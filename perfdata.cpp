@@ -304,13 +304,18 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordSample &record)
         record.m_userStack.resize(size);
         stream.readRawData(record.m_userStack.data(), size);
         stream >> size;
+
+        // In theory this should tell us the real stack size so that we can throw out all the
+        // zeroes. In practice is just random junk.
+        /*if (size == 0)
+            qWarning() << "sample with empty stack??";
         if ((quint64)record.m_userStack.size() < size) {
             qDebug() << "bad user stack";
             return stream; // Will fail length check in calling function
         } else {
             // Throw away trailing zeroes
             record.m_userStack.resize(size);
-        }
+        }*/
     }
 
     if (sampleType & PerfEventAttributes::SAMPLE_WEIGHT)
