@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
     foreach (quint32 pid, pids) {
         PerfUnwind unwind(pid, &header, &features, systemRoot, extraLibs, appPath);
         foreach (const PerfRecordMmap &mmap, data.mmapRecords()) {
-            unwind.report(mmap);
+            unwind.registerElf(mmap);
         }
 
         foreach (const PerfRecordSample &sample, data.sampleRecords()) {

@@ -4,7 +4,7 @@
 #include <elfutils/libdwfl.h>
 #include "perfdata.h"
 #include <QFileInfo>
-#include <QHash>
+#include <QMap>
 
 class PerfUnwind
 {
@@ -30,7 +30,7 @@ private:
     // binaries and debug symbols.
     QByteArray appPath;
 
-    QHash<quint64, QFileInfo> elfs;
+    QMap<quint64, QFileInfo> elfs;
 
 public:
     PerfUnwind(quint32 pid, const PerfHeader *header, const PerfFeatures *features,
@@ -39,7 +39,10 @@ public:
     ~PerfUnwind();
 
 
-    void report(const PerfRecordMmap &mmap);
+    uint architecture() const { return registerArch; }
+
+    void registerElf(const PerfRecordMmap &mmap);
+    void reportElf(quint64 ip) const;
     void unwind(const PerfRecordSample &sample);
 
 };
