@@ -9,8 +9,8 @@ const char *PerfRegisterInfo::s_archNames[] = {
 };
 
 const uint PerfRegisterInfo::s_numRegisters[PerfRegisterInfo::s_numArchitectures][PerfRegisterInfo::s_numAbis] = {
-    {16,  0},
-    {33,  0},
+    {16, 16},
+    {33, 33},
     { 0,  0},
     { 0,  0},
     { 0,  0},
@@ -30,13 +30,13 @@ static uint x86_64[] = {0, 3, 2, 1, 5, 6, 7, 16, 17, 18, 19, 20, 21, 22, 23, 8};
 static uint none[] = {};
 
 const uint *PerfRegisterInfo::s_perfToDwarf[PerfRegisterInfo::s_numArchitectures][PerfRegisterInfo::s_numAbis] = {
-    {arm,   none},
-    {arm64, none},
-    {none,  none},
-    {none,  none},
-    {none,  none},
-    {none,  none},
-    {x86, x86_64}
+    {arm,   arm   },
+    {arm64, arm64 },
+    {none,  none  },
+    {none,  none  },
+    {none,  none  },
+    {none,  none  },
+    {x86,   x86_64}
 };
 
 const uint PerfRegisterInfo::s_perfIp[s_numArchitectures] = {

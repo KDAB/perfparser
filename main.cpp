@@ -1,6 +1,7 @@
 #include <QFile>
 #include <QDebug>
 #include <QtEndian>
+#include <limits>
 
 #include "perfheader.h"
 #include "perfattributes.h"
@@ -16,6 +17,10 @@ enum ErrorCodes {
 
 const QLatin1String DefaultFileName("perf.data");
 
+// TODO: parse from parameters
+const QByteArray systemRoot("/home/ulf/sysroot");
+const QByteArray extraLibs("/home/ulf/Qt/Boot2Qt-3.x/beaglebone-eLinux/qt5");
+const QByteArray appPath("/home/ulf/sysroot/usr/bin");
 
 int main(int argc, char *argv[])
 {
@@ -37,13 +42,23 @@ int main(int argc, char *argv[])
     PerfData data;
     data.read(&file, &header, &attributes, &features);
 
-    PerfUnwind unwind(&header, &features);
-    foreach (const PerfRecordSample &sample, data.sampleRecords()) {
-        unwind.unwind(sample);
+    QSet<quint32> pids;
+    foreach (const PerfRecordMmap &mmap, data.mmapRecords()) {
+        // UINT32_MAX is kernel
+        if (mmap.pid() != std::numeric_limits<quint32>::max())
+            pids << mmap.pid();
     }
 
-    qDebug() << (void *)(&main);
-    qDebug() << (void *)(&PerfUnwind::unwind);
+    foreach (quint32 pid, pids) {
+        PerfUnwind unwind(pid, &header, &features, systemRoot, extraLibs, appPath);
+        foreach (const PerfRecordMmap &mmap, data.mmapRecords()) {
+            unwind.report(mmap);
+        }
+
+        foreach (const PerfRecordSample &sample, data.sampleRecords()) {
+            unwind.unwind(sample);
+        }
+    }
 }
 
 

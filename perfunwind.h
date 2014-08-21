@@ -3,24 +3,42 @@
 
 #include <elfutils/libdwfl.h>
 #include "perfdata.h"
+#include <QFileInfo>
+#include <QHash>
 
 class PerfUnwind
 {
 private:
+    quint32 pid;
     const PerfHeader *header;
     const PerfFeatures *features;
     Dwfl *dwfl;
+    Dwfl_Callbacks offlineCallbacks;
+    char *debugInfoPath;
+
     uint registerArch;
+
+
+    // Root of the file system of the machine that recorded the data. Any binaries and debug
+    // symbols not found in appPath or extraLibsPath have to appear here.
     QByteArray systemRoot;
-    QByteArray extraLibs;
+
+    // Extra path to search for binaries and debug symbols before considering the system root
+    QByteArray extraLibsPath;
+
+    // Path where the application being profiled resides. This is the first path to look for
+    // binaries and debug symbols.
     QByteArray appPath;
-    quint32 pid;
+
+    QHash<quint64, QFileInfo> elfs;
 
 public:
-    PerfUnwind(const PerfHeader *header, const PerfFeatures *features, quint32 pid);
+    PerfUnwind(quint32 pid, const PerfHeader *header, const PerfFeatures *features,
+               const QByteArray &systemRoot, const QByteArray &extraLibs,
+               const QByteArray &appPath);
     ~PerfUnwind();
 
-    void setSystemRoot(const QByteArray &root) { systemRoot = root; }
+
     void report(const PerfRecordMmap &mmap);
     void unwind(const PerfRecordSample &sample);
 

@@ -1,12 +1,12 @@
 #include "perfunwind.h"
 #include "perfregisterinfo.h"
 #include <QDebug>
+#include <QDir>
 #include <endian.h>
 #include <errno.h>
 #include <dwarf.h>
+#include <limits>
 
-
-static char *debuginfoPath = "/home/ulf/Qt/Boot2Qt-3.x/beaglebone-eLinux/qt/lib:/media/rootfs/usr/bin";
 
 int build_id_find_elf (Dwfl_Module *a, void **b, const char *c, Dwarf_Addr d, char **e, Elf **f)
 {
@@ -28,35 +28,74 @@ int offline_section_address (Dwfl_Module *a, void **b, const char *c, Dwarf_Addr
     return dwfl_offline_section_address(a, b, c, d, e, f, g, h);
 }
 
-static const Dwfl_Callbacks offlineCallbacks = {
-	build_id_find_elf,
-    standard_find_debuginfo,
-    offline_section_address,
-    &debuginfoPath
-};
-
-PerfUnwind::PerfUnwind(const PerfHeader *header, const PerfFeatures *features) :
-    header(header), features(features), registerArch(PerfRegisterInfo::s_numArchitectures)
+PerfUnwind::PerfUnwind(quint32 pid, const PerfHeader *header, const PerfFeatures *features,
+                       const QByteArray &systemRoot, const QByteArray &extraLibsPath,
+                       const QByteArray &appPath) :
+    pid(pid), header(header), features(features),
+    registerArch(PerfRegisterInfo::s_numArchitectures), systemRoot(systemRoot),
+    extraLibsPath(extraLibsPath), appPath(appPath)
 {
+    offlineCallbacks.find_elf = build_id_find_elf;
+    offlineCallbacks.find_debuginfo =  standard_find_debuginfo;
+    offlineCallbacks.section_address = offline_section_address;
+    QByteArray newDebugInfo = ":" + appPath + ":" + extraLibsPath + ":" + systemRoot;
+    debugInfoPath = new char[newDebugInfo.length() + 1];
+    debugInfoPath[newDebugInfo.length()] = 0;
+    memcpy(debugInfoPath, newDebugInfo.data(), newDebugInfo.length());
+    offlineCallbacks.debuginfo_path = &debugInfoPath;
+
     const QByteArray &featureArch = features->architecture();
     for (uint i = 0; i < PerfRegisterInfo::s_numArchitectures; ++i) {
-        if (featureArch == PerfRegisterInfo::s_archNames[i]) {
+        if (featureArch.startsWith(PerfRegisterInfo::s_archNames[i])) {
             registerArch = i;
             break;
         }
     }
-    dwfl = dwfl_begin(&offlineCallbacks);
-    if (!dwfl)
-        qWarning() << "failed to initialize dwfl";
 }
 
 PerfUnwind::~PerfUnwind()
 {
-    dwfl_end(dwfl);
+    delete[] debugInfoPath;
+}
+
+bool findInExtraPath(QFileInfo &path, const QString &fileName)
+{
+    path.setFile(path.absoluteFilePath() + "/" + fileName);
+    if (path.exists())
+        return true;
+
+    QDir absDir = path.absoluteDir();
+    foreach (const QString &entry, absDir.entryList(QStringList(),
+                                                    QDir::Dirs | QDir::NoDotAndDotDot)) {
+        path.setFile(absDir, entry);
+        if (findInExtraPath(path, fileName))
+            return true;
+    }
+    return false;
 }
 
 void PerfUnwind::report(const PerfRecordMmap &mmap)
 {
+    if (mmap.pid() != std::numeric_limits<quint32>::max() && mmap.pid() != pid)
+        return;
+
+    QString fileName = QFileInfo(mmap.filename()).fileName();
+    QFileInfo path;
+    if (pid == mmap.pid()) {
+        path.setFile(appPath + "/" + fileName);
+        if (!path.isFile()) {
+            path.setFile(extraLibsPath);
+            if (!findInExtraPath(path, fileName))
+                path.setFile(systemRoot + mmap.filename());
+        }
+    } else { // kernel
+        path.setFile(systemRoot + mmap.filename());
+    }
+
+    if (path.isFile())
+        elfs[mmap.addr()] = path;
+    else
+        qWarning() << "cannot find file to report for" << QString::fromLocal8Bit(mmap.filename());
 
 }
 
@@ -65,11 +104,6 @@ struct UnwindInfo {
     const PerfRecordSample *sample;
     uint registerArch;
 };
-
-struct AddrLocation {};
-
-
-
 
 static pid_t nextThread(Dwfl *dwfl, void *arg, void **threadArg)
 {
@@ -84,7 +118,7 @@ static pid_t nextThread(Dwfl *dwfl, void *arg, void **threadArg)
 
 static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *arg)
 {
-    qDebug() << "memoryRead";
+    //qDebug() << "memoryRead";
     Q_UNUSED(dwfl)
 
     /* Check overflow. */
@@ -125,7 +159,6 @@ bool setInitialRegisters(Dwfl_Thread *thread, void *arg)
     }
 
     return dwfl_thread_state_registers(thread, 0, numRegs, dwarfRegs);
-    return true;
 }
 
 static const Dwfl_Thread_Callbacks callbacks = {
@@ -135,33 +168,62 @@ static const Dwfl_Thread_Callbacks callbacks = {
 
 static int frameCallback(Dwfl_Frame *state, void *arg)
 {
-    Q_UNUSED(arg);
+    int *framenop = static_cast<int *>(arg);
 	Dwarf_Addr pc;
 
-	if (!dwfl_frame_pc(state, &pc, NULL)) {
-		qWarning() << dwfl_errmsg(-1);
+    bool isactivation;
+	if (!dwfl_frame_pc(state, &pc, &isactivation)) {
+		qWarning() << dwfl_errmsg(dwfl_errno());
 		return DWARF_CB_ABORT;
 	}
 
-    qDebug() << "frame" << pc;
+    Dwarf_Addr pc_adjusted = pc - (isactivation ? 0 : 1);
+
+    /* Get PC->SYMNAME.  */
+    Dwfl_Thread *thread = dwfl_frame_thread (state);
+    Dwfl *dwfl = dwfl_thread_dwfl (thread);
+    Dwfl_Module *mod = dwfl_addrmodule (dwfl, pc_adjusted);
+    const char *symname = NULL;
+    if (mod)
+      symname = dwfl_module_addrname (mod, pc_adjusted);
+
+    qDebug() << "frame" << *framenop << pc << (!isactivation ? "- 1" : "", symname);
 
 	return DWARF_CB_OK;
 }
 
 void PerfUnwind::unwind(const PerfRecordSample &sample)
 {
+    if (sample.pid() != pid) {
+        qDebug() << "wrong pid" << sample.pid() << pid;
+        return;
+    }
     UnwindInfo ui = { features, &sample, registerArch };
-    quint64 ip = sample.registerValue(PerfRegisterInfo::s_perfIp[registerArch]);;
+    //quint64 ip = sample.registerValue(PerfRegisterInfo::s_perfIp[registerArch]);;
 
+    dwfl = dwfl_begin(&offlineCallbacks);
 
-    if (dwfl)
-		return;
+    if (!dwfl) {
+        qWarning() << "failed to initialize dwfl" << dwfl_errmsg(dwfl_errno());
+        return;
+    }
+
+    for (QHash<quint64, QFileInfo>::ConstIterator i = elfs.begin(); i != elfs.end(); ++i) {
+        if (!dwfl_report_elf(dwfl, i.value().fileName().toLocal8Bit().data(),
+                             i.value().absoluteFilePath().toLocal8Bit().data(), -1, i.key(),
+                             false)) {
+            qWarning() << "failed to report" << i.value().absoluteFilePath() << "for"
+                       << i.key() << ":" << dwfl_errmsg(dwfl_errno());
+        }
+    }
 
 	if (!dwfl_attach_state(dwfl, 0, sample.tid(), &callbacks, &ui)) {
-        qWarning() << "failed to attach state";
+        qWarning() << "failed to attach state:" << dwfl_errmsg(dwfl_errno());
         return;
     }
 
     if (dwfl_getthread_frames(dwfl, sample.tid(), frameCallback, &ui))
-        qWarning() << "failed to get frames";
+        qWarning() << "failed to get frames:" << dwfl_errmsg(dwfl_errno());
+
+    dwfl_end(dwfl);
 }

@@ -97,6 +97,12 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordMmap &record)
     stream.readRawData(record.m_filename.data(), filenameLength);
     stream >> record.m_sampleId;
 
+    if (record.m_sampleId.pid != record.m_pid)
+        qWarning() << "ambiguous pids in mmap event" << record.m_sampleId.pid << record.m_pid;
+
+    if (record.m_sampleId.tid != record.m_tid)
+        qWarning() << "ambiguous tids in mmap event" << record.m_sampleId.tid << record.m_tid;
+
     qDebug() << record.m_pid << record.m_tid << record.m_addr << record.m_len << record.m_pgoff
              << QString::fromLatin1(record.m_filename) << record.m_sampleId.pid
              << record.m_sampleId.tid;

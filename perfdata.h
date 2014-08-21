@@ -239,6 +239,16 @@ protected:
 class PerfRecordMmap : public PerfRecord {
 public:
     PerfRecordMmap(PerfEventHeader *header = 0, quint64 sampleType = 0);
+
+    // The pids and tids in the sampleId are always 0 in this case. Go figure ...
+    quint32 pid() const { return m_pid; }
+    quint32 tid() const { return m_tid; }
+
+    quint64 addr() const { return m_addr; }
+    quint64 len() const { return m_len; }
+    quint64 pgoff() const { return m_pgoff; }
+    const QByteArray &filename() const { return m_filename; }
+
 private:
     quint32	m_pid;
     quint32 m_tid;
