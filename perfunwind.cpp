@@ -134,12 +134,12 @@ struct UnwindInfo {
 
 static pid_t nextThread(Dwfl *dwfl, void *arg, void **threadArg)
 {
-	/* Stop after first thread. */
-	if (*threadArg != 0)
-		return 0;
+    /* Stop after first thread. */
+    if (*threadArg != 0)
+        return 0;
 
-	*threadArg = arg;
-	return dwfl_pid(dwfl);
+    *threadArg = arg;
+    return dwfl_pid(dwfl);
 }
 
 
@@ -151,24 +151,24 @@ static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *ar
     /* Check overflow. */
     if (addr + sizeof(Dwarf_Word) < addr) {
         qWarning() << "Invalid memory read requested by dwfl" << addr;
-		return false;
+        return false;
     }
 
-	const UnwindInfo *ui = static_cast<UnwindInfo *>(arg);
+    const UnwindInfo *ui = static_cast<UnwindInfo *>(arg);
     const QByteArray &stack = ui->sample->userStack();
 
-	quint64 start = ui->sample->registerValue(PerfRegisterInfo::s_perfSp[ui->unwind->architecture()]);
-	quint64 end = start + stack.size();
+    quint64 start = ui->sample->registerValue(PerfRegisterInfo::s_perfSp[ui->unwind->architecture()]);
+    quint64 end = start + stack.size();
 
-	if (addr < start || addr + sizeof(Dwarf_Word) > end) {
-		qWarning() << "Cannot read memory at" << addr;
+    if (addr < start || addr + sizeof(Dwarf_Word) > end) {
+        qWarning() << "Cannot read memory at" << addr;
         qWarning() << "dwfl should only read stack state (" << start << "to" << end
                    << ") with memoryRead().";
         return false;
-	}
+    }
 
-	*result = *(Dwarf_Word *)(&stack.data()[addr - start]);
-	return true;
+    *result = *(Dwarf_Word *)(&stack.data()[addr - start]);
+    return true;
 }
 
 bool setInitialRegisters(Dwfl_Thread *thread, void *arg)
@@ -190,18 +190,18 @@ bool setInitialRegisters(Dwfl_Thread *thread, void *arg)
 }
 
 static const Dwfl_Thread_Callbacks callbacks = {
-	nextThread, NULL, memoryRead, setInitialRegisters, NULL, NULL
+    nextThread, NULL, memoryRead, setInitialRegisters, NULL, NULL
 };
 
 static int frameCallback(Dwfl_Frame *state, void *arg)
 {
-	Dwarf_Addr pc;
+    Dwarf_Addr pc;
 
     bool isactivation;
-	if (!dwfl_frame_pc(state, &pc, &isactivation)) {
-		qWarning() << dwfl_errmsg(dwfl_errno());
-		return DWARF_CB_ABORT;
-	}
+    if (!dwfl_frame_pc(state, &pc, &isactivation)) {
+        qWarning() << dwfl_errmsg(dwfl_errno());
+        return DWARF_CB_ABORT;
+    }
 
     Dwarf_Addr pc_adjusted = pc - (isactivation ? 0 : 1);
 
@@ -217,11 +217,10 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
         mod = dwfl_addrmodule (dwfl, pc_adjusted);
     }
     if (mod)
-      symname = dwfl_module_addrname (mod, pc_adjusted);
+        symname = dwfl_module_addrname (mod, pc_adjusted);
 
     qDebug() << "frame" << pc << symname;
-
-	return DWARF_CB_OK;
+    return DWARF_CB_OK;
 }
 
 void PerfUnwind::unwind(const PerfRecordSample &sample)

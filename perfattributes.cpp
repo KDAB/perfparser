@@ -53,25 +53,25 @@ int PerfEventAttributes::sampleIdOffset() const
 {
     int offset = 0;
 
-	if (m_sampleType & SAMPLE_IDENTIFIER)
-		return 0;
+    if (m_sampleType & SAMPLE_IDENTIFIER)
+        return 0;
 
-	if (!(m_sampleType & SAMPLE_ID))
-		return -1;
+    if (!(m_sampleType & SAMPLE_ID))
+        return -1;
 
-	if (m_sampleType & SAMPLE_IP)
-		offset += sizeof(quint64); // PerfRecordSample::m_ip
+    if (m_sampleType & SAMPLE_IP)
+        offset += sizeof(quint64); // PerfRecordSample::m_ip
 
-	if (m_sampleType & SAMPLE_TID)
-		offset += sizeof(PerfSampleId::pid) + sizeof(PerfSampleId::tid);
+    if (m_sampleType & SAMPLE_TID)
+        offset += sizeof(PerfSampleId::pid) + sizeof(PerfSampleId::tid);
 
-	if (m_sampleType & SAMPLE_TIME)
-		offset += sizeof(PerfSampleId::time);
+    if (m_sampleType & SAMPLE_TIME)
+        offset += sizeof(PerfSampleId::time);
 
-	if (m_sampleType & SAMPLE_ADDR)
-		offset += sizeof(quint64); // PerfRecordSample::m_addr
+    if (m_sampleType & SAMPLE_ADDR)
+        offset += sizeof(quint64); // PerfRecordSample::m_addr
 
-	return offset;
+    return offset;
 }
 
 
