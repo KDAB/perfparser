@@ -20,7 +20,6 @@
 
 #include "perfattributes.h"
 #include "perfdata.h"
-
 #include <QDebug>
 
 PerfEventAttributes::PerfEventAttributes()
@@ -34,7 +33,7 @@ bool PerfEventAttributes::readFromStream(QDataStream &stream)
     stream >> m_type >> m_size;
 
     if (m_size < sizeof(PerfEventAttributes)) {
-        qDebug() << "unsupported file format";
+        qWarning() << "unsupported file format";
         return false;
     }
 
@@ -53,16 +52,6 @@ bool PerfEventAttributes::readFromStream(QDataStream &stream)
     }
 
     *(&m_readFormat + 1) = flags;
-
-    qDebug() << sizeof(PerfEventAttributes);
-    qDebug() << m_type << m_size << m_config << m_samplePeriod << m_sampleType << m_readFormat
-             << flags << m_wakeupEvents << m_bpType << m_bpAddr << m_bpLen << m_branchSampleType
-             << m_sampleRegsUser << m_sampleStackUser;
-
-    qDebug() << "flags" << m_disabled << m_inherit << m_pinned << m_exclusive << m_excludeUser
-             << m_excludeKernel << m_excludeHv << m_excludeIdle << m_mmap << m_comm << m_freq
-             << m_inheritStat << m_enableOnExec << m_task << m_watermark << m_preciseIp
-             << m_mmapData << m_sampleIdAll << m_excludeHost << m_excludeGuest << m_reserved1;
 
     stream.skipRawData(m_size - sizeof(PerfEventAttributes));
 
@@ -111,7 +100,8 @@ bool PerfAttributes::read(QIODevice *device, PerfHeader *header)
     for (uint i = 0; i < header->numAttrs(); ++i) {
 
         if (!device->seek(header->attrs().offset + header->attrSize() * i)) {
-            qWarning() << "cannot seek to attribute section";
+            qWarning() << "cannot seek to attribute section" << i
+                       << header->attrs().offset + header->attrSize() * i;
             return false;
         }
 
@@ -132,10 +122,8 @@ bool PerfAttributes::read(QIODevice *device, PerfHeader *header)
             QDataStream idStream(device);
             stream.setByteOrder(header->byteOrder());
             quint64 id;
-            qDebug() << "ids" << ids.size << ids.offset;
             for (uint i = 0; i < ids.size / sizeof(quint64); ++i) {
                 idStream >> id;
-                qDebug() << "assigning to" << id;
                 m_attributes[id] = attrs;
             }
         }

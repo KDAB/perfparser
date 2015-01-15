@@ -29,26 +29,6 @@
 #include <limits>
 
 
-int build_id_find_elf (Dwfl_Module *a, void **b, const char *c, Dwarf_Addr d, char **e, Elf **f)
-{
-    qDebug() << "build_id_find_elf" << a << b << c << d << e << f;
-    return dwfl_build_id_find_elf(a, b, c, d, e, f);
-}
-
-int standard_find_debuginfo (Dwfl_Module *a, void **b, const char *c, Dwarf_Addr d, const char *e,
-                             const char *f, GElf_Word g, char **h)
-{
-    qDebug() << "standard_find_debuginfo" << a << b << c << d << e << f << g << h;
-    return dwfl_standard_find_debuginfo(a, b, c, d, e, f, g, h);
-}
-
-int offline_section_address (Dwfl_Module *a, void **b, const char *c, Dwarf_Addr d, const char *e,
-                             GElf_Word f, const GElf_Shdr *g, Dwarf_Addr *h)
-{
-    qDebug() << "offline_section_address" << a << b << c << d << e << f << g << h;
-    return dwfl_offline_section_address(a, b, c, d, e, f, g, h);
-}
-
 PerfUnwind::PerfUnwind(quint32 pid, const PerfHeader *header, const PerfFeatures *features,
                        const QByteArray &systemRoot, const QByteArray &extraLibsPath,
                        const QByteArray &appPath) :
@@ -56,9 +36,9 @@ PerfUnwind::PerfUnwind(quint32 pid, const PerfHeader *header, const PerfFeatures
     registerArch(PerfRegisterInfo::s_numArchitectures), systemRoot(systemRoot),
     extraLibsPath(extraLibsPath), appPath(appPath)
 {
-    offlineCallbacks.find_elf = build_id_find_elf;
-    offlineCallbacks.find_debuginfo =  standard_find_debuginfo;
-    offlineCallbacks.section_address = offline_section_address;
+    offlineCallbacks.find_elf = dwfl_build_id_find_elf;
+    offlineCallbacks.find_debuginfo =  dwfl_standard_find_debuginfo;
+    offlineCallbacks.section_address = dwfl_offline_section_address;
     QByteArray newDebugInfo = ":" + appPath + ":" + extraLibsPath + ":" + systemRoot;
     debugInfoPath = new char[newDebugInfo.length() + 1];
     debugInfoPath[newDebugInfo.length()] = 0;
@@ -140,8 +120,6 @@ void PerfUnwind::reportElf(quint64 ip) const
                              false)) {
             qWarning() << "failed to report" << i.value().absoluteFilePath() << "for"
                        << i.key() << ":" << dwfl_errmsg(dwfl_errno());
-        } else {
-            qDebug() << "reported" << ip << i.key() << i.value().absoluteFilePath();
         }
     } else {
         qWarning() << "no elf found for" << ip;
@@ -166,7 +144,6 @@ static pid_t nextThread(Dwfl *dwfl, void *arg, void **threadArg)
 
 static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *arg)
 {
-    //qDebug() << "memoryRead";
     Q_UNUSED(dwfl)
 
     /* Check overflow. */
@@ -194,7 +171,6 @@ static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *ar
 
 bool setInitialRegisters(Dwfl_Thread *thread, void *arg)
 {
-    qDebug() << "initial registers";
     const UnwindInfo *ui = static_cast<UnwindInfo *>(arg);
     const QList<quint64> &userRegs = ui->sample->registers();
     quint64 abi = ui->sample->registerAbi();
@@ -232,7 +208,6 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
     Dwfl_Module *mod = dwfl_addrmodule (dwfl, pc_adjusted);
     const char *symname = NULL;
     if (!mod) {
-        qDebug() << "reporting from callback";
         UnwindInfo *ui = static_cast<UnwindInfo *>(arg);
         ui->unwind->reportElf(pc_adjusted);
         mod = dwfl_addrmodule (dwfl, pc_adjusted);
@@ -247,7 +222,7 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
 void PerfUnwind::unwind(const PerfRecordSample &sample)
 {
     if (sample.pid() != pid) {
-        qDebug() << "wrong pid" << sample.pid() << pid;
+        qWarning() << "wrong pid" << sample.pid() << pid;
         return;
     }
     UnwindInfo ui = { this, &sample };

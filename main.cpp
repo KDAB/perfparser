@@ -57,7 +57,6 @@ int main(int argc, char *argv[])
 
 
     PerfFeatures features;
-    qDebug() << file.size();
     features.read(&file, &header);
 
     PerfData data;
@@ -72,9 +71,8 @@ int main(int argc, char *argv[])
 
     foreach (quint32 pid, pids) {
         PerfUnwind unwind(pid, &header, &features, systemRoot, extraLibs, appPath);
-        foreach (const PerfRecordMmap &mmap, data.mmapRecords()) {
+        foreach (const PerfRecordMmap &mmap, data.mmapRecords())
             unwind.registerElf(mmap);
-        }
 
         foreach (const PerfRecordSample &sample, data.sampleRecords()) {
             unwind.unwind(sample);

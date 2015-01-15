@@ -31,7 +31,7 @@ bool PerfData::read(QIODevice *device, const PerfHeader *header,
 {
     Q_UNUSED(features);
     if (!device->seek(header->dataOffset())) {
-        qDebug() << "cannot seek to" << header->dataOffset();
+        qWarning() << "cannot seek to" << header->dataOffset();
         return false;
     }
     QDataStream stream(device);
@@ -46,7 +46,12 @@ bool PerfData::read(QIODevice *device, const PerfHeader *header,
     PerfEventHeader eventHeader;
     while ((pos = device->pos()) < header->dataOffset() + header->dataSize()) {
         stream >> eventHeader;
-        qDebug() << eventHeader.type << eventHeader.misc << eventHeader.size;
+
+        if (eventHeader.size < sizeof(PerfEventHeader)) {
+            qWarning() << "bad event header size" << eventHeader.size << eventHeader.type
+                       << eventHeader.misc;
+            return false;
+        }
 
         switch (eventHeader.type) {
         case PERF_RECORD_MMAP:
@@ -70,7 +75,6 @@ bool PerfData::read(QIODevice *device, const PerfHeader *header,
                 qint64 prevPos = device->pos();
                 device->seek(prevPos + idOffset);
                 stream >> id;
-                qDebug() << "found" << id << "at" << idOffset;
                 device->seek(prevPos);
                 sampleAttrs = &attributes->attributes(id);
             }
@@ -90,7 +94,9 @@ bool PerfData::read(QIODevice *device, const PerfHeader *header,
 
         // Read wrong number of bytes => something broken
         if (device->pos() - pos != eventHeader.size) {
-            qDebug() << "read" << (device->pos() - pos) << "instead of" << eventHeader.size << "bytes";
+            qWarning() << "While parsing event of type" << eventHeader.type;
+            qWarning() << "read" << (device->pos() - pos) << "instead of"
+                       << eventHeader.size << "bytes";
             return false;
         }
     }
@@ -113,11 +119,12 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordMmap &record)
             sizeof(record.m_filename) - record.m_sampleId.length();
 
     if (filenameLength > static_cast<quint64>(std::numeric_limits<int>::max())) {
-        qDebug() << "bad filename length";
+        qWarning() << "bad filename length";
         return stream;
     }
     record.m_filename.resize(filenameLength);
     stream.readRawData(record.m_filename.data(), filenameLength);
+
     stream >> record.m_sampleId;
 
     if (record.m_sampleId.pid != record.m_pid)
@@ -125,10 +132,6 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordMmap &record)
 
     if (record.m_sampleId.tid != record.m_tid)
         qWarning() << "ambiguous tids in mmap event" << record.m_sampleId.tid << record.m_tid;
-
-    qDebug() << record.m_pid << record.m_tid << record.m_addr << record.m_len << record.m_pgoff
-             << QString::fromLatin1(record.m_filename) << record.m_sampleId.pid
-             << record.m_sampleId.tid;
 
     return stream;
 }
@@ -146,15 +149,13 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordComm &record)
             sizeof(record.m_comm) - record.m_sampleId.length();
 
     if (commLength > static_cast<quint64>(std::numeric_limits<int>::max())) {
-        qDebug() << "bad comm length";
+        qWarning() << "bad comm length";
         return stream;
     }
     record.m_comm.resize(commLength);
     stream.readRawData(record.m_comm.data(), commLength);
     stream >> record.m_sampleId;
 
-    //qDebug() << record.m_pid << record.m_pid << QString::fromLatin1(record.m_comm)
-    //         << record.m_sampleId.pid << record.m_sampleId.tid;
     return stream;
 }
 
@@ -167,9 +168,7 @@ PerfRecordLost::PerfRecordLost(PerfEventHeader *header, quint64 sampleType) :
 
 QDataStream &operator>>(QDataStream &stream, PerfRecordLost &record)
 {
-    stream >> record.m_id >> record.m_lost;
-    stream >> record.m_sampleId;
-    qDebug() << record.m_id << record.m_lost << record.m_header.size << record.m_sampleId.pid << record.m_sampleId.tid;
+    stream >> record.m_id >> record.m_lost >> record.m_sampleId;
     return stream;
 }
 
@@ -230,6 +229,7 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordSample &record)
     quint32 waste32;
 
     const quint64 sampleType = record.m_sampleId.sampleType();
+
     if (sampleType & PerfEventAttributes::SAMPLE_IDENTIFIER)
         stream >> record.m_sampleId.id;
     if (sampleType & PerfEventAttributes::SAMPLE_IP)
@@ -287,7 +287,7 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordSample &record)
         quint32 rawSize;
         stream >> rawSize;
         if (rawSize > static_cast<quint32>(std::numeric_limits<int>::max())) {
-            qDebug() << "bad raw data section";
+            qWarning() << "bad raw data section";
             return stream;
         }
         record.m_rawData.resize(rawSize);
@@ -321,7 +321,7 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordSample &record)
 
         if (size > static_cast<quint64>(std::numeric_limits<int>::max())) {
             // We don't accept stack samples of > 2G, sorry ...
-            qDebug() << "bad stack size";
+            qWarning() << "bad stack size";
             return stream;
         }
         if (size > 0) {

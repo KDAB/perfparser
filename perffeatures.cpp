@@ -31,7 +31,6 @@ void PerfFeatures::createFeature(QIODevice *device, QDataStream::ByteOrder byteO
     QDataStream stream(device);
     stream.setByteOrder(byteOrder);
 
-    qDebug() << featureId << section.offset << section.size;
     switch (featureId) {
     case PerfHeader::BUILD_ID:
         m_buildId.size = section.size;
@@ -88,11 +87,10 @@ void PerfFeatures::createFeature(QIODevice *device, QDataStream::ByteOrder byteO
 
     quint64 readSize = device->pos() - section.offset;
     if (section.size != readSize) {
-        qWarning() << "feature not properly read" << section.size << readSize;
+        qWarning() << "feature not properly read" << featureId << section.size << readSize;
         QByteArray data;
         data.resize(readSize);
         stream.readRawData(data.data(), readSize);
-        qDebug() << "remaining data" << data.toHex();
     }
 }
 
@@ -107,7 +105,7 @@ PerfFeatures::~PerfFeatures()
 bool PerfFeatures::read(QIODevice *device, const PerfHeader *header)
 {
     if (!device->seek(header->featureOffset())) {
-        qDebug() << "cannot seek to" << header->featureOffset();
+        qWarning() << "cannot seek to" << header->featureOffset();
         return false;
     }
     QDataStream stream(device);
@@ -121,6 +119,8 @@ bool PerfFeatures::read(QIODevice *device, const PerfHeader *header)
             stream >> section;
             if (section.size > 0)
                 featureSections[feature] = section;
+            else
+                qWarning() << "Feature announced in header but not present:" << feature;
         }
     }
 
@@ -146,14 +146,13 @@ QDataStream &operator>>(QDataStream &stream, PerfBuildId &buildId)
         uint fileNameLength = build.header.size - sizeof(build.header) - sizeof(build.pid) -
                 PerfBuildId::s_idPadding - PerfBuildId::s_idLength;
         if (fileNameLength > static_cast<uint>(std::numeric_limits<int>::max())) {
-            qDebug() << "bad file name length";
+            qWarning() << "bad file name length";
             return stream;
         }
         build.fileName.resize(fileNameLength);
         stream.readRawData(build.fileName.data(), fileNameLength);
         next += build.header.size;
         buildId.buildIds << build;
-        qDebug() << build.header.type << build.id.toHex() << QString::fromLatin1(build.fileName);
     }
     return stream;
 }
@@ -169,12 +168,11 @@ QDataStream &operator>>(QDataStream &stream, PerfStringFeature &string)
     quint32 length;
     stream >> length;
     if (length > static_cast<quint32>(std::numeric_limits<int>::max())) {
-        qDebug() << "bad string length";
+        qWarning() << "bad string length";
         return stream;
     }
     string.value.resize(length);
     stream.readRawData(string.value.data(), length);
-    qDebug() << length;
     return stream;
 }
 
@@ -207,20 +205,16 @@ QDataStream &operator>>(QDataStream &stream, PerfEventDesc &eventDesc)
     quint32 numIds;
     quint64 id;
     stream >> numEvents >> eventSize;
-    qDebug() << numEvents << eventSize;
     PerfStringFeature stringFeature;
     while (numEvents-- > 0) {
         eventDesc.eventDescs << PerfEventDesc::EventDesc();
         PerfEventDesc::EventDesc &currentEvent = eventDesc.eventDescs.last();
         currentEvent.attrs.readFromStream(stream);
         stream >> numIds;
-        qDebug() << numIds;
         stream >> stringFeature;
         currentEvent.name = stringFeature.value;
-        qDebug() << currentEvent.name;
         while (numIds-- > 0) {
             stream >> id;
-            qDebug() << id;
             currentEvent.ids << id;
         }
     }
@@ -236,14 +230,12 @@ QDataStream &operator>>(QDataStream &stream, PerfCpuTopology &cpuTopology)
     PerfStringFeature stringFeature;
     stream >> numSiblings;
 
-    qDebug() << "cores" << numSiblings;
     while (numSiblings-- > 0) {
         stream >> stringFeature;
         cpuTopology.siblingCores << stringFeature.value;
     }
 
     stream >> numSiblings;
-    qDebug() << "threads" << numSiblings;
     while (numSiblings-- > 0) {
         stream >> stringFeature;
         cpuTopology.siblingThreads << stringFeature.value;
@@ -255,14 +247,12 @@ QDataStream &operator>>(QDataStream &stream, PerfNumaTopology &numaTopology)
 {
     quint32 numNodes;
     stream >> numNodes;
-    qDebug() << "numa" << numNodes;
 
     PerfStringFeature stringFeature;
     while (numNodes-- > 0) {
         PerfNumaTopology::NumaNode node;
         stream >> node.nodeId >> node.memTotal >> node.memFree >> stringFeature;
         node.topology = stringFeature.value;
-        qDebug() << node.nodeId << node.memTotal << node.memFree;
         numaTopology.nodes << node;
     }
     return stream;
@@ -280,13 +270,11 @@ QDataStream &operator>>(QDataStream &stream, PerfPmuMappings &pmuMappings)
 {
     quint32 numPmus;
     stream >> numPmus;
-    qDebug() << "pmus" << numPmus;
 
     PerfStringFeature stringFeature;
     while (numPmus-- > 0) {
         PerfPmuMappings::Pmu pmu;
         stream >> pmu.type >> stringFeature;
-        qDebug() << pmu.type;
         pmu.name = stringFeature.value;
         pmuMappings.pmus << pmu;
     }
@@ -297,7 +285,6 @@ QDataStream &operator>>(QDataStream &stream, PerfGroupDesc &groupDesc)
 {
     quint32 numGroups;
     stream >> numGroups;
-    qDebug() << "groups" << numGroups;
 
     PerfStringFeature stringFeature;
     while (numGroups-- > 0) {
@@ -306,7 +293,6 @@ QDataStream &operator>>(QDataStream &stream, PerfGroupDesc &groupDesc)
         desc.name = stringFeature.value;
         stream >> desc.leaderIndex >> desc.numMembers;
         groupDesc.groupDescs << desc;
-        qDebug() << desc.leaderIndex << desc.numMembers;
     }
     return stream;
 }
