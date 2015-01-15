@@ -6,8 +6,6 @@
 class PerfRegisterInfo
 {
 public:
-    PerfRegisterInfo();
-
     static const uint s_numArchitectures = 7;
     static const uint s_numAbis = 2; // maybe more for some archs?
 

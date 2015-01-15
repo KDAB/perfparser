@@ -60,6 +60,9 @@ bool PerfData::read(QIODevice *device, const PerfHeader *header,
             stream >> m_sampleRecords.last();
             break;
         }
+        case PERF_RECORD_MMAP2: {
+            // TODO: Implement - this is what shows up in later versions of perf files.
+        }
         default:
             stream.skipRawData(eventHeader.size - sizeof(PerfEventHeader));
             break;
@@ -301,21 +304,11 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordSample &record)
             qDebug() << "bad stack size";
             return stream;
         }
-        record.m_userStack.resize(size);
-        stream.readRawData(record.m_userStack.data(), size);
-        stream >> size;
-
-        // In theory this should tell us the real stack size so that we can throw out all the
-        // zeroes. In practice is just random junk.
-        /*if (size == 0)
-            qWarning() << "sample with empty stack??";
-        if ((quint64)record.m_userStack.size() < size) {
-            qDebug() << "bad user stack";
-            return stream; // Will fail length check in calling function
-        } else {
-            // Throw away trailing zeroes
+        if (size > 0) {
             record.m_userStack.resize(size);
-        }*/
+            stream.readRawData(record.m_userStack.data(), size);
+            stream >> size;
+        }
     }
 
     if (sampleType & PerfEventAttributes::SAMPLE_WEIGHT)

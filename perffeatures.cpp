@@ -31,6 +31,7 @@ void PerfFeatures::createFeature(QIODevice *device, QDataStream::ByteOrder byteO
         break;
     case PerfHeader::CPUDESC:
         stream >> m_cpuDesc;
+        break;
     case PerfHeader::CPUID:
         stream >> m_cpuId;
         break;

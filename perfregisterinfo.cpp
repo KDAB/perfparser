@@ -1,9 +1,5 @@
 #include "perfregisterinfo.h"
 
-PerfRegisterInfo::PerfRegisterInfo()
-{
-}
-
 const char *PerfRegisterInfo::s_archNames[] = {
     "arm", "arm64", "powerpc", "s390", "sh", "sparc", "x86"
 };
