@@ -55,15 +55,15 @@ bool PerfData::read(QIODevice *device, const PerfHeader *header,
 
         switch (eventHeader.type) {
         case PERF_RECORD_MMAP:
-            m_mmapRecords << PerfRecordMmap(&eventHeader, attrs.sampleType());
+            m_mmapRecords << PerfRecordMmap(&eventHeader, attrs.sampleType(), attrs.sampleIdAll());
             stream >> m_mmapRecords.last();
             break;
         case PERF_RECORD_LOST:
-            m_lostRecords << PerfRecordLost(&eventHeader, attrs.sampleType());
+            m_lostRecords << PerfRecordLost(&eventHeader, attrs.sampleType(), attrs.sampleIdAll());
             stream >> m_lostRecords.last();
             break;
         case PERF_RECORD_COMM:
-            m_commRecords << PerfRecordComm(&eventHeader, attrs.sampleType());
+            m_commRecords << PerfRecordComm(&eventHeader, attrs.sampleType(), attrs.sampleIdAll());
             stream >> m_commRecords.last();
             break;
         case PERF_RECORD_SAMPLE: {
@@ -85,7 +85,10 @@ bool PerfData::read(QIODevice *device, const PerfHeader *header,
             break;
         }
         case PERF_RECORD_MMAP2: {
-            // TODO: Implement - this is what shows up in later versions of perf files.
+            PerfRecordMmap2 mmap2(&eventHeader, attrs.sampleType(), attrs.sampleIdAll());
+            stream >> mmap2;
+            m_mmapRecords << mmap2; // Throw out the extra data for now.
+            break;
         }
         default:
             stream.skipRawData(eventHeader.size - sizeof(PerfEventHeader));
@@ -104,41 +107,76 @@ bool PerfData::read(QIODevice *device, const PerfHeader *header,
     return true;
 }
 
-
-PerfRecordMmap::PerfRecordMmap(PerfEventHeader *header, quint64 sampleType) :
-    PerfRecord(header, sampleType), m_pid(0), m_tid(0), m_addr(0), m_len(0), m_pgoff(0)
+PerfRecordMmap::PerfRecordMmap(PerfEventHeader *header, quint64 sampleType, bool sampleIdAll) :
+    PerfRecord(header, sampleType, sampleIdAll), m_pid(0), m_tid(0), m_addr(0), m_len(0), m_pgoff(0)
 {
 }
 
-
-QDataStream &operator>>(QDataStream &stream, PerfRecordMmap &record)
+QDataStream &PerfRecordMmap::readNumbers(QDataStream &stream)
 {
-    stream >> record.m_pid >> record.m_tid >> record.m_addr >> record.m_len >> record.m_pgoff;
+    return stream >> m_pid >> m_tid >> m_addr >> m_len >> m_pgoff;
+}
 
-    quint64 filenameLength = record.m_header.size - sizeof(PerfRecordMmap) + sizeof(PerfSampleId) +
-            sizeof(record.m_filename) - record.m_sampleId.length();
-
+QDataStream &PerfRecordMmap::readFilename(QDataStream &stream, quint64 filenameLength)
+{
     if (filenameLength > static_cast<quint64>(std::numeric_limits<int>::max())) {
         qWarning() << "bad filename length";
         return stream;
     }
-    record.m_filename.resize(filenameLength);
-    stream.readRawData(record.m_filename.data(), filenameLength);
+    m_filename.resize(filenameLength);
+    stream.readRawData(m_filename.data(), filenameLength);
+    return stream;
+}
 
-    stream >> record.m_sampleId;
+QDataStream &PerfRecordMmap::readSampleId(QDataStream &stream)
+{
+    stream >> m_sampleId;
 
-    if (record.m_sampleId.pid != record.m_pid)
-        qWarning() << "ambiguous pids in mmap event" << record.m_sampleId.pid << record.m_pid;
-
-    if (record.m_sampleId.tid != record.m_tid)
-        qWarning() << "ambiguous tids in mmap event" << record.m_sampleId.tid << record.m_tid;
+    if (m_sampleId.sampleType() &
+            (PerfEventAttributes::SAMPLE_ID_ALL | PerfEventAttributes::SAMPLE_TID)) {
+        if (m_sampleId.pid() != m_pid)
+            qWarning() << "ambiguous pids in mmap event" << m_sampleId.pid() << m_pid;
+        if (m_sampleId.tid() != m_tid)
+            qWarning() << "ambiguous tids in mmap event" << m_sampleId.tid() << m_tid;
+    }
 
     return stream;
 }
 
+QDataStream &operator>>(QDataStream &stream, PerfRecordMmap &record)
+{
+    record.readNumbers(stream);
+    quint64 filenameLength = record.m_header.size - sizeof(PerfRecordMmap) + sizeof(PerfSampleId) +
+            sizeof(record.m_filename) - record.m_sampleId.length();
+    record.readFilename(stream, filenameLength);
+    record.readSampleId(stream);
+    return stream;
+}
 
-PerfRecordComm::PerfRecordComm(PerfEventHeader *header, quint64 sampleType) :
-    PerfRecord(header, sampleType), m_pid(0), m_tid(0)
+PerfRecordMmap2::PerfRecordMmap2(PerfEventHeader *header, quint64 sampleType, bool sampleIdAll) :
+    PerfRecordMmap(header, sampleType, sampleIdAll), m_maj(0), m_min(0), m_ino(0),
+    m_ino_generation(0), m_prot(0), m_flags(0)
+{
+}
+
+QDataStream &PerfRecordMmap2::readNumbers(QDataStream &stream)
+{
+    PerfRecordMmap::readNumbers(stream);
+    return stream >> m_maj >> m_min >> m_ino >> m_ino_generation >> m_prot >> m_flags;
+}
+
+QDataStream &operator>>(QDataStream &stream, PerfRecordMmap2 &record)
+{
+    record.readNumbers(stream);
+    quint64 filenameLength = record.m_header.size - sizeof(PerfRecordMmap2) + sizeof(PerfSampleId) +
+            sizeof(record.m_filename) - record.m_sampleId.length();
+    record.readFilename(stream, filenameLength);
+    record.readSampleId(stream);
+    return stream;
+}
+
+PerfRecordComm::PerfRecordComm(PerfEventHeader *header, quint64 sampleType, bool sampleIdAll) :
+    PerfRecord(header, sampleType, sampleIdAll), m_pid(0), m_tid(0)
 {
 }
 
@@ -160,8 +198,8 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordComm &record)
 }
 
 
-PerfRecordLost::PerfRecordLost(PerfEventHeader *header, quint64 sampleType) :
-    PerfRecord(header, sampleType), m_id(0), m_lost(0)
+PerfRecordLost::PerfRecordLost(PerfEventHeader *header, quint64 sampleType, bool sampleIdAll) :
+    PerfRecord(header, sampleType, sampleIdAll), m_id(0), m_lost(0)
 {
 }
 
@@ -172,21 +210,22 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordLost &record)
     return stream;
 }
 
-
 QDataStream &operator>>(QDataStream &stream, PerfSampleId &sampleId)
 {
-    if (sampleId.m_sampleType & PerfEventAttributes::SAMPLE_TID)
-        stream >> sampleId.pid >> sampleId.tid;
-    if (sampleId.m_sampleType & PerfEventAttributes::SAMPLE_TIME)
-        stream >> sampleId.time;
-    if (sampleId.m_sampleType & PerfEventAttributes::SAMPLE_ID)
-        stream >> sampleId.id;
-    if (sampleId.m_sampleType & PerfEventAttributes::SAMPLE_STREAM_ID)
-        stream >> sampleId.streamId;
-    if (sampleId.m_sampleType & PerfEventAttributes::SAMPLE_CPU)
-        stream >> sampleId.res >> sampleId.cpu;
-    if (sampleId.m_sampleType & PerfEventAttributes::SAMPLE_IDENTIFIER)
-        stream.skipRawData(sizeof(sampleId.m_ignoredDuplicateId));
+    if (sampleId.m_sampleType & PerfEventAttributes::SAMPLE_ID_ALL) {
+        if (sampleId.m_sampleType & PerfEventAttributes::SAMPLE_TID)
+            stream >> sampleId.m_pid >> sampleId.m_tid;
+        if (sampleId.m_sampleType & PerfEventAttributes::SAMPLE_TIME)
+            stream >> sampleId.m_time;
+        if (sampleId.m_sampleType & PerfEventAttributes::SAMPLE_ID)
+            stream >> sampleId.m_id;
+        if (sampleId.m_sampleType & PerfEventAttributes::SAMPLE_STREAM_ID)
+            stream >> sampleId.m_streamId;
+        if (sampleId.m_sampleType & PerfEventAttributes::SAMPLE_CPU)
+            stream >> sampleId.m_res >> sampleId.m_cpu;
+        if (sampleId.m_sampleType & PerfEventAttributes::SAMPLE_IDENTIFIER)
+            stream.skipRawData(sizeof(sampleId.m_ignoredDuplicateId));
+    }
     return stream;
 }
 
@@ -194,31 +233,33 @@ QDataStream &operator>>(QDataStream &stream, PerfSampleId &sampleId)
 quint64 PerfSampleId::length() const
 {
     quint64 ret = 0;
-    if (m_sampleType & PerfEventAttributes::SAMPLE_TID)
-        ret += sizeof(pid) + sizeof(tid);
-    if (m_sampleType & PerfEventAttributes::SAMPLE_TIME)
-        ret += sizeof(time);
-    if (m_sampleType & PerfEventAttributes::SAMPLE_ID)
-        ret += sizeof(id);
-    if (m_sampleType & PerfEventAttributes::SAMPLE_STREAM_ID)
-        ret += sizeof(streamId);
-    if (m_sampleType & PerfEventAttributes::SAMPLE_CPU)
-        ret += sizeof(res) + sizeof(cpu);
-    if (m_sampleType & PerfEventAttributes::SAMPLE_IDENTIFIER)
-        ret += sizeof(m_ignoredDuplicateId);
+    if (m_sampleType & PerfEventAttributes::SAMPLE_ID_ALL) {
+        if (m_sampleType & PerfEventAttributes::SAMPLE_TID)
+            ret += sizeof(m_pid) + sizeof(m_tid);
+        if (m_sampleType & PerfEventAttributes::SAMPLE_TIME)
+            ret += sizeof(m_time);
+        if (m_sampleType & PerfEventAttributes::SAMPLE_ID)
+            ret += sizeof(m_id);
+        if (m_sampleType & PerfEventAttributes::SAMPLE_STREAM_ID)
+            ret += sizeof(m_streamId);
+        if (m_sampleType & PerfEventAttributes::SAMPLE_CPU)
+            ret += sizeof(m_res) + sizeof(m_cpu);
+        if (m_sampleType & PerfEventAttributes::SAMPLE_IDENTIFIER)
+            ret += sizeof(m_ignoredDuplicateId);
+    }
     return ret;
 }
 
 
-PerfRecord::PerfRecord(const PerfEventHeader *header, quint64 sampleType) :
-    m_header(header ? *header : PerfEventHeader()), m_sampleId(sampleType)
+PerfRecord::PerfRecord(const PerfEventHeader *header, quint64 sampleType, bool sampleIdAll) :
+    m_header(header ? *header : PerfEventHeader()), m_sampleId(sampleType, sampleIdAll)
 {
 }
 
 
 PerfRecordSample::PerfRecordSample(const PerfEventHeader *header,
                                    const PerfEventAttributes *attributes)
-    : PerfRecord(header, attributes->sampleType()), m_readFormat(attributes->readFormat()),
+    : PerfRecord(header, attributes->sampleType(), false), m_readFormat(attributes->readFormat()),
       m_registerMask(attributes->sampleRegsUser()), m_ip(0), m_addr(0), m_period(0),
       m_timeEnabled(0), m_timeRunning(0), m_registerAbi(0)
 {
@@ -231,21 +272,21 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordSample &record)
     const quint64 sampleType = record.m_sampleId.sampleType();
 
     if (sampleType & PerfEventAttributes::SAMPLE_IDENTIFIER)
-        stream >> record.m_sampleId.id;
+        stream >> record.m_sampleId.m_id;
     if (sampleType & PerfEventAttributes::SAMPLE_IP)
         stream >> record.m_ip;
     if (sampleType & PerfEventAttributes::SAMPLE_TID)
-        stream >> record.m_sampleId.pid >> record.m_sampleId.tid;
+        stream >> record.m_sampleId.m_pid >> record.m_sampleId.m_tid;
     if (sampleType & PerfEventAttributes::SAMPLE_TIME)
-        stream >> record.m_sampleId.time;
+        stream >> record.m_sampleId.m_time;
     if (sampleType & PerfEventAttributes::SAMPLE_ADDR)
         stream >> record.m_addr;
     if (sampleType & PerfEventAttributes::SAMPLE_ID)
-        stream >> record.m_sampleId.id; // It's the same as identifier
+        stream >> record.m_sampleId.m_id; // It's the same as identifier
     if (sampleType & PerfEventAttributes::SAMPLE_STREAM_ID)
-        stream >> record.m_sampleId.streamId;
+        stream >> record.m_sampleId.m_streamId;
     if (sampleType & PerfEventAttributes::SAMPLE_CPU)
-        stream >> record.m_sampleId.cpu >> waste32;
+        stream >> record.m_sampleId.m_cpu >> waste32;
     if (sampleType & PerfEventAttributes::SAMPLE_PERIOD)
         stream >> record.m_period;
 

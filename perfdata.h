@@ -217,49 +217,58 @@ enum PerfEventType {
     PERF_RECORD_MAX,              /* non-ABI */
 };
 
+class PerfRecordSample;
+
 // Use first attribute for deciding if this is present, not the header!
-// Why the first?!? idiots ...
+// Why the first?!? idiots ... => encoded in sampleType via sampleIdAll
 struct PerfSampleId {
-    static const size_t s_duplicateIdFromBack = 8;
+    PerfSampleId(quint64 sampleType = 0, bool sampleIdAll = false) : m_pid(0), m_tid(0), m_time(0),
+        m_id(0), m_streamId(0), m_cpu(0), m_res(0),
+        m_sampleType(sampleType | (sampleIdAll ? (quint64)PerfEventAttributes::SAMPLE_ID_ALL : 0))
+    {}
 
-    PerfSampleId(quint64 sampleType = 0) : pid(0), tid(0), time(0), id(0), streamId(0), cpu(0),
-        res(0), m_sampleType(sampleType) {}
-    quint32 pid;
-    quint32 tid;
-    quint64 time;
-    quint64 id;
-    quint64 streamId;
-    quint32 cpu;
-    quint32 res;
-
+    quint32 pid() const { return m_pid; }
+    quint32 tid() const { return m_tid; }
+    quint64 time() const { return m_time; }
     quint64 length() const;
     quint64 sampleType() const { return m_sampleType; }
 
 private:
+    quint32 m_pid;
+    quint32 m_tid;
+    quint64 m_time;
+    quint64 m_id;
+    quint64 m_streamId;
+    quint32 m_cpu;
+    quint32 m_res;
+
     union {
         quint64 m_ignoredDuplicateId; // In the file format this is the same as id above
         quint64 m_sampleType; // As the id is ignored we can reuse the space for saving the flags
     };
 
     friend QDataStream &operator>>(QDataStream &stream, PerfSampleId &sampleId);
+    friend QDataStream &operator>>(QDataStream &stream, PerfRecordSample &record);
 };
 
 QDataStream &operator>>(QDataStream &stream, PerfSampleId &sampleId);
 
 class PerfRecord {
 public:
-    quint32 pid() const { return m_sampleId.pid; }
-    quint32 tid() const { return m_sampleId.tid; }
+    quint32 pid() const { return m_sampleId.pid(); }
+    quint32 tid() const { return m_sampleId.tid(); }
+    quint64 time() const { return m_sampleId.time(); }
 
 protected:
-    PerfRecord(const PerfEventHeader *header, quint64 sampleType);
+    PerfRecord(const PerfEventHeader *header, quint64 sampleType, bool sampleIdAll);
     PerfEventHeader m_header;
     PerfSampleId m_sampleId;
 };
 
+class PerfRecordMmap2;
 class PerfRecordMmap : public PerfRecord {
 public:
-    PerfRecordMmap(PerfEventHeader *header = 0, quint64 sampleType = 0);
+    PerfRecordMmap(PerfEventHeader *header = 0, quint64 sampleType = 0, bool sampleIdAll = false);
 
     // The pids and tids in the sampleId are always 0 in this case. Go figure ...
     quint32 pid() const { return m_pid; }
@@ -270,6 +279,11 @@ public:
     quint64 pgoff() const { return m_pgoff; }
     const QByteArray &filename() const { return m_filename; }
 
+protected:
+    QDataStream &readNumbers(QDataStream &stream);
+    QDataStream &readFilename(QDataStream &stream, quint64 filenameLength);
+    QDataStream &readSampleId(QDataStream &stream);
+
 private:
     quint32	m_pid;
     quint32 m_tid;
@@ -279,14 +293,35 @@ private:
     QByteArray m_filename;
 
     friend QDataStream &operator>>(QDataStream &stream, PerfRecordMmap &record);
+    friend QDataStream &operator>>(QDataStream &stream, PerfRecordMmap2 &record);
 };
 
 QDataStream &operator>>(QDataStream &stream, PerfRecordMmap &record);
 
+class PerfRecordMmap2 : public PerfRecordMmap
+{
+public:
+    PerfRecordMmap2(PerfEventHeader *header = 0, quint64 sampleType = 0, bool sampleIdAll = false);
+
+protected:
+    QDataStream &readNumbers(QDataStream &stream);
+
+private:
+    quint32 m_maj;
+    quint32 m_min;
+    quint64 m_ino;
+    quint64 m_ino_generation;
+    quint32 m_prot;
+    quint32 m_flags;
+
+    friend QDataStream &operator>>(QDataStream &stream, PerfRecordMmap2 &record);
+};
+
+QDataStream &operator>>(QDataStream &stream, PerfRecordMmap2 &record);
 
 class PerfRecordLost : public PerfRecord {
 public:
-    PerfRecordLost(PerfEventHeader *header = 0, quint64 sampleType = 0);
+    PerfRecordLost(PerfEventHeader *header = 0, quint64 sampleType = 0, bool sampleIdAll = false);
 private:
     quint64 m_id;
     quint64 m_lost;
@@ -298,7 +333,7 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordLost &record);
 
 class PerfRecordComm : public PerfRecord {
 public:
-    PerfRecordComm(PerfEventHeader *header = 0, quint64 sampleType = 0);
+    PerfRecordComm(PerfEventHeader *header = 0, quint64 sampleType = 0, bool sampleIdAll = false);
 private:
     quint32 m_pid;
     quint32 m_tid;

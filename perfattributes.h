@@ -73,7 +73,8 @@ public:
         SAMPLE_IDENTIFIER   = 1U << 16,
         SAMPLE_TRANSACTION  = 1U << 17,
 
-        SAMPLE_MAX          = 1U << 18
+        SAMPLE_MAX          = 1U << 18,
+        SAMPLE_ID_ALL       = 1U << 31 // extra flag, to check if the sample has a sample ID at all
     };
 
 private:

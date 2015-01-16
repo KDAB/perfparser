@@ -72,10 +72,10 @@ int PerfEventAttributes::sampleIdOffset() const
         offset += sizeof(quint64); // PerfRecordSample::m_ip
 
     if (m_sampleType & SAMPLE_TID)
-        offset += sizeof(PerfSampleId::pid) + sizeof(PerfSampleId::tid);
+        offset += sizeof(quint32) + sizeof(quint32); // PerfRecordSampleId::{m_pid|m_tid}
 
     if (m_sampleType & SAMPLE_TIME)
-        offset += sizeof(PerfSampleId::time);
+        offset += sizeof(quint64); // PerfSampleId::m_time
 
     if (m_sampleType & SAMPLE_ADDR)
         offset += sizeof(quint64); // PerfRecordSample::m_addr
