@@ -348,8 +348,7 @@ class PerfRecordSample : public PerfRecord {
 public:
     PerfRecordSample(const PerfEventHeader *header = 0, const PerfEventAttributes *attributes = 0);
     quint64 registerAbi() const { return m_registerAbi; }
-    quint64 registerValue(uint reg) const { return m_registers[reg]; }
-    const QList<quint64> &registers() const { return m_registers; }
+    quint64 registerValue(uint reg) const;
     const QByteArray &userStack() const { return m_userStack; }
 
 private:

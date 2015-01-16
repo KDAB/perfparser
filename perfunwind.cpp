@@ -172,16 +172,14 @@ static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *ar
 bool setInitialRegisters(Dwfl_Thread *thread, void *arg)
 {
     const UnwindInfo *ui = static_cast<UnwindInfo *>(arg);
-    const QList<quint64> &userRegs = ui->sample->registers();
-    quint64 abi = ui->sample->registerAbi();
+    quint64 abi = ui->sample->registerAbi() - 1; // ABI 0 means "no registers"
+    Q_ASSERT(abi < PerfRegisterInfo::s_numAbis);
     uint architecture = ui->unwind->architecture();
     uint numRegs = PerfRegisterInfo::s_numRegisters[architecture][abi];
     Dwarf_Word dwarfRegs[numRegs];
-    for (uint i = 0; i < numRegs; ++i) {
-        uint offset = PerfRegisterInfo::s_perfToDwarf[architecture][abi][i];
-        if (offset < numRegs)
-            dwarfRegs[i] = userRegs[offset];
-    }
+    for (uint i = 0; i < numRegs; ++i)
+        dwarfRegs[i] = ui->sample->registerValue(
+                    PerfRegisterInfo::s_perfToDwarf[architecture][abi][i]);
 
     return dwfl_thread_state_registers(thread, 0, numRegs, dwarfRegs);
 }
@@ -227,6 +225,11 @@ void PerfUnwind::unwind(const PerfRecordSample &sample)
     }
     UnwindInfo ui = { this, &sample };
 
+
+    if (sample.registerAbi() == 0) {
+        qWarning() << "no registers reported. Cannot unwind" << pid;
+        return;
+    }
 
     dwfl = dwfl_begin(&offlineCallbacks);
 

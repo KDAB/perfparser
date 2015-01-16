@@ -265,6 +265,24 @@ PerfRecordSample::PerfRecordSample(const PerfEventHeader *header,
 {
 }
 
+quint64 PerfRecordSample::registerValue(uint reg) const
+{
+    Q_ASSERT(m_registerAbi && m_registerMask & (1 << reg));
+
+    int index = 0;
+    for (uint i = 0; i < reg; i++) {
+        if (m_registerMask & (1 << i))
+            index++;
+    }
+
+    if (index < m_registers.length()) {
+        return m_registers[index];
+    } else {
+        qWarning() << "invalid register offset" << index;
+        return -1;
+    }
+}
+
 QDataStream &operator>>(QDataStream &stream, PerfRecordSample &record)
 {
     quint32 waste32;
