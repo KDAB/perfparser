@@ -350,6 +350,7 @@ public:
     quint64 registerAbi() const { return m_registerAbi; }
     quint64 registerValue(uint reg) const;
     const QByteArray &userStack() const { return m_userStack; }
+    const QList<quint64> &callchain() const { return m_callchain; }
 
 private:
     struct ReadFormat {

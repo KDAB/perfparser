@@ -82,9 +82,8 @@ int main(int argc, char *argv[])
         foreach (const PerfRecordMmap &mmap, data.mmapRecords())
             unwind.registerElf(mmap);
 
-        foreach (const PerfRecordSample &sample, data.sampleRecords()) {
-            unwind.unwind(sample);
-        }
+        foreach (const PerfRecordSample &sample, data.sampleRecords())
+            unwind.analyze(sample);
     }
 
     return NoError;

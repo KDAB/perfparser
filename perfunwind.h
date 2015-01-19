@@ -28,7 +28,22 @@
 
 class PerfUnwind
 {
+public:
+    PerfUnwind(quint32 pid, const PerfHeader *header, const PerfFeatures *features,
+               const QByteArray &systemRoot, const QByteArray &extraLibs,
+               const QByteArray &appPath);
+    ~PerfUnwind();
+
+    uint architecture() const { return registerArch; }
+
+    void registerElf(const PerfRecordMmap &mmap);
+    Dwfl_Module *reportElf(quint64 ip) const;
+
+    void analyze(const PerfRecordSample &sample);
+
 private:
+    static const quint64 s_callchainMax = (quint64)-4095;
+
     quint32 pid;
     const PerfHeader *header;
     const PerfFeatures *features;
@@ -52,19 +67,8 @@ private:
 
     QMap<quint64, QFileInfo> elfs;
 
-public:
-    PerfUnwind(quint32 pid, const PerfHeader *header, const PerfFeatures *features,
-               const QByteArray &systemRoot, const QByteArray &extraLibs,
-               const QByteArray &appPath);
-    ~PerfUnwind();
-
-
-    uint architecture() const { return registerArch; }
-
-    void registerElf(const PerfRecordMmap &mmap);
-    void reportElf(quint64 ip) const;
-    void unwind(const PerfRecordSample &sample);
-
+    void unwindStack(const PerfRecordSample &sample);
+    void resolveCallchain(const PerfRecordSample &sample);
 };
 
 #endif // PERFUNWIND_H

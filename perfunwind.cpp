@@ -105,7 +105,7 @@ void PerfUnwind::registerElf(const PerfRecordMmap &mmap)
 
 }
 
-void PerfUnwind::reportElf(quint64 ip) const
+Dwfl_Module *PerfUnwind::reportElf(quint64 ip) const
 {
     QMap<quint64, QFileInfo>::ConstIterator i = elfs.upperBound(ip);
     if (i == elfs.end() || i.key() != ip) {
@@ -116,14 +116,16 @@ void PerfUnwind::reportElf(quint64 ip) const
     }
 
     if (i != elfs.end()) {
-        if (!dwfl_report_elf(dwfl, i.value().fileName().toLocal8Bit().data(),
-                             i.value().absoluteFilePath().toLocal8Bit().data(), -1, i.key(),
-                             false)) {
+        Dwfl_Module *ret = dwfl_report_elf(dwfl, i.value().fileName().toLocal8Bit().data(),
+                                           i.value().absoluteFilePath().toLocal8Bit().data(), -1,
+                                           i.key(), false);
+        if (!ret)
             qWarning() << "failed to report" << i.value().absoluteFilePath() << "for"
                        << i.key() << ":" << dwfl_errmsg(dwfl_errno());
-        }
+        return ret;
     } else {
         qWarning() << "no elf found for" << ip;
+        return 0;
     }
 }
 
@@ -227,17 +229,36 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
     return DWARF_CB_OK;
 }
 
-void PerfUnwind::unwind(const PerfRecordSample &sample)
+void PerfUnwind::unwindStack(const PerfRecordSample &sample)
+{
+    quint64 ip = sample.registerValue(PerfRegisterInfo::s_perfIp[registerArch]);;
+    reportElf(ip);
+
+    UnwindInfo ui = { this, &sample };
+
+    if (!dwfl_attach_state(dwfl, 0, sample.tid(), &callbacks, &ui)) {
+        qWarning() << "failed to attach state:" << dwfl_errmsg(dwfl_errno());
+        return;
+    }
+
+    if (dwfl_getthread_frames(dwfl, sample.tid(), frameCallback, &ui))
+        qWarning() << "failed to get some frames:" << sample.tid() << dwfl_errmsg(dwfl_errno());
+}
+
+void PerfUnwind::resolveCallchain(const PerfRecordSample &sample)
+{
+    for (int i = 0; i < sample.callchain().length(); ++i) {
+        quint64 ip = sample.callchain()[i];
+        if (ip > s_callchainMax)
+            continue; // ignore cpu mode
+        qDebug() << "frame" << ip << lookupSymbol(this, dwfl, ip);
+    }
+}
+
+void PerfUnwind::analyze(const PerfRecordSample &sample)
 {
     if (sample.pid() != pid) {
         qWarning() << "wrong pid" << sample.pid() << pid;
-        return;
-    }
-    UnwindInfo ui = { this, &sample };
-
-
-    if (sample.registerAbi() == 0) {
-        qWarning() << "no registers reported. Cannot unwind" << pid;
         return;
     }
 
@@ -248,16 +269,10 @@ void PerfUnwind::unwind(const PerfRecordSample &sample)
         return;
     }
 
-    quint64 ip = sample.registerValue(PerfRegisterInfo::s_perfIp[registerArch]);;
-    reportElf(ip);
-
-	if (!dwfl_attach_state(dwfl, 0, sample.tid(), &callbacks, &ui)) {
-        qWarning() << "failed to attach state:" << dwfl_errmsg(dwfl_errno());
-        return;
-    }
-
-    if (dwfl_getthread_frames(dwfl, sample.tid(), frameCallback, &ui))
-        qWarning() << "failed to get frames:" << dwfl_errmsg(dwfl_errno());
+    if (sample.callchain().length() > 0)
+        resolveCallchain(sample);
+    if (sample.registerAbi() != 0 && sample.userStack().length() > 0)
+        unwindStack(sample);
 
     dwfl_end(dwfl);
 }
