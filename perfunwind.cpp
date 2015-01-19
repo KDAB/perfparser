@@ -22,6 +22,7 @@
 #include "perfregisterinfo.h"
 
 #include <dwarf.h>
+#include <bfd.h>
 
 #include <QDir>
 #include <QDebug>
@@ -188,6 +189,24 @@ static const Dwfl_Thread_Callbacks callbacks = {
     nextThread, NULL, memoryRead, setInitialRegisters, NULL, NULL
 };
 
+static const char *lookupSymbol(const PerfUnwind *unwind, Dwfl *dwfl, Dwarf_Addr ip)
+{
+    Dwfl_Module *mod = dwfl_addrmodule (dwfl, ip);
+    const char *symname = NULL;
+    const char *demangled = NULL;
+    if (!mod) {
+        unwind->reportElf(ip);
+        mod = dwfl_addrmodule (dwfl, ip);
+    }
+    if (mod)
+        symname = dwfl_module_addrname (mod, ip);
+
+    if (symname)
+        demangled = bfd_demangle(NULL, symname, 0x3);
+
+    return demangled ? demangled : symname;
+}
+
 static int frameCallback(Dwfl_Frame *state, void *arg)
 {
     Dwarf_Addr pc;
@@ -203,17 +222,8 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
     /* Get PC->SYMNAME.  */
     Dwfl_Thread *thread = dwfl_frame_thread (state);
     Dwfl *dwfl = dwfl_thread_dwfl (thread);
-    Dwfl_Module *mod = dwfl_addrmodule (dwfl, pc_adjusted);
-    const char *symname = NULL;
-    if (!mod) {
-        UnwindInfo *ui = static_cast<UnwindInfo *>(arg);
-        ui->unwind->reportElf(pc_adjusted);
-        mod = dwfl_addrmodule (dwfl, pc_adjusted);
-    }
-    if (mod)
-        symname = dwfl_module_addrname (mod, pc_adjusted);
-
-    qDebug() << "frame" << pc << symname;
+    UnwindInfo *ui = static_cast<UnwindInfo *>(arg);
+    qDebug() << "frame" << pc << lookupSymbol(ui->unwind, dwfl, pc_adjusted);
     return DWARF_CB_OK;
 }
 

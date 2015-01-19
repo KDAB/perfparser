@@ -8,7 +8,7 @@ QT       += core
 
 QT       -= gui
 
-LIBS += -ldw
+LIBS += -ldw -lbfd
 
 TARGET = perfparser
 CONFIG   += console
