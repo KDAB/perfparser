@@ -99,7 +99,7 @@ void PerfUnwind::registerElf(const PerfRecordMmap &mmap)
     }
 
     if (path.isFile())
-        elfs[mmap.addr()] = path;
+        elfs[mmap.addr()] = ElfInfo(path, mmap.len());
     else
         qWarning() << "cannot find file to report for" << QString::fromLocal8Bit(mmap.filename());
 
@@ -107,7 +107,7 @@ void PerfUnwind::registerElf(const PerfRecordMmap &mmap)
 
 Dwfl_Module *PerfUnwind::reportElf(quint64 ip) const
 {
-    QMap<quint64, QFileInfo>::ConstIterator i = elfs.upperBound(ip);
+    QMap<quint64, ElfInfo>::ConstIterator i = elfs.upperBound(ip);
     if (i == elfs.end() || i.key() != ip) {
         if (i != elfs.begin())
             --i;
@@ -115,16 +115,19 @@ Dwfl_Module *PerfUnwind::reportElf(quint64 ip) const
             i = elfs.end();
     }
 
-    if (i != elfs.end()) {
-        Dwfl_Module *ret = dwfl_report_elf(dwfl, i.value().fileName().toLocal8Bit().data(),
-                                           i.value().absoluteFilePath().toLocal8Bit().data(), -1,
-                                           i.key(), false);
+    if (i != elfs.end() && i.key() + i.value().length > ip) {
+        Dwfl_Module *ret = dwfl_report_elf(
+                    dwfl, i.value().file.fileName().toLocal8Bit().constData(),
+                    i.value().file.absoluteFilePath().toLocal8Bit().constData(), -1, i.key(),
+                    false);
         if (!ret)
-            qWarning() << "failed to report" << i.value().absoluteFilePath() << "for"
-                       << i.key() << ":" << dwfl_errmsg(dwfl_errno());
+            qWarning() << "failed to report" << i.value().file.absoluteFilePath() << "for"
+                       << QString("0x%1").arg(i.key(), 0, 16).toLocal8Bit().constData() << ":"
+                       << dwfl_errmsg(dwfl_errno());
         return ret;
     } else {
-        qWarning() << "no elf found for" << ip;
+        qWarning() << "no elf found for IP"
+                   << QString("0x%1").arg(ip, 0, 16).toLocal8Bit().constData();
         return 0;
     }
 }

@@ -65,7 +65,14 @@ private:
     // binaries and debug symbols.
     QByteArray appPath;
 
-    QMap<quint64, QFileInfo> elfs;
+    struct ElfInfo {
+        ElfInfo(const QFileInfo &file = QFileInfo(), quint64 length = 0) :
+            file(file), length(length) {}
+        QFileInfo file;
+        quint64 length;
+    };
+
+    QMap<quint64, ElfInfo> elfs;
 
     void unwindStack(const PerfRecordSample &sample);
     void resolveCallchain(const PerfRecordSample &sample);
