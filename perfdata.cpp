@@ -26,81 +26,109 @@ PerfData::PerfData()
 {
 }
 
-bool PerfData::read(QIODevice *device, const PerfHeader *header,
-                    const PerfAttributes *attributes, const PerfFeatures *features)
+bool PerfData::processEvent(QDataStream &stream, PerfAttributes *attributes)
 {
-    Q_UNUSED(features);
-    if (!device->seek(header->dataOffset())) {
-        qWarning() << "cannot seek to" << header->dataOffset();
+
+    qint64 headerSize = sizeof(PerfEventHeader);
+
+    PerfEventHeader eventHeader;
+    quint64 pos = stream.device()->pos();
+    stream >> eventHeader;
+
+    if (eventHeader.size < headerSize) {
+        qWarning() << "bad event header size" << eventHeader.size << eventHeader.type
+                   << eventHeader.misc;
         return false;
     }
+
+    const PerfEventAttributes &attrs = attributes->globalAttributes();
+    int idOffset = attrs.sampleIdOffset();
+
+    switch (eventHeader.type) {
+    case PERF_RECORD_MMAP:
+        m_mmapRecords << PerfRecordMmap(&eventHeader, attrs.sampleType(), attrs.sampleIdAll());
+        stream >> m_mmapRecords.last();
+        break;
+    case PERF_RECORD_LOST:
+        m_lostRecords << PerfRecordLost(&eventHeader, attrs.sampleType(), attrs.sampleIdAll());
+        stream >> m_lostRecords.last();
+        break;
+    case PERF_RECORD_COMM:
+        m_commRecords << PerfRecordComm(&eventHeader, attrs.sampleType(), attrs.sampleIdAll());
+        stream >> m_commRecords.last();
+        break;
+    case PERF_RECORD_SAMPLE: {
+        const PerfEventAttributes *sampleAttrs = &attrs;
+
+        if (attrs.sampleIdAll() && idOffset >= 0) {
+            // peek into the data structure to find the actual ID. Horrible.
+            quint64 id;
+            qint64 prevPos = stream.device()->pos();
+            stream.device()->seek(prevPos + idOffset);
+            stream >> id;
+            stream.device()->seek(prevPos);
+            sampleAttrs = &attributes->attributes(id);
+        }
+
+        // TODO: for this we have to find the right attribute by some kind of hash and id ...
+        m_sampleRecords << PerfRecordSample(&eventHeader, sampleAttrs);
+        stream >> m_sampleRecords.last();
+        break;
+    }
+    case PERF_RECORD_MMAP2: {
+        PerfRecordMmap2 mmap2(&eventHeader, attrs.sampleType(), attrs.sampleIdAll());
+        stream >> mmap2;
+        m_mmapRecords << mmap2; // Throw out the extra data for now.
+        break;
+    }
+    case PERF_RECORD_HEADER_ATTR: {
+        PerfRecordAttr attr(&eventHeader, attrs.sampleType(), attrs.sampleIdAll());
+        stream >> attr;
+        if (attributes->globalAttributes().size() == 0)
+            attributes->setGlobalAttributes(attr.attr());
+
+        foreach (quint64 id, attr.ids())
+            attributes->addAttributes(id, attr.attr());
+
+        break;
+    }
+
+    default:
+        qWarning() << "unhandled event type" << eventHeader.type;
+        stream.skipRawData(eventHeader.size - headerSize);
+        break;
+    }
+
+    // Read wrong number of bytes => something broken
+    if (stream.device()->pos() - pos != eventHeader.size) {
+        qWarning() << "While parsing event of type" << eventHeader.type;
+        qWarning() << "read" << (stream.device()->pos() - pos) << "instead of"
+                   << eventHeader.size << "bytes";
+        return false;
+    }
+
+    return true;
+}
+
+bool PerfData::read(QIODevice *device, const PerfHeader *header, PerfAttributes *attributes)
+{
     QDataStream stream(device);
     stream.setByteOrder(header->byteOrder());
 
-    const PerfEventAttributes &attrs = attributes->globalAttributes();
-
-    quint64 pos = 0;
-
-    int idOffset = attrs.sampleIdOffset();
-
-    PerfEventHeader eventHeader;
-    while ((pos = device->pos()) < header->dataOffset() + header->dataSize()) {
-        stream >> eventHeader;
-
-        if (eventHeader.size < sizeof(PerfEventHeader)) {
-            qWarning() << "bad event header size" << eventHeader.size << eventHeader.type
-                       << eventHeader.misc;
+    if (header->isPipe()) {
+        while (!stream.atEnd()) {
+            if (!processEvent(stream, attributes))
+                return false;
+        }
+    } else {
+        if (!device->seek(header->dataOffset())) {
+            qWarning() << "cannot seek to" << header->dataOffset();
             return false;
         }
 
-        switch (eventHeader.type) {
-        case PERF_RECORD_MMAP:
-            m_mmapRecords << PerfRecordMmap(&eventHeader, attrs.sampleType(), attrs.sampleIdAll());
-            stream >> m_mmapRecords.last();
-            break;
-        case PERF_RECORD_LOST:
-            m_lostRecords << PerfRecordLost(&eventHeader, attrs.sampleType(), attrs.sampleIdAll());
-            stream >> m_lostRecords.last();
-            break;
-        case PERF_RECORD_COMM:
-            m_commRecords << PerfRecordComm(&eventHeader, attrs.sampleType(), attrs.sampleIdAll());
-            stream >> m_commRecords.last();
-            break;
-        case PERF_RECORD_SAMPLE: {
-            const PerfEventAttributes *sampleAttrs = &attrs;
-
-            if (header->numAttrs() > 1 && attrs.sampleIdAll() && idOffset >= 0) {
-                // peek into the data structure to find the actual ID. Horrible.
-                quint64 id;
-                qint64 prevPos = device->pos();
-                device->seek(prevPos + idOffset);
-                stream >> id;
-                device->seek(prevPos);
-                sampleAttrs = &attributes->attributes(id);
-            }
-
-            // TODO: for this we have to find the right attribute by some kind of hash and id ...
-            m_sampleRecords << PerfRecordSample(&eventHeader, sampleAttrs);
-            stream >> m_sampleRecords.last();
-            break;
-        }
-        case PERF_RECORD_MMAP2: {
-            PerfRecordMmap2 mmap2(&eventHeader, attrs.sampleType(), attrs.sampleIdAll());
-            stream >> mmap2;
-            m_mmapRecords << mmap2; // Throw out the extra data for now.
-            break;
-        }
-        default:
-            stream.skipRawData(eventHeader.size - sizeof(PerfEventHeader));
-            break;
-        }
-
-        // Read wrong number of bytes => something broken
-        if (device->pos() - pos != eventHeader.size) {
-            qWarning() << "While parsing event of type" << eventHeader.type;
-            qWarning() << "read" << (device->pos() - pos) << "instead of"
-                       << eventHeader.size << "bytes";
-            return false;
+        while (static_cast<quint64>(device->pos()) < header->dataOffset() + header->dataSize()) {
+            if (!processEvent(stream, attributes))
+                return false;
         }
     }
 
@@ -399,5 +427,25 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordSample &record)
     if (sampleType & PerfEventAttributes::SAMPLE_TRANSACTION)
         stream >> record.m_transaction;
 
+    return stream;
+}
+
+
+PerfRecordAttr::PerfRecordAttr(const PerfEventHeader *header, quint64 sampleType, bool sampleIdAll) :
+    PerfRecord(header, sampleType, sampleIdAll)
+{
+}
+
+
+QDataStream &operator>>(QDataStream &stream, PerfRecordAttr &record)
+{
+    qint64 pos = stream.device()->pos();
+    stream >> record.m_attr;
+    qint64 read = stream.device()->pos() - pos + sizeof(PerfEventHeader);
+    quint64 id = 0;
+    for (quint64 i = 0; i < (record.m_header.size - read) / sizeof(quint64); ++i) {
+        stream >> id;
+        record.m_ids << id;
+    }
     return stream;
 }

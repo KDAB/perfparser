@@ -215,6 +215,14 @@ enum PerfEventType {
     PERF_RECORD_MMAP2             = 10,
 
     PERF_RECORD_MAX,              /* non-ABI */
+
+    PERF_RECORD_USER_TYPE_START     = 64,
+    PERF_RECORD_HEADER_ATTR         = 64,
+    PERF_RECORD_HEADER_EVENT_TYPE   = 65, /* depreceated */
+    PERF_RECORD_HEADER_TRACING_DATA = 66,
+    PERF_RECORD_HEADER_BUILD_ID     = 67,
+    PERF_RECORD_FINISHED_ROUND      = 68,
+    PERF_RECORD_HEADER_MAX
 };
 
 class PerfRecordSample;
@@ -389,12 +397,29 @@ private:
 
 QDataStream &operator>>(QDataStream &stream, PerfRecordSample &record);
 
+class PerfRecordAttr : PerfRecord
+{
+public:
+    PerfRecordAttr(const PerfEventHeader *header = 0, quint64 sampleType = 0,
+                   bool sampleIdAll = false);
+
+    const PerfEventAttributes &attr() { return m_attr; }
+    const QList<quint64> &ids() { return m_ids; }
+
+private:
+    PerfEventAttributes m_attr;
+    QList<quint64> m_ids;
+
+    friend QDataStream &operator>>(QDataStream &stream, PerfRecordAttr &record);
+};
+
+QDataStream &operator>>(QDataStream &stream, PerfRecordAttr &record);
+
 class PerfData
 {
 public:
     PerfData();
-    bool read(QIODevice *device, const PerfHeader *header, const PerfAttributes *attributes,
-              const PerfFeatures *features);
+    bool read(QIODevice *device, const PerfHeader *header, PerfAttributes *attributes);
 
     const QList<PerfRecordSample> &sampleRecords() { return m_sampleRecords; }
     const QList<PerfRecordMmap> &mmapRecords() { return m_mmapRecords; }
@@ -403,6 +428,7 @@ private:
     QList<PerfRecordComm> m_commRecords;
     QList<PerfRecordLost> m_lostRecords;
     QList<PerfRecordSample> m_sampleRecords;
+    bool processEvent(QDataStream &stream, PerfAttributes *attributes);
 };
 
 #endif // PERFDATA_H

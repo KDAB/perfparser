@@ -32,12 +32,11 @@ class PerfEventAttributes {
 public:
     PerfEventAttributes();
 
-    bool readFromStream(QDataStream &stream);
-
     bool sampleIdAll() const { return m_sampleIdAll; }
     quint64 sampleType() const { return m_sampleType; }
     quint64 readFormat() const { return m_readFormat; }
     quint64 sampleRegsUser() const { return m_sampleRegsUser; }
+    quint32 size() const { return m_size; }
     int sampleIdOffset() const;
 
     enum ReadFormat {
@@ -167,12 +166,18 @@ private:
 
 	/* Align to u64. */
 	quint32	m_reserved2;
+
+    friend QDataStream &operator>>(QDataStream &stream, PerfEventAttributes &attrs);
 };
+
+QDataStream &operator>>(QDataStream &stream, PerfEventAttributes &attrs);
 
 
 class PerfAttributes {
 public:
     bool read(QIODevice *device, PerfHeader *header);
+    void addAttributes(quint64 id, const PerfEventAttributes &attributes);
+    void setGlobalAttributes(const PerfEventAttributes &attributes);
 
     const PerfEventAttributes &attributes(quint64 id) const;
     const PerfEventAttributes &globalAttributes() const { return m_globalAttributes; }

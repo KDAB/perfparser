@@ -43,26 +43,31 @@ bool PerfHeader::read(QIODevice *source)
         stream.setByteOrder(byteOrder());
     }
 
-    stream >> m_size >> m_attrSize >> m_attrs >> m_data >> m_eventTypes;
-    for (uint i = 0; i < featureParts; ++i)
-        stream >> m_features[i];
+    stream >> m_size;
 
-    if (m_magic == s_magicSwitched && !hasFeature(HOSTNAME)) {
-
-        quint32 *features32 = reinterpret_cast<quint32 *>(&m_features[0]);
+    if ((m_size == sizeof(PerfHeader))) {
+        // file header
+        stream >> m_attrSize >> m_attrs >> m_data >> m_eventTypes;
         for (uint i = 0; i < featureParts; ++i)
-            qSwap(features32[i * 2], features32[i * 2 + 1]);
+            stream >> m_features[i];
 
-        if (!hasFeature(HOSTNAME)) {
-            // It borked: blank it all
-            qWarning() << "bad feature data:" << m_features;
+        if (m_magic == s_magicSwitched && !hasFeature(HOSTNAME)) {
+
+            quint32 *features32 = reinterpret_cast<quint32 *>(&m_features[0]);
             for (uint i = 0; i < featureParts; ++i)
-                m_features[i] = 0;
-            setFeature(BUILD_ID);
-        }
-    }
+                qSwap(features32[i * 2], features32[i * 2 + 1]);
 
-    Q_ASSERT(m_size == sizeof(PerfHeader));
+            if (!hasFeature(HOSTNAME)) {
+                // It borked: blank it all
+                qWarning() << "bad feature data:" << m_features;
+                for (uint i = 0; i < featureParts; ++i)
+                    m_features[i] = 0;
+                setFeature(BUILD_ID);
+            }
+        }
+    } else {
+        // pipe header, anything to do here?
+    }
 
     return true;
 }

@@ -27,19 +27,20 @@ PerfEventAttributes::PerfEventAttributes()
     memset(this, 0, sizeof(PerfEventAttributes));
 }
 
-bool PerfEventAttributes::readFromStream(QDataStream &stream)
+QDataStream &operator>>(QDataStream &stream, PerfEventAttributes &attrs)
 {
     quint64 flags;
-    stream >> m_type >> m_size;
+    stream >> attrs.m_type >> attrs.m_size;
 
-    if (m_size < sizeof(PerfEventAttributes)) {
+    if (attrs.m_size < sizeof(PerfEventAttributes)) {
         qWarning() << "unsupported file format";
-        return false;
+        return stream;
     }
 
-    stream >> m_config >> m_samplePeriod >> m_sampleType >> m_readFormat
-           >> flags >> m_wakeupEvents >> m_bpType >> m_bpAddr >> m_bpLen >> m_branchSampleType
-           >> m_sampleRegsUser >> m_sampleStackUser;
+    stream >> attrs.m_config >> attrs.m_samplePeriod >> attrs.m_sampleType >> attrs.m_readFormat
+           >> flags >> attrs.m_wakeupEvents >> attrs.m_bpType >> attrs.m_bpAddr >> attrs.m_bpLen
+           >> attrs.m_branchSampleType >> attrs.m_sampleRegsUser >> attrs.m_sampleStackUser
+           >> attrs.m_reserved2;
 
     if (static_cast<QSysInfo::Endian>(stream.byteOrder()) != QSysInfo::ByteOrder) {
         // bit fields are saved in byte order; who came up with that BS?
@@ -51,11 +52,11 @@ bool PerfEventAttributes::readFromStream(QDataStream &stream)
         flags = newFlags;
     }
 
-    *(&m_readFormat + 1) = flags;
+    *(&attrs.m_readFormat + 1) = flags;
 
-    stream.skipRawData(m_size - sizeof(PerfEventAttributes));
+    stream.skipRawData(attrs.m_size - sizeof(PerfEventAttributes));
 
-    return true;
+    return stream;
 }
 
 int PerfEventAttributes::sampleIdOffset() const
@@ -88,11 +89,10 @@ int PerfEventAttributes::sampleIdOffset() const
 
 bool PerfAttributes::read(QIODevice *device, PerfHeader *header)
 {
-    if (header->attrSize() < sizeof(PerfAttributes)) {
+    if (header->attrSize() < sizeof(PerfEventAttributes) + sizeof(PerfFileSection)) {
         qWarning() << "unsupported file format";
         return false;
     }
-
 
     PerfEventAttributes attrs;
     PerfFileSection ids;
@@ -107,8 +107,11 @@ bool PerfAttributes::read(QIODevice *device, PerfHeader *header)
 
         QDataStream stream(device);
         stream.setByteOrder(header->byteOrder());
-        if (!attrs.readFromStream(stream))
+        stream >> attrs;
+
+        if (attrs.size() < sizeof(PerfEventAttributes))
             return false;
+
         if (i == 0)
             m_globalAttributes = attrs;
 
@@ -130,6 +133,16 @@ bool PerfAttributes::read(QIODevice *device, PerfHeader *header)
 
     }
     return true;
+}
+
+void PerfAttributes::setGlobalAttributes(const PerfEventAttributes &attributes)
+{
+    m_globalAttributes = attributes;
+}
+
+void PerfAttributes::addAttributes(quint64 id, const PerfEventAttributes &attributes)
+{
+    m_attributes[id] = attributes;
 }
 
 const PerfEventAttributes &PerfAttributes::attributes(quint64 id) const

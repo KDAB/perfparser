@@ -62,13 +62,14 @@ public:
     void setFeature(Feature feature);
     void clearFeature(Feature feature);
 
-    uint numAttrs() const { return m_attrs.size / m_attrSize; }
+    uint numAttrs() const { return m_attrs.size > 0 ? m_attrs.size / m_attrSize : 0; }
     quint64 attrSize() const { return m_attrSize; }
     const PerfFileSection &attrs() const { return m_attrs; }
 
     quint64 featureOffset() const { return m_data.offset + m_data.size; }
     quint64 dataOffset() const { return m_data.offset; }
     quint64 dataSize() const { return m_data.size; }
+    bool isPipe() const { return m_size == s_pipeHeaderSize; }
 
 private:
 
@@ -84,6 +85,7 @@ private:
 
     static const quint64 s_magicSame = 0x32454c4946524550ULL;
     static const quint64 s_magicSwitched = 0x50455246494c4532ULL;
+    static const quint64 s_pipeHeaderSize = 16ULL;
 };
 
 #endif // PERFHEADER_H

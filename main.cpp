@@ -52,17 +52,16 @@ int main(int argc, char *argv[])
     if (!file.open(QIODevice::ReadOnly))
         return CannotOpen;
 
+    PerfAttributes attributes;
+    PerfFeatures features;
+    PerfData data;
     PerfHeader header;
     header.read(&file);
-    PerfAttributes attributes;
-    attributes.read(&file, &header);
-
-
-    PerfFeatures features;
-    features.read(&file, &header);
-
-    PerfData data;
-    data.read(&file, &header, &attributes, &features);
+    if (!header.isPipe()) {
+        attributes.read(&file, &header);
+        features.read(&file, &header);
+    }
+    data.read(&file, &header, &attributes);
 
     QSet<quint32> pids;
     foreach (const PerfRecordMmap &mmap, data.mmapRecords()) {

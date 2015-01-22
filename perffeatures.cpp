@@ -209,7 +209,7 @@ QDataStream &operator>>(QDataStream &stream, PerfEventDesc &eventDesc)
     while (numEvents-- > 0) {
         eventDesc.eventDescs << PerfEventDesc::EventDesc();
         PerfEventDesc::EventDesc &currentEvent = eventDesc.eventDescs.last();
-        currentEvent.attrs.readFromStream(stream);
+        stream >> currentEvent.attrs;
         stream >> numIds;
         stream >> stringFeature;
         currentEvent.name = stringFeature.value;
