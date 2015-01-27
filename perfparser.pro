@@ -26,10 +26,6 @@ SOURCES += main.cpp \
     perfunwind.cpp \
     perfregisterinfo.cpp
 
-OTHER_FILES += \
-    perf.data \
-    recording.txt
-
 HEADERS += \
     perfattributes.h \
     perfheader.h \
