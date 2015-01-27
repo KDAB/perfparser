@@ -31,8 +31,10 @@
 #include <limits>
 
 enum ErrorCodes {
-    CannotOpen = 1,
+    NoError,
+    CannotOpen,
     BadMagic,
+    MissingData
 };
 
 
@@ -71,6 +73,12 @@ int main(int argc, char *argv[])
 
     foreach (quint32 pid, pids) {
         PerfUnwind unwind(pid, &header, &features, systemRoot, extraLibs, appPath);
+
+        if (unwind.architecture() == PerfRegisterInfo::s_numArchitectures) {
+            qWarning() << "No information about CPU architecture found. Cannot unwind.";
+            return MissingData;
+        }
+
         foreach (const PerfRecordMmap &mmap, data.mmapRecords())
             unwind.registerElf(mmap);
 
@@ -78,9 +86,6 @@ int main(int argc, char *argv[])
             unwind.unwind(sample);
         }
     }
+
+    return NoError;
 }
-
-
-
-
-
