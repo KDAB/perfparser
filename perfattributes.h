@@ -21,11 +21,12 @@
 #ifndef PERFATTRIBUTES_H
 #define PERFATTRIBUTES_H
 
+#include "perffilesection.h"
+#include "perfheader.h"
+
 #include <QIODevice>
 #include <QDataStream>
 #include <QHash>
-#include "perffilesection.h"
-#include "perfheader.h"
 
 class PerfEventAttributes {
 public:

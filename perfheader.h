@@ -21,11 +21,10 @@
 #ifndef PERFHEADER_H
 #define PERFHEADER_H
 
-#include <QIODevice>
-#include <QDataStream>
 #include "perffilesection.h"
 
-
+#include <QIODevice>
+#include <QDataStream>
 
 class PerfHeader {
 public:

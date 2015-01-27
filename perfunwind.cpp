@@ -20,11 +20,12 @@
 
 #include "perfunwind.h"
 #include "perfregisterinfo.h"
-#include <QDebug>
-#include <QDir>
-#include <endian.h>
-#include <errno.h>
+
 #include <dwarf.h>
+
+#include <QDir>
+#include <QDebug>
+
 #include <limits>
 
 

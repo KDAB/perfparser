@@ -21,10 +21,11 @@
 #ifndef PERFDATA_H
 #define PERFDATA_H
 
-#include <QIODevice>
 #include "perfheader.h"
 #include "perfattributes.h"
 #include "perffeatures.h"
+
+#include <QIODevice>
 
 enum PerfEventType {
 

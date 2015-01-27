@@ -21,7 +21,7 @@
 #ifndef PERFREGISTERINFO_H
 #define PERFREGISTERINFO_H
 
-#include <QObject>
+#include <QtGlobal>
 
 class PerfRegisterInfo
 {

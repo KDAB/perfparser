@@ -21,10 +21,11 @@
 #ifndef PERFFEATURE_H
 #define PERFFEATURE_H
 
-#include <QHash>
-#include <QVector>
 #include "perfheader.h"
 #include "perfattributes.h"
+
+#include <QHash>
+#include <QVector>
 
 struct PerfEventHeader {
     PerfEventHeader() : type(0), misc(0), size(0) {}

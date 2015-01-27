@@ -21,8 +21,8 @@
 #ifndef PERFUNWIND_H
 #define PERFUNWIND_H
 
-#include <elfutils/libdwfl.h>
 #include "perfdata.h"
+#include <elfutils/libdwfl.h>
 #include <QFileInfo>
 #include <QMap>
 

@@ -18,16 +18,17 @@
 **
 ****************************************************************************/
 
-#include <QFile>
-#include <QDebug>
-#include <QtEndian>
-#include <limits>
-
 #include "perfheader.h"
 #include "perfattributes.h"
 #include "perffeatures.h"
 #include "perfdata.h"
 #include "perfunwind.h"
+#include "perfregisterinfo.h"
+
+#include <QFile>
+#include <QDebug>
+#include <QtEndian>
+#include <limits>
 
 enum ErrorCodes {
     CannotOpen = 1,
