@@ -24,66 +24,237 @@
 #include "perfdata.h"
 #include "perfunwind.h"
 #include "perfregisterinfo.h"
+#include "perfstdin.h"
 
 #include <QFile>
 #include <QDebug>
 #include <QtEndian>
+#include <QCoreApplication>
+#include <QCommandLineParser>
+#include <QPointer>
+#include <QAbstractSocket>
+#include <QTcpSocket>
 #include <limits>
 
 enum ErrorCodes {
     NoError,
+    TcpSocketError,
     CannotOpen,
     BadMagic,
-    MissingData
+    HeaderError,
+    DataError,
+    MissingData,
 };
 
+class PerfTcpSocket : public QTcpSocket {
+    Q_OBJECT
+public:
+    PerfTcpSocket(QCoreApplication *app);
 
-const QLatin1String DefaultFileName("perf.data");
+public slots:
+    void readingFinished();
+    void processError(QAbstractSocket::SocketError error);
 
-// TODO: parse from parameters
-const QByteArray systemRoot("/home/ulf/sysroot");
-const QByteArray extraLibs("/home/ulf/Qt/Boot2Qt-3.x/beaglebone-eLinux/qt5");
-const QByteArray appPath("/home/ulf/sysroot/usr/bin");
+private:
+    bool reading;
+};
 
 int main(int argc, char *argv[])
 {
-    QFile file(argc > 1 ? QLatin1String(argv[1]) : DefaultFileName);
+    int exitCode = -1;
 
-    if (!file.open(QIODevice::ReadOnly))
-        return CannotOpen;
+    QCoreApplication app(argc, argv);
+    app.setApplicationName(QLatin1String("perfparser"));
+    app.setApplicationVersion(QLatin1String("1.0"));
 
+    QCommandLineParser parser;
+    parser.setApplicationDescription(QLatin1String("Perf data parser and unwinder."));
+    parser.addHelpOption();
+    parser.addVersionOption();
+
+    QCommandLineOption input(QLatin1String("input"),
+                             QCoreApplication::translate(
+                                 "main", "Read perf data from <file> instead of stdin."),
+                             QLatin1String("file"));
+    parser.addOption(input);
+
+    QCommandLineOption host(QLatin1String("host"),
+                            QCoreApplication::translate(
+                                "main", "Read perf data from remote <host> instead of stdin."),
+                            QLatin1String("host"));
+    parser.addOption(host);
+
+    QCommandLineOption port(QLatin1String("port"),
+                            QCoreApplication::translate(
+                              "main", "When reading from remote host, connect to <port> (default: "
+                                      "9327)."),
+                            QLatin1String("port"),
+                            QLatin1String("9327"));
+    parser.addOption(port);
+
+    QCommandLineOption output(QLatin1String("output"),
+                              QCoreApplication::translate(
+                                  "main", "Write b2qt data to <file> instead of stdout."),
+                              QLatin1String("file"));
+    parser.addOption(output);
+
+    QCommandLineOption sysroot(QLatin1String("sysroot"),
+                               QCoreApplication::translate(
+                                   "main", "Look for system libraries in <path> (default: /)."),
+                               QLatin1String("path"),
+                               QLatin1String("/"));
+    parser.addOption(sysroot);
+
+    QCommandLineOption debug(QLatin1String("debug"),
+                             QCoreApplication::translate(
+                                 "main",
+                                 "Look for debug information in <path>."
+                                 "You can specify multiple paths separated by ':'."
+                                 "The default is: <sysroot>/usr/lib/debug."),
+                             QLatin1String("path"),
+                             QLatin1String("/usr/lib/debug"));
+    parser.addOption(debug);
+
+    QCommandLineOption extra(QLatin1String("extra"),
+                             QCoreApplication::translate(
+                                 "main", "Look for additional libraries in <path> (default: .)."),
+                             QLatin1String("path"),
+                             QLatin1String("."));
+    parser.addOption(extra);
+
+    QCommandLineOption appPath(QLatin1String("app"),
+                               QCoreApplication::translate(
+                                   "main", "Look for application binary in <path> (default: .)."),
+                               QLatin1String("path"),
+                               QLatin1String("."));
+    parser.addOption(appPath);
+
+    QCommandLineOption arch(QLatin1String("arch"),
+                            QCoreApplication::translate(
+                                "main",
+                                "Specify the CPU architecture of any binaries to be analyzed as "
+                                "<arch>. If not given try to parse the architecture from the data "
+                                "itself."),
+                            QLatin1String("arch"));
+    parser.addOption(arch);
+
+    parser.process(app);
+
+    QPointer<QFile> outfile;
+    if (parser.isSet(output)) {
+        outfile = new QFile(parser.value(output));
+        if (!outfile->open(QIODevice::WriteOnly))
+            return CannotOpen;
+    } else {
+        outfile = new QFile;
+        if (!outfile->open(stdout, QIODevice::WriteOnly))
+            return CannotOpen;
+    }
+
+    QPointer<QIODevice> infile;
+    if (parser.isSet(host)) {
+        PerfTcpSocket *socket = new PerfTcpSocket(&app);
+        infile = socket;
+    } else {
+        if (parser.isSet(input))
+            infile = new QFile(parser.value(input));
+        else
+            infile = new PerfStdin;
+    }
+
+    PerfHeader header(infile);
     PerfAttributes attributes;
     PerfFeatures features;
-    PerfData data;
-    PerfHeader header;
-    header.read(&file);
-    if (!header.isPipe()) {
-        attributes.read(&file, &header);
-        features.read(&file, &header);
-    }
-    data.read(&file, &header, &attributes);
+    PerfData data(infile, &header, &attributes);
 
-    QSet<quint32> pids;
-    foreach (const PerfRecordMmap &mmap, data.mmapRecords()) {
-        // UINT32_MAX is kernel
-        if (mmap.pid() != std::numeric_limits<quint32>::max())
-            pids << mmap.pid();
-    }
+    QObject::connect(&header, &PerfHeader::finished, [&]() {
+        if (!header.isPipe()) {
+            attributes.read(infile, &header);
+            features.read(infile, &header);
+        }
+        QObject::connect(infile.data(), &QIODevice::readyRead, &data, &PerfData::read);
+        if (infile->bytesAvailable() > 0)
+            data.read();
+    });
 
-    foreach (quint32 pid, pids) {
-        PerfUnwind unwind(pid, &header, &features, systemRoot, extraLibs, appPath);
+    QObject::connect(&header, &PerfHeader::error, [&]() {
+        app.exit(HeaderError);
+    });
 
-        if (unwind.architecture() == PerfRegisterInfo::s_numArchitectures) {
-            qWarning() << "No information about CPU architecture found. Cannot unwind.";
-            return MissingData;
+    QObject::connect(&data, &PerfData::finished, [&]() {
+        if (parser.isSet(arch))
+            features.setArchitecture(parser.value(arch).toLatin1());
+        QMap<quint32, QMap<quint32, QString> > procs;
+        foreach (const PerfRecordMmap &mmap, data.mmapRecords()) {
+            // UINT32_MAX is kernel
+            if (mmap.pid() != std::numeric_limits<quint32>::max())
+                procs[mmap.pid()][mmap.pid()] = QString();
         }
 
-        foreach (const PerfRecordMmap &mmap, data.mmapRecords())
-            unwind.registerElf(mmap);
+        foreach (const PerfRecordComm &comm, data.commRecords())
+            procs[comm.pid()][comm.tid()] = comm.comm();
 
-        foreach (const PerfRecordSample &sample, data.sampleRecords())
-            unwind.analyze(sample);
+        QMap<quint32, QMap<quint32, QString> >::const_iterator i = procs.begin();
+        for (; i != procs.end(); ++i) {
+            PerfUnwind unwind(i.key(), i.value(), &features, parser.value(sysroot),
+                              parser.isSet(debug) ? parser.value(debug) :
+                                                    parser.value(sysroot) + parser.value(debug),
+                              parser.value(extra), parser.value(appPath));
+
+            if (unwind.architecture() == PerfRegisterInfo::s_numArchitectures) {
+                qWarning() << "No information about CPU architecture found. Cannot unwind.";
+                app.exit(MissingData);
+            }
+
+            foreach (const PerfRecordMmap &mmap, data.mmapRecords())
+                unwind.registerElf(mmap);
+
+            foreach (const PerfRecordSample &sample, data.sampleRecords())
+                unwind.analyze(outfile, sample);
+        }
+
+        exitCode = NoError;
+        app.exit(NoError);
+    });
+
+    QObject::connect(&data, &PerfData::error, [&]() {
+        app.exit(DataError);
+    });
+
+    if (parser.isSet(host)) {
+        PerfTcpSocket *socket = static_cast<PerfTcpSocket *>(infile.data());
+        QObject::connect(socket, &QTcpSocket::disconnected, &data, &PerfData::finishReading);
+        QObject::connect(&data, &PerfData::finished, socket, &PerfTcpSocket::readingFinished);
+        socket->connectToHost(parser.value(host), parser.value(port).toUShort(),
+                              QIODevice::ReadOnly);
+    } else {
+        if (!infile->open(QIODevice::ReadOnly))
+            return CannotOpen;
+        header.read();
     }
 
-    return NoError;
+    return exitCode == -1 ? app.exec() : NoError;
 }
+
+
+void PerfTcpSocket::processError(QAbstractSocket::SocketError error)
+{
+    if (reading) {
+        qWarning() << "socket error" << error << errorString();
+        QCoreApplication::instance()->exit(TcpSocketError);
+    } // Otherwise ignore the error. We don't need the socket anymore
+}
+
+
+PerfTcpSocket::PerfTcpSocket(QCoreApplication *app) : QTcpSocket(app), reading(true)
+{
+    connect(this, SIGNAL(error(QAbstractSocket::SocketError)),
+            this, SLOT(processError(QAbstractSocket::SocketError)));
+}
+
+void PerfTcpSocket::readingFinished()
+{
+    reading = false;
+}
+
+#include "main.moc"

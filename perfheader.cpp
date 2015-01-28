@@ -21,31 +21,41 @@
 #include "perfheader.h"
 #include <QDebug>
 
-PerfHeader::PerfHeader()  :
-    m_magic(0), m_size(0), m_attrSize(0)
+PerfHeader::PerfHeader(QIODevice *source)  :
+    m_source(source), m_magic(0), m_size(0), m_attrSize(0)
 {
+    connect(source, &QIODevice::readyRead, this, &PerfHeader::read);
     for (uint i = 0; i < sizeof(m_features) / sizeof(quint64); ++i)
         m_features[i] = 0;
 }
 
-bool PerfHeader::read(QIODevice *source)
+void PerfHeader::read()
 {
     const uint featureParts = sizeof(m_features) / sizeof(quint64);
-    // TODO: when reading from a pipe we get a truncated header; add some sane defaults then
 
-    QDataStream stream(source);
-    stream >> m_magic;
-    if (m_magic != s_magicSame && m_magic != s_magicSwitched) {
-        qWarning() << "invalid magic:" << m_magic;
-        qWarning() << "we don't support V1 perf data";
-        return false;
-    } else {
-        stream.setByteOrder(byteOrder());
+    QDataStream stream(m_source);
+    if (m_size == 0) {
+        if (m_source->bytesAvailable() < static_cast<qint64>(sizeof(m_magic) + sizeof(m_size)))
+            return;
+
+        stream >> m_magic;
+        if (m_magic != s_magicSame && m_magic != s_magicSwitched) {
+            qWarning() << "invalid magic:" << m_magic;
+            qWarning() << "we don't support V1 perf data";
+            emit error();
+            return;
+        } else {
+            stream.setByteOrder(byteOrder());
+        }
+
+        stream >> m_size;
     }
 
-    stream >> m_size;
+    if (m_size == s_perfHeaderSize) {
+        if (m_source->bytesAvailable() < static_cast<qint64>(m_size - sizeof(m_magic) -
+                                                             sizeof(m_size)))
+            return;
 
-    if ((m_size == sizeof(PerfHeader))) {
         // file header
         stream >> m_attrSize >> m_attrs >> m_data >> m_eventTypes;
         for (uint i = 0; i < featureParts; ++i)
@@ -69,7 +79,8 @@ bool PerfHeader::read(QIODevice *source)
         // pipe header, anything to do here?
     }
 
-    return true;
+    disconnect(m_source, &QIODevice::readyRead, this, &PerfHeader::read);
+    emit finished();
 }
 
 QDataStream::ByteOrder PerfHeader::byteOrder() const

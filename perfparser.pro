@@ -4,14 +4,14 @@
 #
 #-------------------------------------------------
 
-QT       += core
+QT       += core network
 
 QT       -= gui
 
 LIBS += -ldw -lbfd
 
 TARGET = perfparser
-CONFIG   += console
+CONFIG   += console c++11
 CONFIG   -= app_bundle
 
 TEMPLATE = app

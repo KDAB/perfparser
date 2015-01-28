@@ -153,6 +153,7 @@ public:
 
     bool read(QIODevice *device, const PerfHeader *header);
     const QByteArray &architecture() const { return m_arch.value; }
+    void setArchitecture(const QByteArray &arch) { m_arch.value = arch; }
 
 private:
     void createFeature(QIODevice *device, QDataStream::ByteOrder byteOrder,

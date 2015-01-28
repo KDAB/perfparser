@@ -26,10 +26,10 @@
 #include <QIODevice>
 #include <QDataStream>
 
-class PerfHeader {
+class PerfHeader : public QObject {
+    Q_OBJECT
 public:
-    PerfHeader();
-    bool read(QIODevice *source);
+    PerfHeader(QIODevice *source);
 
     enum Feature {
         RESERVED		= 0,	/* always cleared */
@@ -71,7 +71,15 @@ public:
     quint64 dataSize() const { return m_data.size; }
     bool isPipe() const { return m_size == s_pipeHeaderSize; }
 
+public slots:
+    void read();
+
+signals:
+    void finished();
+    void error();
+
 private:
+    QIODevice *m_source;
 
     quint64 m_magic;
     quint64 m_size;
@@ -86,6 +94,7 @@ private:
     static const quint64 s_magicSame = 0x32454c4946524550ULL;
     static const quint64 s_magicSwitched = 0x50455246494c4532ULL;
     static const quint64 s_pipeHeaderSize = 16ULL;
+    static const quint64 s_perfHeaderSize = 104;
 };
 
 #endif // PERFHEADER_H

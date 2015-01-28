@@ -22,8 +22,6 @@
 #define PERFSTDIN_H
 
 #include <QIODevice>
-#include <QFile>
-#include <QSocketNotifier>
 
 class PerfStdin : public QIODevice
 {

@@ -29,9 +29,17 @@
 class PerfUnwind
 {
 public:
-    PerfUnwind(quint32 pid, const PerfHeader *header, const PerfFeatures *features,
-               const QByteArray &systemRoot, const QByteArray &extraLibs,
-               const QByteArray &appPath);
+    struct Frame {
+        Frame(quint64 addr = 0, const QByteArray &symbol = QByteArray(),
+              const QByteArray &file = QByteArray()) : addr(addr), symbol(symbol), file(file) {}
+        quint64 addr;
+        QByteArray symbol;
+        QByteArray file;
+    };
+
+    PerfUnwind(quint32 pid, const QMap<quint32, QString> &threads, const PerfFeatures *features,
+               const QString &systemRoot, const QString &debugInfo, const QString &extraLibs,
+               const QString &appPath);
     ~PerfUnwind();
 
     uint architecture() const { return registerArch; }
@@ -39,13 +47,13 @@ public:
     void registerElf(const PerfRecordMmap &mmap);
     Dwfl_Module *reportElf(quint64 ip) const;
 
-    void analyze(const PerfRecordSample &sample);
+    void analyze(QIODevice *output, const PerfRecordSample &sample);
 
 private:
     static const quint64 s_callchainMax = (quint64)-4095;
 
     quint32 pid;
-    const PerfHeader *header;
+    QMap<quint32, QString> threads;
     const PerfFeatures *features;
     Dwfl *dwfl;
     Dwfl_Callbacks offlineCallbacks;
@@ -56,14 +64,14 @@ private:
 
     // Root of the file system of the machine that recorded the data. Any binaries and debug
     // symbols not found in appPath or extraLibsPath have to appear here.
-    QByteArray systemRoot;
+    QString systemRoot;
 
     // Extra path to search for binaries and debug symbols before considering the system root
-    QByteArray extraLibsPath;
+    QString extraLibsPath;
 
     // Path where the application being profiled resides. This is the first path to look for
     // binaries and debug symbols.
-    QByteArray appPath;
+    QString appPath;
 
     struct ElfInfo {
         ElfInfo(const QFileInfo &file = QFileInfo(), quint64 length = 0) :
@@ -74,8 +82,8 @@ private:
 
     QMap<quint64, ElfInfo> elfs;
 
-    void unwindStack(const PerfRecordSample &sample);
-    void resolveCallchain(const PerfRecordSample &sample);
+    void unwindStack(QVector<Frame> *frames, const PerfRecordSample &sample);
+    void resolveCallchain(QVector<Frame> *frames, const PerfRecordSample &sample);
 };
 
 #endif // PERFUNWIND_H

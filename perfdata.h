@@ -342,6 +342,7 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordLost &record);
 class PerfRecordComm : public PerfRecord {
 public:
     PerfRecordComm(PerfEventHeader *header = 0, quint64 sampleType = 0, bool sampleIdAll = false);
+    const QByteArray &comm() const { return m_comm; }
 private:
     quint32 m_pid;
     quint32 m_tid;
@@ -415,20 +416,43 @@ private:
 
 QDataStream &operator>>(QDataStream &stream, PerfRecordAttr &record);
 
-class PerfData
+class PerfData : public QObject
 {
+    Q_OBJECT
 public:
-    PerfData();
-    bool read(QIODevice *device, const PerfHeader *header, PerfAttributes *attributes);
+    PerfData(QIODevice *source, const PerfHeader *header, PerfAttributes *attributes);
 
     const QList<PerfRecordSample> &sampleRecords() { return m_sampleRecords; }
     const QList<PerfRecordMmap> &mmapRecords() { return m_mmapRecords; }
+    const QList<PerfRecordComm> &commRecords() { return m_commRecords; }
+
+public slots:
+    void read();
+    void finishReading();
+
+signals:
+    void finished();
+    void error();
+
 private:
+
+    enum ReadStatus {
+        Rerun,
+        SignalError,
+        SignalFinished
+    };
+
+    QIODevice *m_source;
+    const PerfHeader *m_header;
+    PerfAttributes *m_attributes;
+    PerfEventHeader m_eventHeader;
+
     QList<PerfRecordMmap> m_mmapRecords;
     QList<PerfRecordComm> m_commRecords;
     QList<PerfRecordLost> m_lostRecords;
     QList<PerfRecordSample> m_sampleRecords;
-    bool processEvent(QDataStream &stream, PerfAttributes *attributes);
+    ReadStatus processEvents(QDataStream &stream);
+    ReadStatus doRead();
 };
 
 #endif // PERFDATA_H

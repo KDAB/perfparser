@@ -22,119 +22,189 @@
 #include <QDebug>
 #include <limits>
 
-PerfData::PerfData()
+PerfData::PerfData(QIODevice *source, const PerfHeader *header, PerfAttributes *attributes) :
+    m_source(source), m_header(header), m_attributes(attributes)
 {
 }
 
-bool PerfData::processEvent(QDataStream &stream, PerfAttributes *attributes)
+PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
 {
-
     qint64 headerSize = sizeof(PerfEventHeader);
 
-    PerfEventHeader eventHeader;
-    quint64 pos = stream.device()->pos();
-    stream >> eventHeader;
+    if (m_eventHeader.size == 0) {
+        if (stream.device()->bytesAvailable() < headerSize)
+            return Rerun;
 
-    if (eventHeader.size < headerSize) {
-        qWarning() << "bad event header size" << eventHeader.size << eventHeader.type
-                   << eventHeader.misc;
-        return false;
+        stream >> m_eventHeader;
+
+        if (m_eventHeader.size < headerSize) {
+            qWarning() << "bad event header size" << m_eventHeader.size << m_eventHeader.type
+                       << m_eventHeader.misc;
+            return SignalError;
+        }
     }
 
-    const PerfEventAttributes &attrs = attributes->globalAttributes();
+    if (stream.device()->bytesAvailable() < m_eventHeader.size - headerSize)
+        return Rerun;
+
+    const PerfEventAttributes &attrs = m_attributes->globalAttributes();
     int idOffset = attrs.sampleIdOffset();
     bool sampleIdAll = attrs.sampleIdAll();
     quint64 sampleType = attrs.sampleType();
 
-    switch (eventHeader.type) {
+    switch (m_eventHeader.type) {
     case PERF_RECORD_MMAP:
-        m_mmapRecords << PerfRecordMmap(&eventHeader, sampleType, sampleIdAll);
+        m_mmapRecords << PerfRecordMmap(&m_eventHeader, sampleType, sampleIdAll);
         stream >> m_mmapRecords.last();
         break;
     case PERF_RECORD_LOST:
-        m_lostRecords << PerfRecordLost(&eventHeader, sampleType, sampleIdAll);
+        m_lostRecords << PerfRecordLost(&m_eventHeader, sampleType, sampleIdAll);
         stream >> m_lostRecords.last();
         break;
     case PERF_RECORD_COMM:
-        m_commRecords << PerfRecordComm(&eventHeader, sampleType, sampleIdAll);
+        m_commRecords << PerfRecordComm(&m_eventHeader, sampleType, sampleIdAll);
         stream >> m_commRecords.last();
         break;
     case PERF_RECORD_SAMPLE: {
         const PerfEventAttributes *sampleAttrs = &attrs;
 
         if (sampleIdAll && idOffset >= 0) {
+            if (stream.device()->isSequential()) {
+                qWarning() << "trying to forward-peek into sample on stream device.";
+                return SignalError;
+            }
+
             // peek into the data structure to find the actual ID. Horrible.
             quint64 id;
             qint64 prevPos = stream.device()->pos();
             stream.device()->seek(prevPos + idOffset);
             stream >> id;
             stream.device()->seek(prevPos);
-            sampleAttrs = &attributes->attributes(id);
+            sampleAttrs = &m_attributes->attributes(id);
         }
 
         // TODO: for this we have to find the right attribute by some kind of hash and id ...
-        m_sampleRecords << PerfRecordSample(&eventHeader, sampleAttrs);
+        m_sampleRecords << PerfRecordSample(&m_eventHeader, sampleAttrs);
         stream >> m_sampleRecords.last();
         break;
     }
     case PERF_RECORD_MMAP2: {
-        PerfRecordMmap2 mmap2(&eventHeader, sampleType, sampleIdAll);
+        PerfRecordMmap2 mmap2(&m_eventHeader, sampleType, sampleIdAll);
         stream >> mmap2;
         m_mmapRecords << mmap2; // Throw out the extra data for now.
         break;
     }
     case PERF_RECORD_HEADER_ATTR: {
-        PerfRecordAttr attr(&eventHeader, sampleType, sampleIdAll);
+        PerfRecordAttr attr(&m_eventHeader, sampleType, sampleIdAll);
         stream >> attr;
-        if (attributes->globalAttributes().size() == 0)
-            attributes->setGlobalAttributes(attr.attr());
+        if (m_attributes->globalAttributes().size() == 0)
+            m_attributes->setGlobalAttributes(attr.attr());
 
         foreach (quint64 id, attr.ids())
-            attributes->addAttributes(id, attr.attr());
+            m_attributes->addAttributes(id, attr.attr());
 
         break;
     }
 
     default:
-        qWarning() << "unhandled event type" << eventHeader.type;
-        stream.skipRawData(eventHeader.size - headerSize);
+        qWarning() << "unhandled event type" << m_eventHeader.type;
+        stream.skipRawData(m_eventHeader.size - headerSize);
         break;
     }
 
-    // Read wrong number of bytes => something broken
-    if (stream.device()->pos() - pos != eventHeader.size) {
-        qWarning() << "While parsing event of type" << eventHeader.type;
-        qWarning() << "read" << (stream.device()->pos() - pos) << "instead of"
-                   << eventHeader.size << "bytes";
-        return false;
-    }
+    m_eventHeader.size = 0;
 
-    return true;
+    return SignalFinished;
 }
 
-bool PerfData::read(QIODevice *device, const PerfHeader *header, PerfAttributes *attributes)
+PerfData::ReadStatus PerfData::doRead()
 {
-    QDataStream stream(device);
-    stream.setByteOrder(header->byteOrder());
+    QDataStream stream(m_source);
+    stream.setByteOrder(m_header->byteOrder());
+    ReadStatus returnCode = SignalFinished;
 
-    if (header->isPipe()) {
-        while (!stream.atEnd()) {
-            if (!processEvent(stream, attributes))
-                return false;
+    if (m_header->isPipe()) {
+        if (m_source->isSequential()) {
+            while (m_source->bytesAvailable() > 0) {
+                returnCode = processEvents(stream);
+                if (returnCode == SignalError || returnCode == Rerun)
+                    break;
+            }
+            if (returnCode != SignalError) {
+                if (m_source->isOpen()) {
+                    // finished some event, but not the whole stream
+                    returnCode = Rerun;
+                } else {
+                    // if there is a half event left when the stream finishes, that's bad
+                    returnCode = m_eventHeader.size != 0 ? SignalError : SignalFinished;
+                }
+            }
+        } else {
+            while (!m_source->atEnd()) {
+                if (processEvents(stream) != SignalFinished) {
+                    returnCode = SignalError;
+                    break;
+                }
+            }
         }
+    } else if (m_source->isSequential()) {
+        qWarning() << "cannot read non-stream format from stream";
+        returnCode = SignalError;
+    } else if (!m_source->seek(m_header->dataOffset())) {
+        qWarning() << "cannot seek to" << m_header->dataOffset();
+        returnCode = SignalError;
     } else {
-        if (!device->seek(header->dataOffset())) {
-            qWarning() << "cannot seek to" << header->dataOffset();
-            return false;
-        }
-
-        while (static_cast<quint64>(device->pos()) < header->dataOffset() + header->dataSize()) {
-            if (!processEvent(stream, attributes))
-                return false;
+        while (static_cast<quint64>(m_source->pos()) <
+               m_header->dataOffset() + m_header->dataSize()) {
+            if (processEvents(stream) != SignalFinished) {
+                returnCode = SignalError;
+                break;
+            }
         }
     }
 
-    return true;
+    return returnCode;
+}
+
+void PerfData::read()
+{
+    ReadStatus returnCode = doRead();
+    switch (returnCode) {
+    case SignalFinished:
+        disconnect(m_source, &QIODevice::readyRead, this, &PerfData::read);
+        disconnect(m_source, &QIODevice::aboutToClose, this, &PerfData::finishReading);
+        emit finished();
+        break;
+    case SignalError:
+        disconnect(m_source, &QIODevice::readyRead, this, &PerfData::read);
+        disconnect(m_source, &QIODevice::aboutToClose, this, &PerfData::finishReading);
+        emit error();
+        break;
+    case Rerun:
+        break;
+    }
+}
+
+void PerfData::finishReading()
+{
+    disconnect(m_source, &QIODevice::readyRead, this, &PerfData::read);
+    disconnect(m_source, &QIODevice::aboutToClose, this, &PerfData::finishReading);
+
+    ReadStatus returnCode = doRead();
+    switch (returnCode) {
+    case SignalFinished:
+        emit finished();
+        break;
+    case SignalError:
+        emit error();
+        break;
+    case Rerun:
+        if (m_eventHeader.size == 0)
+            emit finished();
+        else
+            emit error();
+        break;
+    }
 }
 
 PerfRecordMmap::PerfRecordMmap(PerfEventHeader *header, quint64 sampleType, bool sampleIdAll) :
@@ -441,9 +511,8 @@ PerfRecordAttr::PerfRecordAttr(const PerfEventHeader *header, quint64 sampleType
 
 QDataStream &operator>>(QDataStream &stream, PerfRecordAttr &record)
 {
-    qint64 pos = stream.device()->pos();
     stream >> record.m_attr;
-    qint64 read = stream.device()->pos() - pos + sizeof(PerfEventHeader);
+    qint64 read = record.m_attr.size() + sizeof(PerfEventHeader);
     quint64 id = 0;
     for (quint64 i = 0; i < (record.m_header.size - read) / sizeof(quint64); ++i) {
         stream >> id;

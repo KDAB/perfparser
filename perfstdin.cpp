@@ -19,8 +19,6 @@
 ****************************************************************************/
 
 #include "perfstdin.h"
-#include <QBuffer>
-#include <QDebug>
 #include <cstdio>
 #include <limits>
 
