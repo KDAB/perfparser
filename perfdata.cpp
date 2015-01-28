@@ -43,24 +43,26 @@ bool PerfData::processEvent(QDataStream &stream, PerfAttributes *attributes)
 
     const PerfEventAttributes &attrs = attributes->globalAttributes();
     int idOffset = attrs.sampleIdOffset();
+    bool sampleIdAll = attrs.sampleIdAll();
+    quint64 sampleType = attrs.sampleType();
 
     switch (eventHeader.type) {
     case PERF_RECORD_MMAP:
-        m_mmapRecords << PerfRecordMmap(&eventHeader, attrs.sampleType(), attrs.sampleIdAll());
+        m_mmapRecords << PerfRecordMmap(&eventHeader, sampleType, sampleIdAll);
         stream >> m_mmapRecords.last();
         break;
     case PERF_RECORD_LOST:
-        m_lostRecords << PerfRecordLost(&eventHeader, attrs.sampleType(), attrs.sampleIdAll());
+        m_lostRecords << PerfRecordLost(&eventHeader, sampleType, sampleIdAll);
         stream >> m_lostRecords.last();
         break;
     case PERF_RECORD_COMM:
-        m_commRecords << PerfRecordComm(&eventHeader, attrs.sampleType(), attrs.sampleIdAll());
+        m_commRecords << PerfRecordComm(&eventHeader, sampleType, sampleIdAll);
         stream >> m_commRecords.last();
         break;
     case PERF_RECORD_SAMPLE: {
         const PerfEventAttributes *sampleAttrs = &attrs;
 
-        if (attrs.sampleIdAll() && idOffset >= 0) {
+        if (sampleIdAll && idOffset >= 0) {
             // peek into the data structure to find the actual ID. Horrible.
             quint64 id;
             qint64 prevPos = stream.device()->pos();
@@ -76,13 +78,13 @@ bool PerfData::processEvent(QDataStream &stream, PerfAttributes *attributes)
         break;
     }
     case PERF_RECORD_MMAP2: {
-        PerfRecordMmap2 mmap2(&eventHeader, attrs.sampleType(), attrs.sampleIdAll());
+        PerfRecordMmap2 mmap2(&eventHeader, sampleType, sampleIdAll);
         stream >> mmap2;
         m_mmapRecords << mmap2; // Throw out the extra data for now.
         break;
     }
     case PERF_RECORD_HEADER_ATTR: {
-        PerfRecordAttr attr(&eventHeader, attrs.sampleType(), attrs.sampleIdAll());
+        PerfRecordAttr attr(&eventHeader, sampleType, sampleIdAll);
         stream >> attr;
         if (attributes->globalAttributes().size() == 0)
             attributes->setGlobalAttributes(attr.attr());
