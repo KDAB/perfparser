@@ -19,11 +19,14 @@
 ****************************************************************************/
 
 #include "perfdata.h"
+#include "perfunwind.h"
+
 #include <QDebug>
 #include <limits>
 
-PerfData::PerfData(QIODevice *source, const PerfHeader *header, PerfAttributes *attributes) :
-    m_source(source), m_header(header), m_attributes(attributes)
+PerfData::PerfData(QIODevice *source, PerfUnwind *destination, const PerfHeader *header,
+                   PerfAttributes *attributes) :
+    m_source(source), m_destination(destination), m_header(header), m_attributes(attributes)
 {
 }
 
@@ -53,18 +56,22 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
     quint64 sampleType = attrs.sampleType();
 
     switch (m_eventHeader.type) {
-    case PERF_RECORD_MMAP:
-        m_mmapRecords << PerfRecordMmap(&m_eventHeader, sampleType, sampleIdAll);
-        stream >> m_mmapRecords.last();
+    case PERF_RECORD_MMAP: {
+        PerfRecordMmap mmap(&m_eventHeader, sampleType, sampleIdAll);
+        stream >> mmap;
+        m_destination->registerElf(mmap);
         break;
+    }
     case PERF_RECORD_LOST:
         m_lostRecords << PerfRecordLost(&m_eventHeader, sampleType, sampleIdAll);
         stream >> m_lostRecords.last();
         break;
-    case PERF_RECORD_COMM:
-        m_commRecords << PerfRecordComm(&m_eventHeader, sampleType, sampleIdAll);
-        stream >> m_commRecords.last();
+    case PERF_RECORD_COMM: {
+        PerfRecordComm comm(&m_eventHeader, sampleType, sampleIdAll);
+        stream >> comm;
+        m_destination->registerThread(comm.tid(), comm.comm());
         break;
+    }
     case PERF_RECORD_SAMPLE: {
         const PerfEventAttributes *sampleAttrs = &attrs;
 
@@ -84,14 +91,15 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
         }
 
         // TODO: for this we have to find the right attribute by some kind of hash and id ...
-        m_sampleRecords << PerfRecordSample(&m_eventHeader, sampleAttrs);
-        stream >> m_sampleRecords.last();
+        PerfRecordSample sample(&m_eventHeader, sampleAttrs);
+        stream >> sample;
+        m_destination->analyze(sample);
         break;
     }
     case PERF_RECORD_MMAP2: {
         PerfRecordMmap2 mmap2(&m_eventHeader, sampleType, sampleIdAll);
         stream >> mmap2;
-        m_mmapRecords << mmap2; // Throw out the extra data for now.
+        m_destination->registerElf(mmap2); // Throw out the extra data for now.
         break;
     }
     case PERF_RECORD_HEADER_ATTR: {

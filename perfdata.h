@@ -358,6 +358,7 @@ public:
     PerfRecordSample(const PerfEventHeader *header = 0, const PerfEventAttributes *attributes = 0);
     quint64 registerAbi() const { return m_registerAbi; }
     quint64 registerValue(uint reg) const;
+    quint64 ip() const { return m_ip; }
     const QByteArray &userStack() const { return m_userStack; }
     const QList<quint64> &callchain() const { return m_callchain; }
 
@@ -416,15 +417,13 @@ private:
 
 QDataStream &operator>>(QDataStream &stream, PerfRecordAttr &record);
 
+class PerfUnwind;
 class PerfData : public QObject
 {
     Q_OBJECT
 public:
-    PerfData(QIODevice *source, const PerfHeader *header, PerfAttributes *attributes);
-
-    const QList<PerfRecordSample> &sampleRecords() { return m_sampleRecords; }
-    const QList<PerfRecordMmap> &mmapRecords() { return m_mmapRecords; }
-    const QList<PerfRecordComm> &commRecords() { return m_commRecords; }
+    PerfData(QIODevice *source, PerfUnwind *destination, const PerfHeader *header,
+             PerfAttributes *attributes);
 
 public slots:
     void read();
@@ -443,14 +442,13 @@ private:
     };
 
     QIODevice *m_source;
+    PerfUnwind *m_destination;
+
     const PerfHeader *m_header;
     PerfAttributes *m_attributes;
     PerfEventHeader m_eventHeader;
 
-    QList<PerfRecordMmap> m_mmapRecords;
-    QList<PerfRecordComm> m_commRecords;
     QList<PerfRecordLost> m_lostRecords;
-    QList<PerfRecordSample> m_sampleRecords;
     ReadStatus processEvents(QDataStream &stream);
     ReadStatus doRead();
 };

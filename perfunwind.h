@@ -25,6 +25,7 @@
 #include <elfutils/libdwfl.h>
 #include <QFileInfo>
 #include <QMap>
+#include <QHash>
 
 class PerfUnwind
 {
@@ -37,24 +38,36 @@ public:
         QByteArray file;
     };
 
-    PerfUnwind(quint32 pid, const QMap<quint32, QString> &threads, const PerfFeatures *features,
-               const QString &systemRoot, const QString &debugInfo, const QString &extraLibs,
-               const QString &appPath);
+    struct UnwindInfo {
+        UnwindInfo() : frames(0), unwind(0), sample(0) {}
+        QVector<PerfUnwind::Frame> *frames;
+        const PerfUnwind *unwind;
+        const PerfRecordSample *sample;
+    };
+
+    PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugInfo,
+               const QString &extraLibs, const QString &appPath);
     ~PerfUnwind();
 
     uint architecture() const { return registerArch; }
+    void setArchitecture(uint architecture) { registerArch = architecture; }
 
     void registerElf(const PerfRecordMmap &mmap);
-    Dwfl_Module *reportElf(quint64 ip) const;
+    void registerThread(quint32 tid, const QString &name);
+    quint32 pid() const { return lastPid; }
 
-    void analyze(QIODevice *output, const PerfRecordSample &sample);
+    Dwfl_Module *reportElf(quint64 ip, quint32 pid) const;
+
+    void analyze(const PerfRecordSample &sample);
 
 private:
     static const quint64 s_callchainMax = (quint64)-4095;
 
-    quint32 pid;
-    QMap<quint32, QString> threads;
-    const PerfFeatures *features;
+    UnwindInfo currentUnwind;
+    QIODevice *output;
+    quint32 lastPid;
+
+    QHash<quint32, QString> threads;
     Dwfl *dwfl;
     Dwfl_Callbacks offlineCallbacks;
     char *debugInfoPath;
@@ -80,7 +93,7 @@ private:
         quint64 length;
     };
 
-    QMap<quint64, ElfInfo> elfs;
+    QHash<quint32, QMap<quint64, ElfInfo> > elfs; // The inner map needs to be sorted
 
     void unwindStack(QVector<Frame> *frames, const PerfRecordSample &sample);
     void resolveCallchain(QVector<Frame> *frames, const PerfRecordSample &sample);

@@ -132,9 +132,8 @@ int main(int argc, char *argv[])
     QCommandLineOption arch(QLatin1String("arch"),
                             QCoreApplication::translate(
                                 "main",
-                                "Specify the CPU architecture of any binaries to be analyzed as "
-                                "<arch>. If not given try to parse the architecture from the data "
-                                "itself."),
+                                "Set the fallback architecture, in case the architecture is not "
+                                "given in the data itsel, to <arch>."),
                             QLatin1String("arch"));
     parser.addOption(arch);
 
@@ -162,16 +161,36 @@ int main(int argc, char *argv[])
             infile = new PerfStdin;
     }
 
+    PerfUnwind unwind(outfile, parser.value(sysroot), parser.isSet(debug) ?
+                          parser.value(debug) : parser.value(sysroot) + parser.value(debug),
+                      parser.value(extra), parser.value(appPath));
     PerfHeader header(infile);
     PerfAttributes attributes;
     PerfFeatures features;
-    PerfData data(infile, &header, &attributes);
+    PerfData data(infile, &unwind, &header, &attributes);
+
+    if (parser.isSet(arch))
+        features.setArchitecture(parser.value(arch).toLatin1());
 
     QObject::connect(&header, &PerfHeader::finished, [&]() {
         if (!header.isPipe()) {
             attributes.read(infile, &header);
             features.read(infile, &header);
         }
+
+        const QByteArray &featureArch = features.architecture();
+        for (uint i = 0; i < PerfRegisterInfo::s_numArchitectures; ++i) {
+            if (featureArch.startsWith(PerfRegisterInfo::s_archNames[i])) {
+                unwind.setArchitecture(i);
+                break;
+            }
+        }
+
+        if (unwind.architecture() == PerfRegisterInfo::s_numArchitectures) {
+            qWarning() << "No information about CPU architecture found. Cannot unwind.";
+            app.exit(MissingData);
+        }
+
         QObject::connect(infile.data(), &QIODevice::readyRead, &data, &PerfData::read);
         if (infile->bytesAvailable() > 0)
             data.read();
@@ -182,37 +201,6 @@ int main(int argc, char *argv[])
     });
 
     QObject::connect(&data, &PerfData::finished, [&]() {
-        if (parser.isSet(arch))
-            features.setArchitecture(parser.value(arch).toLatin1());
-        QMap<quint32, QMap<quint32, QString> > procs;
-        foreach (const PerfRecordMmap &mmap, data.mmapRecords()) {
-            // UINT32_MAX is kernel
-            if (mmap.pid() != std::numeric_limits<quint32>::max())
-                procs[mmap.pid()][mmap.pid()] = QString();
-        }
-
-        foreach (const PerfRecordComm &comm, data.commRecords())
-            procs[comm.pid()][comm.tid()] = comm.comm();
-
-        QMap<quint32, QMap<quint32, QString> >::const_iterator i = procs.begin();
-        for (; i != procs.end(); ++i) {
-            PerfUnwind unwind(i.key(), i.value(), &features, parser.value(sysroot),
-                              parser.isSet(debug) ? parser.value(debug) :
-                                                    parser.value(sysroot) + parser.value(debug),
-                              parser.value(extra), parser.value(appPath));
-
-            if (unwind.architecture() == PerfRegisterInfo::s_numArchitectures) {
-                qWarning() << "No information about CPU architecture found. Cannot unwind.";
-                app.exit(MissingData);
-            }
-
-            foreach (const PerfRecordMmap &mmap, data.mmapRecords())
-                unwind.registerElf(mmap);
-
-            foreach (const PerfRecordSample &sample, data.sampleRecords())
-                unwind.analyze(outfile, sample);
-        }
-
         exitCode = NoError;
         app.exit(NoError);
     });
