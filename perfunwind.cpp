@@ -105,7 +105,7 @@ Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid) const
 {
     QHash<quint32, QMap<quint64, ElfInfo> >::ConstIterator elfsIt = elfs.find(pid);
     if (elfsIt == elfs.end()) {
-        qWarning() << "Process" << lastPid << "has no elfs";
+        qWarning() << "Process" << pid << "has no elfs";
         return 0;
     }
     const QMap<quint64, ElfInfo> &procElfs = elfsIt.value();
@@ -138,7 +138,7 @@ Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid) const
 
 QDataStream &operator<<(QDataStream &stream, const PerfUnwind::Frame &frame)
 {
-    return stream << frame.addr << frame.symbol << frame.file;
+    return stream << frame.frame << frame.symbol << frame.file;
 }
 
 static pid_t nextThread(Dwfl *dwfl, void *arg, void **threadArg)
@@ -203,18 +203,20 @@ static PerfUnwind::Frame lookupSymbol(const PerfUnwind *unwind, Dwfl *dwfl, Dwar
     Dwfl_Module *mod = dwfl_addrmodule (dwfl, ip);
     const char *symname = NULL;
     const char *demangled = NULL;
-    if (!mod) {
-        unwind->reportElf(ip, unwind->pid());
-        mod = dwfl_addrmodule (dwfl, ip);
+    if (!mod)
+        mod = unwind->reportElf(ip, unwind->pid());
+
+    const char *filename = NULL;
+    GElf_Sym sym;
+    if (mod) {
+        symname = dwfl_module_addrsym (mod, ip, &sym, 0);
+        filename = dwfl_module_info(mod, 0, 0, 0, 0, 0, 0, 0);
     }
-    if (mod)
-        symname = dwfl_module_addrname (mod, ip);
 
     if (symname)
         demangled = bfd_demangle(NULL, symname, 0x3);
 
-    return PerfUnwind::Frame(ip, demangled ? demangled : symname,
-                             mod ? dwfl_module_info(mod, 0, 0, 0, 0, 0, 0, 0) : 0);
+    return PerfUnwind::Frame(symname ? sym.st_value : ip, demangled ? demangled : symname, filename);
 }
 
 static int frameCallback(Dwfl_Frame *state, void *arg)

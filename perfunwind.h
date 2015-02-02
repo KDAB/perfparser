@@ -31,9 +31,10 @@ class PerfUnwind
 {
 public:
     struct Frame {
-        Frame(quint64 addr = 0, const QByteArray &symbol = QByteArray(),
-              const QByteArray &file = QByteArray()) : addr(addr), symbol(symbol), file(file) {}
-        quint64 addr;
+        Frame(quint64 frame = 0, const QByteArray &symbol = QByteArray(),
+              const QByteArray &file = QByteArray()) :
+            frame(frame), symbol(symbol), file(file) {}
+        quint64 frame;
         QByteArray symbol;
         QByteArray file;
     };
