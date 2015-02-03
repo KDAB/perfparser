@@ -218,17 +218,27 @@ static PerfUnwind::Frame lookupSymbol(const PerfUnwind *unwind, Dwfl *dwfl, Dwar
     const char *filename = NULL;
     GElf_Sym sym;
     GElf_Off off;
+
+    bool do_adjust = (unwind->architecture() == PerfRegisterInfo::ARCH_ARM);
     if (mod) {
-        symname = dwfl_module_addrinfo (mod, ip, &off, &sym, 0, 0, 0);
+        // For addrinfo we need the raw pointer into symtab, so we need to adjust ourselves.
+        symname = dwfl_module_addrinfo(mod, (!do_adjust || (ip & 1)) ? ip : ip + 1, &off, &sym, 0,
+                                       0, 0);
         filename = dwfl_module_info(mod, 0, 0, 0, 0, 0, 0, 0);
     }
 
-    if (symname)
+    if (symname) {
         demangled = bfd_demangle(NULL, symname, 0x3);
-    else
+        // Adjust it back. The symtab entries are 1 off for all practical purposes.
+        return PerfUnwind::Frame((do_adjust && (sym.st_value & 1)) ? sym.st_value - 1 :
+                                                                     sym.st_value,
+                                 demangled ? demangled : symname, filename);
+    } else {
         qWarning() << "no symbol found for" << ip << "in" << filename;
+        return PerfUnwind::Frame(ip, symname, filename);
+    }
 
-    return PerfUnwind::Frame(symname ? sym.st_value : ip, demangled ? demangled : symname, filename);
+
 }
 
 static int frameCallback(Dwfl_Frame *state, void *arg)
