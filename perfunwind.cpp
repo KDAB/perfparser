@@ -117,6 +117,15 @@ Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid) const
             i = procElfs.end();
     }
 
+//    /* On ARM, symbols for thumb functions have 1 added to
+//     * the symbol address as a flag - remove it */
+//    if ((ehdr.e_machine == EM_ARM) &&
+//        (map->type == MAP__FUNCTION) &&
+//        (sym.st_value & 1))
+//        --sym.st_value;
+//
+//    ^ We don't have to do this here as libdw is supposed to handle it from version 0.160.
+
     if (i != procElfs.end() && i.key() + i.value().length > ip) {
         Dwfl_Module *ret = dwfl_report_elf(
                     dwfl, i.value().file.fileName().toLocal8Bit().constData(),
