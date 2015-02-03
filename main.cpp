@@ -179,14 +179,14 @@ int main(int argc, char *argv[])
         }
 
         const QByteArray &featureArch = features.architecture();
-        for (uint i = 0; i < PerfRegisterInfo::s_numArchitectures; ++i) {
+        for (uint i = 0; i < PerfRegisterInfo::ARCH_INVALID; ++i) {
             if (featureArch.startsWith(PerfRegisterInfo::s_archNames[i])) {
-                unwind.setArchitecture(i);
+                unwind.setArchitecture(static_cast<PerfRegisterInfo::Architecture>(i));
                 break;
             }
         }
 
-        if (unwind.architecture() == PerfRegisterInfo::s_numArchitectures) {
+        if (unwind.architecture() == PerfRegisterInfo::ARCH_INVALID) {
             qWarning() << "No information about CPU architecture found. Cannot unwind.";
             app.exit(MissingData);
         }

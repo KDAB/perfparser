@@ -22,6 +22,7 @@
 #define PERFUNWIND_H
 
 #include "perfdata.h"
+#include "perfregisterinfo.h"
 #include <elfutils/libdwfl.h>
 #include <QFileInfo>
 #include <QMap>
@@ -50,8 +51,11 @@ public:
                const QString &extraLibs, const QString &appPath);
     ~PerfUnwind();
 
-    uint architecture() const { return registerArch; }
-    void setArchitecture(uint architecture) { registerArch = architecture; }
+    PerfRegisterInfo::Architecture architecture() const { return registerArch; }
+    void setArchitecture(PerfRegisterInfo::Architecture architecture)
+    {
+        registerArch = architecture;
+    }
 
     void registerElf(const PerfRecordMmap &mmap);
     void registerThread(quint32 tid, const QString &name);
@@ -73,7 +77,7 @@ private:
     Dwfl_Callbacks offlineCallbacks;
     char *debugInfoPath;
 
-    uint registerArch;
+    PerfRegisterInfo::Architecture registerArch;
 
 
     // Root of the file system of the machine that recorded the data. Any binaries and debug

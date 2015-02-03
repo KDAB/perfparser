@@ -31,7 +31,7 @@
 
 PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugPath,
                        const QString &extraLibsPath, const QString &appPath) :
-    output(output), lastPid(0), registerArch(PerfRegisterInfo::s_numArchitectures),
+    output(output), lastPid(0), registerArch(PerfRegisterInfo::ARCH_INVALID),
     systemRoot(systemRoot), extraLibsPath(extraLibsPath), appPath(appPath)
 {
     currentUnwind.unwind = this;

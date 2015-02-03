@@ -24,7 +24,7 @@ const char *PerfRegisterInfo::s_archNames[] = {
     "arm", "arm64", "powerpc", "s390", "sh", "sparc", "x86"
 };
 
-const uint PerfRegisterInfo::s_numRegisters[PerfRegisterInfo::s_numArchitectures][PerfRegisterInfo::s_numAbis] = {
+const uint PerfRegisterInfo::s_numRegisters[PerfRegisterInfo::ARCH_INVALID][PerfRegisterInfo::s_numAbis] = {
     {16, 16},
     {33, 33},
     { 0,  0},
@@ -45,7 +45,7 @@ static uint x86_64[] = {0, 3, 2, 1, 4, 5, 6, 7, 16, 17, 18, 19, 20, 21, 22, 23, 
 
 static uint none[] = {};
 
-const uint *PerfRegisterInfo::s_perfToDwarf[PerfRegisterInfo::s_numArchitectures][PerfRegisterInfo::s_numAbis] = {
+const uint *PerfRegisterInfo::s_perfToDwarf[PerfRegisterInfo::ARCH_INVALID][PerfRegisterInfo::s_numAbis] = {
     {arm,   arm   },
     {arm64, arm64 },
     {none,  none  },
@@ -55,10 +55,10 @@ const uint *PerfRegisterInfo::s_perfToDwarf[PerfRegisterInfo::s_numArchitectures
     {x86,   x86_64}
 };
 
-const uint PerfRegisterInfo::s_perfIp[s_numArchitectures] = {
+const uint PerfRegisterInfo::s_perfIp[ARCH_INVALID] = {
     15, 32, 0xffff, 0xffff, 0xffff, 0xffff, 8
 };
 
-const uint PerfRegisterInfo::s_perfSp[s_numArchitectures] = {
+const uint PerfRegisterInfo::s_perfSp[ARCH_INVALID] = {
     13, 31, 0xffff, 0xffff, 0xffff, 0xffff, 7
 };
