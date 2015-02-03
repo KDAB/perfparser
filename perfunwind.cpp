@@ -208,13 +208,16 @@ static PerfUnwind::Frame lookupSymbol(const PerfUnwind *unwind, Dwfl *dwfl, Dwar
 
     const char *filename = NULL;
     GElf_Sym sym;
+    GElf_Off off;
     if (mod) {
-        symname = dwfl_module_addrsym (mod, ip, &sym, 0);
+        symname = dwfl_module_addrinfo (mod, ip, &off, &sym, 0, 0, 0);
         filename = dwfl_module_info(mod, 0, 0, 0, 0, 0, 0, 0);
     }
 
     if (symname)
         demangled = bfd_demangle(NULL, symname, 0x3);
+    else
+        qWarning() << "no symbol found for" << ip << "in" << filename;
 
     return PerfUnwind::Frame(symname ? sym.st_value : ip, demangled ? demangled : symname, filename);
 }
