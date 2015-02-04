@@ -78,7 +78,7 @@ void PerfUnwind::registerElf(const PerfRecordMmap &mmap)
 
     QString fileName = QFileInfo(mmap.filename()).fileName();
     QFileInfo path;
-    if (mmap.pid() != std::numeric_limits<quint32>::max()) {
+    if (mmap.pid() != s_kernelPid) {
         path.setFile(appPath + "/" + fileName);
         if (!path.isFile()) {
             path.setFile(extraLibsPath);
@@ -136,8 +136,6 @@ Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid) const
                        << QString("0x%1").arg(i.key(), 0, 16).toLocal8Bit().constData() << ":"
                        << dwfl_errmsg(dwfl_errno());
         return ret;
-    } else if (pid != std::numeric_limits<quint32>::max()) {
-        return reportElf(ip, std::numeric_limits<quint32>::max());
     } else {
         qWarning() << "no elf found for IP"
                    << QString("0x%1").arg(ip, 0, 16).toLocal8Bit().constData();
@@ -147,7 +145,7 @@ Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid) const
 
 QDataStream &operator<<(QDataStream &stream, const PerfUnwind::Frame &frame)
 {
-    return stream << frame.frame << frame.symbol << frame.file;
+    return stream << frame.frame << frame.isKernel << frame.symbol << frame.file;
 }
 
 static pid_t nextThread(Dwfl *dwfl, void *arg, void **threadArg)
@@ -207,13 +205,14 @@ static const Dwfl_Thread_Callbacks callbacks = {
     nextThread, NULL, memoryRead, setInitialRegisters, NULL, NULL
 };
 
-static PerfUnwind::Frame lookupSymbol(const PerfUnwind *unwind, Dwfl *dwfl, Dwarf_Addr ip)
+static PerfUnwind::Frame lookupSymbol(const PerfUnwind *unwind, Dwfl *dwfl, Dwarf_Addr ip,
+                                      bool isKernel)
 {
     Dwfl_Module *mod = dwfl_addrmodule (dwfl, ip);
     const char *symname = NULL;
     const char *demangled = NULL;
     if (!mod)
-        mod = unwind->reportElf(ip, unwind->pid());
+        mod = unwind->reportElf(ip, isKernel ? PerfUnwind::s_kernelPid : unwind->pid());
 
     const char *filename = NULL;
     GElf_Sym sym;
@@ -232,13 +231,11 @@ static PerfUnwind::Frame lookupSymbol(const PerfUnwind *unwind, Dwfl *dwfl, Dwar
         // Adjust it back. The symtab entries are 1 off for all practical purposes.
         return PerfUnwind::Frame((do_adjust && (sym.st_value & 1)) ? sym.st_value - 1 :
                                                                      sym.st_value,
-                                 demangled ? demangled : symname, filename);
+                                 isKernel, demangled ? demangled : symname, filename);
     } else {
         qWarning() << "no symbol found for" << ip << "in" << filename;
-        return PerfUnwind::Frame(ip, symname, filename);
+        return PerfUnwind::Frame(ip, isKernel, symname, filename);
     }
-
-
 }
 
 static int frameCallback(Dwfl_Frame *state, void *arg)
@@ -257,7 +254,9 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
     Dwfl_Thread *thread = dwfl_frame_thread (state);
     Dwfl *dwfl = dwfl_thread_dwfl (thread);
     PerfUnwind::UnwindInfo *ui = static_cast<PerfUnwind::UnwindInfo *>(arg);
-    ui->frames->append(lookupSymbol(ui->unwind, dwfl, pc_adjusted));
+
+    // isKernel = false as unwinding generally only works on user code
+    ui->frames->append(lookupSymbol(ui->unwind, dwfl, pc_adjusted, false));
     return DWARF_CB_OK;
 }
 
@@ -272,11 +271,25 @@ void PerfUnwind::unwindStack(QVector<Frame> *frames, const PerfRecordSample &sam
 
 void PerfUnwind::resolveCallchain(QVector<Frame> *frames, const PerfRecordSample &sample)
 {
+    bool isKernel = false;
     for (int i = 0; i < sample.callchain().length(); ++i) {
         quint64 ip = sample.callchain()[i];
-        if (ip > s_callchainMax)
-            continue; // ignore cpu mode
-        frames->append(lookupSymbol(this, dwfl, ip));
+        if (ip > PERF_CONTEXT_MAX) {
+            switch (ip) {
+            case PERF_CONTEXT_HV: // hypervisor
+            case PERF_CONTEXT_KERNEL:
+                isKernel = true;
+                break;
+            case PERF_CONTEXT_USER:
+                isKernel = false;
+                break;
+            default:
+                qWarning() << "invalid callchain context" << ip;
+                return;
+            }
+        } else {
+            frames->append(lookupSymbol(this, dwfl, ip, isKernel));
+        }
     }
 }
 

@@ -32,10 +32,11 @@ class PerfUnwind
 {
 public:
     struct Frame {
-        Frame(quint64 frame = 0, const QByteArray &symbol = QByteArray(),
+        Frame(quint64 frame = 0, bool isKernel = false, const QByteArray &symbol = QByteArray(),
               const QByteArray &file = QByteArray()) :
-            frame(frame), symbol(symbol), file(file) {}
+            frame(frame), isKernel(isKernel), symbol(symbol), file(file) {}
         quint64 frame;
+        bool isKernel;
         QByteArray symbol;
         QByteArray file;
     };
@@ -46,6 +47,8 @@ public:
         const PerfUnwind *unwind;
         const PerfRecordSample *sample;
     };
+
+    static const quint32 s_kernelPid = std::numeric_limits<quint32>::max();
 
     PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugInfo,
                const QString &extraLibs, const QString &appPath);
@@ -66,7 +69,18 @@ public:
     void analyze(const PerfRecordSample &sample);
 
 private:
-    static const quint64 s_callchainMax = (quint64)-4095;
+
+    enum CallchainContext {
+        PERF_CONTEXT_HV             = (quint64)-32,
+        PERF_CONTEXT_KERNEL         = (quint64)-128,
+        PERF_CONTEXT_USER           = (quint64)-512,
+
+        PERF_CONTEXT_GUEST          = (quint64)-2048,
+        PERF_CONTEXT_GUEST_KERNEL   = (quint64)-2176,
+        PERF_CONTEXT_GUEST_USER     = (quint64)-2560,
+
+        PERF_CONTEXT_MAX            = (quint64)-4095,
+    };
 
     UnwindInfo currentUnwind;
     QIODevice *output;
