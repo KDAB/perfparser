@@ -157,10 +157,36 @@ static pid_t nextThread(Dwfl *dwfl, void *arg, void **threadArg)
     return dwfl_pid(dwfl);
 }
 
+static bool accessDsoMem(Dwfl *dwfl, const PerfUnwind::UnwindInfo *ui, Dwarf_Addr addr,
+                         Dwarf_Word *result)
+{
+    // TODO: Take the pgoff into account? Or does elf_getdata do that already?
+    Dwfl_Module *mod = dwfl_addrmodule(dwfl, addr);
+    if (!mod) {
+        mod = ui->unwind->reportElf(addr, ui->unwind->pid());
+        if (!mod) {
+            mod = ui->unwind->reportElf(addr, PerfUnwind::s_kernelPid);
+            if (!mod)
+                return false;
+        }
+    }
+
+    Dwarf_Addr bias;
+    Elf_Scn *section = dwfl_module_address_section(mod, &addr, &bias);
+
+    if (section) {
+        Elf_Data *data = elf_getdata(section, NULL);
+        if (data && data->d_size) {
+            *result = *(Dwarf_Word *)(static_cast<char *>(data->d_buf) + addr);
+            return true;
+        }
+    }
+
+    return false;
+}
 
 static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *arg)
 {
-    Q_UNUSED(dwfl)
     PerfUnwind::UnwindInfo *ui = static_cast<PerfUnwind::UnwindInfo *>(arg);
 
     /* Check overflow. */
@@ -176,14 +202,19 @@ static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *ar
     quint64 end = start + stack.size();
 
     if (addr < start || addr + sizeof(Dwarf_Word) > end) {
-        qWarning() << "Cannot read memory at" << addr;
-        qWarning() << "dwfl should only read stack state (" << start << "to" << end
-                   << ") with memoryRead().";
-        ui->broken = true;
-        return false;
-    }
+        // not stack, try reading from ELF
+        if (!accessDsoMem(dwfl, ui, addr, result)) {
+            qWarning() << QString::fromLatin1("Cannot read memory at 0x%1").arg(addr, 0, 16);
+            qWarning() << QString::fromLatin1(
+                              "dwfl should only read stack state (0x%1 to 0x%2) with memoryRead().")
+                          .arg(start, 0, 16).arg(end, 0, 16);
 
-    *result = *(Dwarf_Word *)(&stack.data()[addr - start]);
+            ui->broken = true;
+            return false;
+        }
+    } else {
+        *result = *(Dwarf_Word *)(&stack.data()[addr - start]);
+    }
     return true;
 }
 
