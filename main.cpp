@@ -108,8 +108,8 @@ int main(int argc, char *argv[])
     QCommandLineOption debug(QLatin1String("debug"),
                              QCoreApplication::translate(
                                  "main",
-                                 "Look for debug information in <path>."
-                                 "You can specify multiple paths separated by ':'."
+                                 "Look for debug information in <path>. "
+                                 "You can specify multiple paths separated by ':'. "
                                  "The default is: <sysroot>/usr/lib/debug."),
                              QLatin1String("path"),
                              QLatin1String("/usr/lib/debug"));
@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
                             QCoreApplication::translate(
                                 "main",
                                 "Set the fallback architecture, in case the architecture is not "
-                                "given in the data itsel, to <arch>."),
+                                "given in the data itself, to <arch>."),
                             QLatin1String("arch"));
     parser.addOption(arch);
 
