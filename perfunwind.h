@@ -31,6 +31,14 @@
 class PerfUnwind
 {
 public:
+    enum EventType {
+        GoodStack,
+        BadStack,
+        ThreadStart,
+        ThreadEnd,
+        InvalidType
+    };
+
     struct Frame {
         Frame(quint64 frame = 0, bool isKernel = false, const QByteArray &symbol = QByteArray(),
               const QByteArray &file = QByteArray()) :
@@ -42,10 +50,11 @@ public:
     };
 
     struct UnwindInfo {
-        UnwindInfo() : frames(0), unwind(0), sample(0) {}
-        QVector<PerfUnwind::Frame> *frames;
+        UnwindInfo() : frames(0), unwind(0), sample(0), broken(false) {}
+        QVector<PerfUnwind::Frame> frames;
         const PerfUnwind *unwind;
         const PerfRecordSample *sample;
+        bool broken;
     };
 
     static const quint32 s_kernelPid = std::numeric_limits<quint32>::max();
@@ -67,6 +76,8 @@ public:
     Dwfl_Module *reportElf(quint64 ip, quint32 pid) const;
 
     void analyze(const PerfRecordSample &sample);
+    void fork(const PerfRecordFork &sample);
+    void exit(const PerfRecordExit &sample);
 
 private:
 
@@ -114,8 +125,8 @@ private:
 
     QHash<quint32, QMap<quint64, ElfInfo> > elfs; // The inner map needs to be sorted
 
-    void unwindStack(QVector<Frame> *frames, const PerfRecordSample &sample);
-    void resolveCallchain(QVector<Frame> *frames, const PerfRecordSample &sample);
+    void unwindStack();
+    void resolveCallchain();
 };
 
 #endif // PERFUNWIND_H

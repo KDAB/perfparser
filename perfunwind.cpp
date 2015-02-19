@@ -162,14 +162,15 @@ static pid_t nextThread(Dwfl *dwfl, void *arg, void **threadArg)
 static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *arg)
 {
     Q_UNUSED(dwfl)
+    PerfUnwind::UnwindInfo *ui = static_cast<PerfUnwind::UnwindInfo *>(arg);
 
     /* Check overflow. */
     if (addr + sizeof(Dwarf_Word) < addr) {
         qWarning() << "Invalid memory read requested by dwfl" << addr;
+        ui->broken = true;
         return false;
     }
 
-    const PerfUnwind::UnwindInfo *ui = static_cast<PerfUnwind::UnwindInfo *>(arg);
     const QByteArray &stack = ui->sample->userStack();
 
     quint64 start = ui->sample->registerValue(PerfRegisterInfo::s_perfSp[ui->unwind->architecture()]);
@@ -179,6 +180,7 @@ static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *ar
         qWarning() << "Cannot read memory at" << addr;
         qWarning() << "dwfl should only read stack state (" << start << "to" << end
                    << ") with memoryRead().";
+        ui->broken = true;
         return false;
     }
 
@@ -205,20 +207,20 @@ static const Dwfl_Thread_Callbacks callbacks = {
     nextThread, NULL, memoryRead, setInitialRegisters, NULL, NULL
 };
 
-static PerfUnwind::Frame lookupSymbol(const PerfUnwind *unwind, Dwfl *dwfl, Dwarf_Addr ip,
+static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dwarf_Addr ip,
                                       bool isKernel)
 {
     Dwfl_Module *mod = dwfl_addrmodule (dwfl, ip);
     const char *symname = NULL;
     const char *demangled = NULL;
     if (!mod)
-        mod = unwind->reportElf(ip, isKernel ? PerfUnwind::s_kernelPid : unwind->pid());
+        mod = ui->unwind->reportElf(ip, isKernel ? PerfUnwind::s_kernelPid : ui->unwind->pid());
 
     const char *filename = NULL;
     GElf_Sym sym;
     GElf_Off off;
 
-    bool do_adjust = (unwind->architecture() == PerfRegisterInfo::ARCH_ARM);
+    bool do_adjust = (ui->unwind->architecture() == PerfRegisterInfo::ARCH_ARM);
     if (mod) {
         // For addrinfo we need the raw pointer into symtab, so we need to adjust ourselves.
         symname = dwfl_module_addrinfo(mod, (!do_adjust || (ip & 1)) ? ip : ip + 1, &off, &sym, 0,
@@ -234,6 +236,7 @@ static PerfUnwind::Frame lookupSymbol(const PerfUnwind *unwind, Dwfl *dwfl, Dwar
                                  isKernel, demangled ? demangled : symname, filename);
     } else {
         qWarning() << "no symbol found for" << ip << "in" << filename;
+        ui->broken = !isKernel;
         return PerfUnwind::Frame(ip, isKernel, symname, filename);
     }
 }
@@ -241,10 +244,12 @@ static PerfUnwind::Frame lookupSymbol(const PerfUnwind *unwind, Dwfl *dwfl, Dwar
 static int frameCallback(Dwfl_Frame *state, void *arg)
 {
     Dwarf_Addr pc;
+    PerfUnwind::UnwindInfo *ui = static_cast<PerfUnwind::UnwindInfo *>(arg);
 
     bool isactivation;
     if (!dwfl_frame_pc(state, &pc, &isactivation)) {
         qWarning() << dwfl_errmsg(dwfl_errno());
+        ui->broken = true;
         return DWARF_CB_ABORT;
     }
 
@@ -253,27 +258,24 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
     /* Get PC->SYMNAME.  */
     Dwfl_Thread *thread = dwfl_frame_thread (state);
     Dwfl *dwfl = dwfl_thread_dwfl (thread);
-    PerfUnwind::UnwindInfo *ui = static_cast<PerfUnwind::UnwindInfo *>(arg);
 
     // isKernel = false as unwinding generally only works on user code
-    ui->frames->append(lookupSymbol(ui->unwind, dwfl, pc_adjusted, false));
+    ui->frames.append(lookupSymbol(ui, dwfl, pc_adjusted, false));
     return DWARF_CB_OK;
 }
 
-void PerfUnwind::unwindStack(QVector<Frame> *frames, const PerfRecordSample &sample)
+void PerfUnwind::unwindStack()
 {
-    currentUnwind.frames = frames;
-    currentUnwind.sample = &sample;
-
-    if (dwfl_getthread_frames(dwfl, sample.pid(), frameCallback, &currentUnwind))
-        qWarning() << "failed to get some frames:" << sample.tid() << dwfl_errmsg(dwfl_errno());
+    if (dwfl_getthread_frames(dwfl, currentUnwind.sample->pid(), frameCallback, &currentUnwind))
+        qWarning() << "failed to get some frames:" << currentUnwind.sample->tid()
+                   << dwfl_errmsg(dwfl_errno());
 }
 
-void PerfUnwind::resolveCallchain(QVector<Frame> *frames, const PerfRecordSample &sample)
+void PerfUnwind::resolveCallchain()
 {
     bool isKernel = false;
-    for (int i = 0; i < sample.callchain().length(); ++i) {
-        quint64 ip = sample.callchain()[i];
+    for (int i = 0; i < currentUnwind.sample->callchain().length(); ++i) {
+        quint64 ip = currentUnwind.sample->callchain()[i];
         if (ip > PERF_CONTEXT_MAX) {
             switch (ip) {
             case PERF_CONTEXT_HV: // hypervisor
@@ -287,10 +289,23 @@ void PerfUnwind::resolveCallchain(QVector<Frame> *frames, const PerfRecordSample
                 qWarning() << "invalid callchain context" << ip;
                 return;
             }
-        } else {
-            frames->append(lookupSymbol(this, dwfl, ip, isKernel));
         }
+
+        // sometimes it skips the first user frame.
+        if (i == 0 && !isKernel && ip != currentUnwind.sample->ip())
+            currentUnwind.frames.append(lookupSymbol(&currentUnwind, dwfl,
+                                                     currentUnwind.sample->ip(), false));
+
+        if (ip <= PERF_CONTEXT_MAX)
+            currentUnwind.frames.append(lookupSymbol(&currentUnwind, dwfl, ip, isKernel));
     }
+}
+
+void sendBuffer(QIODevice *output, const QByteArray &buffer)
+{
+    quint32 size = buffer.length();
+    output->write(reinterpret_cast<char *>(&size), sizeof(quint32));
+    output->write(buffer);
 }
 
 void PerfUnwind::analyze(const PerfRecordSample &sample)
@@ -316,16 +331,37 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
             reportElf(sample.ip(), lastPid);
     }
 
-    QVector<Frame> frames;
+    currentUnwind.broken = false;
+    currentUnwind.sample = &sample;
+    currentUnwind.frames.clear();
     if (sample.callchain().length() > 0)
-        resolveCallchain(&frames, sample);
+        resolveCallchain();
     if (sample.registerAbi() != 0 && sample.userStack().length() > 0)
-        unwindStack(&frames, sample);
+        unwindStack();
 
     QByteArray buffer;
-    QDataStream(&buffer, QIODevice::WriteOnly) << lastPid << sample.tid() << threads[sample.tid()]
-                                               << sample.time() << frames;
-    quint32 size = buffer.length();
-    output->write(reinterpret_cast<char *>(&size), sizeof(quint32));
-    output->write(buffer);
+    QDataStream(&buffer, QIODevice::WriteOnly)
+            << static_cast<quint8>(currentUnwind.broken ? BadStack : GoodStack) << lastPid
+            << sample.tid() << threads[sample.tid()] << sample.time() << currentUnwind.frames;
+    sendBuffer(output, buffer);
+}
+
+void PerfUnwind::fork(const PerfRecordFork &sample)
+{
+    QByteArray buffer;
+    QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(ThreadStart)
+                                               << sample.childPid() << sample.childTid()
+                                               << threads[sample.childTid()] << sample.time()
+                                               << QVector<PerfUnwind::Frame>();
+    sendBuffer(output, buffer);
+}
+
+void PerfUnwind::exit(const PerfRecordExit &sample)
+{
+    QByteArray buffer;
+    QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(ThreadEnd)
+                                               << sample.childPid() << sample.childTid()
+                                               << threads[sample.childTid()] << sample.time()
+                                               << QVector<PerfUnwind::Frame>();
+    sendBuffer(output, buffer);
 }

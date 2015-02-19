@@ -417,6 +417,24 @@ private:
 
 QDataStream &operator>>(QDataStream &stream, PerfRecordAttr &record);
 
+class PerfRecordFork : public PerfRecord
+{
+public:
+    PerfRecordFork(PerfEventHeader *header = 0, quint64 sampleType = 0, bool sampleIdAll = false);
+    quint32 childTid() const { return m_tid; }
+    quint32 childPid() const { return m_pid; }
+private:
+    quint32 m_pid, m_ppid;
+    quint32 m_tid, m_ptid;
+    quint64 m_time;
+
+    friend QDataStream &operator>>(QDataStream &stream, PerfRecordFork &record);
+};
+
+QDataStream &operator>>(QDataStream &stream, PerfRecordFork &record);
+
+typedef PerfRecordFork PerfRecordExit;
+
 class PerfUnwind;
 class PerfData : public QObject
 {

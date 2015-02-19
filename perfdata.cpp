@@ -113,6 +113,18 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
 
         break;
     }
+    case PERF_RECORD_FORK: {
+        PerfRecordFork fork(&m_eventHeader, sampleType, sampleIdAll);
+        stream >> fork;
+        m_destination->fork(fork);
+        break;
+    }
+    case PERF_RECORD_EXIT: {
+        PerfRecordFork exit(&m_eventHeader, sampleType, sampleIdAll);
+        stream >> exit;
+        m_destination->exit(exit);
+        break;
+    }
 
     default:
         qWarning() << "unhandled event type" << m_eventHeader.type;
@@ -527,4 +539,16 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordAttr &record)
         record.m_ids << id;
     }
     return stream;
+}
+
+
+PerfRecordFork::PerfRecordFork(PerfEventHeader *header, quint64 sampleType, bool sampleIdAll) :
+    PerfRecord(header, sampleType, sampleIdAll), m_pid(0), m_ppid(0), m_tid(0), m_ptid(0), m_time(0)
+{
+}
+
+QDataStream &operator>>(QDataStream &stream, PerfRecordFork &record)
+{
+    return stream >> record.m_pid >> record.m_ppid >> record.m_tid >> record.m_ptid >> record.m_time
+                  >> record.m_sampleId;
 }
