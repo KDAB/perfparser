@@ -110,9 +110,10 @@ int main(int argc, char *argv[])
                                  "main",
                                  "Look for debug information in <path>. "
                                  "You can specify multiple paths separated by ':'. "
-                                 "The default is: <sysroot>/usr/lib/debug."),
+                                 "Relative paths are relative to the original file's path. "
+                                 "The default is: <sysroot>/usr/lib/debug:.debug/ ."),
                              QLatin1String("path"),
-                             QLatin1String("/usr/lib/debug"));
+                             QLatin1String("/usr/lib/debug:.debug/"));
     parser.addOption(debug);
 
     QCommandLineOption extra(QLatin1String("extra"),
