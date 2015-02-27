@@ -18,7 +18,7 @@ LIBS += -Wl,--start-group \
         ../3rdparty/elfutils/libebl.a \
         ../3rdparty/elfutils/libdwelf.a \
         -Wl,--end-group \
-        -Wl,-Bstatic -lbfd -Wl,-Bdynamic -lz -ldl -liberty
+        -lz -ldl -liberty
 
 TARGET = ../perfparser
 CONFIG   += console c++11

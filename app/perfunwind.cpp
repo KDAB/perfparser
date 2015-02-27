@@ -21,12 +21,11 @@
 #include "perfunwind.h"
 #include "perfregisterinfo.h"
 
-#include <bfd.h>
-
 #include <QDir>
 #include <QDebug>
 
 #include <limits>
+#include <cxxabi.h>
 
 PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugPath,
                        const QString &extraLibsPath, const QString &appPath) :
@@ -211,7 +210,6 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
 {
     Dwfl_Module *mod = dwfl_addrmodule (dwfl, ip);
     const char *symname = NULL;
-    const char *demangled = NULL;
     if (!mod)
         mod = ui->unwind->reportElf(ip, isKernel ? PerfUnwind::s_kernelPid : ui->unwind->pid());
 
@@ -228,11 +226,17 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
     }
 
     if (symname) {
-        demangled = bfd_demangle(NULL, symname, 0x3);
+        char *demangled = NULL;
+        int status = -1;
+        if (symname[0] == '_' && symname[1] == 'Z') {
+            demangled = abi::__cxa_demangle (symname, 0, 0, &status);
+        }
+
         // Adjust it back. The symtab entries are 1 off for all practical purposes.
         return PerfUnwind::Frame((do_adjust && (sym.st_value & 1)) ? sym.st_value - 1 :
                                                                      sym.st_value,
-                                 isKernel, demangled ? demangled : symname, filename);
+                                 isKernel, status == 0 ? demangled : symname, filename);
+        free(demangled);
     } else {
         qWarning() << "no symbol found for" << ip << "in" << filename;
         ui->broken = !isKernel;
