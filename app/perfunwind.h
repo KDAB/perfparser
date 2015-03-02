@@ -55,11 +55,12 @@ public:
     };
 
     struct UnwindInfo {
-        UnwindInfo() : frames(0), unwind(0), sample(0), broken(false) {}
+        UnwindInfo() : frames(0), unwind(0), sample(0), broken(false), isInterworking(false) {}
         QVector<PerfUnwind::Frame> frames;
         const PerfUnwind *unwind;
         const PerfRecordSample *sample;
         bool broken;
+        bool isInterworking;
     };
 
     static const quint32 s_kernelPid = std::numeric_limits<quint32>::max();

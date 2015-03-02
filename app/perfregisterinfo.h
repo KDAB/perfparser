@@ -51,6 +51,11 @@ public:
     static const uint s_perfIp[ARCH_INVALID];
     // location of SP register or equivalent in perf register layout for each arch/abi
     static const uint s_perfSp[ARCH_INVALID];
+
+    // location of LR register or equivalent in dwarf register layout for each arch/abi
+    static const uint s_dwarfLr[ARCH_INVALID][s_numAbis];
+    // location of IP register or equivalent in dwarf register layout for each arch/abi
+    static const uint s_dwarfIp[ARCH_INVALID][s_numAbis];
 };
 
 #endif // PERFREGISTERINFO_H

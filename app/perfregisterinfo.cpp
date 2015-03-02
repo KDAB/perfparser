@@ -62,3 +62,23 @@ const uint PerfRegisterInfo::s_perfIp[ARCH_INVALID] = {
 const uint PerfRegisterInfo::s_perfSp[ARCH_INVALID] = {
     13, 31, 0xffff, 0xffff, 0xffff, 0xffff, 7
 };
+
+const uint PerfRegisterInfo::s_dwarfLr[ARCH_INVALID][s_numAbis] = {
+    {14, 14},
+    {30, 30},
+    {0xffff, 0xffff},
+    {0xffff, 0xffff},
+    {0xffff, 0xffff},
+    {0xffff, 0xffff},
+    {0xffff, 0xffff}
+};
+
+const uint PerfRegisterInfo::s_dwarfIp[ARCH_INVALID][s_numAbis] = {
+    {15, 15},
+    {32, 32},
+    {0xffff, 0xffff},
+    {0xffff, 0xffff},
+    {0xffff, 0xffff},
+    {0xffff, 0xffff},
+    {8, 16}
+};

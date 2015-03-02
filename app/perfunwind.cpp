@@ -235,6 +235,10 @@ bool setInitialRegisters(Dwfl_Thread *thread, void *arg)
         dwarfRegs[i] = ui->sample->registerValue(
                     PerfRegisterInfo::s_perfToDwarf[architecture][abi][i]);
 
+    if (ui->isInterworking) // Go one frame up to get the rest of the stack at interworking veneers.
+        dwarfRegs[PerfRegisterInfo::s_dwarfIp[architecture][abi]] =
+                dwarfRegs[PerfRegisterInfo::s_dwarfLr[architecture][abi]];
+
     return dwfl_thread_state_registers(thread, 0, numRegs, dwarfRegs);
 }
 
@@ -274,9 +278,11 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
     if (symname) {
         char *demangled = NULL;
         int status = -1;
-        if (symname[0] == '_' && symname[1] == 'Z') {
+        if (symname[0] == '_' && symname[1] == 'Z')
             demangled = abi::__cxa_demangle (symname, 0, 0, &status);
-        }
+        else if (ui->unwind->architecture() == PerfRegisterInfo::ARCH_ARM && symname[0] == '$'
+                 && (symname[1] == 'a' || symname[1] == 't') && symname[2] == '\0')
+            ui->isInterworking = true;
 
         // Adjust it back. The symtab entries are 1 off for all practical purposes.
         return PerfUnwind::Frame((do_adjust && (sym.st_value & 1)) ? sym.st_value - 1 :
@@ -296,8 +302,8 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
 
     bool isactivation;
     if (!dwfl_frame_pc(state, &pc, &isactivation)) {
-        qWarning() << dwfl_errmsg(dwfl_errno());
         ui->broken = true;
+        qWarning() << dwfl_errmsg(dwfl_errno()) << ui->broken;
         return DWARF_CB_ABORT;
     }
 
@@ -315,6 +321,16 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
 void PerfUnwind::unwindStack()
 {
     dwfl_getthread_frames(dwfl, currentUnwind.sample->pid(), frameCallback, &currentUnwind);
+    if (currentUnwind.isInterworking && currentUnwind.frames.length() == 1) {
+        // If it's an ARM interworking veneer, we assume that we can find a return address in LR and
+        // no stack has been used for the veneer itself.
+        // The reasoning is that any symbol jumped to by the veneer has to work with or without
+        // using the veneer. It needs a valid return address and when it returns the stack pointer
+        // must be the same in both cases. Thus, the veneer cannot touch the stack pointer and there
+        // has to be a return address in LR, provided by the caller.
+        // So, just try again, and make setInitialRegisters use LR for IP.
+        dwfl_getthread_frames(dwfl, currentUnwind.sample->pid(), frameCallback, &currentUnwind);
+    }
 }
 
 void PerfUnwind::resolveCallchain()
@@ -378,6 +394,7 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
     }
 
     currentUnwind.broken = false;
+    currentUnwind.isInterworking = false;
     currentUnwind.sample = &sample;
     currentUnwind.frames.clear();
     if (sample.callchain().length() > 0)
