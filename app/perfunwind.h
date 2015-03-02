@@ -41,12 +41,17 @@ public:
 
     struct Frame {
         Frame(quint64 frame = 0, bool isKernel = false, const QByteArray &symbol = QByteArray(),
-              const QByteArray &file = QByteArray()) :
-            frame(frame), isKernel(isKernel), symbol(symbol), file(file) {}
+              const QByteArray &elfFile = QByteArray(), const QByteArray &srcFile = QByteArray(),
+              int line = 0, int column = 0) :
+            frame(frame), isKernel(isKernel), symbol(symbol), elfFile(elfFile), srcFile(srcFile),
+            line(line), column(column) {}
         quint64 frame;
         bool isKernel;
         QByteArray symbol;
-        QByteArray file;
+        QByteArray elfFile;
+        QByteArray srcFile;
+        int line;
+        int column;
     };
 
     struct UnwindInfo {

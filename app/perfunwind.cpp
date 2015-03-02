@@ -143,7 +143,8 @@ Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid) const
 
 QDataStream &operator<<(QDataStream &stream, const PerfUnwind::Frame &frame)
 {
-    return stream << frame.frame << frame.isKernel << frame.symbol << frame.file;
+    return stream << frame.frame << frame.isKernel << frame.symbol << frame.elfFile
+                  << frame.srcFile << frame.line << frame.column;
 }
 
 static pid_t nextThread(Dwfl *dwfl, void *arg, void **threadArg)
@@ -213,16 +214,25 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
     if (!mod)
         mod = ui->unwind->reportElf(ip, isKernel ? PerfUnwind::s_kernelPid : ui->unwind->pid());
 
-    const char *filename = NULL;
+    const char *elfFile = NULL;
+    const char *srcFile = NULL;
+    int line = 0;
+    int column = 0;
     GElf_Sym sym;
     GElf_Off off;
 
     bool do_adjust = (ui->unwind->architecture() == PerfRegisterInfo::ARCH_ARM);
     if (mod) {
+        Dwarf_Addr adjusted = (!do_adjust || (ip & 1)) ? ip : ip + 1;
         // For addrinfo we need the raw pointer into symtab, so we need to adjust ourselves.
-        symname = dwfl_module_addrinfo(mod, (!do_adjust || (ip & 1)) ? ip : ip + 1, &off, &sym, 0,
+        symname = dwfl_module_addrinfo(mod, adjusted, &off, &sym, 0,
                                        0, 0);
-        filename = dwfl_module_info(mod, 0, 0, 0, 0, 0, 0, 0);
+        elfFile = dwfl_module_info(mod, 0, 0, 0, 0, 0, 0, 0);
+
+        // We take the first line of the function for now, in order to reduce UI complexity
+        Dwfl_Line *srcLine = dwfl_module_getsrc(mod, adjusted);
+        if (srcLine)
+            srcFile = dwfl_lineinfo(srcLine, NULL, &line, &column, NULL, NULL);
     }
 
     if (symname) {
@@ -235,12 +245,13 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
         // Adjust it back. The symtab entries are 1 off for all practical purposes.
         return PerfUnwind::Frame((do_adjust && (sym.st_value & 1)) ? sym.st_value - 1 :
                                                                      sym.st_value,
-                                 isKernel, status == 0 ? demangled : symname, filename);
+                                 isKernel, status == 0 ? demangled : symname, elfFile, srcFile,
+                                 line, column);
         free(demangled);
     } else {
-        qWarning() << "no symbol found for" << ip << "in" << filename;
+        qWarning() << "no symbol found for" << ip << "in" << elfFile;
         ui->broken = !isKernel;
-        return PerfUnwind::Frame(ip, isKernel, symname, filename);
+        return PerfUnwind::Frame(ip, isKernel, symname, elfFile, srcFile, line, column);
     }
 }
 
