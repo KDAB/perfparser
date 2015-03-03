@@ -142,8 +142,6 @@ Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid) const
                        << dwfl_errmsg(dwfl_errno());
         return ret;
     } else {
-        qWarning() << "no elf found for IP"
-                   << QString("0x%1").arg(ip, 0, 16).toLocal8Bit().constData();
         return 0;
     }
 }
@@ -287,8 +285,6 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
                                  line, column);
         free(demangled);
     } else {
-        qWarning() << "no symbol found for" << ip << "in" << elfFile;
-        ui->broken = !isKernel;
         return PerfUnwind::Frame(ip, isKernel, symname, elfFile, srcFile, line, column);
     }
 }
@@ -318,9 +314,7 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
 
 void PerfUnwind::unwindStack()
 {
-    if (dwfl_getthread_frames(dwfl, currentUnwind.sample->pid(), frameCallback, &currentUnwind))
-        qWarning() << "failed to get some frames:" << currentUnwind.sample->tid()
-                   << dwfl_errmsg(dwfl_errno());
+    dwfl_getthread_frames(dwfl, currentUnwind.sample->pid(), frameCallback, &currentUnwind);
 }
 
 void PerfUnwind::resolveCallchain()
