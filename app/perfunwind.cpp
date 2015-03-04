@@ -79,8 +79,15 @@ void PerfUnwind::registerElf(const PerfRecordMmap &mmap)
     if (mmap.pid() != s_kernelPid) {
         path.setFile(appPath + "/" + fileName);
         if (!path.isFile()) {
-            path.setFile(extraLibsPath);
-            if (!findInExtraPath(path, fileName))
+            bool found = false;
+            foreach (const QString &extraPath, extraLibsPath.split(":")) {
+                path.setFile(extraPath);
+                if (findInExtraPath(path, fileName)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
                 path.setFile(systemRoot + mmap.filename());
         }
     } else { // kernel
