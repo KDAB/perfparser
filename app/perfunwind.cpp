@@ -70,9 +70,33 @@ void PerfUnwind::registerElf(const PerfRecordMmap &mmap)
 {
     QMap<quint64, ElfInfo> &procElfs = elfs[mmap.pid()];
 
-    // No point in mapping the same file twice
-    if (procElfs.find(mmap.addr()) != procElfs.end())
-        return;
+    auto i = procElfs.upperBound(mmap.addr());
+    if (i != procElfs.begin())
+        --i;
+    while (i != procElfs.end() && i.key() < mmap.addr() + mmap.len()) {
+        if (i.key() + i.value().length <= mmap.addr()) {
+            ++i;
+            continue;
+        }
+
+        if (i.key() + i.value().length > mmap.addr() + mmap.len()) {
+            // Move or copy the original mmap to the part after the new mmap. The new length is the
+            // difference between the end points (begin + length) of the two. The original mmap
+            // is either removed or shortened by the following if/else construct.
+            procElfs.insert(mmap.addr() + mmap.len(),
+                            ElfInfo(i.value().file,
+                                    i.key() + i.value().length - mmap.addr() - mmap.len()));
+        }
+
+        if (i.key() >= mmap.addr()) {
+            i = procElfs.erase(i);
+        } else {
+            i.value().length = mmap.addr() - i.key();
+            ++i;
+        }
+
+        lastPid = -1; // Throw out the dwfl state
+    }
 
     QString fileName = QFileInfo(mmap.filename()).fileName();
     QFileInfo path;
@@ -97,8 +121,7 @@ void PerfUnwind::registerElf(const PerfRecordMmap &mmap)
     if (path.isFile())
         procElfs[mmap.addr()] = ElfInfo(path, mmap.len());
     else
-        qWarning() << "cannot find file to report for" << QString::fromLocal8Bit(mmap.filename());
-
+        procElfs[mmap.addr()] = ElfInfo(QFileInfo(mmap.filename()), mmap.len(), false);
 }
 
 void sendBuffer(QIODevice *output, const QByteArray &buffer)
@@ -119,7 +142,7 @@ void PerfUnwind::comm(PerfRecordComm &comm)
     sendBuffer(output, buffer);
 }
 
-Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid) const
+Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid, const ElfInfo **info) const
 {
     QHash<quint32, QMap<quint64, ElfInfo> >::ConstIterator elfsIt = elfs.find(pid);
     if (elfsIt == elfs.end()) {
@@ -145,6 +168,10 @@ Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid) const
 //    ^ We don't have to do this here as libdw is supposed to handle it from version 0.160.
 
     if (i != procElfs.end() && i.key() + i.value().length > ip) {
+        if (info)
+            *info = &i.value();
+        if (!i.value().found)
+            return 0;
         Dwfl_Module *ret = dwfl_report_elf(
                     dwfl, i.value().file.fileName().toLocal8Bit().constData(),
                     i.value().file.absoluteFilePath().toLocal8Bit().constData(), -1, i.key(),
@@ -264,15 +291,20 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
 {
     Dwfl_Module *mod = dwfl_addrmodule (dwfl, ip);
     const char *symname = NULL;
-    if (!mod)
-        mod = ui->unwind->reportElf(ip, isKernel ? PerfUnwind::s_kernelPid : ui->unwind->pid());
-
     const char *elfFile = NULL;
     const char *srcFile = NULL;
     int line = 0;
     int column = 0;
     GElf_Sym sym;
     GElf_Off off;
+
+    if (!mod) {
+        const PerfUnwind::ElfInfo *elfInfo = 0;
+        mod = ui->unwind->reportElf(ip, isKernel ? PerfUnwind::s_kernelPid : ui->unwind->pid(),
+                                    &elfInfo);
+        if (!mod && elfInfo)
+            elfFile = elfInfo->file.fileName().toLocal8Bit();
+    }
 
     bool do_adjust = (ui->unwind->architecture() == PerfRegisterInfo::ARCH_ARM);
     if (mod) {

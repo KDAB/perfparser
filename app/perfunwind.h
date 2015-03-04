@@ -64,6 +64,14 @@ public:
         bool isInterworking;
     };
 
+    struct ElfInfo {
+        ElfInfo(const QFileInfo &file = QFileInfo(), quint64 length = 0, bool found = true) :
+            file(file), length(length), found(found) {}
+        QFileInfo file;
+        quint64 length;
+        bool found;
+    };
+
     static const quint32 s_kernelPid = std::numeric_limits<quint32>::max();
     static const int s_maxFrames = 64;
 
@@ -81,7 +89,7 @@ public:
     void comm(PerfRecordComm &comm);
     quint32 pid() const { return lastPid; }
 
-    Dwfl_Module *reportElf(quint64 ip, quint32 pid) const;
+    Dwfl_Module *reportElf(quint64 ip, quint32 pid, const ElfInfo **info = 0) const;
 
     void analyze(const PerfRecordSample &sample);
     void fork(const PerfRecordFork &sample);
@@ -123,13 +131,6 @@ private:
     // Path where the application being profiled resides. This is the first path to look for
     // binaries and debug symbols.
     QString appPath;
-
-    struct ElfInfo {
-        ElfInfo(const QFileInfo &file = QFileInfo(), quint64 length = 0) :
-            file(file), length(length) {}
-        QFileInfo file;
-        quint64 length;
-    };
 
     QHash<quint32, QMap<quint64, ElfInfo> > elfs; // The inner map needs to be sorted
 
