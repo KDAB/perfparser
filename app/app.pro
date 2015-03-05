@@ -8,7 +8,7 @@ QT       += core network
 
 QT       -= gui
 
-QMAKE_LFLAGS += -Wl,-rpath,\'\$\$ORIGIN/elfutils/backends\'
+QMAKE_LFLAGS += -Wl,-rpath,\'\$\$ORIGIN/3rdparty/elfutils/backends\'
 LIBS += -Wl,--start-group \
         ../3rdparty/elfutils/libdw.a \
         ../3rdparty/elfutils/libdwfl.a \
