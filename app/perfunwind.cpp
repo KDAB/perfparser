@@ -101,9 +101,22 @@ void PerfUnwind::registerElf(const PerfRecordMmap &mmap)
 
 }
 
-void PerfUnwind::registerThread(quint32 tid, const QString &name)
+void sendBuffer(QIODevice *output, const QByteArray &buffer)
 {
-    threads[tid] = name;
+    quint32 size = buffer.length();
+    output->write(reinterpret_cast<char *>(&size), sizeof(quint32));
+    output->write(buffer);
+}
+
+void PerfUnwind::comm(PerfRecordComm &comm)
+{
+
+    threads[comm.tid()] = QString::fromLocal8Bit(comm.comm());
+    QByteArray buffer;
+    QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(Command)
+                                               << comm.pid() << comm.tid() << threads[comm.tid()]
+                                               << comm.time() << QVector<PerfUnwind::Frame>();
+    sendBuffer(output, buffer);
 }
 
 Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid) const
@@ -361,13 +374,6 @@ void PerfUnwind::resolveCallchain()
         if (ip <= PERF_CONTEXT_MAX)
             currentUnwind.frames.append(lookupSymbol(&currentUnwind, dwfl, ip, isKernel));
     }
-}
-
-void sendBuffer(QIODevice *output, const QByteArray &buffer)
-{
-    quint32 size = buffer.length();
-    output->write(reinterpret_cast<char *>(&size), sizeof(quint32));
-    output->write(buffer);
 }
 
 void PerfUnwind::analyze(const PerfRecordSample &sample)

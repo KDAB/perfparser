@@ -36,6 +36,7 @@ public:
         BadStack,
         ThreadStart,
         ThreadEnd,
+        Command,
         InvalidType
     };
 
@@ -76,7 +77,7 @@ public:
     }
 
     void registerElf(const PerfRecordMmap &mmap);
-    void registerThread(quint32 tid, const QString &name);
+    void comm(PerfRecordComm &comm);
     quint32 pid() const { return lastPid; }
 
     Dwfl_Module *reportElf(quint64 ip, quint32 pid) const;

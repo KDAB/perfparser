@@ -69,7 +69,7 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
     case PERF_RECORD_COMM: {
         PerfRecordComm comm(&m_eventHeader, sampleType, sampleIdAll);
         stream >> comm;
-        m_destination->registerThread(comm.tid(), comm.comm());
+        m_destination->comm(comm);
         break;
     }
     case PERF_RECORD_SAMPLE: {
