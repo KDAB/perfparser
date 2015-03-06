@@ -2,6 +2,8 @@ TEMPLATE = lib
 include(../backends.pri)
 TARGET = ../ebl_i386
 
+LIBS += ../../libcpu/libi386.a
+
 SOURCES += \
     ../i386_auxv.c \
     ../i386_cfi.c \

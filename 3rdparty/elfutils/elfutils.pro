@@ -7,6 +7,7 @@ SUBDIRS = \
     backends \
     lib \
     libasm \
+    libcpu \
     libebl \
     libelf \
     libelf/elf32 \
@@ -14,6 +15,9 @@ SUBDIRS = \
     libdw \
     libdwelf \
     libdwfl
+
+libcpu.depends = lib
+backends.depends = libcpu
 
 OTHER_FILES += \
     COPYING \
