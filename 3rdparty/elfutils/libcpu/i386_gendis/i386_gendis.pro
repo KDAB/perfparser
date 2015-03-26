@@ -13,10 +13,11 @@ mnemonics32.commands = make -f $$PWD/../extras.mk srcdir=$$PWD/../ i386.mnemonic
 mnemonics64.target = x86_64.mnemonics
 mnemonics64.commands = make -f $$PWD/../extras.mk srcdir=$$PWD/../ x86_64.mnemonics
 
-mylex.target = lexresults
+mylex.target = i386_lex.c
+mylex.depends = i386_parse.c
 mylex.commands = lex -Pi386_ -o i386_lex.c $$PWD/../i386_lex.l
 
-myyacc.target = yaccresults
+myyacc.target = i386_parse.c
 myyacc.commands = yacc -pi386_ -d -o i386_parse.c $$PWD/../i386_parse.y
 
 OTHER_FILES += \
@@ -36,8 +37,6 @@ GENERATED_HEADERS += \
     i386_parse.h
 
 PRE_TARGETDEPS += \
-    lexresults \
-    yaccresults \
     i386.mnemonics \
     x86_64.mnemonics
 
