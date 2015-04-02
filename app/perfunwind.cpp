@@ -298,11 +298,12 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
             ui->isInterworking = true;
 
         // Adjust it back. The symtab entries are 1 off for all practical purposes.
-        return PerfUnwind::Frame((do_adjust && (sym.st_value & 1)) ? sym.st_value - 1 :
+        PerfUnwind::Frame frame((do_adjust && (sym.st_value & 1)) ? sym.st_value - 1 :
                                                                      sym.st_value,
                                  isKernel, status == 0 ? demangled : symname, elfFile, srcFile,
                                  line, column);
         free(demangled);
+        return frame;
     } else {
         return PerfUnwind::Frame(ip, isKernel, symname, elfFile, srcFile, line, column);
     }
