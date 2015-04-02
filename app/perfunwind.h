@@ -65,6 +65,7 @@ public:
     };
 
     static const quint32 s_kernelPid = std::numeric_limits<quint32>::max();
+    static const int s_maxFrames = 64;
 
     PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugInfo,
                const QString &extraLibs, const QString &appPath);

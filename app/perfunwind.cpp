@@ -314,7 +314,8 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
     PerfUnwind::UnwindInfo *ui = static_cast<PerfUnwind::UnwindInfo *>(arg);
 
     bool isactivation;
-    if (!dwfl_frame_pc(state, &pc, &isactivation)) {
+    if (!dwfl_frame_pc(state, &pc, &isactivation) ||
+            ui->frames.length() > PerfUnwind::s_maxFrames) {
         ui->broken = true;
         qWarning() << dwfl_errmsg(dwfl_errno()) << ui->broken;
         return DWARF_CB_ABORT;
