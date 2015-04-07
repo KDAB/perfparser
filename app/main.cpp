@@ -31,7 +31,7 @@
 #include <QtEndian>
 #include <QCoreApplication>
 #include <QCommandLineParser>
-#include <QPointer>
+#include <QScopedPointer>
 #include <QAbstractSocket>
 #include <QTcpSocket>
 #include <limits>
@@ -140,43 +140,43 @@ int main(int argc, char *argv[])
 
     parser.process(app);
 
-    QPointer<QFile> outfile;
+    QScopedPointer<QFile> outfile;
     if (parser.isSet(output)) {
-        outfile = new QFile(parser.value(output));
+        outfile.reset(new QFile(parser.value(output)));
         if (!outfile->open(QIODevice::WriteOnly))
             return CannotOpen;
     } else {
-        outfile = new QFile;
+        outfile.reset(new QFile);
         if (!outfile->open(stdout, QIODevice::WriteOnly))
             return CannotOpen;
     }
 
-    QPointer<QIODevice> infile;
+    QScopedPointer<QIODevice> infile;
     if (parser.isSet(host)) {
         PerfTcpSocket *socket = new PerfTcpSocket(&app);
-        infile = socket;
+        infile.reset(socket);
     } else {
         if (parser.isSet(input))
-            infile = new QFile(parser.value(input));
+            infile.reset(new QFile(parser.value(input)));
         else
-            infile = new PerfStdin;
+            infile.reset(new PerfStdin);
     }
 
-    PerfUnwind unwind(outfile, parser.value(sysroot), parser.isSet(debug) ?
+    PerfUnwind unwind(outfile.data(), parser.value(sysroot), parser.isSet(debug) ?
                           parser.value(debug) : parser.value(sysroot) + parser.value(debug),
                       parser.value(extra), parser.value(appPath));
-    PerfHeader header(infile);
+    PerfHeader header(infile.data());
     PerfAttributes attributes;
     PerfFeatures features;
-    PerfData data(infile, &unwind, &header, &attributes);
+    PerfData data(infile.data(), &unwind, &header, &attributes);
 
     if (parser.isSet(arch))
         features.setArchitecture(parser.value(arch).toLatin1());
 
     QObject::connect(&header, &PerfHeader::finished, [&]() {
         if (!header.isPipe()) {
-            attributes.read(infile, &header);
-            features.read(infile, &header);
+            attributes.read(infile.data(), &header);
+            features.read(infile.data(), &header);
         }
 
         const QByteArray &featureArch = features.architecture();

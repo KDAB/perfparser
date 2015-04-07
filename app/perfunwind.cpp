@@ -48,6 +48,7 @@ PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QStri
 PerfUnwind::~PerfUnwind()
 {
     delete[] debugInfoPath;
+    dwfl_end(dwfl);
 }
 
 bool findInExtraPath(QFileInfo &path, const QString &fileName)
