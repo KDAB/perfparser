@@ -175,8 +175,10 @@ int main(int argc, char *argv[])
 
     QObject::connect(&header, &PerfHeader::finished, [&]() {
         if (!header.isPipe()) {
+            const qint64 filePos = infile->pos();
             attributes.read(infile.data(), &header);
             features.read(infile.data(), &header);
+            infile->seek(filePos);
         }
 
         const QByteArray &featureArch = features.architecture();
