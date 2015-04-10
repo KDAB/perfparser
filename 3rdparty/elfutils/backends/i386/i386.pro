@@ -1,6 +1,6 @@
 TEMPLATE = lib
 include(../backends.pri)
-TARGET = ../ebl_i386
+TARGET = ../../../../elfutils/ebl_i386
 
 LIBS += ../../libcpu/libi386.a
 

@@ -1,6 +1,6 @@
 TEMPLATE = lib
 include(../backends.pri)
-TARGET = ../ebl_tilegx
+TARGET = ../../../../elfutils/ebl_tilegx
 
 SOURCES += \
     ../tilegx_corenote.c \

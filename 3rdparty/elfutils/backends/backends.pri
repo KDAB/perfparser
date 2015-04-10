@@ -10,3 +10,6 @@ HEADERS += \
     $$PWD/common-reloc.c
 
 INCLUDEPATH += $$PWD
+
+INSTALLS += target
+target.path = /lib/elfutils

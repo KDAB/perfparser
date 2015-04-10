@@ -1,6 +1,6 @@
 TEMPLATE = lib
 include(../backends.pri)
-TARGET = ../ebl_ia64
+TARGET = ../../../../elfutils/ebl_ia64
 
 SOURCES += \
     ../ia64_init.c \

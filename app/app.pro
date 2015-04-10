@@ -8,7 +8,7 @@ QT       += core network
 
 QT       -= gui
 
-QMAKE_LFLAGS += -Wl,-rpath,\'\$\$ORIGIN/3rdparty/elfutils/backends\'
+QMAKE_LFLAGS += -Wl,-rpath,\'\$\$ORIGIN/elfutils:\$\$ORIGIN/../lib/elfutils\'
 LIBS += -Wl,--start-group \
         ../3rdparty/elfutils/libdw.a \
         ../3rdparty/elfutils/libdwfl.a \
@@ -50,3 +50,6 @@ include(../3rdparty/elfutils/elfutils.pri)
 include(../3rdparty/elfutils/libdwfl/dwflheaders.pri)
 include(../3rdparty/elfutils/libebl/eblheaders.pri)
 include(../3rdparty/elfutils/libdwelf/dwelfheaders.pri)
+
+INSTALLS += target
+target.path = /bin
