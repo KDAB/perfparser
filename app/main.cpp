@@ -61,8 +61,6 @@ private:
 
 int main(int argc, char *argv[])
 {
-    int exitCode = -1;
-
     QCoreApplication app(argc, argv);
     app.setApplicationName(QLatin1String("perfparser"));
     app.setApplicationVersion(QLatin1String("1.0"));
@@ -191,7 +189,8 @@ int main(int argc, char *argv[])
 
         if (unwind.architecture() == PerfRegisterInfo::ARCH_INVALID) {
             qWarning() << "No information about CPU architecture found. Cannot unwind.";
-            app.exit(MissingData);
+            qApp->exit(MissingData);
+            return;
         }
 
         QObject::connect(infile.data(), &QIODevice::readyRead, &data, &PerfData::read);
@@ -199,17 +198,16 @@ int main(int argc, char *argv[])
             data.read();
     });
 
-    QObject::connect(&header, &PerfHeader::error, [&]() {
-        app.exit(HeaderError);
+    QObject::connect(&header, &PerfHeader::error, []() {
+        qApp->exit(HeaderError);
     });
 
-    QObject::connect(&data, &PerfData::finished, [&]() {
-        exitCode = NoError;
-        app.exit(NoError);
+    QObject::connect(&data, &PerfData::finished, []() {
+        qApp->exit(NoError);
     });
 
-    QObject::connect(&data, &PerfData::error, [&]() {
-        app.exit(DataError);
+    QObject::connect(&data, &PerfData::error, []() {
+        qApp->exit(DataError);
     });
 
     if (parser.isSet(host)) {
@@ -221,10 +219,10 @@ int main(int argc, char *argv[])
     } else {
         if (!infile->open(QIODevice::ReadOnly))
             return CannotOpen;
-        header.read();
+        QMetaObject::invokeMethod(&header, "read", Qt::QueuedConnection);
     }
 
-    return exitCode == -1 ? app.exec() : NoError;
+    return app.exec();
 }
 
 
@@ -232,7 +230,7 @@ void PerfTcpSocket::processError(QAbstractSocket::SocketError error)
 {
     if (reading) {
         qWarning() << "socket error" << error << errorString();
-        QCoreApplication::instance()->exit(TcpSocketError);
+        qApp->exit(TcpSocketError);
     } // Otherwise ignore the error. We don't need the socket anymore
 }
 
