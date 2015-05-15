@@ -15,10 +15,10 @@ mnemonics64.commands = make -f $$PWD/../extras.mk srcdir=$$PWD/../ x86_64.mnemon
 
 mylex.target = i386_lex.c
 mylex.depends = i386_parse.c
-mylex.commands = lex -Pi386_ -o i386_lex.c $$PWD/../i386_lex.l
+mylex.commands = flex -Pi386_ -o i386_lex.c $$PWD/../i386_lex.l
 
 myyacc.target = i386_parse.c
-myyacc.commands = yacc -pi386_ -d -o i386_parse.c $$PWD/../i386_parse.y
+myyacc.commands = bison -pi386_ -d -o i386_parse.c $$PWD/../i386_parse.y
 
 OTHER_FILES += \
     $$PWD/../extras.mk \
