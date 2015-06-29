@@ -26,9 +26,6 @@ bool PerfStdin::open(QIODevice::OpenMode mode)
 {
     if (!(mode & QIODevice::ReadOnly) || (mode & QIODevice::WriteOnly))
         return false;
-    char cReadMode[3] = {'r', (mode & QIODevice::Text) == 0 ? 'b' : '\0', '\0'};
-    if (!freopen(0, cReadMode, stdin))
-        return false;
 
     return QIODevice::open(mode);
 }
