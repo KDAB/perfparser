@@ -1,8 +1,6 @@
-TEMPLATE = lib
-CONFIG += staticlib
-TARGET = ../asm
+TARGET = asm
 
-include(../elfutils.pri)
+include(../dynamic.pri)
 include(../libebl/eblheaders.pri)
 include(asmheaders.pri)
 

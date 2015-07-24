@@ -1,6 +1,5 @@
-TEMPLATE = lib
+TARGET = ebl_s390
 include(../backends.pri)
-TARGET = ../../../../elfutils/ebl_s390
 
 SOURCES += \
     ../s390_cfi.c \

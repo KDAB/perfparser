@@ -1,6 +1,5 @@
-TEMPLATE = lib
+TARGET = ebl_aarch64
 include(../backends.pri)
-TARGET = ../../../../elfutils/ebl_aarch64
 
 SOURCES += \
     ../aarch64_cfi.c \

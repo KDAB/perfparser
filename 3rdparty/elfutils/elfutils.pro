@@ -16,6 +16,9 @@ SUBDIRS = \
     libdwelf \
     libdwfl
 
+libdw.depends = libelf libebl libdwelf libdwfl
+libelf.depends = libelf/elf32 libelf/elf64
+
 libcpu.depends = lib
 backends.depends = libcpu
 

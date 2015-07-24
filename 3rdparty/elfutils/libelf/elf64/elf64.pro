@@ -1,8 +1,6 @@
-TEMPLATE = lib
-CONFIG += staticlib
-TARGET = ../../elf64
+TARGET = ../elf64
 
-include(../../elfutils.pri)
+include(../../static.pri)
 include(../elfheaders.pri)
 
 SOURCES += \

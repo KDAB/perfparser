@@ -1,6 +1,5 @@
-TEMPLATE = lib
+TARGET = ebl_ppc64
 include(../backends.pri)
-TARGET = ../../../../elfutils/ebl_ppc64
 
 SOURCES += \
     ../ppc64_corenote.c \

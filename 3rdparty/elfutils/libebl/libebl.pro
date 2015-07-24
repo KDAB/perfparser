@@ -1,8 +1,6 @@
-TEMPLATE = lib
-CONFIG += staticlib
 TARGET = ../ebl
 
-include(../elfutils.pri)
+include(../static.pri)
 include(eblheaders.pri)
 
 SOURCES += \

@@ -6,5 +6,8 @@ HEADERS += \
     $$PWD/version.h \
     $$PWD/config.h
 
+CONFIG -= qt
+
 INCLUDEPATH += $$PWD
+
 include(lib/libheaders.pri)

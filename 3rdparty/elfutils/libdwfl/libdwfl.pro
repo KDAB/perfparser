@@ -1,8 +1,6 @@
-TEMPLATE = lib
-CONFIG += staticlib
 TARGET = ../dwfl
 
-include(../elfutils.pri)
+include(../static.pri)
 include(dwflheaders.pri)
 include(../libdw/dwheaders.pri)
 include(../libebl/eblheaders.pri)

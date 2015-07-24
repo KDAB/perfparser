@@ -1,6 +1,5 @@
-TEMPLATE = lib
+TARGET = ebl_x86_64
 include(../backends.pri)
-TARGET = ../../../../elfutils/ebl_x86_64
 
 LIBS += ../../libcpu/libx86_64.a
 

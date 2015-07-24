@@ -1,8 +1,6 @@
-TEMPLATE = lib
-CONFIG += staticlib
 TARGET = ../x86_64
 
-include(../../elfutils.pri)
+include(../../static.pri)
 include(../../libasm/asmheaders.pri)
 include(../../libebl/eblheaders.pri)
 include(../cpuheaders.pri)
@@ -18,7 +16,8 @@ SOURCES += \
     $$PWD/../x86_64_disasm.c
 
 INCLUDEPATH += \
-    $$OUT_PWD/../i386_gendis
+    $$OUT_PWD/../i386_gendis \
+    $$OUT_PWD
 
 GENERATED_HEADERS += \
     $$OUT_PWD/x86_64_dis.h \

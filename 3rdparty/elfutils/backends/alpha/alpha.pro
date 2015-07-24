@@ -1,6 +1,5 @@
-TEMPLATE = lib
+TARGET = ebl_alpha
 include(../backends.pri)
-TARGET = ../../../../elfutils/ebl_alpha
 
 SOURCES += \
     ../alpha_auxv.c \

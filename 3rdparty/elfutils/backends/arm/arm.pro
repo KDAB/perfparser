@@ -1,6 +1,5 @@
-TEMPLATE = lib
+TARGET = ebl_arm
 include(../backends.pri)
-TARGET = ../../../../elfutils/ebl_arm
 
 SOURCES += \
     ../arm_attrs.c \

@@ -1,9 +1,9 @@
-TEMPLATE = lib
-CONFIG += staticlib
-TARGET = ../elf
+TARGET = elf
 
-include(../elfutils.pri)
+include(../dynamic.pri)
 include(elfheaders.pri)
+
+LIBS += -Wl,--whole-archive libelf32.a libelf64.a -Wl,--no-whole-archive
 
 SOURCES += \
     $$PWD/elf_begin.c \

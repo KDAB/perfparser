@@ -1,8 +1,6 @@
-TEMPLATE = lib
-CONFIG += staticlib
-TARGET = ../eu
+TARGET = eu
 
-include(../elfutils.pri)
+include(../static.pri)
 
 SOURCES += \
     $$PWD/color.c \

@@ -1,10 +1,14 @@
-TEMPLATE = lib
-CONFIG += staticlib
-TARGET = ../dw
+TARGET = dw
 
-include(../elfutils.pri)
+include(../dynamic.pri)
 include(../libelf/elfheaders.pri)
 include(dwheaders.pri)
+
+LIBS += \
+        -Wl,--whole-archive \
+        ../libebl.a ../libdwelf.a ../libdwfl.a \
+        -Wl,--no-whole-archive \
+        -lz -ldl -L$$DESTDIR -lelf
 
 SOURCES += \
     $$PWD/cfi.c \

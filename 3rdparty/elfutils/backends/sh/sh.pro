@@ -1,6 +1,5 @@
-TEMPLATE = lib
+TARGET = ebl_sh
 include(../backends.pri)
-TARGET = ../../../../elfutils/ebl_sh
 
 SOURCES += \
     ../sh_corenote.c \

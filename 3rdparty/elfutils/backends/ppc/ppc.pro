@@ -1,6 +1,5 @@
-TEMPLATE = lib
+TARGET = ebl_ppc
 include(../backends.pri)
-TARGET = ../../../../elfutils/ebl_ppc
 
 SOURCES += \
     ../ppc_attrs.c \

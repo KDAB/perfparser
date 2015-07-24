@@ -4,27 +4,21 @@
 #
 #-------------------------------------------------
 
-QT       += core network
+QT     = core network
+CONFIG += c++11 console
+CONFIG -= app_bundle
 
-QT       -= gui
+include(../paths.pri)
+RPATH = $$relative_path($$PERFPARSER_ELFUTILS_INSTALLDIR, $$PERFPARSER_APP_INSTALLDIR)
 
-QMAKE_LFLAGS += -Wl,-rpath,\'\$\$ORIGIN/elfutils:\$\$ORIGIN/../lib/elfutils\'
-LIBS += -Wl,--start-group \
-        ../3rdparty/elfutils/libdw.a \
-        ../3rdparty/elfutils/libdwfl.a \
-        ../3rdparty/elfutils/libelf.a \
-        ../3rdparty/elfutils/libelf32.a \
-        ../3rdparty/elfutils/libelf64.a \
-        ../3rdparty/elfutils/libebl.a \
-        ../3rdparty/elfutils/libdwelf.a \
-        -Wl,--end-group \
-        -lz -ldl
+QMAKE_LFLAGS += -Wl,-z,origin \'-Wl,-rpath,\$\$ORIGIN/$$RPATH\'
+LIBS += -L$$PERFPARSER_ELFUTILS_DESTDIR -ldw -lelf
 
-TARGET = ../perfparser
-CONFIG   += console c++11
-CONFIG   -= app_bundle
+DESTDIR = $$PERFPARSER_APP_DESTDIR
+target.path = $$PERFPARSER_APP_INSTALLDIR
+INSTALLS += target
 
-TEMPLATE = app
+TARGET = perfparser
 
 SOURCES += main.cpp \
     perfattributes.cpp \
@@ -46,10 +40,6 @@ HEADERS += \
     perfregisterinfo.h \
     perfstdin.h
 
-include(../3rdparty/elfutils/elfutils.pri)
 include(../3rdparty/elfutils/libdwfl/dwflheaders.pri)
 include(../3rdparty/elfutils/libebl/eblheaders.pri)
 include(../3rdparty/elfutils/libdwelf/dwelfheaders.pri)
-
-INSTALLS += target
-target.path = /bin

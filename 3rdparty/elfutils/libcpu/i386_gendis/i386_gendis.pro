@@ -1,7 +1,6 @@
 TEMPLATE = app
 
-CONFIG -= qt
-LIBS += ../../libeu.a
+LIBS += ../../lib/libeu.a
 QMAKE_CFLAGS += -Wno-unused-function
 
 include(../../elfutils.pri)

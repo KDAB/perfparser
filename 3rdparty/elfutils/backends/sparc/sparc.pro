@@ -1,6 +1,5 @@
-TEMPLATE = lib
+TARGET = ebl_sparc
 include(../backends.pri)
-TARGET = ../../../../elfutils/ebl_sparc
 
 SOURCES += \
     ../sparc_auxv.c \
