@@ -27,6 +27,8 @@
 #include <limits>
 #include <cxxabi.h>
 
+static const QChar colon = QLatin1Char(':');
+
 PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugPath,
                        const QString &extraLibsPath, const QString &appPath) :
     output(output), lastPid(0), registerArch(PerfRegisterInfo::ARCH_INVALID),
@@ -36,7 +38,7 @@ PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QStri
     offlineCallbacks.find_elf = dwfl_build_id_find_elf;
     offlineCallbacks.find_debuginfo =  dwfl_standard_find_debuginfo;
     offlineCallbacks.section_address = dwfl_offline_section_address;
-    QByteArray newDebugInfo = (":" + debugPath + ":" + appPath + ":" + extraLibsPath + ":" +
+    QByteArray newDebugInfo = (colon + debugPath + colon + appPath + colon + extraLibsPath + colon +
                                systemRoot).toUtf8();
     debugInfoPath = new char[newDebugInfo.length() + 1];
     debugInfoPath[newDebugInfo.length()] = 0;
@@ -53,7 +55,7 @@ PerfUnwind::~PerfUnwind()
 
 bool findInExtraPath(QFileInfo &path, const QString &fileName)
 {
-    path.setFile(path.absoluteFilePath() + "/" + fileName);
+    path.setFile(path.absoluteFilePath() + QDir::separator() + fileName);
     if (path.exists())
         return true;
 
@@ -99,30 +101,31 @@ void PerfUnwind::registerElf(const PerfRecordMmap &mmap)
         lastPid = -1; // Throw out the dwfl state
     }
 
-    QString fileName = QFileInfo(mmap.filename()).fileName();
-    QFileInfo path;
+    QLatin1String filePath(mmap.filename());
+    QFileInfo fileInfo(filePath);
+    QFileInfo fullPath;
     if (mmap.pid() != s_kernelPid) {
-        path.setFile(appPath + "/" + fileName);
-        if (!path.isFile()) {
+        fullPath.setFile(appPath + QDir::separator() + filePath);
+        if (!fullPath.isFile()) {
             bool found = false;
-            foreach (const QString &extraPath, extraLibsPath.split(":")) {
-                path.setFile(extraPath);
-                if (findInExtraPath(path, fileName)) {
+            foreach (const QString &extraPath, extraLibsPath.split(colon)) {
+                fullPath.setFile(extraPath);
+                if (findInExtraPath(fullPath, fileInfo.fileName())) {
                     found = true;
                     break;
                 }
             }
             if (!found)
-                path.setFile(systemRoot + mmap.filename());
+                fullPath.setFile(systemRoot + filePath);
         }
     } else { // kernel
-        path.setFile(systemRoot + mmap.filename());
+        fullPath.setFile(systemRoot + filePath);
     }
 
-    if (path.isFile())
-        procElfs[mmap.addr()] = ElfInfo(path, mmap.len());
+    if (fullPath.isFile())
+        procElfs[mmap.addr()] = ElfInfo(fullPath, mmap.len());
     else
-        procElfs[mmap.addr()] = ElfInfo(QFileInfo(mmap.filename()), mmap.len(), false);
+        procElfs[mmap.addr()] = ElfInfo(fileInfo, mmap.len(), false);
 }
 
 void sendBuffer(QIODevice *output, const QByteArray &buffer)
@@ -179,8 +182,8 @@ Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid, const ElfInfo **info
                     false);
         if (!ret)
             qWarning() << "failed to report" << i.value().file.absoluteFilePath() << "for"
-                       << QString("0x%1").arg(i.key(), 0, 16).toLocal8Bit().constData() << ":"
-                       << dwfl_errmsg(dwfl_errno());
+                       << QString::fromLatin1("0x%1").arg(i.key(), 0, 16).toLocal8Bit().constData()
+                       << ":" << dwfl_errmsg(dwfl_errno());
         return ret;
     } else {
         return 0;
