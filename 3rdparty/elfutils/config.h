@@ -1,6 +1,9 @@
 /* config.h.  Generated from config.h.in by configure.  */
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Building with -fsanitize=undefined or not */
+#define CHECK_UNDEFINED false
+
 /* Should ar and ranlib use -D behavior by default? */
 #define DEFAULT_AR_DETERMINISTIC false
 
@@ -53,7 +56,7 @@
 #define PACKAGE_NAME "elfutils"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "elfutils 0.161"
+#define PACKAGE_STRING "elfutils 0.163"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "elfutils"
@@ -62,7 +65,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.161"
+#define PACKAGE_VERSION "0.163"
 
 /* The size of `long', as computed by sizeof. */
 #define SIZEOF_LONG 8
@@ -86,7 +89,7 @@
 #define USE_ZLIB 1
 
 /* Version number of package */
-#define VERSION "0.161"
+#define VERSION "0.163"
 
 /* Define to 1 if `lex' declares `yytext' as a `char *' by default, not a
    `char[]'. */

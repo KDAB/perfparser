@@ -15,4 +15,5 @@ SOURCES += \
     ../i386_syscall.c
 
 HEADERS += \
-    ../i386_reloc.def
+    ../i386_reloc.def \
+    ../x86_corenote.c
