@@ -1,5 +1,7 @@
 TEMPLATE = subdirs
+SUBDIRS = app
 
-SUBDIRS = app 3rdparty/elfutils
-
-app.depends = 3rdparty/elfutils
+!isEmpty(PERFPARSER_BUNDLED_ELFUTILS) {
+    SUBDIRS += 3rdparty/elfutils
+    app.depends = 3rdparty/elfutils
+}
