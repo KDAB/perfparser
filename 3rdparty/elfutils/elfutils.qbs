@@ -2,6 +2,7 @@ import qbs
 
 Project {
     name: "elfutils"
+    condition: !project.useSystemElfUtils
 
     references: [
         "backends",

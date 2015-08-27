@@ -4,15 +4,21 @@ QtApplication {
     name: "perfparser"
     consoleApplication: true
 
-    Depends { name: "dw" }
-    Depends { name: "dwelf" }
-    Depends { name: "dwfl" }
-    Depends { name: "ebl" }
-    Depends { name: "elf" }
-    Depends { name: "elf32" }
-    Depends { name: "elf64" }
+    Depends { name: "dw"; condition: !project.useSystemElfUtils }
+    Depends { name: "dwelf"; condition: !project.useSystemElfUtils }
+    Depends { name: "dwfl"; condition: !project.useSystemElfUtils }
+    Depends { name: "ebl"; condition: !project.useSystemElfUtils }
+    Depends { name: "elf"; condition: !project.useSystemElfUtils }
+    Depends { name: "elf32"; condition: !project.useSystemElfUtils }
+    Depends { name: "elf64"; condition: !project.useSystemElfUtils }
 
     Depends { name: "Qt.network" }
+
+    Properties {
+        condition: project.useSystemElfUtils
+        cpp.includePaths: ["/usr/include/elfutils"]
+        cpp.dynamicLibraries: ["dw", "elf"]
+    }
 
     cpp.allowUnresolvedSymbols: true
     cpp.cxxLanguageVersion: "c++11"
