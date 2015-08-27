@@ -245,6 +245,9 @@ QDataStream &PerfRecordMmap::readFilename(QDataStream &stream, quint64 filenameL
     }
     m_filename.resize(filenameLength);
     stream.readRawData(m_filename.data(), filenameLength);
+    int null = m_filename.indexOf('\0');
+    if (null != -1)
+        m_filename.truncate(null);
     return stream;
 }
 
@@ -312,6 +315,10 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordComm &record)
     }
     record.m_comm.resize(commLength);
     stream.readRawData(record.m_comm.data(), commLength);
+    int null = record.m_comm.indexOf('\0');
+    if (null != -1)
+        record.m_comm.truncate(null);
+
     stream >> record.m_sampleId;
 
     return stream;
