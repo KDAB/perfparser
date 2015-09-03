@@ -319,7 +319,7 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
         elfFile = dwfl_module_info(mod, 0, 0, 0, 0, 0, 0, 0);
 
         // We take the first line of the function for now, in order to reduce UI complexity
-        Dwfl_Line *srcLine = dwfl_module_getsrc(mod, adjusted);
+        Dwfl_Line *srcLine = dwfl_module_getsrc(mod, adjusted - off);
         if (srcLine)
             srcFile = dwfl_lineinfo(srcLine, NULL, &line, &column, NULL, NULL);
     }
