@@ -105,8 +105,8 @@ void PerfUnwind::registerElf(const PerfRecordMmap &mmap)
     QFileInfo fileInfo(filePath);
     QFileInfo fullPath;
     if (mmap.pid() != s_kernelPid) {
-        fullPath.setFile(appPath + QDir::separator() + filePath);
-        if (!fullPath.isFile()) {
+        fullPath.setFile(appPath);
+        if (!findInExtraPath(fullPath, fileInfo.fileName())) {
             bool found = false;
             foreach (const QString &extraPath, extraLibsPath.split(colon)) {
                 fullPath.setFile(extraPath);
