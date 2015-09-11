@@ -2,7 +2,7 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Building with -fsanitize=undefined or not */
-#define CHECK_UNDEFINED false
+#define CHECK_UNDEFINED 0
 
 /* Should ar and ranlib use -D behavior by default? */
 #define DEFAULT_AR_DETERMINISTIC false
@@ -41,7 +41,7 @@
 #define LIBEBL_SUBDIR "elfutils"
 
 /* Identifier for modules in the build. */
-#define MODVERSION "Build on zebra 2015-02-03T13:51:12+0100"
+#define MODVERSION "Build for Qt Creator"
 
 /* Define to 32 or 64 if a specific implementation is wanted. */
 /* #undef NATIVE_ELF */
@@ -68,7 +68,11 @@
 #define PACKAGE_VERSION "0.163"
 
 /* The size of `long', as computed by sizeof. */
+#if QMAKE_ARCH == 64
 #define SIZEOF_LONG 8
+#else
+#define SIZEOF_LONG 4
+#endif
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
@@ -101,7 +105,9 @@
 #endif
 
 /* Number of bits in a file offset, on hosts where this is settable. */
-/* #undef _FILE_OFFSET_BITS */
+#if QMAKE_ARCH == 32
+#define _FILE_OFFSET_BITS 64
+#endif
 
 /* Define for large files, on AIX-style hosts. */
 /* #undef _LARGE_FILES */
