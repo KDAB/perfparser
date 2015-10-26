@@ -1,4 +1,5 @@
-TARGET = ../i386
+TARGET = i386
+DESTDIR = $$OUT_PWD/..
 
 include(../../static.pri)
 include(../../libasm/asmheaders.pri)
@@ -8,6 +9,7 @@ include(../cpuheaders.pri)
 gendis.target = i386_dis.h
 gendis.commands = make -f $$PWD/../extras.mk gendis=$$OUT_PWD/../i386_gendis/ srcdir=$$PWD/../ \
     i386_dis.h
+i386.depends = i386_dis.h
 
 OTHER_FILES += \
     $$PWD/../extras.mk

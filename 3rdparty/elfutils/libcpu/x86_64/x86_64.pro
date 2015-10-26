@@ -1,4 +1,5 @@
-TARGET = ../x86_64
+TARGET = x86_64
+DESTDIR = $$OUT_PWD/..
 
 include(../../static.pri)
 include(../../libasm/asmheaders.pri)
@@ -8,6 +9,7 @@ include(../cpuheaders.pri)
 gendis.target = x86_64_dis.h
 gendis.commands = make -f $$PWD/../extras.mk gendis=$$OUT_PWD/../i386_gendis/ srcdir=$$PWD/../ \
     x86_64_dis.h
+x86_64.depends = x86_64_dis.h
 
 OTHER_FILES += \
     $$PWD/../extras.mk
