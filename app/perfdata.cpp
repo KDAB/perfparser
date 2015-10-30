@@ -254,15 +254,6 @@ QDataStream &PerfRecordMmap::readFilename(QDataStream &stream, quint64 filenameL
 QDataStream &PerfRecordMmap::readSampleId(QDataStream &stream)
 {
     stream >> m_sampleId;
-
-    if (m_sampleId.sampleType() &
-            (PerfEventAttributes::SAMPLE_ID_ALL | PerfEventAttributes::SAMPLE_TID)) {
-        if (m_sampleId.pid() != m_pid)
-            qWarning() << "ambiguous pids in mmap event" << m_sampleId.pid() << m_pid;
-        if (m_sampleId.tid() != m_tid)
-            qWarning() << "ambiguous tids in mmap event" << m_sampleId.tid() << m_tid;
-    }
-
     return stream;
 }
 

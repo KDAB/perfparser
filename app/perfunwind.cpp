@@ -149,10 +149,9 @@ void PerfUnwind::comm(PerfRecordComm &comm)
 Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid, const ElfInfo **info) const
 {
     QHash<quint32, QMap<quint64, ElfInfo> >::ConstIterator elfsIt = elfs.find(pid);
-    if (elfsIt == elfs.end()) {
-        qWarning() << "Process" << pid << "has no elfs";
+    if (elfsIt == elfs.end())
         return 0;
-    }
+
     const QMap<quint64, ElfInfo> &procElfs = elfsIt.value();
     QMap<quint64, ElfInfo>::ConstIterator i = procElfs.upperBound(ip);
     if (i == procElfs.end() || i.key() != ip) {
@@ -253,11 +252,6 @@ static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *ar
     if (addr < start || addr + sizeof(Dwarf_Word) > end) {
         // not stack, try reading from ELF
         if (!accessDsoMem(dwfl, ui, addr, result)) {
-            qWarning() << QString::fromLatin1("Cannot read memory at 0x%1").arg(addr, 0, 16);
-            qWarning() << QString::fromLatin1(
-                              "dwfl should only read stack state (0x%1 to 0x%2) with memoryRead().")
-                          .arg(start, 0, 16).arg(end, 0, 16);
-
             ui->broken = true;
             return false;
         }
@@ -425,7 +419,6 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
             return;
         }
         if (!dwfl_attach_state(dwfl, 0, sample.pid(), &callbacks, &currentUnwind)) {
-            qWarning() << "failed to attach state:" << dwfl_errmsg(dwfl_errno());
             lastPid = -1;
             return;
         }
