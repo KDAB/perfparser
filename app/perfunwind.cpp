@@ -314,8 +314,7 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
                 ip : ip + 1;
     if (mod) {
         // For addrinfo we need the raw pointer into symtab, so we need to adjust ourselves.
-        symname = dwfl_module_addrinfo(mod, adjusted, &off, &sym, 0,
-                                       0, 0);
+        symname = dwfl_module_addrinfo(mod, adjusted, &off, &sym, 0, 0, 0);
         elfFile = dwfl_module_info(mod, 0, 0, 0, 0, 0, 0, 0);
 
         // We take the first line of the function for now, in order to reduce UI complexity
@@ -328,7 +327,7 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
         char *demangled = NULL;
         int status = -1;
         if (symname[0] == '_' && symname[1] == 'Z')
-            demangled = abi::__cxa_demangle (symname, 0, 0, &status);
+            demangled = abi::__cxa_demangle(symname, 0, 0, &status);
         else if (ui->unwind->architecture() == PerfRegisterInfo::ARCH_ARM && symname[0] == '$'
                  && (symname[1] == 'a' || symname[1] == 't') && symname[2] == '\0')
             ui->isInterworking = true;
