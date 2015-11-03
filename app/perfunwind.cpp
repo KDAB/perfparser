@@ -296,9 +296,9 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
                                       bool isKernel)
 {
     Dwfl_Module *mod = dwfl ? dwfl_addrmodule(dwfl, ip) : 0;
-    const char *symname = NULL;
-    const char *elfFile = NULL;
-    const char *srcFile = NULL;
+    QByteArray symname;
+    QByteArray elfFile;
+    QByteArray srcFile;
     int line = 0;
     int column = 0;
     GElf_Sym sym;
@@ -329,7 +329,7 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
             srcFile = dwfl_lineinfo(srcLine, NULL, &line, &column, NULL, NULL);
     }
 
-    if (symname) {
+    if (!symname.isEmpty()) {
         char *demangled = NULL;
         int status = -1;
         if (symname[0] == '_' && symname[1] == 'Z')
@@ -339,11 +339,14 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
             ui->isInterworking = true;
 
         // Adjust it back. The symtab entries are 1 off for all practical purposes.
-        PerfUnwind::Frame frame(adjusted, isKernel, status == 0 ? demangled : symname,
+        PerfUnwind::Frame frame(adjusted, isKernel, status == 0 ? QByteArray(demangled) : symname,
                                 elfFile, srcFile, line, column);
         free(demangled);
         return frame;
     } else {
+        symname = ui->unwind->symbolFromPerfMap(adjusted, ui->sample->pid(), &off);
+        if (ui->unwind->granularity() == PerfUnwind::Function)
+            adjusted -= off;
         return PerfUnwind::Frame(adjusted, isKernel, symname, elfFile, srcFile, line, column);
     }
 }
@@ -453,6 +456,7 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
         if (!dwfl_addrmodule (dwfl, sample.ip()))
             reportElf(sample.ip(), sample.pid());
     }
+    updatePerfMap(sample.pid());
 
     if (sample.callchain().length() > 0)
         resolveCallchain();
@@ -489,4 +493,56 @@ void PerfUnwind::exit(const PerfRecordExit &sample)
                                                << threads[sample.childTid()] << sample.time()
                                                << QVector<PerfUnwind::Frame>();
     sendBuffer(output, buffer);
+}
+
+bool operator<(const PerfUnwind::PerfMap::Symbol &a, const PerfUnwind::PerfMap::Symbol &b)
+{
+    return a.start < b.start;
+}
+
+QByteArray PerfUnwind::symbolFromPerfMap(quint64 ip, quint32 pid, GElf_Off *offset) const
+{
+    const PerfMap &map = perfMaps[pid];
+
+    QVector<PerfMap::Symbol>::ConstIterator sym =
+            std::upper_bound(map.symbols.begin(), map.symbols.end(), PerfMap::Symbol(ip));
+    if (sym == map.symbols.begin())
+        return QByteArray();
+    --sym;
+
+    if (sym != map.symbols.end() && sym->start <= ip && sym->start + sym->length > ip) {
+        *offset = ip - sym->start;
+        return sym->name;
+    }
+    *offset = 0;
+    return QByteArray();
+}
+
+void PerfUnwind::updatePerfMap(quint32 pid)
+{
+    PerfMap &map = perfMaps[pid];
+    if (!map.file) {
+        map.file.reset(new QFile(QString::fromLatin1("/tmp/perf-%1.map").arg(pid)));
+        map.file->open(QIODevice::ReadOnly);
+    }
+
+    bool readLine = false;
+    while (!map.file->atEnd()) {
+        QByteArrayList line = map.file->readLine().split(' ');
+        if (line.length() >= 3) {
+            bool ok = false;
+            quint64 start = line.takeFirst().toULongLong(&ok, 16);
+            if (!ok)
+                continue;
+            quint64 length = line.takeFirst().toULongLong(&ok, 16);
+            if (!ok)
+                continue;
+            QByteArray name = line.join(' ').trimmed();
+            map.symbols.append(PerfMap::Symbol(start, length, name));
+            readLine = true;
+        }
+    }
+
+    if (readLine)
+        std::sort(map.symbols.begin(), map.symbols.end());
 }
