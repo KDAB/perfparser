@@ -310,9 +310,9 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
             elfFile = elfInfo->file.fileName().toLocal8Bit();
     }
 
-    bool do_adjust = (ui->unwind->architecture() == PerfRegisterInfo::ARCH_ARM);
+    Dwarf_Addr adjusted = (ui->unwind->architecture() != PerfRegisterInfo::ARCH_ARM || (ip & 1)) ?
+                ip : ip + 1;
     if (mod) {
-        Dwarf_Addr adjusted = (!do_adjust || (ip & 1)) ? ip : ip + 1;
         // For addrinfo we need the raw pointer into symtab, so we need to adjust ourselves.
         symname = dwfl_module_addrinfo(mod, adjusted, &off, &sym, 0,
                                        0, 0);
@@ -334,10 +334,8 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
             ui->isInterworking = true;
 
         // Adjust it back. The symtab entries are 1 off for all practical purposes.
-        PerfUnwind::Frame frame((do_adjust && (sym.st_value & 1)) ? sym.st_value - 1 :
-                                                                     sym.st_value,
-                                 isKernel, status == 0 ? demangled : symname, elfFile, srcFile,
-                                 line, column);
+        PerfUnwind::Frame frame(adjusted - off, isKernel, status == 0 ? demangled : symname,
+                                elfFile, srcFile, line, column);
         free(demangled);
         return frame;
     } else {
