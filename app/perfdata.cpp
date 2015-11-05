@@ -93,7 +93,7 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
         // TODO: for this we have to find the right attribute by some kind of hash and id ...
         PerfRecordSample sample(&m_eventHeader, sampleAttrs);
         stream >> sample;
-        m_destination->analyze(sample);
+        m_destination->sample(sample);
         break;
     }
     case PERF_RECORD_MMAP2: {

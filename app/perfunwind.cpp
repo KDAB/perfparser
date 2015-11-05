@@ -31,8 +31,8 @@ static const QChar colon = QLatin1Char(':');
 
 PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugPath,
                        const QString &extraLibsPath, const QString &appPath) :
-    output(output), lastPid(0), registerArch(PerfRegisterInfo::ARCH_INVALID),
-    systemRoot(systemRoot), extraLibsPath(extraLibsPath), appPath(appPath)
+    output(output), registerArch(PerfRegisterInfo::ARCH_INVALID), systemRoot(systemRoot),
+    extraLibsPath(extraLibsPath), appPath(appPath), sampleBufferSize(0)
 {
     currentUnwind.unwind = this;
     offlineCallbacks.find_elf = dwfl_build_id_find_elf;
@@ -49,6 +49,9 @@ PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QStri
 
 PerfUnwind::~PerfUnwind()
 {
+    foreach (const PerfRecordSample &sample, sampleBuffer)
+        analyze(sample);
+
     delete[] debugInfoPath;
     dwfl_end(dwfl);
 }
@@ -402,6 +405,19 @@ void PerfUnwind::resolveCallchain()
 
         if (ip <= PERF_CONTEXT_MAX)
             currentUnwind.frames.append(lookupSymbol(&currentUnwind, dwfl, ip, isKernel));
+    }
+}
+
+void PerfUnwind::sample(const PerfRecordSample &sample)
+{
+    sampleBuffer.append(sample);
+    sampleBufferSize += sample.size();
+
+    while (sampleBufferSize > maxSampleBufferSize) {
+        const PerfRecordSample &sample = sampleBuffer.front();
+        sampleBufferSize -= sample.size();
+        analyze(sample);
+        sampleBuffer.removeFirst();
     }
 }
 
