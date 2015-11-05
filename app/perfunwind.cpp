@@ -101,7 +101,10 @@ void PerfUnwind::registerElf(const PerfRecordMmap &mmap)
             ++i;
         }
 
-        lastPid = -1; // Throw out the dwfl state
+        if (dwfl && dwfl_pid(dwfl) == static_cast<pid_t>(mmap.pid())) {
+            dwfl_end(dwfl); // Throw out the dwfl state
+            dwfl = 0;
+        }
     }
 
     QLatin1String filePath(mmap.filename());
@@ -214,7 +217,7 @@ static bool accessDsoMem(Dwfl *dwfl, const PerfUnwind::UnwindInfo *ui, Dwarf_Add
     // TODO: Take the pgoff into account? Or does elf_getdata do that already?
     Dwfl_Module *mod = dwfl_addrmodule(dwfl, addr);
     if (!mod) {
-        mod = ui->unwind->reportElf(addr, ui->unwind->pid());
+        mod = ui->unwind->reportElf(addr, ui->sample->pid());
         if (!mod) {
             mod = ui->unwind->reportElf(addr, PerfUnwind::s_kernelPid);
             if (!mod)
@@ -301,7 +304,7 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
 
     if (!mod) {
         const PerfUnwind::ElfInfo *elfInfo = 0;
-        mod = ui->unwind->reportElf(ip, isKernel ? PerfUnwind::s_kernelPid : ui->unwind->pid(),
+        mod = ui->unwind->reportElf(ip, isKernel ? PerfUnwind::s_kernelPid : ui->sample->pid(),
                                     &elfInfo);
         if (!mod && elfInfo)
             elfFile = elfInfo->file.fileName().toLocal8Bit();
@@ -423,24 +426,21 @@ void PerfUnwind::sample(const PerfRecordSample &sample)
 
 void PerfUnwind::analyze(const PerfRecordSample &sample)
 {
-    if (sample.pid() != lastPid) {
+    if (!dwfl || static_cast<pid_t>(sample.pid()) != dwfl_pid(dwfl)) {
         dwfl_end(dwfl);
         dwfl = dwfl_begin(&offlineCallbacks);
-        lastPid = sample.pid();
-        reportElf(sample.ip(), lastPid);
+        reportElf(sample.ip(), sample.pid());
 
         if (!dwfl) {
             qWarning() << "failed to initialize dwfl" << dwfl_errmsg(dwfl_errno());
-            lastPid = -1;
             return;
         }
         if (!dwfl_attach_state(dwfl, 0, sample.pid(), &callbacks, &currentUnwind)) {
-            lastPid = -1;
             return;
         }
     } else {
         if (!dwfl_addrmodule (dwfl, sample.ip()))
-            reportElf(sample.ip(), lastPid);
+            reportElf(sample.ip(), sample.pid());
     }
 
     currentUnwind.broken = false;
@@ -454,7 +454,7 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
 
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly)
-            << static_cast<quint8>(currentUnwind.broken ? BadStack : GoodStack) << lastPid
+            << static_cast<quint8>(currentUnwind.broken ? BadStack : GoodStack) << sample.pid()
             << sample.tid() << threads[sample.tid()] << sample.time() << currentUnwind.frames;
     sendBuffer(output, buffer);
 }

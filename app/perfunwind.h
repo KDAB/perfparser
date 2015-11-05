@@ -87,7 +87,6 @@ public:
 
     void registerElf(const PerfRecordMmap &mmap);
     void comm(PerfRecordComm &comm);
-    quint32 pid() const { return lastPid; }
 
     Dwfl_Module *reportElf(quint64 ip, quint32 pid, const ElfInfo **info = 0) const;
     void sample(const PerfRecordSample &sample);
@@ -111,7 +110,6 @@ private:
 
     UnwindInfo currentUnwind;
     QIODevice *output;
-    quint32 lastPid;
 
     QHash<quint32, QString> threads;
     Dwfl *dwfl;
