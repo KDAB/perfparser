@@ -293,7 +293,7 @@ static const Dwfl_Thread_Callbacks callbacks = {
 static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dwarf_Addr ip,
                                       bool isKernel)
 {
-    Dwfl_Module *mod = dwfl_addrmodule (dwfl, ip);
+    Dwfl_Module *mod = dwfl ? dwfl_addrmodule(dwfl, ip) : 0;
     const char *symname = NULL;
     const char *elfFile = NULL;
     const char *srcFile = NULL;
@@ -302,7 +302,7 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
     GElf_Sym sym;
     GElf_Off off;
 
-    if (!mod) {
+    if (dwfl && !mod) {
         const PerfUnwind::ElfInfo *elfInfo = 0;
         mod = ui->unwind->reportElf(ip, isKernel ? PerfUnwind::s_kernelPid : ui->sample->pid(),
                                     &elfInfo);
@@ -426,6 +426,11 @@ void PerfUnwind::sample(const PerfRecordSample &sample)
 
 void PerfUnwind::analyze(const PerfRecordSample &sample)
 {
+    currentUnwind.broken = false;
+    currentUnwind.isInterworking = false;
+    currentUnwind.sample = &sample;
+    currentUnwind.frames.clear();
+
     if (!dwfl || static_cast<pid_t>(sample.pid()) != dwfl_pid(dwfl)) {
         dwfl_end(dwfl);
         dwfl = dwfl_begin(&offlineCallbacks);
@@ -433,24 +438,25 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
 
         if (!dwfl) {
             qWarning() << "failed to initialize dwfl" << dwfl_errmsg(dwfl_errno());
-            return;
-        }
-        if (!dwfl_attach_state(dwfl, 0, sample.pid(), &callbacks, &currentUnwind)) {
-            return;
+            currentUnwind.broken = true;
+        } else if (!dwfl_attach_state(dwfl, 0, sample.pid(), &callbacks, &currentUnwind)) {
+            qWarning() << "failed to attach state" << dwfl_errmsg(dwfl_errno());
+            currentUnwind.broken = true;
         }
     } else {
         if (!dwfl_addrmodule (dwfl, sample.ip()))
             reportElf(sample.ip(), sample.pid());
     }
 
-    currentUnwind.broken = false;
-    currentUnwind.isInterworking = false;
-    currentUnwind.sample = &sample;
-    currentUnwind.frames.clear();
     if (sample.callchain().length() > 0)
         resolveCallchain();
-    if (sample.registerAbi() != 0 && sample.userStack().length() > 0)
-        unwindStack();
+    if (sample.registerAbi() != 0) {
+        if (dwfl && sample.userStack().length() > 0)
+            unwindStack();
+        // If nothing was found, at least look up the IP
+        if (currentUnwind.frames.isEmpty())
+            currentUnwind.frames.append(lookupSymbol(&currentUnwind, dwfl, sample.ip(), false));
+    }
 
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly)
