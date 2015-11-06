@@ -300,7 +300,7 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
     int line = 0;
     int column = 0;
     GElf_Sym sym;
-    GElf_Off off;
+    GElf_Off off = 0;
 
     if (dwfl && !mod) {
         const PerfUnwind::ElfInfo *elfInfo = 0;
@@ -315,6 +315,8 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
     if (mod) {
         // For addrinfo we need the raw pointer into symtab, so we need to adjust ourselves.
         symname = dwfl_module_addrinfo(mod, adjusted, &off, &sym, 0, 0, 0);
+        if (off == adjusted) // no symbol found
+            off = 0;
         elfFile = dwfl_module_info(mod, 0, 0, 0, 0, 0, 0, 0);
 
         // We take the first line of the function for now, in order to reduce UI complexity
