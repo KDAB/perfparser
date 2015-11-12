@@ -361,6 +361,7 @@ public:
     quint64 ip() const { return m_ip; }
     const QByteArray &userStack() const { return m_userStack; }
     const QList<quint64> &callchain() const { return m_callchain; }
+    uint size() const { return m_header.size; }
 
 private:
     struct ReadFormat {

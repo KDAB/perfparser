@@ -87,11 +87,10 @@ public:
 
     void registerElf(const PerfRecordMmap &mmap);
     void comm(PerfRecordComm &comm);
-    quint32 pid() const { return lastPid; }
 
     Dwfl_Module *reportElf(quint64 ip, quint32 pid, const ElfInfo **info = 0) const;
+    void sample(const PerfRecordSample &sample);
 
-    void analyze(const PerfRecordSample &sample);
     void fork(const PerfRecordFork &sample);
     void exit(const PerfRecordExit &sample);
 
@@ -111,7 +110,6 @@ private:
 
     UnwindInfo currentUnwind;
     QIODevice *output;
-    quint32 lastPid;
 
     QHash<quint32, QString> threads;
     Dwfl *dwfl;
@@ -133,9 +131,13 @@ private:
     QString appPath;
 
     QHash<quint32, QMap<quint64, ElfInfo> > elfs; // The inner map needs to be sorted
+    QList<PerfRecordSample> sampleBuffer;
+    uint sampleBufferSize;
+    static const uint maxSampleBufferSize = 1024 * 1024;
 
     void unwindStack();
     void resolveCallchain();
+    void analyze(const PerfRecordSample &sample);
 };
 
 #endif // PERFUNWIND_H

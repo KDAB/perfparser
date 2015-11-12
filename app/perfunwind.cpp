@@ -31,8 +31,8 @@ static const QChar colon = QLatin1Char(':');
 
 PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugPath,
                        const QString &extraLibsPath, const QString &appPath) :
-    output(output), lastPid(0), registerArch(PerfRegisterInfo::ARCH_INVALID),
-    systemRoot(systemRoot), extraLibsPath(extraLibsPath), appPath(appPath)
+    output(output), registerArch(PerfRegisterInfo::ARCH_INVALID), systemRoot(systemRoot),
+    extraLibsPath(extraLibsPath), appPath(appPath), sampleBufferSize(0)
 {
     currentUnwind.unwind = this;
     offlineCallbacks.find_elf = dwfl_build_id_find_elf;
@@ -49,6 +49,9 @@ PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QStri
 
 PerfUnwind::~PerfUnwind()
 {
+    foreach (const PerfRecordSample &sample, sampleBuffer)
+        analyze(sample);
+
     delete[] debugInfoPath;
     dwfl_end(dwfl);
 }
@@ -98,7 +101,10 @@ void PerfUnwind::registerElf(const PerfRecordMmap &mmap)
             ++i;
         }
 
-        lastPid = -1; // Throw out the dwfl state
+        if (dwfl && dwfl_pid(dwfl) == static_cast<pid_t>(mmap.pid())) {
+            dwfl_end(dwfl); // Throw out the dwfl state
+            dwfl = 0;
+        }
     }
 
     QLatin1String filePath(mmap.filename());
@@ -149,10 +155,9 @@ void PerfUnwind::comm(PerfRecordComm &comm)
 Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid, const ElfInfo **info) const
 {
     QHash<quint32, QMap<quint64, ElfInfo> >::ConstIterator elfsIt = elfs.find(pid);
-    if (elfsIt == elfs.end()) {
-        qWarning() << "Process" << pid << "has no elfs";
+    if (elfsIt == elfs.end())
         return 0;
-    }
+
     const QMap<quint64, ElfInfo> &procElfs = elfsIt.value();
     QMap<quint64, ElfInfo>::ConstIterator i = procElfs.upperBound(ip);
     if (i == procElfs.end() || i.key() != ip) {
@@ -212,7 +217,7 @@ static bool accessDsoMem(Dwfl *dwfl, const PerfUnwind::UnwindInfo *ui, Dwarf_Add
     // TODO: Take the pgoff into account? Or does elf_getdata do that already?
     Dwfl_Module *mod = dwfl_addrmodule(dwfl, addr);
     if (!mod) {
-        mod = ui->unwind->reportElf(addr, ui->unwind->pid());
+        mod = ui->unwind->reportElf(addr, ui->sample->pid());
         if (!mod) {
             mod = ui->unwind->reportElf(addr, PerfUnwind::s_kernelPid);
             if (!mod)
@@ -253,11 +258,6 @@ static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *ar
     if (addr < start || addr + sizeof(Dwarf_Word) > end) {
         // not stack, try reading from ELF
         if (!accessDsoMem(dwfl, ui, addr, result)) {
-            qWarning() << QString::fromLatin1("Cannot read memory at 0x%1").arg(addr, 0, 16);
-            qWarning() << QString::fromLatin1(
-                              "dwfl should only read stack state (0x%1 to 0x%2) with memoryRead().")
-                          .arg(start, 0, 16).arg(end, 0, 16);
-
             ui->broken = true;
             return false;
         }
@@ -293,7 +293,7 @@ static const Dwfl_Thread_Callbacks callbacks = {
 static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dwarf_Addr ip,
                                       bool isKernel)
 {
-    Dwfl_Module *mod = dwfl_addrmodule (dwfl, ip);
+    Dwfl_Module *mod = dwfl ? dwfl_addrmodule(dwfl, ip) : 0;
     const char *symname = NULL;
     const char *elfFile = NULL;
     const char *srcFile = NULL;
@@ -302,20 +302,19 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
     GElf_Sym sym;
     GElf_Off off;
 
-    if (!mod) {
+    if (dwfl && !mod) {
         const PerfUnwind::ElfInfo *elfInfo = 0;
-        mod = ui->unwind->reportElf(ip, isKernel ? PerfUnwind::s_kernelPid : ui->unwind->pid(),
+        mod = ui->unwind->reportElf(ip, isKernel ? PerfUnwind::s_kernelPid : ui->sample->pid(),
                                     &elfInfo);
         if (!mod && elfInfo)
             elfFile = elfInfo->file.fileName().toLocal8Bit();
     }
 
-    bool do_adjust = (ui->unwind->architecture() == PerfRegisterInfo::ARCH_ARM);
+    Dwarf_Addr adjusted = (ui->unwind->architecture() != PerfRegisterInfo::ARCH_ARM || (ip & 1)) ?
+                ip : ip + 1;
     if (mod) {
-        Dwarf_Addr adjusted = (!do_adjust || (ip & 1)) ? ip : ip + 1;
         // For addrinfo we need the raw pointer into symtab, so we need to adjust ourselves.
-        symname = dwfl_module_addrinfo(mod, adjusted, &off, &sym, 0,
-                                       0, 0);
+        symname = dwfl_module_addrinfo(mod, adjusted, &off, &sym, 0, 0, 0);
         elfFile = dwfl_module_info(mod, 0, 0, 0, 0, 0, 0, 0);
 
         // We take the first line of the function for now, in order to reduce UI complexity
@@ -328,16 +327,14 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
         char *demangled = NULL;
         int status = -1;
         if (symname[0] == '_' && symname[1] == 'Z')
-            demangled = abi::__cxa_demangle (symname, 0, 0, &status);
+            demangled = abi::__cxa_demangle(symname, 0, 0, &status);
         else if (ui->unwind->architecture() == PerfRegisterInfo::ARCH_ARM && symname[0] == '$'
                  && (symname[1] == 'a' || symname[1] == 't') && symname[2] == '\0')
             ui->isInterworking = true;
 
         // Adjust it back. The symtab entries are 1 off for all practical purposes.
-        PerfUnwind::Frame frame((do_adjust && (sym.st_value & 1)) ? sym.st_value - 1 :
-                                                                     sym.st_value,
-                                 isKernel, status == 0 ? demangled : symname, elfFile, srcFile,
-                                 line, column);
+        PerfUnwind::Frame frame(adjusted - off, isKernel, status == 0 ? demangled : symname,
+                                elfFile, srcFile, line, column);
         free(demangled);
         return frame;
     } else {
@@ -414,41 +411,56 @@ void PerfUnwind::resolveCallchain()
     }
 }
 
+void PerfUnwind::sample(const PerfRecordSample &sample)
+{
+    sampleBuffer.append(sample);
+    sampleBufferSize += sample.size();
+
+    while (sampleBufferSize > maxSampleBufferSize) {
+        const PerfRecordSample &sample = sampleBuffer.front();
+        sampleBufferSize -= sample.size();
+        analyze(sample);
+        sampleBuffer.removeFirst();
+    }
+}
+
 void PerfUnwind::analyze(const PerfRecordSample &sample)
 {
-    if (sample.pid() != lastPid) {
-        dwfl_end(dwfl);
-        dwfl = dwfl_begin(&offlineCallbacks);
-        lastPid = sample.pid();
-        reportElf(sample.ip(), lastPid);
-
-        if (!dwfl) {
-            qWarning() << "failed to initialize dwfl" << dwfl_errmsg(dwfl_errno());
-            lastPid = -1;
-            return;
-        }
-        if (!dwfl_attach_state(dwfl, 0, sample.pid(), &callbacks, &currentUnwind)) {
-            qWarning() << "failed to attach state:" << dwfl_errmsg(dwfl_errno());
-            lastPid = -1;
-            return;
-        }
-    } else {
-        if (!dwfl_addrmodule (dwfl, sample.ip()))
-            reportElf(sample.ip(), lastPid);
-    }
-
     currentUnwind.broken = false;
     currentUnwind.isInterworking = false;
     currentUnwind.sample = &sample;
     currentUnwind.frames.clear();
+
+    if (!dwfl || static_cast<pid_t>(sample.pid()) != dwfl_pid(dwfl)) {
+        dwfl_end(dwfl);
+        dwfl = dwfl_begin(&offlineCallbacks);
+        reportElf(sample.ip(), sample.pid());
+
+        if (!dwfl) {
+            qWarning() << "failed to initialize dwfl" << dwfl_errmsg(dwfl_errno());
+            currentUnwind.broken = true;
+        } else if (!dwfl_attach_state(dwfl, 0, sample.pid(), &callbacks, &currentUnwind)) {
+            qWarning() << "failed to attach state" << dwfl_errmsg(dwfl_errno());
+            currentUnwind.broken = true;
+        }
+    } else {
+        if (!dwfl_addrmodule (dwfl, sample.ip()))
+            reportElf(sample.ip(), sample.pid());
+    }
+
     if (sample.callchain().length() > 0)
         resolveCallchain();
-    if (sample.registerAbi() != 0 && sample.userStack().length() > 0)
-        unwindStack();
+    if (sample.registerAbi() != 0) {
+        if (dwfl && sample.userStack().length() > 0)
+            unwindStack();
+        // If nothing was found, at least look up the IP
+        if (currentUnwind.frames.isEmpty())
+            currentUnwind.frames.append(lookupSymbol(&currentUnwind, dwfl, sample.ip(), false));
+    }
 
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly)
-            << static_cast<quint8>(currentUnwind.broken ? BadStack : GoodStack) << lastPid
+            << static_cast<quint8>(currentUnwind.broken ? BadStack : GoodStack) << sample.pid()
             << sample.tid() << threads[sample.tid()] << sample.time() << currentUnwind.frames;
     sendBuffer(output, buffer);
 }
