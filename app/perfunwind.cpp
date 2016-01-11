@@ -32,7 +32,7 @@ static const QChar colon = QLatin1Char(':');
 PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugPath,
                        const QString &extraLibsPath, const QString &appPath) :
     output(output), registerArch(PerfRegisterInfo::ARCH_INVALID), systemRoot(systemRoot),
-    extraLibsPath(extraLibsPath), appPath(appPath), sampleBufferSize(0)
+    extraLibsPath(extraLibsPath), appPath(appPath), sampleBufferSize(0), sampleGranularity(Function)
 {
     currentUnwind.unwind = this;
     offlineCallbacks.find_elf = dwfl_build_id_find_elf;
@@ -317,10 +317,12 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
         symname = dwfl_module_addrinfo(mod, adjusted, &off, &sym, 0, 0, 0);
         if (off == adjusted) // no symbol found
             off = 0;
+        else if (ui->unwind->granularity() == PerfUnwind::Function)
+            adjusted -= off;
+
         elfFile = dwfl_module_info(mod, 0, 0, 0, 0, 0, 0, 0);
 
-        // We take the first line of the function for now, in order to reduce UI complexity
-        Dwfl_Line *srcLine = dwfl_module_getsrc(mod, adjusted - off);
+        Dwfl_Line *srcLine = dwfl_module_getsrc(mod, adjusted);
         if (srcLine)
             srcFile = dwfl_lineinfo(srcLine, NULL, &line, &column, NULL, NULL);
     }
@@ -335,12 +337,12 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
             ui->isInterworking = true;
 
         // Adjust it back. The symtab entries are 1 off for all practical purposes.
-        PerfUnwind::Frame frame(adjusted - off, isKernel, status == 0 ? demangled : symname,
+        PerfUnwind::Frame frame(adjusted, isKernel, status == 0 ? demangled : symname,
                                 elfFile, srcFile, line, column);
         free(demangled);
         return frame;
     } else {
-        return PerfUnwind::Frame(ip, isKernel, symname, elfFile, srcFile, line, column);
+        return PerfUnwind::Frame(adjusted, isKernel, symname, elfFile, srcFile, line, column);
     }
 }
 

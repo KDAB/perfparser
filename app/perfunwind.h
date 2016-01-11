@@ -40,6 +40,11 @@ public:
         InvalidType
     };
 
+    enum Granularity {
+        Function,
+        Address
+    };
+
     struct Frame {
         Frame(quint64 frame = 0, bool isKernel = false, const QByteArray &symbol = QByteArray(),
               const QByteArray &elfFile = QByteArray(), const QByteArray &srcFile = QByteArray(),
@@ -84,6 +89,9 @@ public:
     {
         registerArch = architecture;
     }
+
+    Granularity granularity() const { return sampleGranularity; }
+    void setGranularity(Granularity granularity) { sampleGranularity = granularity; }
 
     void registerElf(const PerfRecordMmap &mmap);
     void comm(PerfRecordComm &comm);
@@ -133,6 +141,9 @@ private:
     QHash<quint32, QMap<quint64, ElfInfo> > elfs; // The inner map needs to be sorted
     QList<PerfRecordSample> sampleBuffer;
     uint sampleBufferSize;
+
+    Granularity sampleGranularity;
+
     static const uint maxSampleBufferSize = 1024 * 1024;
 
     void unwindStack();
