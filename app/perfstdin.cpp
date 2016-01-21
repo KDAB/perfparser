@@ -19,6 +19,7 @@
 ****************************************************************************/
 
 #include "perfstdin.h"
+#include <QTimer>
 #include <cstdio>
 #include <limits>
 
@@ -34,7 +35,7 @@ qint64 PerfStdin::readData(char *data, qint64 maxlen)
 {
     size_t read = fread(data, 1, maxlen, stdin);
     if (feof(stdin) || ferror(stdin))
-        close();
+        QTimer::singleShot(0, this, &QIODevice::close);
     if (read == 0 && maxlen > 0) {
         return -1;
     } else {
