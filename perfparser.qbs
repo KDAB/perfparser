@@ -2,7 +2,7 @@ import qbs
 
 Project {
     name: "Perf Parser"
-    // condition: qbs.targetOS.contains("linux") TODO: Re-enable once qbs evaluation bug is fixed.
+    condition: qbs.targetOS.contains("linux")
 
     property bool useSystemElfUtils: !qbs.toolchain.contains("gcc")
                                      || qbs.toolchain.contains("clang")
