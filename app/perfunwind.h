@@ -27,6 +27,7 @@
 #include <QFileInfo>
 #include <QMap>
 #include <QHash>
+#include <QSharedPointer>
 
 class PerfUnwind
 {
@@ -77,6 +78,19 @@ public:
         bool found;
     };
 
+    struct PerfMap {
+        struct Symbol {
+            Symbol(quint64 start = 0, quint64 length = 0, QByteArray name = QByteArray()) :
+                start(start), length(length), name(name) {}
+            quint64 start;
+            quint64 length;
+            QByteArray name;
+        };
+
+        QSharedPointer<QFile> file;
+        QVector<Symbol> symbols;
+    };
+
     static const quint32 s_kernelPid = std::numeric_limits<quint32>::max();
     static const int s_maxFrames = 64;
 
@@ -101,6 +115,9 @@ public:
 
     void fork(const PerfRecordFork &sample);
     void exit(const PerfRecordExit &sample);
+
+    QByteArray symbolFromPerfMap(quint64 ip, quint32 pid, GElf_Off *offset) const;
+    void updatePerfMap(quint32 pid);
 
 private:
 
@@ -139,6 +156,7 @@ private:
     QString appPath;
 
     QHash<quint32, QMap<quint64, ElfInfo> > elfs; // The inner map needs to be sorted
+    QHash<quint32, PerfMap> perfMaps;
     QList<PerfRecordSample> sampleBuffer;
     uint sampleBufferSize;
 
