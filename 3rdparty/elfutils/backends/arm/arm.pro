@@ -10,7 +10,8 @@ SOURCES += \
     ../arm_initreg.c \
     ../arm_regs.c \
     ../arm_retval.c \
-    ../arm_symbol.c
+    ../arm_symbol.c \
+    ../arm_unwind.c
 
 HEADERS += \
     ../arm_reloc.def

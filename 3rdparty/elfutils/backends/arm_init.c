@@ -69,6 +69,7 @@ arm_init (elf, machine, eh, ehlen)
   /* We only unwind the core integer registers.  */
   eh->frame_nregs = 16;
   HOOK (eh, set_initial_registers_tid);
+  HOOK (eh, unwind);
 
   /* Bit zero encodes whether an function address is THUMB or ARM. */
   eh->func_addr_mask = ~(GElf_Addr)1;

@@ -11,6 +11,7 @@ SOURCES += \
     ../x86_64_retval.c \
     ../x86_64_symbol.c \
     ../x86_64_syscall.c \
+    ../x86_64_unwind.c \
     ../i386_auxv.c # x86_64_auxv_info is an alias for i386_auxv_info
 
 HEADERS += \
