@@ -25,6 +25,7 @@
 #include <QDebug>
 
 #include <limits>
+#include <cstring>
 #include <cxxabi.h>
 
 static const QChar colon = QLatin1Char(':');
@@ -42,7 +43,7 @@ PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QStri
                                systemRoot).toUtf8();
     debugInfoPath = new char[newDebugInfo.length() + 1];
     debugInfoPath[newDebugInfo.length()] = 0;
-    memcpy(debugInfoPath, newDebugInfo.data(), newDebugInfo.length());
+    std::memcpy(debugInfoPath, newDebugInfo.data(), newDebugInfo.length());
     offlineCallbacks.debuginfo_path = &debugInfoPath;
     dwfl = dwfl_begin(&offlineCallbacks);
 }
@@ -233,7 +234,7 @@ static bool accessDsoMem(Dwfl *dwfl, const PerfUnwind::UnwindInfo *ui, Dwarf_Add
     if (section) {
         Elf_Data *data = elf_getdata(section, NULL);
         if (data && data->d_buf && data->d_size > addr) {
-            *result = *(Dwarf_Word *)(static_cast<char *>(data->d_buf) + addr);
+            std::memcpy(result, static_cast<char *>(data->d_buf) + addr, sizeof(Dwarf_Word));
             return true;
         }
     }
@@ -264,7 +265,7 @@ static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *ar
             return false;
         }
     } else {
-        *result = *(Dwarf_Word *)(&stack.data()[addr - start]);
+        std::memcpy(result, &(stack.data()[addr - start]), sizeof(Dwarf_Word));
     }
     return true;
 }
