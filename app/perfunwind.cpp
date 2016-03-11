@@ -232,7 +232,7 @@ static bool accessDsoMem(Dwfl *dwfl, const PerfUnwind::UnwindInfo *ui, Dwarf_Add
 
     if (section) {
         Elf_Data *data = elf_getdata(section, NULL);
-        if (data && data->d_size) {
+        if (data && data->d_buf && data->d_size > addr) {
             *result = *(Dwarf_Word *)(static_cast<char *>(data->d_buf) + addr);
             return true;
         }
