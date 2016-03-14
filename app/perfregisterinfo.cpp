@@ -21,7 +21,7 @@
 #include "perfregisterinfo.h"
 
 const char *PerfRegisterInfo::s_archNames[] = {
-    "arm", "arm64", "powerpc", "s390", "sh", "sparc", "x86"
+    "arm", "aarch64", "powerpc", "s390", "sh", "sparc", "x86"
 };
 
 const uint PerfRegisterInfo::s_numRegisters[PerfRegisterInfo::ARCH_INVALID][PerfRegisterInfo::s_numAbis] = {
