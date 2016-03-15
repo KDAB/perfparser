@@ -28,7 +28,7 @@ class PerfRegisterInfo
 public:
     enum Architecture {
         ARCH_ARM = 0,
-        ARCH_ARM64,
+        ARCH_AARCH64,
         ARCH_POWERPC,
         ARCH_S390,
         ARCH_SH,
