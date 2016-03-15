@@ -82,3 +82,13 @@ const uint PerfRegisterInfo::s_dwarfIp[ARCH_INVALID][s_numAbis] = {
     {0xffff, 0xffff},
     {8, 16}
 };
+
+const uint PerfRegisterInfo::s_dummyRegisters[ARCH_INVALID][2] = {
+    {0, 0},
+    {72, 80},
+    {0, 0},
+    {0, 0},
+    {0, 0},
+    {0, 0},
+    {0, 0}
+};

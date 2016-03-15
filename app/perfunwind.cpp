@@ -286,6 +286,16 @@ bool setInitialRegisters(Dwfl_Thread *thread, void *arg)
         dwarfRegs[PerfRegisterInfo::s_dwarfIp[architecture][abi]] =
                 dwarfRegs[PerfRegisterInfo::s_dwarfLr[architecture][abi]];
 
+    uint dummyBegin = PerfRegisterInfo::s_dummyRegisters[architecture][0];
+    uint dummyNum = PerfRegisterInfo::s_dummyRegisters[architecture][1] - dummyBegin;
+
+    if (dummyNum > 0) {
+        Dwarf_Word dummyRegs[dummyNum];
+        std::memset(dummyRegs, 0, dummyNum * sizeof(Dwarf_Word));
+        if (!dwfl_thread_state_registers(thread, dummyBegin, dummyNum, dummyRegs))
+            return false;
+    }
+
     return dwfl_thread_state_registers(thread, 0, numRegs, dwarfRegs);
 }
 
