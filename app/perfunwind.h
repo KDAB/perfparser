@@ -111,6 +111,7 @@ public:
     void comm(PerfRecordComm &comm);
 
     Dwfl_Module *reportElf(quint64 ip, quint32 pid, const ElfInfo **info = 0) const;
+    bool ipIsInKernelSpace(quint64 ip) const;
     void sample(const PerfRecordSample &sample);
 
     void fork(const PerfRecordFork &sample);

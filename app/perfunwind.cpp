@@ -198,6 +198,21 @@ Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid, const ElfInfo **info
     }
 }
 
+bool PerfUnwind::ipIsInKernelSpace(quint64 ip) const
+{
+    auto elfsIt = elfs.constFind(quint32(s_kernelPid));
+    if (elfsIt == elfs.constEnd())
+        return false;
+
+    const QMap<quint64, ElfInfo> &kernelElfs = elfsIt.value();
+    if (kernelElfs.isEmpty())
+        return false;
+
+    const auto last = (--kernelElfs.constEnd());
+    const auto first = kernelElfs.constBegin();
+    return first.key() <= ip && last.key() + last.value().length > ip;
+}
+
 QDataStream &operator<<(QDataStream &stream, const PerfUnwind::Frame &frame)
 {
     return stream << frame.frame << frame.isKernel << frame.symbol << frame.elfFile
@@ -474,9 +489,11 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
     if (sample.registerAbi() != 0) {
         if (dwfl && sample.userStack().length() > 0)
             unwindStack();
-        // If nothing was found, at least look up the IP
-        if (currentUnwind.frames.isEmpty())
-            currentUnwind.frames.append(lookupSymbol(&currentUnwind, dwfl, sample.ip(), false));
+    }
+    // If nothing was found, at least look up the IP
+    if (currentUnwind.frames.isEmpty()) {
+        currentUnwind.frames.append(lookupSymbol(&currentUnwind, dwfl, sample.ip(),
+                                                 ipIsInKernelSpace(sample.ip())));
     }
 
     QByteArray buffer;
