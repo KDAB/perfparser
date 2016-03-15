@@ -8,7 +8,8 @@ SOURCES += \
     ../aarch64_initreg.c \
     ../aarch64_regs.c \
     ../aarch64_retval.c \
-    ../aarch64_symbol.c
+    ../aarch64_symbol.c \
+    ../aarch64_unwind.c
 
 HEADERS += \
     ../aarch64_reloc.def

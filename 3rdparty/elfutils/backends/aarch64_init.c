@@ -64,6 +64,7 @@ aarch64_init (elf, machine, eh, ehlen)
      + ALT_FRAME_RETURN_COLUMN (used when LR isn't used) = 97 DWARF regs. */
   eh->frame_nregs = 97;
   HOOK (eh, set_initial_registers_tid);
+  HOOK (eh, unwind);
 
   return MODVERSION;
 }
