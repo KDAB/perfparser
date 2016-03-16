@@ -25,6 +25,7 @@
 #include <QDebug>
 
 #include <limits>
+#include <cstring>
 #include <cxxabi.h>
 
 static const QChar colon = QLatin1Char(':');
@@ -42,7 +43,7 @@ PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QStri
                                systemRoot).toUtf8();
     debugInfoPath = new char[newDebugInfo.length() + 1];
     debugInfoPath[newDebugInfo.length()] = 0;
-    memcpy(debugInfoPath, newDebugInfo.data(), newDebugInfo.length());
+    std::memcpy(debugInfoPath, newDebugInfo.data(), newDebugInfo.length());
     offlineCallbacks.debuginfo_path = &debugInfoPath;
     dwfl = dwfl_begin(&offlineCallbacks);
 }
@@ -197,6 +198,21 @@ Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid, const ElfInfo **info
     }
 }
 
+bool PerfUnwind::ipIsInKernelSpace(quint64 ip) const
+{
+    auto elfsIt = elfs.constFind(quint32(s_kernelPid));
+    if (elfsIt == elfs.constEnd())
+        return false;
+
+    const QMap<quint64, ElfInfo> &kernelElfs = elfsIt.value();
+    if (kernelElfs.isEmpty())
+        return false;
+
+    const auto last = (--kernelElfs.constEnd());
+    const auto first = kernelElfs.constBegin();
+    return first.key() <= ip && last.key() + last.value().length > ip;
+}
+
 QDataStream &operator<<(QDataStream &stream, const PerfUnwind::Frame &frame)
 {
     return stream << frame.frame << frame.isKernel << frame.symbol << frame.elfFile
@@ -233,7 +249,7 @@ static bool accessDsoMem(Dwfl *dwfl, const PerfUnwind::UnwindInfo *ui, Dwarf_Add
     if (section) {
         Elf_Data *data = elf_getdata(section, NULL);
         if (data && data->d_buf && data->d_size > addr) {
-            *result = *(Dwarf_Word *)(static_cast<char *>(data->d_buf) + addr);
+            std::memcpy(result, static_cast<char *>(data->d_buf) + addr, sizeof(Dwarf_Word));
             return true;
         }
     }
@@ -264,7 +280,7 @@ static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *ar
             return false;
         }
     } else {
-        *result = *(Dwarf_Word *)(&stack.data()[addr - start]);
+        std::memcpy(result, &(stack.data()[addr - start]), sizeof(Dwarf_Word));
     }
     return true;
 }
@@ -284,6 +300,16 @@ bool setInitialRegisters(Dwfl_Thread *thread, void *arg)
     if (ui->isInterworking) // Go one frame up to get the rest of the stack at interworking veneers.
         dwarfRegs[PerfRegisterInfo::s_dwarfIp[architecture][abi]] =
                 dwarfRegs[PerfRegisterInfo::s_dwarfLr[architecture][abi]];
+
+    uint dummyBegin = PerfRegisterInfo::s_dummyRegisters[architecture][0];
+    uint dummyNum = PerfRegisterInfo::s_dummyRegisters[architecture][1] - dummyBegin;
+
+    if (dummyNum > 0) {
+        Dwarf_Word dummyRegs[dummyNum];
+        std::memset(dummyRegs, 0, dummyNum * sizeof(Dwarf_Word));
+        if (!dwfl_thread_state_registers(thread, dummyBegin, dummyNum, dummyRegs))
+            return false;
+    }
 
     return dwfl_thread_state_registers(thread, 0, numRegs, dwarfRegs);
 }
@@ -463,9 +489,11 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
     if (sample.registerAbi() != 0) {
         if (dwfl && sample.userStack().length() > 0)
             unwindStack();
-        // If nothing was found, at least look up the IP
-        if (currentUnwind.frames.isEmpty())
-            currentUnwind.frames.append(lookupSymbol(&currentUnwind, dwfl, sample.ip(), false));
+    }
+    // If nothing was found, at least look up the IP
+    if (currentUnwind.frames.isEmpty()) {
+        currentUnwind.frames.append(lookupSymbol(&currentUnwind, dwfl, sample.ip(),
+                                                 ipIsInKernelSpace(sample.ip())));
     }
 
     QByteArray buffer;

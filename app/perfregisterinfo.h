@@ -28,7 +28,7 @@ class PerfRegisterInfo
 public:
     enum Architecture {
         ARCH_ARM = 0,
-        ARCH_ARM64,
+        ARCH_AARCH64,
         ARCH_POWERPC,
         ARCH_S390,
         ARCH_SH,
@@ -56,6 +56,9 @@ public:
     static const uint s_dwarfLr[ARCH_INVALID][s_numAbis];
     // location of IP register or equivalent in dwarf register layout for each arch/abi
     static const uint s_dwarfIp[ARCH_INVALID][s_numAbis];
+
+    // ranges of registers expected by libdw, but not provided by perf
+    static const uint s_dummyRegisters[ARCH_INVALID][2];
 };
 
 #endif // PERFREGISTERINFO_H
