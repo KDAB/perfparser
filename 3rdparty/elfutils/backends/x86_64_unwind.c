@@ -48,7 +48,7 @@ x86_64_unwind (Ebl *ebl __attribute__ ((unused)), Dwarf_Addr pc __attribute__ ((
   const int spReg = 7;
 
   Dwarf_Word fp;
-  if (!getfunc(fpReg, 1, &fp, arg))
+  if (!getfunc(fpReg, 1, &fp, arg) || fp == 0)
     return false;
 
   Dwarf_Word prev_fp;

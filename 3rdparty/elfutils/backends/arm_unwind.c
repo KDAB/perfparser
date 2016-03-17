@@ -50,18 +50,18 @@ arm_unwind (Ebl *ebl __attribute__ ((unused)), Dwarf_Addr pc,
   const int lrReg = 14;
   const int spReg = 13;
 
-  Dwarf_Word fp = 0, lr = 0, sp = 0;
-  if (!getfunc(fpReg, 1, &fp, arg))
+  Dwarf_Word fp = 0, lr = 0, sp = 0; // have to be initialized because registers are 32bit only
+  if (!getfunc(fpReg, 1, &fp, arg) || fp == 0)
       return false;
   if (!getfunc(lrReg, 1, &lr, arg))
       return false;
   if (!getfunc(spReg, 1, &sp, arg))
       return false;
 
-  Dwarf_Word newFp = 0, newLr = 0;
+  Dwarf_Word newFp; // no initialization needed because we read 64bit
   if (!readfunc(fp, &newFp, arg))
       return false;
-  newLr = newFp >> 32;
+  Dwarf_Word newLr = newFp >> 32;
   newFp &= 0xffffffff;
 
   fp += 8;
