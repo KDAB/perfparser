@@ -64,7 +64,7 @@ public:
     struct UnwindInfo {
         UnwindInfo() : frames(0), unwind(0), sample(0), broken(false), isInterworking(false) {}
         QVector<PerfUnwind::Frame> frames;
-        const PerfUnwind *unwind;
+        PerfUnwind *unwind;
         const PerfRecordSample *sample;
         bool broken;
         bool isInterworking;
@@ -120,6 +120,8 @@ public:
     QByteArray symbolFromPerfMap(quint64 ip, quint32 pid, GElf_Off *offset) const;
     void updatePerfMap(quint32 pid);
 
+    Frame lookupSymbol(Dwarf_Addr ip, bool isKernel);
+
 private:
 
     enum CallchainContext {
@@ -159,6 +161,8 @@ private:
     QHash<quint32, QMap<quint64, ElfInfo> > elfs; // The inner map needs to be sorted
     QHash<quint32, PerfMap> perfMaps;
     QList<PerfRecordSample> sampleBuffer;
+    QHash<quint32, QHash<Dwarf_Addr, Frame> > addrCache;
+
     uint sampleBufferSize;
 
     Granularity sampleGranularity;

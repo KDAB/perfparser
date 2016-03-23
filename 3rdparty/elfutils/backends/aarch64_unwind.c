@@ -33,43 +33,46 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#define BACKEND x86_64_
+#define BACKEND aarch64_
 #include "libebl_CPU.h"
+#include <stdio.h>
 
 /* There was no CFI. Maybe we happen to have a frame pointer and can unwind from that?  */
 
 bool
-x86_64_unwind (Ebl *ebl __attribute__ ((unused)), Dwarf_Addr pc __attribute__ ((unused)),
+aarch64_unwind (Ebl *ebl __attribute__ ((unused)), Dwarf_Addr pc __attribute__ ((unused)),
          ebl_tid_registers_t *setfunc, ebl_tid_registers_get_t *getfunc,
          ebl_pid_memory_read_t *readfunc, void *arg, bool *signal_framep)
 {
-  // Register 6 is supposed to be rbp, thus the conventional frame pointer
-  const int fpReg = 6;
-  const int spReg = 7;
+  const int fpReg = 29;
+  const int lrReg = 30;
+  const int spReg = 31;
 
   Dwarf_Word fp;
   if (!getfunc(fpReg, 1, &fp, arg) || fp == 0)
-    return false;
+      return false;
 
-  Dwarf_Word prev_fp;
-  if (!readfunc(fp, &prev_fp, arg))
-    return false;
+  Dwarf_Word lr;
+  if (!getfunc(lrReg, 1, &lr, arg))
+      return false;
 
-  Dwarf_Word ret;
-  if (!readfunc(fp + 8, &ret, arg))
-    return false;
+  Dwarf_Word newFp, newLr;
+  if (!readfunc(fp, &newFp, arg))
+      return false;
+  fp += 8;
+  if (!readfunc(fp, &newLr, arg))
+      return false;
 
-  if (!setfunc(fpReg, 1, &prev_fp, arg))
-    return false;
-
-  fp += 16;
+  fp += 8;
   if (!setfunc(spReg, 1, &fp, arg))
-    return false;
+      return false;
+  if (!setfunc(fpReg, 1, &newFp, arg))
+      return false;
+  if (!setfunc(-1, 1, &newLr, arg))
+      return false;
+  if (!setfunc(lrReg, 1, &newLr, arg))
+      return false;
 
-  if (!setfunc(-1, 1, &ret, arg))
-    return false;
-
-  *signal_framep = false; // Can we actually have a signal frame here?
-
+  *signal_framep = false;
   return true;
 }

@@ -318,37 +318,45 @@ static const Dwfl_Thread_Callbacks callbacks = {
     nextThread, NULL, memoryRead, setInitialRegisters, NULL, NULL
 };
 
-static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dwarf_Addr ip,
-                                      bool isKernel)
+PerfUnwind::Frame PerfUnwind::lookupSymbol(Dwarf_Addr ip, bool isKernel)
 {
+    quint32 pid = currentUnwind.sample->pid();
     Dwfl_Module *mod = dwfl ? dwfl_addrmodule(dwfl, ip) : 0;
-    QByteArray symname;
     QByteArray elfFile;
+
+    if (dwfl && !mod) {
+        const ElfInfo *elfInfo = 0;
+        mod = reportElf(ip, isKernel ? s_kernelPid : pid, &elfInfo);
+        if (!mod && elfInfo)
+            elfFile = elfInfo->file.fileName().toLocal8Bit();
+    }
+
+    Dwarf_Addr adjusted = (architecture() != PerfRegisterInfo::ARCH_ARM || (ip & 1)) ? ip : ip + 1;
+    if (mod)
+        elfFile = dwfl_module_info(mod, 0, 0, 0, 0, 0, 0, 0);
+
+    QHash<Dwarf_Addr, Frame> &processAddrCache = addrCache[pid];
+    auto it = processAddrCache.constFind(ip);
+    // Check for elfFile as it might have loaded a different file to the same address in the mean
+    // time. We don't consider the case of loading the same file again at a different, overlapping
+    // offset.
+    if (it != processAddrCache.constEnd() && it->elfFile == elfFile)
+        return *it;
+
+    QByteArray symname;
     QByteArray srcFile;
     int line = 0;
     int column = 0;
     GElf_Sym sym;
     GElf_Off off = 0;
 
-    if (dwfl && !mod) {
-        const PerfUnwind::ElfInfo *elfInfo = 0;
-        mod = ui->unwind->reportElf(ip, isKernel ? PerfUnwind::s_kernelPid : ui->sample->pid(),
-                                    &elfInfo);
-        if (!mod && elfInfo)
-            elfFile = elfInfo->file.fileName().toLocal8Bit();
-    }
-
-    Dwarf_Addr adjusted = (ui->unwind->architecture() != PerfRegisterInfo::ARCH_ARM || (ip & 1)) ?
-                ip : ip + 1;
     if (mod) {
         // For addrinfo we need the raw pointer into symtab, so we need to adjust ourselves.
         symname = dwfl_module_addrinfo(mod, adjusted, &off, &sym, 0, 0, 0);
         if (off == adjusted) // no symbol found
             off = 0;
-        else if (ui->unwind->granularity() == PerfUnwind::Function)
+        else if (granularity() == Function)
             adjusted -= off;
-
-        elfFile = dwfl_module_info(mod, 0, 0, 0, 0, 0, 0, 0);
 
         Dwfl_Line *srcLine = dwfl_module_getsrc(mod, adjusted);
         if (srcLine)
@@ -360,20 +368,23 @@ static PerfUnwind::Frame lookupSymbol(PerfUnwind::UnwindInfo *ui, Dwfl *dwfl, Dw
         int status = -1;
         if (symname[0] == '_' && symname[1] == 'Z')
             demangled = abi::__cxa_demangle(symname, 0, 0, &status);
-        else if (ui->unwind->architecture() == PerfRegisterInfo::ARCH_ARM && symname[0] == '$'
+        else if (architecture() == PerfRegisterInfo::ARCH_ARM && symname[0] == '$'
                  && (symname[1] == 'a' || symname[1] == 't') && symname[2] == '\0')
-            ui->isInterworking = true;
+            currentUnwind.isInterworking = true;
 
         // Adjust it back. The symtab entries are 1 off for all practical purposes.
-        PerfUnwind::Frame frame(adjusted, isKernel, status == 0 ? QByteArray(demangled) : symname,
-                                elfFile, srcFile, line, column);
+        Frame frame(adjusted, isKernel, status == 0 ? QByteArray(demangled) : symname, elfFile,
+                    srcFile, line, column);
         free(demangled);
+        processAddrCache.insert(ip, frame);
         return frame;
     } else {
-        symname = ui->unwind->symbolFromPerfMap(adjusted, ui->sample->pid(), &off);
-        if (ui->unwind->granularity() == PerfUnwind::Function)
+        symname = symbolFromPerfMap(adjusted, pid, &off);
+        if (granularity() == Function)
             adjusted -= off;
-        return PerfUnwind::Frame(adjusted, isKernel, symname, elfFile, srcFile, line, column);
+        Frame frame(adjusted, isKernel, symname, elfFile, srcFile, line, column);
+        processAddrCache.insert(ip, frame);
+        return frame;
     }
 }
 
@@ -392,12 +403,8 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
 
     Dwarf_Addr pc_adjusted = pc - (isactivation ? 0 : 1);
 
-    /* Get PC->SYMNAME.  */
-    Dwfl_Thread *thread = dwfl_frame_thread (state);
-    Dwfl *dwfl = dwfl_thread_dwfl (thread);
-
     // isKernel = false as unwinding generally only works on user code
-    ui->frames.append(lookupSymbol(ui, dwfl, pc_adjusted, false));
+    ui->frames.append(ui->unwind->lookupSymbol(pc_adjusted, false));
     return DWARF_CB_OK;
 }
 
@@ -438,11 +445,10 @@ void PerfUnwind::resolveCallchain()
 
         // sometimes it skips the first user frame.
         if (i == 0 && !isKernel && ip != currentUnwind.sample->ip())
-            currentUnwind.frames.append(lookupSymbol(&currentUnwind, dwfl,
-                                                     currentUnwind.sample->ip(), false));
+            currentUnwind.frames.append(lookupSymbol(currentUnwind.sample->ip(), false));
 
         if (ip <= PERF_CONTEXT_MAX)
-            currentUnwind.frames.append(lookupSymbol(&currentUnwind, dwfl, ip, isKernel));
+            currentUnwind.frames.append(lookupSymbol(ip, isKernel));
     }
 }
 
@@ -491,10 +497,8 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
             unwindStack();
     }
     // If nothing was found, at least look up the IP
-    if (currentUnwind.frames.isEmpty()) {
-        currentUnwind.frames.append(lookupSymbol(&currentUnwind, dwfl, sample.ip(),
-                                                 ipIsInKernelSpace(sample.ip())));
-    }
+    if (currentUnwind.frames.isEmpty())
+        currentUnwind.frames.append(lookupSymbol(sample.ip(), ipIsInKernelSpace(sample.ip())));
 
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly)
