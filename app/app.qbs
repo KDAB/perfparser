@@ -1,8 +1,7 @@
 import qbs
 
-QtApplication {
+QtcTool {
     name: "perfparser"
-    consoleApplication: true
 
     Depends { name: "dw"; condition: !project.useSystemElfUtils }
     Depends { name: "dwelf"; condition: !project.useSystemElfUtils }
@@ -21,7 +20,6 @@ QtApplication {
     }
 
     cpp.allowUnresolvedSymbols: true
-    cpp.cxxLanguageVersion: "c++11"
 
     files: [
         "main.cpp",
