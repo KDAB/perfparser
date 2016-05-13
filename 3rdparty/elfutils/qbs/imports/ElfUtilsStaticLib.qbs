@@ -2,6 +2,7 @@ import qbs
 
 ElfUtilsProduct {
     type: ["staticlibrary"]
+    cpp.positionIndependentCode: true
 
     Export {
         Depends { name: "cpp" }

@@ -2,6 +2,7 @@ import qbs
 import qbs.FileInfo
 
 Product {
+    destinationDirectory: project.buildDirectory + "/elfutils"
     Depends { name: "cpp" }
     version: "0.163"
     cpp.cFlags: ["-std=gnu99"]

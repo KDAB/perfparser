@@ -1,7 +1,10 @@
 import qbs
 
-ElfUtilsStaticLib {
+ElfUtilsDynamicLib {
     name: "elf"
+    Depends { name: "elf32" }
+    Depends { name: "elf64" }
+
     files: [
         "abstract.h",
         "common.h",

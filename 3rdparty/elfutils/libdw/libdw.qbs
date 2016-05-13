@@ -1,7 +1,23 @@
 import qbs
 
-ElfUtilsStaticLib {
+ElfUtilsDynamicLib {
     name: "dw"
+    Depends { name: "ebl" }
+    Depends { name: "dwfl" }
+    Depends { name: "elf" }
+    cpp.dynamicLibraries: base.concat(["dl", "z"])
+
+    // Workaround for broken dependencies
+    cpp.linkerFlags: base.concat([
+        "-L" + project.buildDirectory + "/elfutils",
+        "-Wl,--whole-archive", "-lebl", "-ldwelf", "-ldwfl", "-Wl,--no-whole-archive"
+    ])
+
+    Export {
+        Depends { name: "cpp" }
+        cpp.includePaths: base.concat(".")
+    }
+
     files: [
         "cfi.c",
         "cfi.h",

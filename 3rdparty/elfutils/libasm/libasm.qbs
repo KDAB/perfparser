@@ -1,7 +1,10 @@
 import qbs
 
-ElfUtilsStaticLib {
+ElfUtilsDynamicLib {
     name: "asm"
+    Depends { name: "ebl" }
+    Depends { name: "elf" }
+    cpp.allowUnresolvedSymbols: true
     files: [
         "asm_abort.c",
         "asm_addint8.c",

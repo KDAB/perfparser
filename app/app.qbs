@@ -1,4 +1,5 @@
 import qbs
+import qbs.FileInfo
 
 QtcTool {
     name: "perfparser"
@@ -20,6 +21,10 @@ QtcTool {
     }
 
     cpp.allowUnresolvedSymbols: true
+    cpp.rpaths: [
+        "$ORIGIN/" + FileInfo.relativePath('/' + project.ide_libexec_path,
+                                           '/' + project.ide_library_path) + '/',
+    ]
 
     files: [
         "main.cpp",
