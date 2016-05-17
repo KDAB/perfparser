@@ -7,7 +7,7 @@
 	sed '1,/^%%/d;/^#/d;/^[[:space:]]*$$/d;s/[^:]*:\([^[:space:]]*\).*/MNE(\1)/;s/{[^}]*}//g;/INVALID/d' \
 	  $< | sort -u > $@
 
-%_dis.h: $(gendis)/%_defs $(gendis)/i386_gendis
+%_dis.h: $(mnemonics)/%_defs $(gendis)/i386_gendis
 	$(gendis)/i386_gendis $< > $@T
 	mv -f $@T $@
 
