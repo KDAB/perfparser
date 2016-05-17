@@ -12,6 +12,8 @@ QtcTool {
     Depends { name: "elf32"; condition: !project.useSystemElfUtils }
     Depends { name: "elf64"; condition: !project.useSystemElfUtils }
 
+    Depends { name: "qtc" }
+
     Depends { name: "Qt.network" }
 
     Properties {
@@ -22,8 +24,8 @@ QtcTool {
 
     cpp.allowUnresolvedSymbols: true
     cpp.rpaths: [
-        "$ORIGIN/" + FileInfo.relativePath('/' + project.ide_libexec_path,
-                                           '/' + project.ide_library_path) + '/',
+        "$ORIGIN/" + FileInfo.relativePath('/' + qtc.ide_libexec_path,
+                                           '/' + qtc.ide_library_path) + '/',
     ]
 
     files: [
