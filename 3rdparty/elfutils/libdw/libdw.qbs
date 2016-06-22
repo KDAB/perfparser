@@ -5,6 +5,7 @@ ElfUtilsDynamicLib {
     Depends { name: "ebl" }
     Depends { name: "dwfl" }
     Depends { name: "elf" }
+    Depends { name: "dwelf" }
     cpp.dynamicLibraries: base.concat(["dl", "z"])
 
     // Workaround for broken dependencies

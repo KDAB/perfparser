@@ -19,6 +19,7 @@ Product {
             var args = [
                 "-f", FileInfo.joinPaths(product.sourceDirectory, "..", "extras.mk"),
                 "gendis=" + FileInfo.path(input.filePath),
+                "mnemonics=" + FileInfo.path(input.filePath),
                 "srcdir=" + FileInfo.joinPaths(product.sourceDirectory, ".."),
                 output.fileName
             ];
