@@ -11,6 +11,7 @@ Project {
         Depends { name: "eu" }
         Depends { name: "i386 mnemonics" }
         cpp.cFlags: base.concat(["-Wno-unused-function"])
+        cpp.dynamicLibraries: base.concat(["m"])
         Group {
             fileTags: ["yacc"]
             files: ["../i386_parse.y"]
