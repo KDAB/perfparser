@@ -11,7 +11,7 @@ ElfUtilsDynamicLib {
     // Workaround for broken dependencies
     cpp.linkerFlags: base.concat([
         "-L" + project.buildDirectory + "/elfutils",
-        "-Wl,--whole-archive", "-lebl", "-ldwelf", "-ldwfl", "-Wl,--no-whole-archive"
+        "--whole-archive", "-lebl", "-ldwelf", "-ldwfl", "--no-whole-archive"
     ])
 
     Export {
