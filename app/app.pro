@@ -38,7 +38,8 @@ SOURCES += main.cpp \
     perfdata.cpp \
     perfunwind.cpp \
     perfregisterinfo.cpp \
-    perfstdin.cpp
+    perfstdin.cpp \
+    perfsymboltable.cpp
 
 HEADERS += \
     perfattributes.h \
@@ -48,4 +49,5 @@ HEADERS += \
     perfdata.h \
     perfunwind.h \
     perfregisterinfo.h \
-    perfstdin.h
+    perfstdin.h \
+    perfsymboltable.h
