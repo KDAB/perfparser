@@ -62,6 +62,11 @@ PerfSymbolTable *PerfUnwind::symbolTable(quint32 pid)
     return symbolTable;
 }
 
+Dwfl *PerfUnwind::dwfl(quint32 pid)
+{
+    return symbolTable(pid)->attachDwfl(pid, &m_currentUnwind);
+}
+
 void PerfUnwind::registerElf(const PerfRecordMmap &mmap)
 {
     symbolTable(mmap.pid())->registerElf(mmap, m_appPath, m_systemRoot, m_extraLibsPath);

@@ -60,11 +60,8 @@ static bool accessDsoMem(Dwfl *dwfl, const PerfUnwind::UnwindInfo *ui, Dwarf_Add
     Dwfl_Module *mod = dwfl_addrmodule(dwfl, addr);
     if (!mod) {
         mod = ui->unwind->reportElf(addr, ui->sample->pid());
-        if (!mod) {
-            mod = ui->unwind->reportElf(addr, PerfUnwind::s_kernelPid);
-            if (!mod)
-                return false;
-        }
+        if (!mod)
+            return false;
     }
 
     Dwarf_Addr bias;
@@ -100,6 +97,8 @@ static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *ar
 
     if (addr < start || addr + sizeof(Dwarf_Word) > end) {
         // not stack, try reading from ELF
+        if (ui->unwind->ipIsInKernelSpace(addr))
+            dwfl = ui->unwind->dwfl(PerfUnwind::s_kernelPid);
         if (!accessDsoMem(dwfl, ui, addr, result)) {
             ui->broken = true;
             return false;

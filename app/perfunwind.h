@@ -109,6 +109,7 @@ public:
     void fork(const PerfRecordFork &sample);
     void exit(const PerfRecordExit &sample);
     PerfSymbolTable *symbolTable(quint32 pid);
+    Dwfl *dwfl(quint32 pid);
 
 private:
 
