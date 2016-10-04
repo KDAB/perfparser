@@ -169,6 +169,9 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QString &app
     auto i = m_elfs.upperBound(mmap.addr());
     if (i != m_elfs.begin())
         --i;
+
+    bool cacheInvalid = false;
+    QMap<quint64, ElfInfo> toBeInserted;
     while (i != m_elfs.end() && i.key() < mmap.addr() + mmap.len()) {
         if (i.key() + i.value().length <= mmap.addr()) {
             ++i;
@@ -179,9 +182,9 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QString &app
             // Move or copy the original mmap to the part after the new mmap. The new length is the
             // difference between the end points (begin + length) of the two. The original mmap
             // is either removed or shortened by the following if/else construct.
-            m_elfs.insert(mmap.addr() + mmap.len(),
-                            ElfInfo(i.value().file,
-                                    i.key() + i.value().length - mmap.addr() - mmap.len()));
+            toBeInserted.insert(mmap.addr() + mmap.len(),
+                                ElfInfo(i.value().file,
+                                        i.key() + i.value().length - mmap.addr() - mmap.len()));
         }
 
         if (i.key() >= mmap.addr()) {
@@ -192,8 +195,11 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QString &app
         }
 
         // Overlapping module. Clear the cache
-        clearCache();
+        cacheInvalid = true;
     }
+    m_elfs.unite(toBeInserted);
+    if (cacheInvalid)
+        clearCache();
 
     QLatin1String filePath(mmap.filename());
     QFileInfo fileInfo(filePath);
