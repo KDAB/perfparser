@@ -46,7 +46,19 @@ public:
         ThreadStart,
         ThreadEnd,
         Command,
+        LocationDefinition,
         InvalidType
+    };
+
+    struct Location {
+        explicit Location(quint64 address = 0, const QByteArray &file = QByteArray(),
+                          qint32 line = 0, qint32 column = 0) :
+            address(address), file(file), line(line), column(column) {}
+
+        quint64 address;
+        QByteArray file;
+        qint32 line;
+        qint32 column;
     };
 
     enum Granularity {
@@ -55,18 +67,15 @@ public:
     };
 
     struct Frame {
-        Frame(quint64 frame = 0, bool isKernel = false, const QByteArray &symbol = QByteArray(),
-              const QByteArray &elfFile = QByteArray(), const QByteArray &srcFile = QByteArray(),
-              int line = 0, int column = 0, bool isInterworking = false) :
-            frame(frame), isKernel(isKernel), symbol(symbol), elfFile(elfFile), srcFile(srcFile),
-            line(line), column(column), isInterworking(isInterworking) {}
-        quint64 frame;
+        Frame(qint32 locationId = -1, bool isKernel = false,
+              const QByteArray &symbol = QByteArray(), const QByteArray &elfFile = QByteArray(),
+              bool isInterworking = false) :
+            locationId(locationId), isKernel(isKernel), symbol(symbol), elfFile(elfFile),
+            isInterworking(isInterworking) {}
+        qint32 locationId;
         bool isKernel;
         QByteArray symbol;
         QByteArray elfFile;
-        QByteArray srcFile;
-        int line;
-        int column;
         bool isInterworking;
     };
 
@@ -111,6 +120,8 @@ public:
     PerfSymbolTable *symbolTable(quint32 pid);
     Dwfl *dwfl(quint32 pid);
 
+    int resolveLocation(const Location &location);
+
 private:
 
     enum CallchainContext {
@@ -149,6 +160,8 @@ private:
     QList<PerfRecordSample> m_sampleBuffer;
     QHash<quint32, PerfSymbolTable *> m_symbolTables;
 
+    QHash<Location, int> m_locations;
+
     uint m_sampleBufferSize;
 
     Granularity m_granularity;
@@ -158,6 +171,10 @@ private:
     void unwindStack(Dwfl *dwfl);
     void resolveCallchain();
     void analyze(const PerfRecordSample &sample);
+    void sendLocation(int id, const Location &location);
 };
+
+uint qHash(const PerfUnwind::Location &location, uint seed = 0);
+bool operator==(const PerfUnwind::Location &a, const PerfUnwind::Location &b);
 
 #endif // PERFUNWIND_H

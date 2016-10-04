@@ -317,8 +317,10 @@ PerfUnwind::Frame PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel)
             isInterworking = true;
 
         // Adjust it back. The symtab entries are 1 off for all practical purposes.
-        PerfUnwind::Frame frame(adjusted, isKernel, status == 0 ? QByteArray(demangled) : symname,
-                                elfFile, srcFile, line, column, isInterworking);
+        PerfUnwind::Frame frame(m_unwind->resolveLocation(PerfUnwind::Location(adjusted, srcFile,
+                                                                               line, column)),
+                                isKernel, status == 0 ? QByteArray(demangled) : symname, elfFile,
+                                isInterworking);
         free(demangled);
         m_addrCache.insert(ip, frame);
         return frame;
@@ -326,7 +328,9 @@ PerfUnwind::Frame PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel)
         symname = symbolFromPerfMap(adjusted, &off);
         if (m_unwind->granularity() == PerfUnwind::Function)
             adjusted -= off;
-        PerfUnwind::Frame frame(adjusted, isKernel, symname, elfFile, srcFile, line, column);
+        PerfUnwind::Frame frame(m_unwind->resolveLocation(PerfUnwind::Location(adjusted, srcFile,
+                                                                               line, column)),
+                                isKernel, symname, elfFile);
         m_addrCache.insert(ip, frame);
         return frame;
     }

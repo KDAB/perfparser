@@ -26,6 +26,21 @@
 
 #include <cstring>
 
+uint qHash(const PerfUnwind::Location &location, uint seed)
+{
+    QtPrivate::QHashCombine hash;
+    seed = hash(seed, location.address);
+    seed = hash(seed, location.file);
+    seed = hash(seed, location.line);
+    seed = hash(seed, location.column);
+    return seed;
+}
+
+bool operator==(const PerfUnwind::Location &a, const PerfUnwind::Location &b)
+{
+    return a.address == b.address && a.file == b.file && a.line == b.line && a.column == b.column;
+}
+
 PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugPath,
                        const QString &extraLibsPath, const QString &appPath) :
     m_output(output), m_architecture(PerfRegisterInfo::ARCH_INVALID), m_systemRoot(systemRoot),
@@ -106,8 +121,12 @@ bool PerfUnwind::ipIsInKernelSpace(quint64 ip) const
 
 QDataStream &operator<<(QDataStream &stream, const PerfUnwind::Frame &frame)
 {
-    return stream << frame.frame << frame.isKernel << frame.symbol << frame.elfFile
-                  << frame.srcFile << frame.line << frame.column;
+    return stream << frame.locationId << frame.isKernel << frame.symbol << frame.elfFile;
+}
+
+QDataStream &operator<<(QDataStream &stream, const PerfUnwind::Location &location)
+{
+    return stream << location.address << location.file << location.line << location.column;
 }
 
 static int frameCallback(Dwfl_Frame *state, void *arg)
@@ -246,3 +265,23 @@ void PerfUnwind::exit(const PerfRecordExit &sample)
     sendBuffer(m_output, buffer);
 }
 
+void PerfUnwind::sendLocation(int id, const PerfUnwind::Location &location)
+{
+    QByteArray buffer;
+    const PerfRecordSample *sample = m_currentUnwind.sample;
+    QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(LocationDefinition)
+                                               << sample->pid() << sample->tid()
+                                               << m_threads[sample->tid()] << sample->time()
+                                               << id << location;
+    sendBuffer(m_output, buffer);
+}
+
+int PerfUnwind::resolveLocation(const Location &location)
+{
+    auto symbolLocationIt = m_locations.find(location);
+    if (symbolLocationIt == m_locations.end()) {
+        symbolLocationIt = m_locations.insert(location, m_locations.size());
+        sendLocation(symbolLocationIt.value(), location);
+    }
+    return symbolLocationIt.value();
+}
