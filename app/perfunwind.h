@@ -28,6 +28,7 @@
 #include <QMap>
 #include <QHash>
 #include <QSharedPointer>
+#include <limits>
 
 class PerfUnwind
 {
@@ -98,14 +99,14 @@ public:
                const QString &extraLibs, const QString &appPath);
     ~PerfUnwind();
 
-    PerfRegisterInfo::Architecture architecture() const { return registerArch; }
+    PerfRegisterInfo::Architecture architecture() const { return m_architecture; }
     void setArchitecture(PerfRegisterInfo::Architecture architecture)
     {
-        registerArch = architecture;
+        m_architecture = architecture;
     }
 
-    Granularity granularity() const { return sampleGranularity; }
-    void setGranularity(Granularity granularity) { sampleGranularity = granularity; }
+    Granularity granularity() const { return m_granularity; }
+    void setGranularity(Granularity granularity) { m_granularity = granularity; }
 
     void registerElf(const PerfRecordMmap &mmap);
     void comm(PerfRecordComm &comm);
@@ -136,38 +137,38 @@ private:
         PERF_CONTEXT_MAX            = (quint64)-4095,
     };
 
-    UnwindInfo currentUnwind;
-    QIODevice *output;
+    UnwindInfo m_currentUnwind;
+    QIODevice *m_output;
 
-    QHash<quint32, QString> threads;
+    QHash<quint32, QString> m_threads;
     Dwfl *dwfl;
-    Dwfl_Callbacks offlineCallbacks;
-    char *debugInfoPath;
+    Dwfl_Callbacks m_offlineCallbacks;
+    char *m_debugInfoPath;
 
-    PerfRegisterInfo::Architecture registerArch;
+    PerfRegisterInfo::Architecture m_architecture;
 
 
     // Root of the file system of the machine that recorded the data. Any binaries and debug
     // symbols not found in appPath or extraLibsPath have to appear here.
-    QString systemRoot;
+    QString m_systemRoot;
 
     // Extra path to search for binaries and debug symbols before considering the system root
-    QString extraLibsPath;
+    QString m_extraLibsPath;
 
     // Path where the application being profiled resides. This is the first path to look for
     // binaries and debug symbols.
-    QString appPath;
+    QString m_appPath;
 
     QHash<quint32, QMap<quint64, ElfInfo> > elfs; // The inner map needs to be sorted
     QHash<quint32, PerfMap> perfMaps;
-    QList<PerfRecordSample> sampleBuffer;
+    QList<PerfRecordSample> m_sampleBuffer;
     QHash<quint32, QHash<Dwarf_Addr, Frame> > addrCache;
 
-    uint sampleBufferSize;
+    uint m_sampleBufferSize;
 
-    Granularity sampleGranularity;
+    Granularity m_granularity;
 
-    static const uint maxSampleBufferSize = 1024 * 1024;
+    static const uint s_maxSampleBufferSize = 1024 * 1024;
 
     void unwindStack();
     void resolveCallchain();
