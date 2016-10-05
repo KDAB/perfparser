@@ -132,7 +132,6 @@ private:
     UnwindInfo m_currentUnwind;
     QIODevice *m_output;
 
-    QHash<quint32, QString> m_threads;
     Dwfl_Callbacks m_offlineCallbacks;
     char *m_debugInfoPath;
 

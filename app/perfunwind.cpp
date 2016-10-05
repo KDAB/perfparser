@@ -96,11 +96,10 @@ void PerfUnwind::sendBuffer(const QByteArray &buffer)
 void PerfUnwind::comm(PerfRecordComm &comm)
 {
 
-    m_threads[comm.tid()] = QString::fromLocal8Bit(comm.comm());
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(Command)
-                                               << comm.pid() << comm.tid() << m_threads[comm.tid()]
-                                               << comm.time();
+                                               << comm.pid() << comm.tid()  << comm.time()
+                                               << comm.comm();
     sendBuffer(buffer);
 }
 
@@ -247,7 +246,7 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly)
             << static_cast<quint8>(m_currentUnwind.broken ? BadStack : GoodStack) << sample.pid()
-            << sample.tid() << m_threads[sample.tid()] << sample.time() << m_currentUnwind.frames;
+            << sample.tid() << sample.time() << m_currentUnwind.frames;
     sendBuffer(buffer);
 }
 
@@ -256,7 +255,7 @@ void PerfUnwind::fork(const PerfRecordFork &sample)
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(ThreadStart)
                                                << sample.childPid() << sample.childTid()
-                                               << m_threads[sample.childTid()] << sample.time();
+                                               << sample.time();
     sendBuffer(buffer);
 }
 
@@ -265,7 +264,7 @@ void PerfUnwind::exit(const PerfRecordExit &sample)
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(ThreadEnd)
                                                << sample.childPid() << sample.childTid()
-                                               << m_threads[sample.childTid()] << sample.time();
+                                               << sample.time();
     sendBuffer(buffer);
 }
 
@@ -275,8 +274,7 @@ void PerfUnwind::sendLocation(int id, const PerfUnwind::Location &location)
     const PerfRecordSample *sample = m_currentUnwind.sample;
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(LocationDefinition)
                                                << sample->pid() << sample->tid()
-                                               << m_threads[sample->tid()] << sample->time()
-                                               << id << location;
+                                               << sample->time() << id << location;
     sendBuffer(buffer);
 }
 
@@ -286,8 +284,7 @@ void PerfUnwind::sendSymbol(int id, const PerfUnwind::Symbol &symbol)
     const PerfRecordSample *sample = m_currentUnwind.sample;
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(SymbolDefinition)
                                                << sample->pid() << sample->tid()
-                                               << m_threads[sample->tid()] << sample->time()
-                                               << id << symbol;
+                                               << sample->time() << id << symbol;
     sendBuffer(buffer);
 }
 
