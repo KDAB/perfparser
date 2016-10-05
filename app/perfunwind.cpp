@@ -100,7 +100,7 @@ void PerfUnwind::comm(PerfRecordComm &comm)
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(Command)
                                                << comm.pid() << comm.tid() << m_threads[comm.tid()]
-                                               << comm.time() << QVector<PerfUnwind::Frame>();
+                                               << comm.time();
     sendBuffer(m_output, buffer);
 }
 
@@ -251,8 +251,7 @@ void PerfUnwind::fork(const PerfRecordFork &sample)
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(ThreadStart)
                                                << sample.childPid() << sample.childTid()
-                                               << m_threads[sample.childTid()] << sample.time()
-                                               << QVector<PerfUnwind::Frame>();
+                                               << m_threads[sample.childTid()] << sample.time();
     sendBuffer(m_output, buffer);
 }
 
@@ -261,8 +260,7 @@ void PerfUnwind::exit(const PerfRecordExit &sample)
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(ThreadEnd)
                                                << sample.childPid() << sample.childTid()
-                                               << m_threads[sample.childTid()] << sample.time()
-                                               << QVector<PerfUnwind::Frame>();
+                                               << m_threads[sample.childTid()] << sample.time();
     sendBuffer(m_output, buffer);
 }
 
