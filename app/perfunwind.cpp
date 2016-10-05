@@ -44,8 +44,7 @@ bool operator==(const PerfUnwind::Location &a, const PerfUnwind::Location &b)
 PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugPath,
                        const QString &extraLibsPath, const QString &appPath) :
     m_output(output), m_architecture(PerfRegisterInfo::ARCH_INVALID), m_systemRoot(systemRoot),
-    m_extraLibsPath(extraLibsPath), m_appPath(appPath), m_sampleBufferSize(0),
-    m_granularity(Function)
+    m_extraLibsPath(extraLibsPath), m_appPath(appPath), m_sampleBufferSize(0)
 {
     m_currentUnwind.unwind = this;
     m_offlineCallbacks.find_elf = dwfl_build_id_find_elf;
@@ -107,7 +106,8 @@ void PerfUnwind::comm(PerfRecordComm &comm)
 
 Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid)
 {
-    return symbolTable(pid)->reportElf(ip);
+    auto symbols = symbolTable(pid);
+    return symbols->reportElf(symbols->findElf(ip));
 }
 
 bool PerfUnwind::ipIsInKernelSpace(quint64 ip) const
@@ -126,7 +126,8 @@ QDataStream &operator<<(QDataStream &stream, const PerfUnwind::Frame &frame)
 
 QDataStream &operator<<(QDataStream &stream, const PerfUnwind::Location &location)
 {
-    return stream << location.address << location.file << location.line << location.column;
+    return stream << location.address << location.file << location.line << location.column
+                  << location.parentLocationId;
 }
 
 static int frameCallback(Dwfl_Frame *state, void *arg)

@@ -136,19 +136,6 @@ int main(int argc, char *argv[])
                                 "given in the data itself, to <arch>."),
                             QLatin1String("arch"));
     parser.addOption(arch);
-
-    QCommandLineOption granularity(QLatin1String("granularity"),
-                                   QCoreApplication::translate(
-                                       "main",
-                                       "Set the granularity for collected samples. Set it to "
-                                       "\"address\" in order to report the exact address of each "
-                                       "stack frame, or to \"function\" to report the start points "
-                                       "of the functions the stack frames are in. The default is "
-                                       "\"function\"."),
-                                   QLatin1String("granularity"),
-                                   QLatin1String("function"));
-    parser.addOption(granularity);
-
     parser.process(app);
 
     QScopedPointer<QFile> outfile;
@@ -176,17 +163,6 @@ int main(int argc, char *argv[])
     PerfUnwind unwind(outfile.data(), parser.value(sysroot), parser.isSet(debug) ?
                           parser.value(debug) : parser.value(sysroot) + parser.value(debug),
                       parser.value(extra), parser.value(appPath));
-    if (parser.isSet(granularity)) {
-        QString granularityValue = parser.value(granularity);
-        if (granularityValue == QLatin1String("address")) {
-            unwind.setGranularity(PerfUnwind::Address);
-        } else if (granularityValue == QLatin1String("function")) {
-            unwind.setGranularity(PerfUnwind::Function);
-        } else {
-            qWarning() << "Unknown granularity" << granularityValue;
-            return InvalidOption;
-        }
-    }
 
     PerfHeader header(infile.data());
     PerfAttributes attributes;

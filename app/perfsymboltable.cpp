@@ -224,7 +224,22 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QString &app
     m_elfs[mmap.addr()] = ElfInfo(fullPath, mmap.len(), fullPath.isFile());
 }
 
-Dwfl_Module *PerfSymbolTable::reportElf(quint64 ip, const PerfSymbolTable::ElfInfo **info)
+Dwfl_Module *PerfSymbolTable::reportElf(QMap<quint64, PerfSymbolTable::ElfInfo>::ConstIterator i)
+{
+    if (i == m_elfs.end() || !i.value().found)
+        return 0;
+    Dwfl_Module *ret = dwfl_report_elf(
+                m_dwfl, i.value().file.fileName().toLocal8Bit().constData(),
+                i.value().file.absoluteFilePath().toLocal8Bit().constData(), -1, i.key(),
+                false);
+    if (!ret)
+        qWarning() << "failed to report" << i.value().file.absoluteFilePath() << "for"
+                   << QString::fromLatin1("0x%1").arg(i.key(), 0, 16).toLocal8Bit().constData()
+                   << ":" << dwfl_errmsg(dwfl_errno());
+    return ret;
+}
+
+QMap<quint64, PerfSymbolTable::ElfInfo>::ConstIterator PerfSymbolTable::findElf(quint64 ip)
 {
     QMap<quint64, ElfInfo>::ConstIterator i = m_elfs.upperBound(ip);
     if (i == m_elfs.end() || i.key() != ip) {
@@ -243,23 +258,10 @@ Dwfl_Module *PerfSymbolTable::reportElf(quint64 ip, const PerfSymbolTable::ElfIn
 //
 //    ^ We don't have to do this here as libdw is supposed to handle it from version 0.160.
 
-    if (i != m_elfs.end() && i.key() + i.value().length > ip) {
-        if (info)
-            *info = &i.value();
-        if (!i.value().found)
-            return 0;
-        Dwfl_Module *ret = dwfl_report_elf(
-                    m_dwfl, i.value().file.fileName().toLocal8Bit().constData(),
-                    i.value().file.absoluteFilePath().toLocal8Bit().constData(), -1, i.key(),
-                    false);
-        if (!ret)
-            qWarning() << "failed to report" << i.value().file.absoluteFilePath() << "for"
-                       << QString::fromLatin1("0x%1").arg(i.key(), 0, 16).toLocal8Bit().constData()
-                       << ":" << dwfl_errmsg(dwfl_errno());
-        return ret;
-    } else {
-        return 0;
-    }
+    if (i != m_elfs.end() && i.key() + i.value().length > ip)
+        return i;
+    else
+        return m_elfs.end();
 }
 
 PerfUnwind::Frame PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel)
@@ -267,17 +269,20 @@ PerfUnwind::Frame PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel)
     Dwfl_Module *mod = m_dwfl ? dwfl_addrmodule(m_dwfl, ip) : 0;
     QByteArray elfFile;
 
-    if (m_dwfl && !mod) {
-        const ElfInfo *elfInfo = 0;
-        mod = reportElf(ip, &elfInfo);
-        if (!mod && elfInfo)
-            elfFile = elfInfo->file.fileName().toLocal8Bit();
+    quint64 elfStart = 0;
+
+    auto elfIt = findElf(ip);
+    if (elfIt != m_elfs.end()) {
+        elfFile = elfIt.value().file.fileName().toLocal8Bit();
+        elfStart = elfIt.key();
+        if (m_dwfl && !mod)
+            mod = reportElf(elfIt);
     }
 
-    Dwarf_Addr adjusted = (m_unwind->architecture() != PerfRegisterInfo::ARCH_ARM
-            || (ip & 1)) ? ip : ip + 1;
-    if (mod)
-        elfFile = dwfl_module_info(mod, 0, 0, 0, 0, 0, 0, 0);
+    PerfUnwind::Location addressLocation(
+                (m_unwind->architecture() != PerfRegisterInfo::ARCH_ARM || (ip & 1))
+                ? ip : ip + 1);
+    PerfUnwind::Location functionLocation(addressLocation);
 
     auto it = m_addrCache.constFind(ip);
     // Check for elfFile as it might have loaded a different file to the same address in the mean
@@ -287,23 +292,28 @@ PerfUnwind::Frame PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel)
         return *it;
 
     QByteArray symname;
-    QByteArray srcFile;
-    int line = 0;
-    int column = 0;
     GElf_Sym sym;
     GElf_Off off = 0;
 
     if (mod) {
         // For addrinfo we need the raw pointer into symtab, so we need to adjust ourselves.
-        symname = dwfl_module_addrinfo(mod, adjusted, &off, &sym, 0, 0, 0);
-        if (off == adjusted) // no symbol found
-            off = 0;
-        else if (m_unwind->granularity() == PerfUnwind::Function)
-            adjusted -= off;
+        symname = dwfl_module_addrinfo(mod, addressLocation.address, &off, &sym, 0, 0, 0);
+        Dwfl_Line *srcLine = dwfl_module_getsrc(mod, addressLocation.address);
+        if (srcLine) {
+            addressLocation.file = dwfl_lineinfo(srcLine, NULL, &addressLocation.line,
+                                                 &addressLocation.column, NULL, NULL);
+        }
 
-        Dwfl_Line *srcLine = dwfl_module_getsrc(mod, adjusted);
-        if (srcLine)
-            srcFile = dwfl_lineinfo(srcLine, NULL, &line, &column, NULL, NULL);
+        if (off == addressLocation.address) {// no symbol found
+            functionLocation.address = elfStart; // use the start of the elf as "function"
+        } else {
+            functionLocation.address -= off;
+            srcLine = dwfl_module_getsrc(mod, functionLocation.address);
+            if (srcLine) {
+                functionLocation.file = dwfl_lineinfo(srcLine, NULL, &functionLocation.line,
+                                                      &functionLocation.column, NULL, NULL);
+            }
+        }
     }
 
     if (!symname.isEmpty()) {
@@ -317,19 +327,21 @@ PerfUnwind::Frame PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel)
             isInterworking = true;
 
         // Adjust it back. The symtab entries are 1 off for all practical purposes.
-        PerfUnwind::Frame frame(m_unwind->resolveLocation(PerfUnwind::Location(adjusted, srcFile,
-                                                                               line, column)),
+        addressLocation.parentLocationId = m_unwind->resolveLocation(functionLocation);
+        PerfUnwind::Frame frame(m_unwind->resolveLocation(addressLocation),
                                 isKernel, status == 0 ? QByteArray(demangled) : symname, elfFile,
                                 isInterworking);
         free(demangled);
         m_addrCache.insert(ip, frame);
         return frame;
     } else {
-        symname = symbolFromPerfMap(adjusted, &off);
-        if (m_unwind->granularity() == PerfUnwind::Function)
-            adjusted -= off;
-        PerfUnwind::Frame frame(m_unwind->resolveLocation(PerfUnwind::Location(adjusted, srcFile,
-                                                                               line, column)),
+        symname = symbolFromPerfMap(addressLocation.address, &off);
+        if (off)
+            functionLocation.address -= off;
+        else
+            functionLocation.address = elfStart;
+        addressLocation.parentLocationId = m_unwind->resolveLocation(functionLocation);
+        PerfUnwind::Frame frame(m_unwind->resolveLocation(addressLocation),
                                 isKernel, symname, elfFile);
         m_addrCache.insert(ip, frame);
         return frame;

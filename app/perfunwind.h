@@ -52,18 +52,15 @@ public:
 
     struct Location {
         explicit Location(quint64 address = 0, const QByteArray &file = QByteArray(),
-                          qint32 line = 0, qint32 column = 0) :
-            address(address), file(file), line(line), column(column) {}
+                          qint32 line = 0, qint32 column = 0, qint32 parentLocationId = -1) :
+            address(address), file(file), line(line), column(column),
+            parentLocationId(parentLocationId) {}
 
         quint64 address;
         QByteArray file;
         qint32 line;
         qint32 column;
-    };
-
-    enum Granularity {
-        Function,
-        Address
+        qint32 parentLocationId;
     };
 
     struct Frame {
@@ -104,9 +101,6 @@ public:
     {
         m_architecture = architecture;
     }
-
-    Granularity granularity() const { return m_granularity; }
-    void setGranularity(Granularity granularity) { m_granularity = granularity; }
 
     void registerElf(const PerfRecordMmap &mmap);
     void comm(PerfRecordComm &comm);
@@ -163,8 +157,6 @@ private:
     QHash<Location, int> m_locations;
 
     uint m_sampleBufferSize;
-
-    Granularity m_granularity;
 
     static const uint s_maxSampleBufferSize = 1024 * 1024;
 
