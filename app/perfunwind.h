@@ -163,6 +163,7 @@ private:
     void unwindStack(Dwfl *dwfl);
     void resolveCallchain();
     void analyze(const PerfRecordSample &sample);
+    void sendBuffer(const QByteArray &buffer);
     void sendLocation(int id, const Location &location);
     void sendSymbol(int id, const Symbol &symbol);
 };

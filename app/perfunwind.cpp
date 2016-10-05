@@ -86,11 +86,11 @@ void PerfUnwind::registerElf(const PerfRecordMmap &mmap)
     symbolTable(mmap.pid())->registerElf(mmap, m_appPath, m_systemRoot, m_extraLibsPath);
 }
 
-void sendBuffer(QIODevice *output, const QByteArray &buffer)
+void PerfUnwind::sendBuffer(const QByteArray &buffer)
 {
     quint32 size = buffer.length();
-    output->write(reinterpret_cast<char *>(&size), sizeof(quint32));
-    output->write(buffer);
+    m_output->write(reinterpret_cast<char *>(&size), sizeof(quint32));
+    m_output->write(buffer);
 }
 
 void PerfUnwind::comm(PerfRecordComm &comm)
@@ -101,7 +101,7 @@ void PerfUnwind::comm(PerfRecordComm &comm)
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(Command)
                                                << comm.pid() << comm.tid() << m_threads[comm.tid()]
                                                << comm.time();
-    sendBuffer(m_output, buffer);
+    sendBuffer(buffer);
 }
 
 Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid)
@@ -248,7 +248,7 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
     QDataStream(&buffer, QIODevice::WriteOnly)
             << static_cast<quint8>(m_currentUnwind.broken ? BadStack : GoodStack) << sample.pid()
             << sample.tid() << m_threads[sample.tid()] << sample.time() << m_currentUnwind.frames;
-    sendBuffer(m_output, buffer);
+    sendBuffer(buffer);
 }
 
 void PerfUnwind::fork(const PerfRecordFork &sample)
@@ -257,7 +257,7 @@ void PerfUnwind::fork(const PerfRecordFork &sample)
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(ThreadStart)
                                                << sample.childPid() << sample.childTid()
                                                << m_threads[sample.childTid()] << sample.time();
-    sendBuffer(m_output, buffer);
+    sendBuffer(buffer);
 }
 
 void PerfUnwind::exit(const PerfRecordExit &sample)
@@ -266,7 +266,7 @@ void PerfUnwind::exit(const PerfRecordExit &sample)
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(ThreadEnd)
                                                << sample.childPid() << sample.childTid()
                                                << m_threads[sample.childTid()] << sample.time();
-    sendBuffer(m_output, buffer);
+    sendBuffer(buffer);
 }
 
 void PerfUnwind::sendLocation(int id, const PerfUnwind::Location &location)
@@ -277,7 +277,7 @@ void PerfUnwind::sendLocation(int id, const PerfUnwind::Location &location)
                                                << sample->pid() << sample->tid()
                                                << m_threads[sample->tid()] << sample->time()
                                                << id << location;
-    sendBuffer(m_output, buffer);
+    sendBuffer(buffer);
 }
 
 void PerfUnwind::sendSymbol(int id, const PerfUnwind::Symbol &symbol)
@@ -288,7 +288,7 @@ void PerfUnwind::sendSymbol(int id, const PerfUnwind::Symbol &symbol)
                                                << sample->pid() << sample->tid()
                                                << m_threads[sample->tid()] << sample->time()
                                                << id << symbol;
-    sendBuffer(m_output, buffer);
+    sendBuffer(buffer);
 }
 
 int PerfUnwind::resolveLocation(const Location &location)
