@@ -24,9 +24,11 @@
 ****************************************************************************/
 #include "perfsymboltable.h"
 #include "perfunwind.h"
+#include <dwarf.h>
 
 #include <QDir>
 #include <QDebug>
+#include <QStack>
 
 #include <cstring>
 #include <cxxabi.h>
@@ -212,6 +214,131 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QString &app
                                             fullPath.isFile()));
 }
 
+static QByteArray dieName(Dwarf_Die *die)
+{
+    Dwarf_Attribute attr;
+    Dwarf_Attribute *result = dwarf_attr_integrate(die, DW_AT_MIPS_linkage_name, &attr);
+    if (!result)
+        result = dwarf_attr_integrate(die, DW_AT_linkage_name, &attr);
+
+    const char *name = dwarf_formstring(result);
+    if (!name)
+        name = dwarf_diename(die);
+
+    return name ? name : "";
+}
+
+static QByteArray demangle(const QByteArray &mangledName)
+{
+    if (mangledName.length() < 3) {
+        return mangledName;
+    } else {
+        static size_t demangleBufferLength = 0;
+        static char *demangleBuffer = nullptr;
+
+        // Require GNU v3 ABI by the "_Z" prefix.
+        if (mangledName[0] == '_' && mangledName[1] == 'Z') {
+            int status = -1;
+            char *dsymname = abi::__cxa_demangle(mangledName, demangleBuffer, &demangleBufferLength,
+                                                 &status);
+            if (status == 0)
+                return demangleBuffer = dsymname;
+        }
+    }
+    return mangledName;
+}
+
+int PerfSymbolTable::insertSubprogram(Dwarf_Die *top, Dwarf_Addr entry, const QByteArray &binary,
+                                      qint32 inlineCallLocationId, bool isKernel)
+{
+    int line = 0;
+    dwarf_decl_line(top, &line);
+    int column = 0;
+    dwarf_decl_column(top, &column);
+    const QByteArray file = dwarf_decl_file(top);
+
+    int locationId = m_unwind->resolveLocation(PerfUnwind::Location(entry, file, line, column,
+                                                                    inlineCallLocationId));
+    m_unwind->resolveSymbol(locationId, PerfUnwind::Symbol(demangle(dieName(top)), binary,
+                                                           isKernel));
+
+    return locationId;
+}
+
+int PerfSymbolTable::parseDie(Dwarf_Die *top, const QByteArray &binary, Dwarf_Files *files,
+                              Dwarf_Addr entry, bool isKernel, const QStack<DieAndLocation> &stack)
+{
+    int tag = dwarf_tag(top);
+    switch (tag) {
+    case DW_TAG_inlined_subroutine: {
+        PerfUnwind::Location location(entry);
+        Dwarf_Attribute attr;
+        Dwarf_Word val = 0;
+        location.file
+                = (dwarf_formudata(dwarf_attr(top, DW_AT_call_file, &attr), &val) == 0)
+                ? dwarf_filesrc (files, val, NULL, NULL) : "";
+        location.line
+                = (dwarf_formudata(dwarf_attr(top, DW_AT_call_line, &attr), &val) == 0)
+                ? val : -1;
+        location.column
+                = (dwarf_formudata(dwarf_attr(top, DW_AT_call_column, &attr), &val) == 0)
+                ? val : -1;
+
+        auto it = stack.end();
+        --it;
+        while (it != stack.begin()) {
+            location.parentLocationId = (--it)->locationId;
+            if (location.parentLocationId != -1)
+                break;
+        }
+
+        int callLocationId = m_unwind->resolveLocation(location);
+        return insertSubprogram(top, entry, binary, callLocationId, isKernel);
+    }
+    case DW_TAG_subprogram:
+        return insertSubprogram(top, entry, binary, -1, isKernel);
+    default:
+        return -1;
+    }
+}
+
+void PerfSymbolTable::parseDwarf(Dwarf_Die *cudie, Dwarf_Addr bias, const QByteArray &binary,
+                                 bool isKernel)
+{
+    // Iterate through all dwarf sections and establish parent/child relations for inline
+    // subroutines. Add all symbols to m_symbols and special frames for start points of inline
+    // instances to m_addresses.
+
+    QStack<DieAndLocation> stack;
+    stack.push_back({*cudie, -1});
+
+    Dwarf_Files *files = 0;
+    dwarf_getsrcfiles(cudie, &files, NULL);
+
+    while (!stack.isEmpty()) {
+        Dwarf_Die *top = &(stack.last().die);
+        Dwarf_Addr entry = 0;
+        if (dwarf_entrypc(top, &entry) == 0 && entry != 0)
+            stack.last().locationId = parseDie(top, binary, files, entry + bias, isKernel, stack);
+
+        Dwarf_Die child;
+        if (dwarf_child(top, &child) == 0) {
+            stack.push_back({child, -1});
+        } else {
+            do {
+                Dwarf_Die sibling;
+                // Mind that stack.last() can change during this loop. So don't use "top" below.
+                const bool hasSibling = (dwarf_siblingof(&(stack.last().die), &sibling) == 0);
+                stack.pop_back();
+                if (hasSibling) {
+                    stack.push_back({sibling, -1});
+                    break;
+                }
+            } while (!stack.isEmpty());
+        }
+    }
+}
+
 Dwfl_Module *PerfSymbolTable::reportElf(QMap<quint64, PerfSymbolTable::ElfInfo>::ConstIterator i)
 {
     if (i == m_elfs.end() || !i.value().found)
@@ -309,28 +436,40 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, quint64 timestamp, bool isKernel
 
         if (off == addressLocation.address) {// no symbol found
             functionLocation.address = elfStart; // use the start of the elf as "function"
+            addressLocation.parentLocationId = m_unwind->resolveLocation(functionLocation);
         } else {
-            functionLocation.address -= off;
-            srcLine = dwfl_module_getsrc(mod, functionLocation.address);
-            if (srcLine) {
-                functionLocation.file = dwfl_lineinfo(srcLine, NULL, &functionLocation.line,
-                                                      &functionLocation.column, NULL, NULL);
+            Dwarf_Addr bias = 0;
+            functionLocation.address -= off; // in case we don't find anything better
+            Dwarf_Die *die = dwfl_module_addrdie(mod, addressLocation.address, &bias);
+
+            Dwarf_Die *scopes = NULL;
+            int nscopes = dwarf_getscopes(die, addressLocation.address - bias, &scopes);
+
+            for (int i = 0; i < nscopes; ++i) {
+                Dwarf_Die *scope = &scopes[i];
+                const int tag = dwarf_tag(scope);
+                if (tag == DW_TAG_subprogram || tag == DW_TAG_inlined_subroutine) {
+                    Dwarf_Addr entry = 0;
+                    dwarf_entrypc(scope, &entry);
+                    functionLocation.address = entry + bias;
+                    functionLocation.file = dwarf_decl_file(scope);
+                    dwarf_decl_line(scope, &functionLocation.line);
+                    dwarf_decl_column(scope, &functionLocation.column);
+                    break;
+                }
             }
+            free(scopes);
+
+            addressLocation.parentLocationId = m_unwind->lookupLocation(functionLocation);
+            if (die && !m_unwind->hasSymbol(addressLocation.parentLocationId))
+                parseDwarf(die, bias, elfFile, isKernel);
+            if (addressLocation.parentLocationId == -1)
+                addressLocation.parentLocationId = m_unwind->resolveLocation(functionLocation);
         }
-    }
-
-    if (!symname.isEmpty()) {
-        addressLocation.parentLocationId = m_unwind->resolveLocation(functionLocation);
         if (!m_unwind->hasSymbol(addressLocation.parentLocationId)) {
-            char *demangled = NULL;
-            int status = -1;
-            if (symname[0] == '_' && symname[1] == 'Z')
-                demangled = abi::__cxa_demangle(symname, 0, 0, &status);
-
-            m_unwind->resolveSymbol(addressLocation.parentLocationId, PerfUnwind::Symbol(
-                                        status == 0 ? QByteArray(demangled) : symname,
-                                        elfFile, isKernel));
-            free(demangled);
+            // no sufficient debug information. Use what we already know
+            m_unwind->resolveSymbol(addressLocation.parentLocationId,
+                                    PerfUnwind::Symbol(demangle(symname), elfFile, isKernel));
         }
     } else {
         symname = symbolFromPerfMap(addressLocation.address, &off);

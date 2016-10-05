@@ -110,6 +110,7 @@ public:
     PerfSymbolTable *symbolTable(quint32 pid);
     Dwfl *dwfl(quint32 pid, quint64 timestamp);
 
+    int lookupLocation(const Location &location) const;
     int resolveLocation(const Location &location);
 
     bool hasSymbol(int locationId) const;

@@ -293,6 +293,11 @@ void PerfUnwind::sendSymbol(int id, const PerfUnwind::Symbol &symbol)
     sendBuffer(buffer);
 }
 
+int PerfUnwind::lookupLocation(const PerfUnwind::Location &location) const
+{
+    return m_locations.value(location, -1);
+}
+
 int PerfUnwind::resolveLocation(const Location &location)
 {
     auto symbolLocationIt = m_locations.find(location);

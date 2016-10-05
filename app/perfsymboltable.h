@@ -59,6 +59,11 @@ public:
         QByteArray name;
     };
 
+    struct DieAndLocation {
+        Dwarf_Die die;
+        int locationId;
+    };
+
     // Announce an mmap. Invalidate the symbol and address cache and clear the dwfl if it overlaps
     // with an existing one.
     void registerElf(const PerfRecordMmap &mmap, const QString &appPath,
@@ -101,10 +106,16 @@ private:
     QMultiMap<quint64, ElfInfo> m_elfs; // needs to be sorted
     Dwfl_Callbacks *m_callbacks;
     QByteArray symbolFromPerfMap(quint64 ip, GElf_Off *offset) const;
+    int parseDie(Dwarf_Die *top, const QByteArray &binary, Dwarf_Files *files, Dwarf_Addr entry,
+                 bool isKernel, const QStack<DieAndLocation> &stack);
+    int insertSubprogram(Dwarf_Die *top, Dwarf_Addr entry, const QByteArray &binary,
+                         qint32 inlineParent, bool isKernel);
+    void parseDwarf(Dwarf_Die *cudie, Dwarf_Addr bias, const QByteArray &binary, bool isKernel);
 };
 
 QT_BEGIN_NAMESPACE
 Q_DECLARE_TYPEINFO(PerfSymbolTable::PerfMapSymbol, Q_MOVABLE_TYPE);
+Q_DECLARE_TYPEINFO(PerfSymbolTable::DieAndLocation, Q_MOVABLE_TYPE);
 QT_END_NAMESPACE
 
 #endif // PERFSYMBOLTABLE_H
