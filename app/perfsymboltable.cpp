@@ -122,7 +122,7 @@ static bool setInitialRegisters(Dwfl_Thread *thread, void *arg)
                     PerfRegisterInfo::s_perfToDwarf[architecture][abi][i]);
 
     // Go one frame up to get the rest of the stack at interworking veneers.
-    if (ui->isInterworking()) {
+    if (ui->isInterworking) {
         dwarfRegs[PerfRegisterInfo::s_dwarfIp[architecture][abi]] =
                 dwarfRegs[PerfRegisterInfo::s_dwarfLr[architecture][abi]];
     }
@@ -197,6 +197,10 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QString &app
         cacheInvalid = true;
     }
     m_elfs.unite(toBeInserted);
+
+    // There is no need to clear the symbol or location caches in PerfUnwind. Some locations become
+    // stale this way, but we still need to keep their IDs, as the receiver might still use them for
+    // past frames.
     if (cacheInvalid)
         clearCache();
 
@@ -264,8 +268,14 @@ QMap<quint64, PerfSymbolTable::ElfInfo>::ConstIterator PerfSymbolTable::findElf(
         return m_elfs.end();
 }
 
-PerfUnwind::Frame PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel)
+int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel, bool *isInterworking)
 {
+    auto it = m_addressCache.constFind(ip);
+    if (it != m_addressCache.constEnd()) {
+        *isInterworking = it->isInterworking;
+        return it->locationId;
+    }
+
     Dwfl_Module *mod = m_dwfl ? dwfl_addrmodule(m_dwfl, ip) : 0;
     QByteArray elfFile;
 
@@ -283,10 +293,6 @@ PerfUnwind::Frame PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel)
                 (m_unwind->architecture() != PerfRegisterInfo::ARCH_ARM || (ip & 1))
                 ? ip : ip + 1);
     PerfUnwind::Location functionLocation(addressLocation);
-
-    auto it = m_addrCache.constFind(ip);
-    if (it != m_addrCache.constEnd())
-        return *it;
 
     QByteArray symname;
     GElf_Sym sym;
@@ -314,23 +320,18 @@ PerfUnwind::Frame PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel)
     }
 
     if (!symname.isEmpty()) {
-        char *demangled = NULL;
-        int status = -1;
-        bool isInterworking = false;
-        if (symname[0] == '_' && symname[1] == 'Z')
-            demangled = abi::__cxa_demangle(symname, 0, 0, &status);
-        else if (m_unwind->architecture() == PerfRegisterInfo::ARCH_ARM && symname[0] == '$'
-                 && (symname[1] == 'a' || symname[1] == 't') && symname[2] == '\0')
-            isInterworking = true;
-
-        // Adjust it back. The symtab entries are 1 off for all practical purposes.
         addressLocation.parentLocationId = m_unwind->resolveLocation(functionLocation);
-        PerfUnwind::Frame frame(m_unwind->resolveLocation(addressLocation),
-                                isKernel, status == 0 ? QByteArray(demangled) : symname, elfFile,
-                                isInterworking);
-        free(demangled);
-        m_addrCache.insert(ip, frame);
-        return frame;
+        if (!m_unwind->hasSymbol(addressLocation.parentLocationId)) {
+            char *demangled = NULL;
+            int status = -1;
+            if (symname[0] == '_' && symname[1] == 'Z')
+                demangled = abi::__cxa_demangle(symname, 0, 0, &status);
+
+            m_unwind->resolveSymbol(addressLocation.parentLocationId, PerfUnwind::Symbol(
+                                        status == 0 ? QByteArray(demangled) : symname,
+                                        elfFile, isKernel));
+            free(demangled);
+        }
     } else {
         symname = symbolFromPerfMap(addressLocation.address, &off);
         if (off)
@@ -338,11 +339,19 @@ PerfUnwind::Frame PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel)
         else
             functionLocation.address = elfStart;
         addressLocation.parentLocationId = m_unwind->resolveLocation(functionLocation);
-        PerfUnwind::Frame frame(m_unwind->resolveLocation(addressLocation),
-                                isKernel, symname, elfFile);
-        m_addrCache.insert(ip, frame);
-        return frame;
+        if (!m_unwind->hasSymbol(addressLocation.parentLocationId)) {
+            m_unwind->resolveSymbol(addressLocation.parentLocationId,
+                                    PerfUnwind::Symbol(symname, elfFile, isKernel));
+        }
     }
+
+    Q_ASSERT(addressLocation.parentLocationId != -1);
+    Q_ASSERT(m_unwind->hasSymbol(addressLocation.parentLocationId));
+
+    int locationId = m_unwind->resolveLocation(addressLocation);
+    *isInterworking = (symname == "$at");
+    m_addressCache.insert(ip, {locationId, *isInterworking});
+    return locationId;
 }
 
 static bool operator<(const PerfSymbolTable::PerfMapSymbol &a,
@@ -430,7 +439,7 @@ Dwfl *PerfSymbolTable::attachDwfl(quint32 pid, void *arg)
 
 void PerfSymbolTable::clearCache()
 {
-    m_addrCache.clear();
+    m_addressCache.clear();
     m_perfMap.clear();
     if (m_perfMapFile.isOpen())
         m_perfMapFile.reset();

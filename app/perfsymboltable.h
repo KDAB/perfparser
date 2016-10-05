@@ -68,7 +68,7 @@ public:
 
     // Look up a frame and all its inline parents and append them to the given vector.
     // If the frame hits an elf that hasn't been reported, yet, report it.
-    PerfUnwind::Frame lookupFrame(Dwarf_Addr ip, bool isKernel = false);
+    int lookupFrame(Dwarf_Addr ip, bool isKernel, bool *isInterworking);
 
     void updatePerfMap();
     bool containsAddress(quint64 address) const;
@@ -77,9 +77,15 @@ public:
     void clearCache();
 
 private:
+
+    struct AddressCacheEntry {
+        int locationId;
+        bool isInterworking;
+    };
+
     QFile m_perfMapFile;
     QVector<PerfMapSymbol> m_perfMap;
-    QHash<Dwarf_Addr, PerfUnwind::Frame> m_addrCache;
+    QHash<Dwarf_Addr, AddressCacheEntry> m_addressCache;
 
     PerfUnwind *m_unwind;
     Dwfl *m_dwfl;

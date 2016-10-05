@@ -47,6 +47,7 @@ public:
         ThreadEnd,
         Command,
         LocationDefinition,
+        SymbolDefinition,
         InvalidType
     };
 
@@ -63,29 +64,24 @@ public:
         qint32 parentLocationId;
     };
 
-    struct Frame {
-        Frame(qint32 locationId = -1, bool isKernel = false,
-              const QByteArray &symbol = QByteArray(), const QByteArray &elfFile = QByteArray(),
-              bool isInterworking = false) :
-            locationId(locationId), isKernel(isKernel), symbol(symbol), elfFile(elfFile),
-            isInterworking(isInterworking) {}
-        qint32 locationId;
+    struct Symbol {
+        explicit Symbol(const QByteArray &name = QByteArray(),
+                        const QByteArray &binary = QByteArray(), bool isKernel = false) :
+            name(name), binary(binary), isKernel(isKernel)
+        {}
+
+        QByteArray name;
+        QByteArray binary;
         bool isKernel;
-        QByteArray symbol;
-        QByteArray elfFile;
-        bool isInterworking;
     };
 
     struct UnwindInfo {
-        UnwindInfo() : frames(0), unwind(0), sample(0), broken(false) {}
-        bool isInterworking() const
-        {
-            return frames.length() == 1 && frames.first().isInterworking;
-        }
+        UnwindInfo() : frames(0), unwind(0), sample(0), isInterworking(false), broken(false) {}
 
-        QVector<PerfUnwind::Frame> frames;
+        QVector<qint32> frames;
         PerfUnwind *unwind;
         const PerfRecordSample *sample;
+        bool isInterworking;
         bool broken;
     };
 
@@ -115,6 +111,9 @@ public:
     Dwfl *dwfl(quint32 pid);
 
     int resolveLocation(const Location &location);
+
+    bool hasSymbol(int locationId) const;
+    void resolveSymbol(int locationId, const Symbol &symbol);
 
 private:
 
@@ -155,6 +154,7 @@ private:
     QHash<quint32, PerfSymbolTable *> m_symbolTables;
 
     QHash<Location, int> m_locations;
+    QHash<int, Symbol> m_symbols;
 
     uint m_sampleBufferSize;
 
@@ -164,6 +164,7 @@ private:
     void resolveCallchain();
     void analyze(const PerfRecordSample &sample);
     void sendLocation(int id, const Location &location);
+    void sendSymbol(int id, const Symbol &symbol);
 };
 
 uint qHash(const PerfUnwind::Location &location, uint seed = 0);

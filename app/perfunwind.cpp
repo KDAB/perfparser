@@ -119,15 +119,15 @@ bool PerfUnwind::ipIsInKernelSpace(quint64 ip) const
     return symbolTableIt.value()->containsAddress(ip);
 }
 
-QDataStream &operator<<(QDataStream &stream, const PerfUnwind::Frame &frame)
-{
-    return stream << frame.locationId << frame.isKernel << frame.symbol << frame.elfFile;
-}
-
 QDataStream &operator<<(QDataStream &stream, const PerfUnwind::Location &location)
 {
     return stream << location.address << location.file << location.line << location.column
                   << location.parentLocationId;
+}
+
+QDataStream &operator<<(QDataStream &stream, const PerfUnwind::Symbol &symbol)
+{
+    return stream << symbol.name << symbol.binary << symbol.isKernel;
 }
 
 static int frameCallback(Dwfl_Frame *state, void *arg)
@@ -146,14 +146,15 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
     Dwarf_Addr pc_adjusted = pc - (isactivation ? 0 : 1);
 
     // isKernel = false as unwinding generally only works on user code
-    ui->frames.append(ui->unwind->symbolTable(ui->sample->pid())->lookupFrame(pc_adjusted));
+    ui->frames.append(ui->unwind->symbolTable(ui->sample->pid())->lookupFrame(pc_adjusted, false,
+                                                                              &ui->isInterworking));
     return DWARF_CB_OK;
 }
 
 void PerfUnwind::unwindStack(Dwfl *dwfl)
 {
     dwfl_getthread_frames(dwfl, m_currentUnwind.sample->pid(), frameCallback, &m_currentUnwind);
-    if (m_currentUnwind.isInterworking()) {
+    if (m_currentUnwind.frames.length() == 1 && m_currentUnwind.isInterworking) {
         // If it's an ARM interworking veneer, we assume that we can find a return address in LR and
         // no stack has been used for the veneer itself.
         // The reasoning is that any symbol jumped to by the veneer has to work with or without
@@ -194,10 +195,12 @@ void PerfUnwind::resolveCallchain()
 
         // sometimes it skips the first user frame.
         if (i == 0 && !isKernel && ip != m_currentUnwind.sample->ip())
-            m_currentUnwind.frames.append(symbols->lookupFrame(m_currentUnwind.sample->ip()));
+            m_currentUnwind.frames.append(symbols->lookupFrame(m_currentUnwind.sample->ip(), false,
+                                                               &m_currentUnwind.isInterworking));
 
         if (ip <= PERF_CONTEXT_MAX)
-            m_currentUnwind.frames.append(symbols->lookupFrame(ip, isKernel));
+            m_currentUnwind.frames.append(symbols->lookupFrame(ip, isKernel,
+                                                               &m_currentUnwind.isInterworking));
     }
 }
 
@@ -216,6 +219,7 @@ void PerfUnwind::sample(const PerfRecordSample &sample)
 
 void PerfUnwind::analyze(const PerfRecordSample &sample)
 {
+    m_currentUnwind.isInterworking = false;
     m_currentUnwind.broken = false;
     m_currentUnwind.sample = &sample;
     m_currentUnwind.frames.clear();
@@ -236,7 +240,8 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
     // If nothing was found, at least look up the IP
     if (m_currentUnwind.frames.isEmpty()) {
         PerfSymbolTable *symbols = isKernel ? symbolTable(s_kernelPid) : userSymbols;
-        m_currentUnwind.frames.append(symbols->lookupFrame(sample.ip(), isKernel));
+        m_currentUnwind.frames.append(symbols->lookupFrame(sample.ip(), isKernel,
+                                                           &m_currentUnwind.isInterworking));
     }
 
     QByteArray buffer;
@@ -275,6 +280,17 @@ void PerfUnwind::sendLocation(int id, const PerfUnwind::Location &location)
     sendBuffer(m_output, buffer);
 }
 
+void PerfUnwind::sendSymbol(int id, const PerfUnwind::Symbol &symbol)
+{
+    QByteArray buffer;
+    const PerfRecordSample *sample = m_currentUnwind.sample;
+    QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(SymbolDefinition)
+                                               << sample->pid() << sample->tid()
+                                               << m_threads[sample->tid()] << sample->time()
+                                               << id << symbol;
+    sendBuffer(m_output, buffer);
+}
+
 int PerfUnwind::resolveLocation(const Location &location)
 {
     auto symbolLocationIt = m_locations.find(location);
@@ -283,4 +299,15 @@ int PerfUnwind::resolveLocation(const Location &location)
         sendLocation(symbolLocationIt.value(), location);
     }
     return symbolLocationIt.value();
+}
+
+bool PerfUnwind::hasSymbol(int locationId) const
+{
+    return m_symbols.contains(locationId);
+}
+
+void PerfUnwind::resolveSymbol(int locationId, const PerfUnwind::Symbol &symbol)
+{
+    m_symbols.insert(locationId, symbol);
+    sendSymbol(locationId, symbol);
 }
