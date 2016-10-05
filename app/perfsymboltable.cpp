@@ -285,10 +285,7 @@ PerfUnwind::Frame PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel)
     PerfUnwind::Location functionLocation(addressLocation);
 
     auto it = m_addrCache.constFind(ip);
-    // Check for elfFile as it might have loaded a different file to the same address in the mean
-    // time. We don't consider the case of loading the same file again at a different, overlapping
-    // offset.
-    if (it != m_addrCache.constEnd() && it->elfFile == elfFile)
+    if (it != m_addrCache.constEnd())
         return *it;
 
     QByteArray symname;
