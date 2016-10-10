@@ -23,14 +23,22 @@
 
 #include "perfdata.h"
 #include "perfregisterinfo.h"
-#include <libdwfl.h>
-#include <QFileInfo>
-#include <QMap>
-#include <QHash>
-#include <QSharedPointer>
 
-class PerfUnwind
+#include <libdwfl.h>
+
+#include <QObject>
+#include <QList>
+#include <QHash>
+#include <QIODevice>
+#include <QByteArray>
+#include <QString>
+
+#include <limits>
+
+class PerfSymbolTable;
+class PerfUnwind : public QObject
 {
+    Q_OBJECT
 public:
     enum EventType {
         GoodStack,
@@ -49,9 +57,9 @@ public:
     struct Frame {
         Frame(quint64 frame = 0, bool isKernel = false, const QByteArray &symbol = QByteArray(),
               const QByteArray &elfFile = QByteArray(), const QByteArray &srcFile = QByteArray(),
-              int line = 0, int column = 0) :
+              int line = 0, int column = 0, bool isInterworking = false) :
             frame(frame), isKernel(isKernel), symbol(symbol), elfFile(elfFile), srcFile(srcFile),
-            line(line), column(column) {}
+            line(line), column(column), isInterworking(isInterworking) {}
         quint64 frame;
         bool isKernel;
         QByteArray symbol;
@@ -59,36 +67,20 @@ public:
         QByteArray srcFile;
         int line;
         int column;
+        bool isInterworking;
     };
 
     struct UnwindInfo {
-        UnwindInfo() : frames(0), unwind(0), sample(0), broken(false), isInterworking(false) {}
+        UnwindInfo() : frames(0), unwind(0), sample(0), broken(false) {}
+        bool isInterworking() const
+        {
+            return frames.length() == 1 && frames.first().isInterworking;
+        }
+
         QVector<PerfUnwind::Frame> frames;
         PerfUnwind *unwind;
         const PerfRecordSample *sample;
         bool broken;
-        bool isInterworking;
-    };
-
-    struct ElfInfo {
-        ElfInfo(const QFileInfo &file = QFileInfo(), quint64 length = 0, bool found = true) :
-            file(file), length(length), found(found) {}
-        QFileInfo file;
-        quint64 length;
-        bool found;
-    };
-
-    struct PerfMap {
-        struct Symbol {
-            Symbol(quint64 start = 0, quint64 length = 0, QByteArray name = QByteArray()) :
-                start(start), length(length), name(name) {}
-            quint64 start;
-            quint64 length;
-            QByteArray name;
-        };
-
-        QSharedPointer<QFile> file;
-        QVector<Symbol> symbols;
     };
 
     static const quint32 s_kernelPid = std::numeric_limits<quint32>::max();
@@ -98,29 +90,26 @@ public:
                const QString &extraLibs, const QString &appPath);
     ~PerfUnwind();
 
-    PerfRegisterInfo::Architecture architecture() const { return registerArch; }
+    PerfRegisterInfo::Architecture architecture() const { return m_architecture; }
     void setArchitecture(PerfRegisterInfo::Architecture architecture)
     {
-        registerArch = architecture;
+        m_architecture = architecture;
     }
 
-    Granularity granularity() const { return sampleGranularity; }
-    void setGranularity(Granularity granularity) { sampleGranularity = granularity; }
+    Granularity granularity() const { return m_granularity; }
+    void setGranularity(Granularity granularity) { m_granularity = granularity; }
 
     void registerElf(const PerfRecordMmap &mmap);
     void comm(PerfRecordComm &comm);
 
-    Dwfl_Module *reportElf(quint64 ip, quint32 pid, const ElfInfo **info = 0) const;
+    Dwfl_Module *reportElf(quint64 ip, quint32 pid);
     bool ipIsInKernelSpace(quint64 ip) const;
     void sample(const PerfRecordSample &sample);
 
     void fork(const PerfRecordFork &sample);
     void exit(const PerfRecordExit &sample);
-
-    QByteArray symbolFromPerfMap(quint64 ip, quint32 pid, GElf_Off *offset) const;
-    void updatePerfMap(quint32 pid);
-
-    Frame lookupSymbol(Dwarf_Addr ip, bool isKernel);
+    PerfSymbolTable *symbolTable(quint32 pid);
+    Dwfl *dwfl(quint32 pid);
 
 private:
 
@@ -136,40 +125,37 @@ private:
         PERF_CONTEXT_MAX            = (quint64)-4095,
     };
 
-    UnwindInfo currentUnwind;
-    QIODevice *output;
+    UnwindInfo m_currentUnwind;
+    QIODevice *m_output;
 
-    QHash<quint32, QString> threads;
-    Dwfl *dwfl;
-    Dwfl_Callbacks offlineCallbacks;
-    char *debugInfoPath;
+    QHash<quint32, QString> m_threads;
+    Dwfl_Callbacks m_offlineCallbacks;
+    char *m_debugInfoPath;
 
-    PerfRegisterInfo::Architecture registerArch;
+    PerfRegisterInfo::Architecture m_architecture;
 
 
     // Root of the file system of the machine that recorded the data. Any binaries and debug
     // symbols not found in appPath or extraLibsPath have to appear here.
-    QString systemRoot;
+    QString m_systemRoot;
 
     // Extra path to search for binaries and debug symbols before considering the system root
-    QString extraLibsPath;
+    QString m_extraLibsPath;
 
     // Path where the application being profiled resides. This is the first path to look for
     // binaries and debug symbols.
-    QString appPath;
+    QString m_appPath;
 
-    QHash<quint32, QMap<quint64, ElfInfo> > elfs; // The inner map needs to be sorted
-    QHash<quint32, PerfMap> perfMaps;
-    QList<PerfRecordSample> sampleBuffer;
-    QHash<quint32, QHash<Dwarf_Addr, Frame> > addrCache;
+    QList<PerfRecordSample> m_sampleBuffer;
+    QHash<quint32, PerfSymbolTable *> m_symbolTables;
 
-    uint sampleBufferSize;
+    uint m_sampleBufferSize;
 
-    Granularity sampleGranularity;
+    Granularity m_granularity;
 
-    static const uint maxSampleBufferSize = 1024 * 1024;
+    static const uint s_maxSampleBufferSize = 1024 * 1024;
 
-    void unwindStack();
+    void unwindStack(Dwfl *dwfl);
     void resolveCallchain();
     void analyze(const PerfRecordSample &sample);
 };
