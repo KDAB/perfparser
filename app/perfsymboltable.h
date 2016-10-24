@@ -87,6 +87,8 @@ private:
     QByteArray symbolFromPerfMap(quint64 ip, GElf_Off *offset) const;
 };
 
+QT_BEGIN_NAMESPACE
 Q_DECLARE_TYPEINFO(PerfSymbolTable::PerfMapSymbol, Q_MOVABLE_TYPE);
+QT_END_NAMESPACE
 
 #endif // PERFSYMBOLTABLE_H
