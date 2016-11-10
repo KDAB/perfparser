@@ -76,9 +76,9 @@ PerfSymbolTable *PerfUnwind::symbolTable(quint32 pid)
     return symbolTable;
 }
 
-Dwfl *PerfUnwind::dwfl(quint32 pid)
+Dwfl *PerfUnwind::dwfl(quint32 pid, quint64 timestamp)
 {
-    return symbolTable(pid)->attachDwfl(pid, &m_currentUnwind);
+    return symbolTable(pid)->attachDwfl(pid, timestamp, &m_currentUnwind);
 }
 
 void PerfUnwind::registerElf(const PerfRecordMmap &mmap)
@@ -103,10 +103,10 @@ void PerfUnwind::comm(PerfRecordComm &comm)
     sendBuffer(buffer);
 }
 
-Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid)
+Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid, quint64 timestamp)
 {
     auto symbols = symbolTable(pid);
-    return symbols->reportElf(symbols->findElf(ip));
+    return symbols->reportElf(symbols->findElf(ip, timestamp));
 }
 
 bool PerfUnwind::ipIsInKernelSpace(quint64 ip) const
@@ -145,8 +145,8 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
     Dwarf_Addr pc_adjusted = pc - (isactivation ? 0 : 1);
 
     // isKernel = false as unwinding generally only works on user code
-    ui->frames.append(ui->unwind->symbolTable(ui->sample->pid())->lookupFrame(pc_adjusted, false,
-                                                                              &ui->isInterworking));
+    ui->frames.append(ui->unwind->symbolTable(ui->sample->pid())->lookupFrame(
+                          pc_adjusted, ui->sample->time(), false, &ui->isInterworking));
     return DWARF_CB_OK;
 }
 
@@ -193,13 +193,18 @@ void PerfUnwind::resolveCallchain()
         }
 
         // sometimes it skips the first user frame.
-        if (i == 0 && !isKernel && ip != m_currentUnwind.sample->ip())
-            m_currentUnwind.frames.append(symbols->lookupFrame(m_currentUnwind.sample->ip(), false,
-                                                               &m_currentUnwind.isInterworking));
+        if (i == 0 && !isKernel && ip != m_currentUnwind.sample->ip()) {
+            m_currentUnwind.frames.append(symbols->lookupFrame(
+                                              m_currentUnwind.sample->ip(),
+                                              m_currentUnwind.sample->time(), false,
+                                              &m_currentUnwind.isInterworking));
+        }
 
-        if (ip <= PERF_CONTEXT_MAX)
-            m_currentUnwind.frames.append(symbols->lookupFrame(ip, isKernel,
-                                                               &m_currentUnwind.isInterworking));
+        if (ip <= PERF_CONTEXT_MAX) {
+            m_currentUnwind.frames.append(symbols->lookupFrame(
+                                              ip, m_currentUnwind.sample->time(), isKernel,
+                                              &m_currentUnwind.isInterworking));
+        }
     }
 }
 
@@ -228,18 +233,18 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
     PerfSymbolTable *userSymbols = symbolTable(sample.pid());
     userSymbols->updatePerfMap();
 
+    // Do this before any lookupFrame() calls; we want to clear the caches if timestamps reset.
+    Dwfl *userDwfl = userSymbols->attachDwfl(sample.pid(), sample.time(), &m_currentUnwind);
     if (sample.callchain().length() > 0)
         resolveCallchain();
 
-    if (sample.registerAbi() != 0 && sample.userStack().length() > 0) {
-        if (Dwfl *userDwfl = userSymbols->attachDwfl(sample.pid(), &m_currentUnwind))
-            unwindStack(userDwfl);
-    }
+    if (userDwfl && sample.registerAbi() != 0 && sample.userStack().length() > 0)
+        unwindStack(userDwfl);
 
     // If nothing was found, at least look up the IP
     if (m_currentUnwind.frames.isEmpty()) {
         PerfSymbolTable *symbols = isKernel ? symbolTable(s_kernelPid) : userSymbols;
-        m_currentUnwind.frames.append(symbols->lookupFrame(sample.ip(), isKernel,
+        m_currentUnwind.frames.append(symbols->lookupFrame(sample.ip(), sample.time(), isKernel,
                                                            &m_currentUnwind.isInterworking));
     }
 

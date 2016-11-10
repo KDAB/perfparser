@@ -40,10 +40,14 @@ public:
     ~PerfSymbolTable();
 
     struct ElfInfo {
-        ElfInfo(const QFileInfo &file = QFileInfo(), quint64 length = 0, bool found = true) :
-            file(file), length(length), found(found) {}
+        ElfInfo(const QFileInfo &file = QFileInfo(), quint64 length = 0, quint64 timeAdded = 0,
+                quint64 timeOverwritten = std::numeric_limits<quint64>::max(), bool found = true) :
+            file(file), length(length), timeAdded(timeAdded), timeOverwritten(timeOverwritten),
+            found(found) {}
         QFileInfo file;
         quint64 length;
+        quint64 timeAdded;
+        quint64 timeOverwritten;
         bool found;
     };
 
@@ -60,7 +64,8 @@ public:
     void registerElf(const PerfRecordMmap &mmap, const QString &appPath,
                      const QString &systemRoot, const QString &extraLibsPath);
 
-    QMap<quint64, PerfSymbolTable::ElfInfo>::ConstIterator findElf(quint64 ip);
+    QMap<quint64, PerfSymbolTable::ElfInfo>::ConstIterator
+    findElf(quint64 ip, quint64 timestamp) const;
 
     // Report an mmap to dwfl and parse it for symbols and inlines, or simply return it if dwfl has
     // it already
@@ -68,12 +73,12 @@ public:
 
     // Look up a frame and all its inline parents and append them to the given vector.
     // If the frame hits an elf that hasn't been reported, yet, report it.
-    int lookupFrame(Dwarf_Addr ip, bool isKernel, bool *isInterworking);
+    int lookupFrame(Dwarf_Addr ip, quint64 timestamp, bool isKernel, bool *isInterworking);
 
     void updatePerfMap();
     bool containsAddress(quint64 address) const;
 
-    Dwfl *attachDwfl(quint32 pid, void *arg);
+    Dwfl *attachDwfl(quint32 pid, quint64 timestamp, void *arg);
     void clearCache();
 
 private:
@@ -90,7 +95,10 @@ private:
     PerfUnwind *m_unwind;
     Dwfl *m_dwfl;
 
-    QMap<quint64, ElfInfo> m_elfs; // needs to be sorted
+    quint64 m_lastMmapAddedTime;
+    quint64 m_nextMmapOverwrittenTime;
+
+    QMultiMap<quint64, ElfInfo> m_elfs; // needs to be sorted
     Dwfl_Callbacks *m_callbacks;
     QByteArray symbolFromPerfMap(quint64 ip, GElf_Off *offset) const;
 };

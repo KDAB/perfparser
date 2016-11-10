@@ -33,7 +33,8 @@
 
 PerfSymbolTable::PerfSymbolTable(quint32 pid, Dwfl_Callbacks *callbacks, PerfUnwind *parent) :
     m_perfMapFile(QString::fromLatin1("/tmp/perf-%1.map").arg(pid)),
-    m_unwind(parent), m_callbacks(callbacks)
+    m_unwind(parent), m_lastMmapAddedTime(0),
+    m_nextMmapOverwrittenTime(std::numeric_limits<quint64>::max()), m_callbacks(callbacks)
 {
     m_dwfl = dwfl_begin(m_callbacks);
 }
@@ -59,7 +60,7 @@ static bool accessDsoMem(Dwfl *dwfl, const PerfUnwind::UnwindInfo *ui, Dwarf_Add
     // TODO: Take the pgoff into account? Or does elf_getdata do that already?
     Dwfl_Module *mod = dwfl_addrmodule(dwfl, addr);
     if (!mod) {
-        mod = ui->unwind->reportElf(addr, ui->sample->pid());
+        mod = ui->unwind->reportElf(addr, ui->sample->pid(), ui->sample->time());
         if (!mod)
             return false;
     }
@@ -98,7 +99,7 @@ static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *ar
     if (addr < start || addr + sizeof(Dwarf_Word) > end) {
         // not stack, try reading from ELF
         if (ui->unwind->ipIsInKernelSpace(addr))
-            dwfl = ui->unwind->dwfl(PerfUnwind::s_kernelPid);
+            dwfl = ui->unwind->dwfl(PerfUnwind::s_kernelPid, ui->sample->time());
         if (!accessDsoMem(dwfl, ui, addr, result)) {
             ui->broken = true;
             return false;
@@ -165,38 +166,20 @@ static bool findInExtraPath(QFileInfo &path, const QString &fileName)
 void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QString &appPath,
                                   const QString &systemRoot, const QString &extraLibsPath)
 {
-    auto i = m_elfs.upperBound(mmap.addr());
-    if (i != m_elfs.begin())
-        --i;
-
     bool cacheInvalid = false;
-    QMap<quint64, ElfInfo> toBeInserted;
-    while (i != m_elfs.end() && i.key() < mmap.addr() + mmap.len()) {
-        if (i.key() + i.value().length <= mmap.addr()) {
-            ++i;
+    quint64 overwritten = std::numeric_limits<quint64>::max();
+    for (auto i = m_elfs.begin(); i != m_elfs.end() && i.key() < mmap.addr() + mmap.len(); ++i) {
+        if (i.key() + i->length <= mmap.addr())
             continue;
-        }
 
-        if (i.key() + i.value().length > mmap.addr() + mmap.len()) {
-            // Move or copy the original mmap to the part after the new mmap. The new length is the
-            // difference between the end points (begin + length) of the two. The original mmap
-            // is either removed or shortened by the following if/else construct.
-            toBeInserted.insert(mmap.addr() + mmap.len(),
-                                ElfInfo(i.value().file,
-                                        i.key() + i.value().length - mmap.addr() - mmap.len()));
-        }
-
-        if (i.key() >= mmap.addr()) {
-            i = m_elfs.erase(i);
-        } else {
-            i.value().length = mmap.addr() - i.key();
-            ++i;
-        }
+        if (mmap.time() > i->timeAdded)
+            i->timeOverwritten = qMin(i->timeOverwritten, mmap.time());
+        else
+            overwritten = qMin(i->timeAdded, overwritten);
 
         // Overlapping module. Clear the cache
         cacheInvalid = true;
     }
-    m_elfs.unite(toBeInserted);
 
     // There is no need to clear the symbol or location caches in PerfUnwind. Some locations become
     // stale this way, but we still need to keep their IDs, as the receiver might still use them for
@@ -225,7 +208,8 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QString &app
         fullPath.setFile(systemRoot + filePath);
     }
 
-    m_elfs[mmap.addr()] = ElfInfo(fullPath, mmap.len(), fullPath.isFile());
+    m_elfs.insertMulti(mmap.addr(), ElfInfo(fullPath, mmap.len(), mmap.time(), overwritten,
+                                            fullPath.isFile()));
 }
 
 Dwfl_Module *PerfSymbolTable::reportElf(QMap<quint64, PerfSymbolTable::ElfInfo>::ConstIterator i)
@@ -240,17 +224,24 @@ Dwfl_Module *PerfSymbolTable::reportElf(QMap<quint64, PerfSymbolTable::ElfInfo>:
         qWarning() << "failed to report" << i.value().file.absoluteFilePath() << "for"
                    << QString::fromLatin1("0x%1").arg(i.key(), 0, 16).toLocal8Bit().constData()
                    << ":" << dwfl_errmsg(dwfl_errno());
+
+    if (m_lastMmapAddedTime < i->timeAdded)
+        m_lastMmapAddedTime = i->timeAdded;
+    if (m_nextMmapOverwrittenTime > i->timeOverwritten)
+        m_nextMmapOverwrittenTime = i->timeOverwritten;
+
     return ret;
 }
 
-QMap<quint64, PerfSymbolTable::ElfInfo>::ConstIterator PerfSymbolTable::findElf(quint64 ip)
+QMap<quint64, PerfSymbolTable::ElfInfo>::ConstIterator
+PerfSymbolTable::findElf(quint64 ip, quint64 timestamp) const
 {
     QMap<quint64, ElfInfo>::ConstIterator i = m_elfs.upperBound(ip);
     if (i == m_elfs.end() || i.key() != ip) {
         if (i != m_elfs.begin())
             --i;
         else
-            i = m_elfs.end();
+            return m_elfs.end();
     }
 
 //    /* On ARM, symbols for thumb functions have 1 added to
@@ -262,14 +253,23 @@ QMap<quint64, PerfSymbolTable::ElfInfo>::ConstIterator PerfSymbolTable::findElf(
 //
 //    ^ We don't have to do this here as libdw is supposed to handle it from version 0.160.
 
-    if (i != m_elfs.end() && i.key() + i.value().length > ip)
-        return i;
-    else
-        return m_elfs.end();
+    while (true) {
+        if (i->timeAdded <= timestamp && i->timeOverwritten > timestamp)
+            return (i.key() + i->length > ip) ? i : m_elfs.end();
+
+        if (i == m_elfs.begin())
+            return m_elfs.end();
+
+        --i;
+    }
 }
 
-int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel, bool *isInterworking)
+int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, quint64 timestamp, bool isKernel,
+                                 bool *isInterworking)
 {
+    Q_ASSERT(timestamp >= m_lastMmapAddedTime);
+    Q_ASSERT(timestamp < m_nextMmapOverwrittenTime);
+
     auto it = m_addressCache.constFind(ip);
     if (it != m_addressCache.constEnd()) {
         *isInterworking = it->isInterworking;
@@ -281,7 +281,7 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel, bool *isInterwork
 
     quint64 elfStart = 0;
 
-    auto elfIt = findElf(ip);
+    auto elfIt = findElf(ip, timestamp);
     if (elfIt != m_elfs.end()) {
         elfFile = elfIt.value().file.fileName().toLocal8Bit();
         elfStart = elfIt.key();
@@ -412,25 +412,28 @@ bool PerfSymbolTable::containsAddress(quint64 address) const
     return first.key() <= address && last.key() + last.value().length > address;
 }
 
-Dwfl *PerfSymbolTable::attachDwfl(quint32 pid, void *arg)
+Dwfl *PerfSymbolTable::attachDwfl(quint32 pid, quint64 timestamp, void *arg)
 {
-    // Already attached, nothing to do
-    if (static_cast<pid_t>(pid) == dwfl_pid(m_dwfl))
-        return m_dwfl;
+    if (timestamp < m_lastMmapAddedTime || timestamp >= m_nextMmapOverwrittenTime)
+        clearCache();
+    else if (static_cast<pid_t>(pid) == dwfl_pid(m_dwfl))
+        return m_dwfl; // Already attached, nothing to do
 
     // Report some random elf, so that dwfl guesses the target architecture.
     for (auto it = m_elfs.constBegin(), end = m_elfs.constEnd(); it != end; ++it) {
-        if (!it->found)
+        if (!it->found || it->timeAdded > timestamp || it->timeOverwritten <= timestamp)
             continue;
         if (dwfl_report_elf(m_dwfl, it.value().file.fileName().toLocal8Bit().constData(),
                             it.value().file.absoluteFilePath().toLocal8Bit().constData(), -1,
                             it.key(), false)) {
+            m_lastMmapAddedTime = it->timeAdded;
+            m_nextMmapOverwrittenTime = it->timeOverwritten;
             break;
         }
     }
 
     if (!dwfl_attach_state(m_dwfl, 0, pid, &threadCallbacks, arg)) {
-        qWarning() << "failed to attach state" << dwfl_errmsg(dwfl_errno());
+        qWarning() << pid << "failed to attach state" << dwfl_errmsg(dwfl_errno());
         return nullptr;
     }
 
@@ -439,6 +442,8 @@ Dwfl *PerfSymbolTable::attachDwfl(quint32 pid, void *arg)
 
 void PerfSymbolTable::clearCache()
 {
+    m_lastMmapAddedTime = 0;
+    m_nextMmapOverwrittenTime = std::numeric_limits<quint64>::max();
     m_addressCache.clear();
     m_perfMap.clear();
     if (m_perfMapFile.isOpen())

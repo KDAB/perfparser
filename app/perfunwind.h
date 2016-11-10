@@ -101,14 +101,14 @@ public:
     void registerElf(const PerfRecordMmap &mmap);
     void comm(PerfRecordComm &comm);
 
-    Dwfl_Module *reportElf(quint64 ip, quint32 pid);
+    Dwfl_Module *reportElf(quint64 ip, quint32 pid, quint64 timestamp);
     bool ipIsInKernelSpace(quint64 ip) const;
     void sample(const PerfRecordSample &sample);
 
     void fork(const PerfRecordFork &sample);
     void exit(const PerfRecordExit &sample);
     PerfSymbolTable *symbolTable(quint32 pid);
-    Dwfl *dwfl(quint32 pid);
+    Dwfl *dwfl(quint32 pid, quint64 timestamp);
 
     int resolveLocation(const Location &location);
 
