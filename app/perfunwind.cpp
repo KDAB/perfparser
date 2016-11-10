@@ -131,14 +131,15 @@ QDataStream &operator<<(QDataStream &stream, const PerfUnwind::Symbol &symbol)
 
 static int frameCallback(Dwfl_Frame *state, void *arg)
 {
-    Dwarf_Addr pc;
+    Dwarf_Addr pc = 0;
     PerfUnwind::UnwindInfo *ui = static_cast<PerfUnwind::UnwindInfo *>(arg);
 
     bool isactivation;
-    if (!dwfl_frame_pc(state, &pc, &isactivation) ||
-            ui->frames.length() > PerfUnwind::s_maxFrames) {
-        ui->broken = true;
-        qWarning() << dwfl_errmsg(dwfl_errno()) << ui->broken;
+    if (!dwfl_frame_pc(state, &pc, &isactivation)
+            || ui->frames.length() > PerfUnwind::s_maxFrames
+            || pc == 0) {
+        ui->firstGuessedFrame = ui->frames.length();
+        qWarning() << dwfl_errmsg(dwfl_errno()) << ui->firstGuessedFrame;
         return DWARF_CB_ABORT;
     }
 
@@ -224,7 +225,7 @@ void PerfUnwind::sample(const PerfRecordSample &sample)
 void PerfUnwind::analyze(const PerfRecordSample &sample)
 {
     m_currentUnwind.isInterworking = false;
-    m_currentUnwind.broken = false;
+    m_currentUnwind.firstGuessedFrame = -1;
     m_currentUnwind.sample = &sample;
     m_currentUnwind.frames.clear();
 
@@ -248,10 +249,13 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
                                                            &m_currentUnwind.isInterworking));
     }
 
+    const quint8 numGuessedFrames = (m_currentUnwind.firstGuessedFrame == -1)
+            ? 0 : m_currentUnwind.frames.length() - m_currentUnwind.firstGuessedFrame;
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly)
-            << static_cast<quint8>(m_currentUnwind.broken ? BadStack : GoodStack) << sample.pid()
-            << sample.tid() << sample.time() << m_currentUnwind.frames;
+            << static_cast<quint8>(Sample) << sample.pid()
+            << sample.tid() << sample.time() << m_currentUnwind.frames
+            << numGuessedFrames;
     sendBuffer(buffer);
 }
 

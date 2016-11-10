@@ -41,8 +41,7 @@ class PerfUnwind : public QObject
     Q_OBJECT
 public:
     enum EventType {
-        GoodStack,
-        BadStack,
+        Sample,
         ThreadStart,
         ThreadEnd,
         Command,
@@ -76,13 +75,15 @@ public:
     };
 
     struct UnwindInfo {
-        UnwindInfo() : frames(0), unwind(0), sample(0), isInterworking(false), broken(false) {}
+        UnwindInfo() : frames(0), unwind(0), sample(0),
+            firstGuessedFrame(-1), isInterworking(false) {}
 
+        QHash<quint32, QHash<quint64, Dwarf_Word>> stackValues;
         QVector<qint32> frames;
         PerfUnwind *unwind;
         const PerfRecordSample *sample;
+        int firstGuessedFrame;
         bool isInterworking;
-        bool broken;
     };
 
     static const quint32 s_kernelPid = std::numeric_limits<quint32>::max();

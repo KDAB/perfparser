@@ -88,7 +88,7 @@ static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *ar
     /* Check overflow. */
     if (addr + sizeof(Dwarf_Word) < addr) {
         qWarning() << "Invalid memory read requested by dwfl" << addr;
-        ui->broken = true;
+        ui->firstGuessedFrame = ui->frames.length();
         return false;
     }
 
@@ -103,11 +103,18 @@ static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *ar
         if (ui->unwind->ipIsInKernelSpace(addr))
             dwfl = ui->unwind->dwfl(PerfUnwind::s_kernelPid, ui->sample->time());
         if (!accessDsoMem(dwfl, ui, addr, result)) {
-            ui->broken = true;
-            return false;
+            ui->firstGuessedFrame = ui->frames.length();
+            const QHash<quint64, Dwarf_Word> &stackValues = ui->stackValues[ui->sample->pid()];
+            auto it = stackValues.find(addr);
+            if (it == stackValues.end()) {
+                return false;
+            } else {
+                *result = *it;
+            }
         }
     } else {
         std::memcpy(result, &(stack.data()[addr - start]), sizeof(Dwarf_Word));
+        ui->stackValues[ui->sample->pid()][addr] = *result;
     }
     return true;
 }
