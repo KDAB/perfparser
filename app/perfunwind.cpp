@@ -23,6 +23,7 @@
 #include "perfsymboltable.h"
 
 #include <QDebug>
+#include <QtEndian>
 
 #include <cstring>
 
@@ -57,6 +58,12 @@ PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QStri
     m_debugInfoPath[newDebugInfo.length()] = 0;
     std::memcpy(m_debugInfoPath, newDebugInfo.data(), newDebugInfo.length());
     m_offlineCallbacks.debuginfo_path = &m_debugInfoPath;
+
+    // Write minimal header, consisting of magic and data stream version we're going to use.
+    const char magic[] = "QPERFSTREAM";
+    output->write(magic, sizeof(magic));
+    qint32 dataStreamVersion = qToLittleEndian(QDataStream::Qt_DefaultCompiledVersion);
+    output->write(reinterpret_cast<const char *>(&dataStreamVersion), sizeof(qint32));
 }
 
 PerfUnwind::~PerfUnwind()
@@ -88,7 +95,7 @@ void PerfUnwind::registerElf(const PerfRecordMmap &mmap)
 
 void PerfUnwind::sendBuffer(const QByteArray &buffer)
 {
-    quint32 size = buffer.length();
+    quint32 size = qToLittleEndian(buffer.length());
     m_output->write(reinterpret_cast<char *>(&size), sizeof(quint32));
     m_output->write(buffer);
 }
