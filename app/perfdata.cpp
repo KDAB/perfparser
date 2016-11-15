@@ -47,7 +47,8 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
         }
     }
 
-    if (stream.device()->bytesAvailable() < m_eventHeader.size - headerSize)
+    const qint64 contentSize = m_eventHeader.size - headerSize;
+    if (stream.device()->bytesAvailable() < contentSize)
         return Rerun;
 
     const PerfEventAttributes &attrs = m_attributes->globalAttributes();
@@ -73,27 +74,30 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
         break;
     }
     case PERF_RECORD_SAMPLE: {
-        const PerfEventAttributes *sampleAttrs = &attrs;
-
         if (sampleIdAll && idOffset >= 0) {
-            if (stream.device()->isSequential()) {
-                qWarning() << "trying to forward-peek into sample on stream device.";
-                return SignalError;
-            }
+            QByteArray buffer(contentSize, Qt::Uninitialized);
+            stream.readRawData(buffer.data(), contentSize);
+            QDataStream contentStream(buffer);
+            contentStream.setByteOrder(stream.byteOrder());
+
+            Q_ASSERT(!contentStream.device()->isSequential());
 
             // peek into the data structure to find the actual ID. Horrible.
             quint64 id;
-            qint64 prevPos = stream.device()->pos();
-            stream.device()->seek(prevPos + idOffset);
-            stream >> id;
-            stream.device()->seek(prevPos);
-            sampleAttrs = &m_attributes->attributes(id);
+            qint64 prevPos = contentStream.device()->pos();
+            contentStream.device()->seek(prevPos + idOffset);
+            contentStream >> id;
+            contentStream.device()->seek(prevPos);
+
+            PerfRecordSample sample(&m_eventHeader, &m_attributes->attributes(id));
+            contentStream >> sample;
+            m_destination->sample(sample);
+        } else {
+            PerfRecordSample sample(&m_eventHeader, &attrs);
+            stream >> sample;
+            m_destination->sample(sample);
         }
 
-        // TODO: for this we have to find the right attribute by some kind of hash and id ...
-        PerfRecordSample sample(&m_eventHeader, sampleAttrs);
-        stream >> sample;
-        m_destination->sample(sample);
         break;
     }
     case PERF_RECORD_MMAP2: {
@@ -128,7 +132,7 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
 
     default:
         qWarning() << "unhandled event type" << m_eventHeader.type;
-        stream.skipRawData(m_eventHeader.size - headerSize);
+        stream.skipRawData(contentSize);
         break;
     }
 
