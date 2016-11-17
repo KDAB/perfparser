@@ -101,7 +101,7 @@ public:
     }
 
     void registerElf(const PerfRecordMmap &mmap);
-    void comm(PerfRecordComm &comm);
+    void comm(const PerfRecordComm &comm);
     void attr(const PerfRecordAttr &attr);
 
     Dwfl_Module *reportElf(quint64 ip, quint32 pid, quint64 timestamp);

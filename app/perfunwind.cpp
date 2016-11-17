@@ -93,7 +93,7 @@ void PerfUnwind::sendBuffer(const QByteArray &buffer)
     m_output->write(buffer);
 }
 
-void PerfUnwind::comm(PerfRecordComm &comm)
+void PerfUnwind::comm(const PerfRecordComm &comm)
 {
 
     QByteArray buffer;
