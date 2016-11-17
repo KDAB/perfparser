@@ -37,7 +37,11 @@ public:
     quint64 readFormat() const { return m_readFormat; }
     quint64 sampleRegsUser() const { return m_sampleRegsUser; }
     quint32 size() const { return m_size; }
+    quint32 type() const { return m_type; }
+    quint64 config() const { return m_config; }
     int sampleIdOffset() const;
+
+    QByteArray name() const;
 
     enum ReadFormat {
         FORMAT_TOTAL_TIME_ENABLED = 1U << 0,
@@ -74,6 +78,97 @@ public:
 
         SAMPLE_MAX          = 1U << 18,
         SAMPLE_ID_ALL       = 1U << 31 // extra flag, to check if the sample has a sample ID at all
+    };
+
+    /*
+     * attr.type()
+     */
+    enum TypeId {
+        TYPE_HARDWARE       = 0,
+        TYPE_SOFTWARE       = 1,
+        TYPE_TRACEPOINT     = 2,
+        TYPE_HARDWARE_CACHE = 3,
+        TYPE_RAW            = 4,
+        TYPE_BREAKPOINT     = 5,
+        TYPE_MAX,           /* non-ABI */
+    };
+
+    /*
+     * Generalized performance event eventId types, used by the
+     * attr.event_id parameter of the sys_perf_event_open()
+     * syscall.
+     *
+     * Ends up in attr.config() if type() is TYPE_HARDWARE
+     */
+    enum HardwareId {
+        /*
+         * Common hardware events, generalized by the kernel:
+         */
+        HARDWARE_CPU_CYCLES              = 0,
+        HARDWARE_INSTRUCTIONS            = 1,
+        HARDWARE_CACHE_REFERENCES        = 2,
+        HARDWARE_CACHE_MISSES            = 3,
+        HARDWARE_BRANCH_INSTRUCTIONS     = 4,
+        HARDWARE_BRANCH_MISSES           = 5,
+        HARDWARE_BUS_CYCLES              = 6,
+        HARDWARE_STALLED_CYCLES_FRONTEND = 7,
+        HARDWARE_STALLED_CYCLES_BACKEND  = 8,
+        HARDWARE_REF_CPU_CYCLES          = 9,
+        HARDWARE_MAX,                    /* non-ABI */
+    };
+
+    /*
+     * Generalized hardware cache events:
+     *
+     * attr.config() for type() == TYPE_HW_CACHE.
+     *
+     * Encoding is (cacheId | (cacheOpId << 8) | (cacheOpResultId << 16))
+     * for example -e L1-dcache-store-misses results in config == 0x10100, or
+     * -e LLC-loads in config == 0x000002.
+     */
+    enum HardwareCacheId {
+        HARDWARE_CACHE_L1D  = 0,
+        HARDWARE_CACHE_L1I  = 1,
+        HARDWARE_CACHE_LL   = 2,
+        HARDWARE_CACHE_DTLB = 3,
+        HARDWARE_CACHE_ITLB = 4,
+        HARDWARE_CACHE_BPU  = 5,
+        HARDWARE_CACHE_NODE = 6,
+
+        HARDWARE_CACHE_MAX, /* non-ABI */
+    };
+
+    enum HardwareCacheOperationId {
+        HARDWARE_CACHE_OPERATION_READ     = 0,
+        HARDWARE_CACHE_OPERATION_WRITE    = 1,
+        HARDWARE_CACHE_OPERATION_PREFETCH = 2,
+        HARDWARE_CACHE_OPERATION_MAX,     /* non-ABI */
+    };
+
+    enum HardwareCacheOperationResultId {
+        HARDWARE_CACHE_RESULT_OPERATION_ACCESS = 0,
+        HARDWARE_CACHE_RESULT_OPERATION_MISS   = 1,
+        HARDWARE_CACHE_RESULT_OPERATION_MAX,   /* non-ABI */
+    };
+
+    /*
+     * Special "software" events provided by the kernel, even if the hardware
+     * does not support performance events. These events measure various
+     * physical and sw events of the kernel (and allow the profiling of them as
+     * well):
+     */
+    enum SoftwareId {
+        SOFTWARE_CPU_CLOCK        = 0,
+        SOFTWARE_TASK_CLOCK       = 1,
+        SOFTWARE_PAGE_FAULTS      = 2,
+        SOFTWARE_CONTEXT_SWITCHES = 3,
+        SOFTWARE_CPU_MIGRATIONS   = 4,
+        SOFTWARE_PAGE_FAULTS_MIN  = 5,
+        SOFTWARE_PAGE_FAULTS_MAJ  = 6,
+        SOFTWARE_ALIGNMENT_FAULTS = 7,
+        SOFTWARE_EMULATION_FAULTS = 8,
+        SOFTWARE_DUMMY            = 9,
+        SOFTWARE_MAX,             /* non-ABI */
     };
 
 private:
