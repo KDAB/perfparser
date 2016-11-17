@@ -44,7 +44,7 @@ bool operator==(const PerfUnwind::Location &a, const PerfUnwind::Location &b)
 PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugPath,
                        const QString &extraLibsPath, const QString &appPath) :
     m_output(output), m_architecture(PerfRegisterInfo::ARCH_INVALID), m_systemRoot(systemRoot),
-    m_extraLibsPath(extraLibsPath), m_appPath(appPath), m_sampleBufferSize(0)
+    m_extraLibsPath(extraLibsPath), m_appPath(appPath), m_nextAttributeId(0), m_sampleBufferSize(0)
 {
     m_currentUnwind.unwind = this;
     m_offlineCallbacks.find_elf = dwfl_build_id_find_elf;
@@ -101,6 +101,21 @@ void PerfUnwind::comm(PerfRecordComm &comm)
                                                << comm.pid() << comm.tid()  << comm.time()
                                                << comm.comm();
     sendBuffer(buffer);
+}
+
+void PerfUnwind::attr(const PerfRecordAttr &attr)
+{
+    QByteArray buffer;
+
+    foreach (quint64 id, attr.ids())
+        m_attributeIds[id] = m_nextAttributeId;
+
+    QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(AttributesDefinition)
+                                               << attr.pid() << attr.tid() << attr.time()
+                                               << m_nextAttributeId << attr.attr().type()
+                                               << attr.attr().config() << attr.attr().name();
+    sendBuffer(buffer);
+    ++m_nextAttributeId;
 }
 
 Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid, quint64 timestamp)
@@ -255,7 +270,7 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
     QDataStream(&buffer, QIODevice::WriteOnly)
             << static_cast<quint8>(Sample) << sample.pid()
             << sample.tid() << sample.time() << m_currentUnwind.frames
-            << numGuessedFrames;
+            << numGuessedFrames << m_attributeIds[sample.id()];
     sendBuffer(buffer);
 }
 
@@ -277,7 +292,7 @@ void PerfUnwind::exit(const PerfRecordExit &sample)
     sendBuffer(buffer);
 }
 
-void PerfUnwind::sendLocation(int id, const PerfUnwind::Location &location)
+void PerfUnwind::sendLocation(qint32 id, const PerfUnwind::Location &location)
 {
     QByteArray buffer;
     const PerfRecordSample *sample = m_currentUnwind.sample;
@@ -287,7 +302,7 @@ void PerfUnwind::sendLocation(int id, const PerfUnwind::Location &location)
     sendBuffer(buffer);
 }
 
-void PerfUnwind::sendSymbol(int id, const PerfUnwind::Symbol &symbol)
+void PerfUnwind::sendSymbol(qint32 id, const PerfUnwind::Symbol &symbol)
 {
     QByteArray buffer;
     const PerfRecordSample *sample = m_currentUnwind.sample;

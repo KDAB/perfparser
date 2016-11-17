@@ -109,6 +109,7 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
     case PERF_RECORD_HEADER_ATTR: {
         PerfRecordAttr attr(&m_eventHeader, sampleType, sampleIdAll);
         stream >> attr;
+        m_destination->attr(attr);
         if (m_attributes->globalAttributes().size() == 0)
             m_attributes->setGlobalAttributes(attr.attr());
 

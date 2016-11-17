@@ -47,6 +47,7 @@ public:
         Command,
         LocationDefinition,
         SymbolDefinition,
+        AttributesDefinition,
         InvalidType
     };
 
@@ -101,6 +102,7 @@ public:
 
     void registerElf(const PerfRecordMmap &mmap);
     void comm(PerfRecordComm &comm);
+    void attr(const PerfRecordAttr &attr);
 
     Dwfl_Module *reportElf(quint64 ip, quint32 pid, quint64 timestamp);
     bool ipIsInKernelSpace(quint64 ip) const;
@@ -154,8 +156,10 @@ private:
     QList<PerfRecordSample> m_sampleBuffer;
     QHash<quint32, PerfSymbolTable *> m_symbolTables;
 
-    QHash<Location, int> m_locations;
-    QHash<int, Symbol> m_symbols;
+    QHash<Location, qint32> m_locations;
+    QHash<qint32, Symbol> m_symbols;
+    QHash<quint64, qint32> m_attributeIds;
+    qint32 m_nextAttributeId;
 
     uint m_sampleBufferSize;
 
@@ -165,8 +169,8 @@ private:
     void resolveCallchain();
     void analyze(const PerfRecordSample &sample);
     void sendBuffer(const QByteArray &buffer);
-    void sendLocation(int id, const Location &location);
-    void sendSymbol(int id, const Symbol &symbol);
+    void sendLocation(qint32 id, const Location &location);
+    void sendSymbol(qint32 id, const Symbol &symbol);
 };
 
 uint qHash(const PerfUnwind::Location &location, uint seed = 0);

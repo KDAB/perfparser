@@ -238,6 +238,7 @@ struct PerfSampleId {
     quint32 pid() const { return m_pid; }
     quint32 tid() const { return m_tid; }
     quint64 time() const { return m_time; }
+    quint64 id() const { return m_id; }
     quint64 length() const;
     quint64 sampleType() const { return m_sampleType; }
 
@@ -266,6 +267,7 @@ public:
     quint32 pid() const { return m_sampleId.pid(); }
     quint32 tid() const { return m_sampleId.tid(); }
     quint64 time() const { return m_sampleId.time(); }
+    quint64 id() const { return m_sampleId.id(); }
 
 protected:
     PerfRecord(const PerfEventHeader *header, quint64 sampleType, bool sampleIdAll);
@@ -400,14 +402,14 @@ private:
 
 QDataStream &operator>>(QDataStream &stream, PerfRecordSample &record);
 
-class PerfRecordAttr : PerfRecord
+class PerfRecordAttr : public PerfRecord
 {
 public:
     PerfRecordAttr(const PerfEventHeader *header = 0, quint64 sampleType = 0,
                    bool sampleIdAll = false);
 
-    const PerfEventAttributes &attr() { return m_attr; }
-    const QList<quint64> &ids() { return m_ids; }
+    const PerfEventAttributes &attr() const { return m_attr; }
+    const QList<quint64> &ids() const { return m_ids; }
 
 private:
     PerfEventAttributes m_attr;
