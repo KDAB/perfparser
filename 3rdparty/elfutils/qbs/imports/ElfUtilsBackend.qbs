@@ -13,7 +13,7 @@ ElfUtilsDynamicLib {
     cpp.allowUnresolvedSymbols: true
     Group {
         name: "sources"
-        prefix: "../" + arch + "_"
+        prefix: FileInfo.joinPaths(product.sourceDirectory, "..") + '/' + arch + "_"
         files: [
             "init.c",
             "retval.c",
@@ -22,9 +22,10 @@ ElfUtilsDynamicLib {
     }
     Group {
         name: "headers"
+        prefix: FileInfo.joinPaths(product.sourceDirectory, "..") + '/' + arch + "_"
         fileTags: ["hpp"]
         files: [
-            "../" + arch + "_reloc.def"
+            "reloc.def"
         ]
     }
 }
