@@ -8,5 +8,5 @@ ElfUtilsStaticLib {
     Depends { name: arch + " disasm header" }
     Depends { name: arch + " mnemonics" }
     cpp.includePaths: base.concat([FileInfo.joinPaths(product.sourceDirectory, "..")])
-    files: ["../" + arch + "_disasm.c"]
+    files: [FileInfo.joinPaths(sourceDirectory, "..",  arch + "_disasm.c")]
 }
