@@ -96,7 +96,7 @@ QByteArray PerfEventAttributes::name() const
         case HARDWARE_BRANCH_INSTRUCTIONS:     return QByteArrayLiteral("branch-instructions");
         case HARDWARE_BRANCH_MISSES:           return QByteArrayLiteral("branch-misses");
         case HARDWARE_BUS_CYCLES:              return QByteArrayLiteral("bus-cycles");
-        case HARDWARE_STALLED_CYCLES_FRONTEND: return QByteArrayLiteral("stalled-cycles-frontent");
+        case HARDWARE_STALLED_CYCLES_FRONTEND: return QByteArrayLiteral("stalled-cycles-frontend");
         case HARDWARE_STALLED_CYCLES_BACKEND:  return QByteArrayLiteral("stalled-cycles-backend");
         case HARDWARE_REF_CPU_CYCLES:          return QByteArrayLiteral("ref-cycles");
         default: return QByteArrayLiteral("hardware event: 0x") + QByteArray::number(m_config, 16);
