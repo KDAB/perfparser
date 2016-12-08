@@ -177,7 +177,8 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QString &app
 {
     bool cacheInvalid = false;
     quint64 overwritten = std::numeric_limits<quint64>::max();
-    for (auto i = m_elfs.begin(); i != m_elfs.end() && i.key() < mmap.addr() + mmap.len(); ++i) {
+    for (auto i = m_elfs.begin(), end = m_elfs.end(); i != end
+         && i.key() < mmap.addr() + mmap.len(); ++i) {
         if (i.key() + i->length <= mmap.addr())
             continue;
 
