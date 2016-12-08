@@ -348,7 +348,7 @@ void PerfSymbolTable::parseDwarf(Dwarf_Die *cudie, Dwarf_Addr bias, const QByteA
 
 Dwfl_Module *PerfSymbolTable::reportElf(QMap<quint64, PerfSymbolTable::ElfInfo>::ConstIterator i)
 {
-    if (i == m_elfs.end() || !i.value().found)
+    if (i == m_elfs.constEnd() || !i.value().found)
         return 0;
     Dwfl_Module *ret = dwfl_report_elf(
                 m_dwfl, i.value().file.fileName().toLocal8Bit().constData(),
@@ -371,11 +371,11 @@ QMap<quint64, PerfSymbolTable::ElfInfo>::ConstIterator
 PerfSymbolTable::findElf(quint64 ip, quint64 timestamp) const
 {
     QMap<quint64, ElfInfo>::ConstIterator i = m_elfs.upperBound(ip);
-    if (i == m_elfs.end() || i.key() != ip) {
-        if (i != m_elfs.begin())
+    if (i == m_elfs.constEnd() || i.key() != ip) {
+        if (i != m_elfs.constBegin())
             --i;
         else
-            return m_elfs.end();
+            return m_elfs.constEnd();
     }
 
 //    /* On ARM, symbols for thumb functions have 1 added to
@@ -389,10 +389,10 @@ PerfSymbolTable::findElf(quint64 ip, quint64 timestamp) const
 
     while (true) {
         if (i->timeAdded <= timestamp && i->timeOverwritten > timestamp)
-            return (i.key() + i->length > ip) ? i : m_elfs.end();
+            return (i.key() + i->length > ip) ? i : m_elfs.constEnd();
 
-        if (i == m_elfs.begin())
-            return m_elfs.end();
+        if (i == m_elfs.constBegin())
+            return m_elfs.constEnd();
 
         --i;
     }
@@ -415,8 +415,8 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, quint64 timestamp, bool isKernel
 
     quint64 elfStart = 0;
 
-    auto elfIt = findElf(ip, timestamp);
-    if (elfIt != m_elfs.end()) {
+    QMultiMap<quint64, ElfInfo>::ConstIterator elfIt = findElf(ip, timestamp);
+    if (elfIt != m_elfs.constEnd()) {
         elfFile = elfIt.value().file.fileName().toLocal8Bit();
         elfStart = elfIt.key();
         if (m_dwfl && !mod)
