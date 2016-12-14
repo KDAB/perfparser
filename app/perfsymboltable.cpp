@@ -266,8 +266,8 @@ int PerfSymbolTable::insertSubprogram(Dwarf_Die *top, Dwarf_Addr entry, const QB
     dwarf_decl_column(top, &column);
     const QByteArray file = dwarf_decl_file(top);
 
-    int locationId = m_unwind->resolveLocation(PerfUnwind::Location(entry, file, line, column,
-                                                                    inlineCallLocationId));
+    int locationId = m_unwind->resolveLocation(PerfUnwind::Location(entry, file, m_pid, line,
+                                                                    column, inlineCallLocationId));
     m_unwind->resolveSymbol(locationId, PerfUnwind::Symbol(demangle(dieName(top)), binary,
                                                            isKernel));
 
@@ -427,7 +427,7 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, quint64 timestamp, bool isKernel
 
     PerfUnwind::Location addressLocation(
                 (m_unwind->architecture() != PerfRegisterInfo::ARCH_ARM || (ip & 1))
-                ? ip : ip + 1);
+                ? ip : ip + 1, QByteArray(), m_pid);
     PerfUnwind::Location functionLocation(addressLocation);
 
     QByteArray symname;

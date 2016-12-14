@@ -53,12 +53,14 @@ public:
 
     struct Location {
         explicit Location(quint64 address = 0, const QByteArray &file = QByteArray(),
-                          qint32 line = 0, qint32 column = 0, qint32 parentLocationId = -1) :
-            address(address), file(file), line(line), column(column),
+                          quint32 pid = 0, qint32 line = 0, qint32 column = 0,
+                          qint32 parentLocationId = -1) :
+            address(address), file(file), pid(pid), line(line), column(column),
             parentLocationId(parentLocationId) {}
 
         quint64 address;
         QByteArray file;
+        quint32 pid;
         qint32 line;
         qint32 column;
         qint32 parentLocationId;
