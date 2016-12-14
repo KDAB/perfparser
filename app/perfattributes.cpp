@@ -108,7 +108,7 @@ QByteArray PerfEventAttributes::name() const
         case SOFTWARE_TASK_CLOCK:       return QByteArrayLiteral("task-clock");
         case SOFTWARE_PAGE_FAULTS:      return QByteArrayLiteral("page-faults");
         case SOFTWARE_CONTEXT_SWITCHES: return QByteArrayLiteral("context-switches");
-        case SOFTWARE_CPU_MIGRATIONS:   return QByteArrayLiteral("cpu-migragions");
+        case SOFTWARE_CPU_MIGRATIONS:   return QByteArrayLiteral("cpu-migrations");
         case SOFTWARE_PAGE_FAULTS_MIN:  return QByteArrayLiteral("minor-faults");
         case SOFTWARE_PAGE_FAULTS_MAJ:  return QByteArrayLiteral("major-faults");
         case SOFTWARE_ALIGNMENT_FAULTS: return QByteArrayLiteral("alignment-faults");
