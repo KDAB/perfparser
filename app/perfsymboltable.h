@@ -83,7 +83,7 @@ public:
     void updatePerfMap();
     bool containsAddress(quint64 address) const;
 
-    Dwfl *attachDwfl(quint32 pid, quint64 timestamp, void *arg);
+    Dwfl *attachDwfl(quint64 timestamp, void *arg);
     void clearCache();
 
 private:
@@ -105,6 +105,8 @@ private:
 
     QMultiMap<quint64, ElfInfo> m_elfs; // needs to be sorted
     Dwfl_Callbacks *m_callbacks;
+    quint32 m_pid;
+
     QByteArray symbolFromPerfMap(quint64 ip, GElf_Off *offset) const;
     int parseDie(Dwarf_Die *top, const QByteArray &binary, Dwarf_Files *files, Dwarf_Addr entry,
                  bool isKernel, const QStack<DieAndLocation> &stack);

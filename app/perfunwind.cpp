@@ -85,7 +85,7 @@ PerfSymbolTable *PerfUnwind::symbolTable(quint32 pid)
 
 Dwfl *PerfUnwind::dwfl(quint32 pid, quint64 timestamp)
 {
-    return symbolTable(pid)->attachDwfl(pid, timestamp, &m_currentUnwind);
+    return symbolTable(pid)->attachDwfl(timestamp, &m_currentUnwind);
 }
 
 void PerfUnwind::registerElf(const PerfRecordMmap &mmap)
@@ -257,7 +257,7 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
     userSymbols->updatePerfMap();
 
     // Do this before any lookupFrame() calls; we want to clear the caches if timestamps reset.
-    Dwfl *userDwfl = userSymbols->attachDwfl(sample.pid(), sample.time(), &m_currentUnwind);
+    Dwfl *userDwfl = userSymbols->attachDwfl(sample.time(), &m_currentUnwind);
     if (sample.callchain().length() > 0)
         resolveCallchain();
 

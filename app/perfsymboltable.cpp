@@ -36,7 +36,8 @@
 PerfSymbolTable::PerfSymbolTable(quint32 pid, Dwfl_Callbacks *callbacks, PerfUnwind *parent) :
     m_perfMapFile(QString::fromLatin1("/tmp/perf-%1.map").arg(pid)),
     m_unwind(parent), m_lastMmapAddedTime(0),
-    m_nextMmapOverwrittenTime(std::numeric_limits<quint64>::max()), m_callbacks(callbacks)
+    m_nextMmapOverwrittenTime(std::numeric_limits<quint64>::max()), m_callbacks(callbacks),
+    m_pid(pid)
 {
     m_dwfl = dwfl_begin(m_callbacks);
 }
@@ -559,11 +560,11 @@ bool PerfSymbolTable::containsAddress(quint64 address) const
     return first.key() <= address && last.key() + last.value().length > address;
 }
 
-Dwfl *PerfSymbolTable::attachDwfl(quint32 pid, quint64 timestamp, void *arg)
+Dwfl *PerfSymbolTable::attachDwfl(quint64 timestamp, void *arg)
 {
     if (timestamp < m_lastMmapAddedTime || timestamp >= m_nextMmapOverwrittenTime)
         clearCache();
-    else if (static_cast<pid_t>(pid) == dwfl_pid(m_dwfl))
+    else if (static_cast<pid_t>(m_pid) == dwfl_pid(m_dwfl))
         return m_dwfl; // Already attached, nothing to do
 
     // Report some random elf, so that dwfl guesses the target architecture.
@@ -579,8 +580,8 @@ Dwfl *PerfSymbolTable::attachDwfl(quint32 pid, quint64 timestamp, void *arg)
         }
     }
 
-    if (!dwfl_attach_state(m_dwfl, 0, pid, &threadCallbacks, arg)) {
-        qWarning() << pid << "failed to attach state" << dwfl_errmsg(dwfl_errno());
+    if (!dwfl_attach_state(m_dwfl, 0, m_pid, &threadCallbacks, arg)) {
+        qWarning() << m_pid << "failed to attach state" << dwfl_errmsg(dwfl_errno());
         return nullptr;
     }
 
