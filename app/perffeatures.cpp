@@ -86,12 +86,8 @@ void PerfFeatures::createFeature(QIODevice *device, QDataStream::ByteOrder byteO
     }
 
     quint64 readSize = device->pos() - section.offset;
-    if (section.size != readSize) {
+    if (section.size != readSize)
         qWarning() << "feature not properly read" << featureId << section.size << readSize;
-        QByteArray data;
-        data.resize(readSize);
-        stream.readRawData(data.data(), readSize);
-    }
 }
 
 PerfFeatures::PerfFeatures()
