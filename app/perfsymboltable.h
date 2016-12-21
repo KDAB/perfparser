@@ -27,29 +27,16 @@
 
 #include "perfdata.h"
 #include "perfunwind.h"
+#include "perfelfmap.h"
 
 #include <libdwfl.h>
 #include <QObject>
-#include <QFileInfo>
-#include <QMap>
 
 class PerfSymbolTable
 {
 public:
     PerfSymbolTable(quint32 pid, Dwfl_Callbacks *callbacks, PerfUnwind *parent);
     ~PerfSymbolTable();
-
-    struct ElfInfo {
-        ElfInfo(const QFileInfo &file = QFileInfo(), quint64 length = 0, quint64 timeAdded = 0,
-                quint64 timeOverwritten = std::numeric_limits<quint64>::max(), bool found = true) :
-            file(file), length(length), timeAdded(timeAdded), timeOverwritten(timeOverwritten),
-            found(found) {}
-        QFileInfo file;
-        quint64 length;
-        quint64 timeAdded;
-        quint64 timeOverwritten;
-        bool found;
-    };
 
     struct PerfMapSymbol {
         PerfMapSymbol(quint64 start = 0, quint64 length = 0, QByteArray name = QByteArray()) :
@@ -69,12 +56,11 @@ public:
     void registerElf(const PerfRecordMmap &mmap, const QString &appPath,
                      const QString &systemRoot, const QString &extraLibsPath);
 
-    QMap<quint64, PerfSymbolTable::ElfInfo>::ConstIterator
-    findElf(quint64 ip, quint64 timestamp) const;
+    PerfElfMap::ConstIterator findElf(quint64 ip, quint64 timestamp) const;
 
     // Report an mmap to dwfl and parse it for symbols and inlines, or simply return it if dwfl has
     // it already
-    Dwfl_Module *reportElf(QMap<quint64, PerfSymbolTable::ElfInfo>::ConstIterator i);
+    Dwfl_Module *reportElf(PerfElfMap::ConstIterator i);
 
     // Look up a frame and all its inline parents and append them to the given vector.
     // If the frame hits an elf that hasn't been reported, yet, report it.
@@ -103,7 +89,7 @@ private:
     quint64 m_lastMmapAddedTime;
     quint64 m_nextMmapOverwrittenTime;
 
-    QMultiMap<quint64, ElfInfo> m_elfs; // needs to be sorted
+    PerfElfMap m_elfs;
     Dwfl_Callbacks *m_callbacks;
     quint32 m_pid;
 

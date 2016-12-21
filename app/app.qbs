@@ -48,5 +48,7 @@ QtcTool {
         "perfstdin.h",
         "perfsymboltable.cpp",
         "perfsymboltable.h",
+        "perfelfmap.cpp",
+        "perfelfmap.h"
     ]
 }

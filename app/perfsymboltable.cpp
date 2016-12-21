@@ -176,28 +176,6 @@ static bool findInExtraPath(QFileInfo &path, const QString &fileName)
 void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QString &appPath,
                                   const QString &systemRoot, const QString &extraLibsPath)
 {
-    bool cacheInvalid = false;
-    quint64 overwritten = std::numeric_limits<quint64>::max();
-    for (auto i = m_elfs.begin(), end = m_elfs.end(); i != end
-         && i.key() < mmap.addr() + mmap.len(); ++i) {
-        if (i.key() + i->length <= mmap.addr())
-            continue;
-
-        if (mmap.time() > i->timeAdded)
-            i->timeOverwritten = qMin(i->timeOverwritten, mmap.time());
-        else
-            overwritten = qMin(i->timeAdded, overwritten);
-
-        // Overlapping module. Clear the cache
-        cacheInvalid = true;
-    }
-
-    // There is no need to clear the symbol or location caches in PerfUnwind. Some locations become
-    // stale this way, but we still need to keep their IDs, as the receiver might still use them for
-    // past frames.
-    if (cacheInvalid)
-        clearCache();
-
     QLatin1String filePath(mmap.filename());
     QFileInfo fileInfo(filePath);
     QFileInfo fullPath;
@@ -219,8 +197,13 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QString &app
         fullPath.setFile(systemRoot + filePath);
     }
 
-    m_elfs.insertMulti(mmap.addr(), ElfInfo(fullPath, mmap.len(), mmap.time(), overwritten,
-                                            fullPath.isFile()));
+    bool cacheInvalid = m_elfs.registerElf(mmap.addr(), mmap.len(), mmap.time(), fullPath);
+
+    // There is no need to clear the symbol or location caches in PerfUnwind. Some locations become
+    // stale this way, but we still need to keep their IDs, as the receiver might still use them for
+    // past frames.
+    if (cacheInvalid)
+        clearCache();
 }
 
 static QByteArray dieName(Dwarf_Die *die)
@@ -348,7 +331,7 @@ void PerfSymbolTable::parseDwarf(Dwarf_Die *cudie, Dwarf_Addr bias, const QByteA
     }
 }
 
-Dwfl_Module *PerfSymbolTable::reportElf(QMap<quint64, PerfSymbolTable::ElfInfo>::ConstIterator i)
+Dwfl_Module *PerfSymbolTable::reportElf(PerfElfMap::ConstIterator i)
 {
     if (i == m_elfs.constEnd() || !i.value().found)
         return 0;
@@ -369,35 +352,9 @@ Dwfl_Module *PerfSymbolTable::reportElf(QMap<quint64, PerfSymbolTable::ElfInfo>:
     return ret;
 }
 
-QMap<quint64, PerfSymbolTable::ElfInfo>::ConstIterator
-PerfSymbolTable::findElf(quint64 ip, quint64 timestamp) const
+PerfElfMap::ConstIterator PerfSymbolTable::findElf(quint64 ip, quint64 timestamp) const
 {
-    QMap<quint64, ElfInfo>::ConstIterator i = m_elfs.upperBound(ip);
-    if (i == m_elfs.constEnd() || i.key() != ip) {
-        if (i != m_elfs.constBegin())
-            --i;
-        else
-            return m_elfs.constEnd();
-    }
-
-//    /* On ARM, symbols for thumb functions have 1 added to
-//     * the symbol address as a flag - remove it */
-//    if ((ehdr.e_machine == EM_ARM) &&
-//        (map->type == MAP__FUNCTION) &&
-//        (sym.st_value & 1))
-//        --sym.st_value;
-//
-//    ^ We don't have to do this here as libdw is supposed to handle it from version 0.160.
-
-    while (true) {
-        if (i->timeAdded <= timestamp && i->timeOverwritten > timestamp)
-            return (i.key() + i->length > ip) ? i : m_elfs.constEnd();
-
-        if (i == m_elfs.constBegin())
-            return m_elfs.constEnd();
-
-        --i;
-    }
+    return m_elfs.findElf(ip, timestamp);
 }
 
 int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, quint64 timestamp, bool isKernel,
@@ -417,7 +374,7 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, quint64 timestamp, bool isKernel
 
     quint64 elfStart = 0;
 
-    QMultiMap<quint64, ElfInfo>::ConstIterator elfIt = findElf(ip, timestamp);
+    auto elfIt = findElf(ip, timestamp);
     if (elfIt != m_elfs.constEnd()) {
         elfFile = elfIt.value().file.fileName().toLocal8Bit();
         elfStart = elfIt.key();
