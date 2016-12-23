@@ -67,6 +67,42 @@ private slots:
         QCOMPARE(map.findElf(110, 0), map.constEnd());
         QCOMPARE(map.findElf(105, 1), second);
     }
+
+    void testOverwrite()
+    {
+        QFETCH(bool, reversed);
+
+        PerfElfMap map;
+        if (!reversed) {
+            QVERIFY(!map.registerElf(100, 20, 0, {}));
+            QVERIFY(map.registerElf(100, 20, 1, {}));
+        } else {
+            QVERIFY(!map.registerElf(100, 20, 1, {}));
+            QVERIFY(map.registerElf(100, 20, 0, {}));
+        }
+
+        auto first = map.findElf(105, 0);
+        QCOMPARE(first.key(), 100ull);
+        QCOMPARE(first->length, 20ull);
+        QCOMPARE(first->timeAdded, 0ull);
+        QCOMPARE(first->timeOverwritten, 1ull);
+
+        auto second = map.findElf(105, 1);
+        QCOMPARE(second.key(), 100ull);
+        QCOMPARE(second->length, 20ull);
+        QCOMPARE(second->timeAdded, 1ull);
+        QCOMPARE(second->timeOverwritten, std::numeric_limits<quint64>::max());
+
+        QCOMPARE(map.findElf(105, 2), second);
+    }
+
+    void testOverwrite_data()
+    {
+        QTest::addColumn<bool>("reversed");
+
+        QTest::newRow("normal") << false;
+        QTest::newRow("reversed") << true;
+    }
 };
 
 QTEST_MAIN(TestElfMap)
