@@ -313,6 +313,8 @@ class PerfRecordMmap2 : public PerfRecordMmap
 public:
     PerfRecordMmap2(PerfEventHeader *header = 0, quint64 sampleType = 0, bool sampleIdAll = false);
 
+    quint32 prot() const { return m_prot; }
+
 protected:
     QDataStream &readNumbers(QDataStream &stream);
 
