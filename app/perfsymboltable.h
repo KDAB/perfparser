@@ -94,11 +94,11 @@ private:
     quint32 m_pid;
 
     QByteArray symbolFromPerfMap(quint64 ip, GElf_Off *offset) const;
-    int parseDie(Dwarf_Die *top, const QByteArray &binary, Dwarf_Files *files, Dwarf_Addr entry,
+    int parseDie(Dwarf_Die *top, qint32 binaryId, Dwarf_Files *files, Dwarf_Addr entry,
                  bool isKernel, const QStack<DieAndLocation> &stack);
-    int insertSubprogram(Dwarf_Die *top, Dwarf_Addr entry, const QByteArray &binary,
+    int insertSubprogram(Dwarf_Die *top, Dwarf_Addr entry, qint32 binaryId,
                          qint32 inlineParent, bool isKernel);
-    void parseDwarf(Dwarf_Die *cudie, Dwarf_Addr bias, const QByteArray &binary, bool isKernel);
+    void parseDwarf(Dwarf_Die *cudie, Dwarf_Addr bias, qint32 binaryId, bool isKernel);
 };
 
 QT_BEGIN_NAMESPACE

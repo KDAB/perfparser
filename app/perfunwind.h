@@ -48,18 +48,19 @@ public:
         LocationDefinition,
         SymbolDefinition,
         AttributesDefinition,
+        StringDefinition,
         InvalidType
     };
 
     struct Location {
-        explicit Location(quint64 address = 0, const QByteArray &file = QByteArray(),
+        explicit Location(quint64 address = 0, qint32 file = -1,
                           quint32 pid = 0, qint32 line = 0, qint32 column = 0,
                           qint32 parentLocationId = -1) :
             address(address), file(file), pid(pid), line(line), column(column),
             parentLocationId(parentLocationId) {}
 
         quint64 address;
-        QByteArray file;
+        qint32 file;
         quint32 pid;
         qint32 line;
         qint32 column;
@@ -67,13 +68,13 @@ public:
     };
 
     struct Symbol {
-        explicit Symbol(const QByteArray &name = QByteArray(),
-                        const QByteArray &binary = QByteArray(), bool isKernel = false) :
+        explicit Symbol(qint32 name = -1, qint32 binary = -1,
+                        bool isKernel = false) :
             name(name), binary(binary), isKernel(isKernel)
         {}
 
-        QByteArray name;
-        QByteArray binary;
+        qint32 name;
+        qint32 binary;
         bool isKernel;
     };
 
@@ -114,6 +115,8 @@ public:
     void exit(const PerfRecordExit &sample);
     PerfSymbolTable *symbolTable(quint32 pid);
     Dwfl *dwfl(quint32 pid, quint64 timestamp);
+
+    qint32 resolveString(const QByteArray &string);
 
     int lookupLocation(const Location &location) const;
     int resolveLocation(const Location &location);
@@ -158,6 +161,7 @@ private:
     QList<PerfRecordSample> m_sampleBuffer;
     QHash<quint32, PerfSymbolTable *> m_symbolTables;
 
+    QHash<QByteArray, qint32> m_strings;
     QHash<Location, qint32> m_locations;
     QHash<qint32, Symbol> m_symbols;
     QHash<quint64, qint32> m_attributeIds;
@@ -171,6 +175,7 @@ private:
     void resolveCallchain();
     void analyze(const PerfRecordSample &sample);
     void sendBuffer(const QByteArray &buffer);
+    void sendString(qint32 id, const QByteArray &string);
     void sendLocation(qint32 id, const Location &location);
     void sendSymbol(qint32 id, const Symbol &symbol);
 };

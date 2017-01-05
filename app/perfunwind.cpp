@@ -104,25 +104,26 @@ void PerfUnwind::sendBuffer(const QByteArray &buffer)
 
 void PerfUnwind::comm(const PerfRecordComm &comm)
 {
-
+    const qint32 commId = resolveString(comm.comm());
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(Command)
                                                << comm.pid() << comm.tid()  << comm.time()
-                                               << comm.comm();
+                                               << commId;
     sendBuffer(buffer);
 }
 
 void PerfUnwind::attr(const PerfRecordAttr &attr)
 {
-    QByteArray buffer;
-
     foreach (quint64 id, attr.ids())
         m_attributeIds[id] = m_nextAttributeId;
 
+    const qint32 attrNameId = resolveString(attr.attr().name());
+
+    QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(AttributesDefinition)
                                                << attr.pid() << attr.tid() << attr.time()
                                                << m_nextAttributeId << attr.attr().type()
-                                               << attr.attr().config() << attr.attr().name();
+                                               << attr.attr().config() << attrNameId;
     sendBuffer(buffer);
     ++m_nextAttributeId;
 }
@@ -301,6 +302,14 @@ void PerfUnwind::exit(const PerfRecordExit &sample)
     sendBuffer(buffer);
 }
 
+void PerfUnwind::sendString(qint32 id, const QByteArray& string)
+{
+    QByteArray buffer;
+    QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(StringDefinition)
+                                               << id << string;
+    sendBuffer(buffer);
+}
+
 void PerfUnwind::sendLocation(qint32 id, const PerfUnwind::Location &location)
 {
     QByteArray buffer;
@@ -319,6 +328,18 @@ void PerfUnwind::sendSymbol(qint32 id, const PerfUnwind::Symbol &symbol)
                                                << sample->pid() << sample->tid()
                                                << sample->time() << id << symbol;
     sendBuffer(buffer);
+}
+
+qint32 PerfUnwind::resolveString(const QByteArray& string)
+{
+    if (string.isEmpty())
+        return -1;
+    auto stringIt = m_strings.find(string);
+    if (stringIt == m_strings.end()) {
+        stringIt = m_strings.insert(string, m_strings.size());
+        sendString(stringIt.value(), string);
+    }
+    return stringIt.value();
 }
 
 int PerfUnwind::lookupLocation(const PerfUnwind::Location &location) const
