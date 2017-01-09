@@ -1,5 +1,5 @@
 /* Internal interfaces for libelf.
-   Copyright (C) 1998-2010 Red Hat, Inc.
+   Copyright (C) 1998-2010, 2015, 2016 Red Hat, Inc.
    This file is part of elfutils.
    Contributed by Ulrich Drepper <drepper@redhat.com>, 1998.
 
@@ -38,6 +38,7 @@
 #include <gelf.h>
 
 #include <errno.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -138,6 +139,13 @@ enum
   ELF_E_INVALID_PHDR,
   ELF_E_NO_PHDR,
   ELF_E_INVALID_OFFSET,
+  ELF_E_INVALID_SECTION_TYPE,
+  ELF_E_INVALID_SECTION_FLAGS,
+  ELF_E_NOT_COMPRESSED,
+  ELF_E_ALREADY_COMPRESSED,
+  ELF_E_UNKNOWN_COMPRESSION_TYPE,
+  ELF_E_COMPRESS_ERROR,
+  ELF_E_DECOMPRESS_ERROR,
   /* Keep this as the last entry.  */
   ELF_E_NUM
 };
@@ -225,10 +233,20 @@ struct Elf_Scn
   } shdr;
 
   unsigned int shdr_flags;	/* Section header modified?  */
-  unsigned int flags;		/* Section changed in size?  */
+  unsigned int flags;		/* Section changed in size?
+				   ELF_F_MALLOCED for a Elf_Data_Chunk
+				   dummy_scn means the rawchunks
+				   data.d.d_buf was malloced. For normal
+				   sections it means rawdata_base was
+				   malloced (by elf_compress) even if
+				   the Elf was mmapped.  */
 
   char *rawdata_base;		/* The unmodified data of the section.  */
   char *data_base;		/* The converted data of the section.  */
+
+  char *zdata_base;		/* The uncompressed data of the section.  */
+  size_t zdata_size;		/* If zdata_base != NULL, the size of data.  */
+  size_t zdata_align;		/* If zdata_base != NULL, the addralign.  */
 
   struct Elf_ScnList *list;	/* Pointer to the section list element the
 				   data is in.  */
@@ -316,7 +334,7 @@ struct Elf
       int ehdr_flags;		/* Flags (dirty) for ELF header.  */
       int phdr_flags;		/* Flags (dirty|malloc) for program header.  */
       int shdr_malloced;	/* Nonzero if shdr array was allocated.  */
-      off64_t sizestr_offset;	/* Offset of the size string in the parent
+      off_t sizestr_offset;	/* Offset of the size string in the parent
 				   if this is an archive member.  */
     } elf;
 
@@ -335,7 +353,7 @@ struct Elf
       int ehdr_flags;		/* Flags (dirty) for ELF header.  */
       int phdr_flags;		/* Flags (dirty|malloc) for program header.  */
       int shdr_malloced;	/* Nonzero if shdr array was allocated.  */
-      off64_t sizestr_offset;	/* Offset of the size string in the parent
+      off_t sizestr_offset;	/* Offset of the size string in the parent
 				   if this is an archive member.  */
       Elf32_Ehdr ehdr_mem;	/* Memory used for ELF header when not
 				   mmaped.  */
@@ -360,7 +378,7 @@ struct Elf
       int ehdr_flags;		/* Flags (dirty) for ELF header.  */
       int phdr_flags;		/* Flags (dirty|malloc) for program header.  */
       int shdr_malloced;	/* Nonzero if shdr array was allocated.  */
-      off64_t sizestr_offset;	/* Offset of the size string in the parent
+      off_t sizestr_offset;	/* Offset of the size string in the parent
 				   if this is an archive member.  */
       Elf64_Ehdr ehdr_mem;	/* Memory used for ELF header when not
 				   mmaped.  */
@@ -437,6 +455,11 @@ extern const uint_fast8_t __libelf_type_aligns[EV_NUM - 1][ELFCLASSNUM - 1][ELF_
 #else
 # define __libelf_type_align(class, type)	1
 #endif
+
+/* Given an Elf handle and a section type returns the Elf_Data d_type.
+   Should not be called when SHF_COMPRESSED is set, the d_type should
+   be ELF_T_BYTE.  */
+extern Elf_Type __libelf_data_type (Elf *elf, int sh_type) internal_function;
 
 /* The libelf API does not have such a function but it is still useful.
    Get the memory size for the given type.
@@ -577,6 +600,22 @@ extern GElf_Sym *__gelf_getsym_internal (Elf_Data *__data, int __ndx,
 
 extern uint32_t __libelf_crc32 (uint32_t crc, unsigned char *buf, size_t len)
      attribute_hidden;
+
+extern void * __libelf_compress (Elf_Scn *scn, size_t hsize, int ei_data,
+				 size_t *orig_size, size_t *orig_addralign,
+				 size_t *size, bool force)
+     internal_function;
+
+extern void * __libelf_decompress (void *buf_in, size_t size_in,
+				   size_t size_out) internal_function;
+extern void * __libelf_decompress_elf (Elf_Scn *scn,
+				       size_t *size_out, size_t *addralign)
+     internal_function;
+
+
+extern void __libelf_reset_rawdata (Elf_Scn *scn, void *buf, size_t size,
+				    size_t align, Elf_Type type)
+     internal_function;
 
 
 /* We often have to update a flag iff a value changed.  Make this

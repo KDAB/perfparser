@@ -2,6 +2,7 @@ TARGET = asm
 
 include(../dynamic.pri)
 include(../libebl/eblheaders.pri)
+include(../libdwelf/dwelfheaders.pri)
 include(asmheaders.pri)
 
 SOURCES += \

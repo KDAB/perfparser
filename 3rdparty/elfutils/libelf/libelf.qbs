@@ -5,15 +5,20 @@ ElfUtilsDynamicLib {
     Depends { name: "elf32" }
     Depends { name: "elf64" }
 
+    cpp.dynamicLibraries: base.concat(["z"])
+
     files: [
         "abstract.h",
         "common.h",
+        "chdr_xlate.h",
         "dl-hash.h",
         "elf.h",
         "elf-knowledge.h",
         "elf_begin.c",
         "elf_clone.c",
         "elf_cntl.c",
+        "elf_compress.c",
+        "elf_compress_gnu.c",
         "elf_end.c",
         "elf_error.c",
         "elf_fill.c",
@@ -56,6 +61,7 @@ ElfUtilsDynamicLib {
         "gelf_checksum.c",
         "gelf_fsize.c",
         "gelf_getauxv.c",
+        "gelf_getchdr.c",
         "gelf_getclass.c",
         "gelf_getdyn.c",
         "gelf_getehdr.c",

@@ -1,5 +1,5 @@
 /* Maintenance of module list in libdwfl.
-   Copyright (C) 2005, 2006, 2007, 2008, 2014 Red Hat, Inc.
+   Copyright (C) 2005, 2006, 2007, 2008, 2014, 2015 Red Hat, Inc.
    This file is part of elfutils.
 
    This file is free software; you can redistribute it and/or modify
@@ -27,6 +27,7 @@
    not, see <http://www.gnu.org/licenses/>.  */
 
 #include "libdwflP.h"
+#include "../libdw/cfi.h"
 #include <search.h>
 #include <unistd.h>
 
@@ -70,6 +71,23 @@ __libdwfl_module_free (Dwfl_Module *mod)
       free (mod->cu);
     }
 
+  /* We might have primed the Dwarf_CFI ebl cache with our own ebl
+     in __libdwfl_set_cfi. Make sure we don't free it twice.  */
+  if (mod->eh_cfi != NULL)
+    {
+      if (mod->eh_cfi->ebl != NULL && mod->eh_cfi->ebl == mod->ebl)
+	mod->eh_cfi->ebl = NULL;
+      dwarf_cfi_end (mod->eh_cfi);
+    }
+
+  if (mod->dwarf_cfi != NULL)
+    {
+      if (mod->dwarf_cfi->ebl != NULL && mod->dwarf_cfi->ebl == mod->ebl)
+	mod->dwarf_cfi->ebl = NULL;
+      /* We don't need to explicitly destroy the dwarf_cfi.
+	 That will be done by dwarf_end.  */
+    }
+
   if (mod->dw != NULL)
     {
       INTUSE(dwarf_end) (mod->dw);
@@ -97,9 +115,6 @@ __libdwfl_module_free (Dwfl_Module *mod)
   if (mod->reloc_info != NULL)
     free (mod->reloc_info);
 
-  if (mod->eh_cfi != NULL)
-    dwarf_cfi_end (mod->eh_cfi);
-
   free (mod->name);
   free (mod);
 }
@@ -125,6 +140,21 @@ dwfl_report_begin (Dwfl *dwfl)
 }
 INTDEF (dwfl_report_begin)
 
+static inline Dwfl_Module *
+use (Dwfl_Module *mod, Dwfl_Module **tailp, Dwfl *dwfl)
+{
+  mod->next = *tailp;
+  *tailp = mod;
+
+  if (unlikely (dwfl->lookup_module != NULL))
+    {
+      free (dwfl->lookup_module);
+      dwfl->lookup_module = NULL;
+    }
+
+  return mod;
+}
+
 /* Report that a module called NAME spans addresses [START, END).
    Returns the module handle, either existing or newly allocated,
    or returns a null pointer for an allocation error.  */
@@ -133,20 +163,6 @@ dwfl_report_module (Dwfl *dwfl, const char *name,
 		    GElf_Addr start, GElf_Addr end)
 {
   Dwfl_Module **tailp = &dwfl->modulelist, **prevp = tailp;
-
-  inline Dwfl_Module *use (Dwfl_Module *mod)
-  {
-    mod->next = *tailp;
-    *tailp = mod;
-
-    if (unlikely (dwfl->lookup_module != NULL))
-      {
-	free (dwfl->lookup_module);
-	dwfl->lookup_module = NULL;
-      }
-
-    return mod;
-  }
 
   for (Dwfl_Module *m = *prevp; m != NULL; m = *(prevp = &m->next))
     {
@@ -157,7 +173,7 @@ dwfl_report_module (Dwfl *dwfl, const char *name,
 	     after the last module already reported.  */
 	  *prevp = m->next;
 	  m->gc = false;
-	  return use (m);
+	  return use (m, tailp, dwfl);
 	}
 
       if (! m->gc)
@@ -181,7 +197,7 @@ dwfl_report_module (Dwfl *dwfl, const char *name,
   mod->high_addr = end;
   mod->dwfl = dwfl;
 
-  return use (mod);
+  return use (mod, tailp, dwfl);
 }
 INTDEF (dwfl_report_module)
 

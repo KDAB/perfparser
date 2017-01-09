@@ -9,6 +9,7 @@ ElfUtilsStaticLib {
         "md5.c",
         "next_prime.c",
         "sha1.c",
+        "version.c",
         "xmalloc.c",
         "xstrdup.c",
         "xstrndup.c",

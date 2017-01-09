@@ -16,8 +16,6 @@ ElfUtilsDynamicLib {
         prefix: FileInfo.joinPaths(product.sourceDirectory, "..") + '/' + arch + "_"
         files: [
             "init.c",
-            "retval.c",
-            "symbol.c",
         ].concat(additionalSources)
     }
     Group {

@@ -39,9 +39,7 @@
 
 
 Dwarf *
-dwarf_begin (fd, cmd)
-     int fd;
-     Dwarf_Cmd cmd;
+dwarf_begin (int fd, Dwarf_Cmd cmd)
 {
   Elf *elf;
   Elf_Cmd elfcmd;
@@ -75,9 +73,9 @@ dwarf_begin (fd, cmd)
   if (elf == NULL)
     {
       /* Test why the `elf_begin" call failed.  */
-      struct stat64 st;
+      struct stat st;
 
-      if (fstat64 (fd, &st) == 0 && ! S_ISREG (st.st_mode))
+      if (fstat (fd, &st) == 0 && ! S_ISREG (st.st_mode))
 	__libdw_seterrno (DWARF_E_NO_REGFILE);
       else if (errno == EBADF)
 	__libdw_seterrno (DWARF_E_INVALID_FILE);

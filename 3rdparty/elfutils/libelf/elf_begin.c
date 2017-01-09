@@ -1,5 +1,5 @@
 /* Create descriptor for processing file.
-   Copyright (C) 1998-2010, 2012, 2014, 2015 Red Hat, Inc.
+   Copyright (C) 1998-2010, 2012, 2014, 2015, 2016 Red Hat, Inc.
    This file is part of elfutils.
    Written by Ulrich Drepper <drepper@redhat.com>, 1998.
 
@@ -40,7 +40,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/mman.h>
-#include <sys/param.h>
 #include <sys/stat.h>
 
 #include <system.h>
@@ -216,7 +215,7 @@ get_shnum (void *map_address, unsigned char *e_ident, int fildes, off_t offset,
 						 + offset))->sh_size,
 			sizeof (Elf64_Xword));
 	      else
-		if (unlikely (pread_retry (fildes, &size, sizeof (Elf64_Word),
+		if (unlikely (pread_retry (fildes, &size, sizeof (Elf64_Xword),
 					   offset + ehdr.e64->e_shoff
 					   + offsetof (Elf64_Shdr, sh_size))
 			      != sizeof (Elf64_Xword)))
@@ -340,6 +339,7 @@ file_read_elf (int fildes, void *map_address, unsigned char *e_ident,
 
       Elf32_Off e_shoff = elf->state.elf32.ehdr->e_shoff;
       if (map_address != NULL && e_ident[EI_DATA] == MY_ELFDATA
+	  && cmd != ELF_C_READ_MMAP /* We need a copy to be able to write.  */
 	  && (ALLOW_UNALIGNED
 	      || (((uintptr_t) ((char *) ehdr + e_shoff)
 		   & (__alignof__ (Elf32_Shdr) - 1)) == 0)))
@@ -441,6 +441,7 @@ file_read_elf (int fildes, void *map_address, unsigned char *e_ident,
 
       Elf64_Off e_shoff = elf->state.elf64.ehdr->e_shoff;
       if (map_address != NULL && e_ident[EI_DATA] == MY_ELFDATA
+	  && cmd != ELF_C_READ_MMAP /* We need a copy to be able to write.  */
 	  && (ALLOW_UNALIGNED
 	      || (((uintptr_t) ((char *) ehdr + e_shoff)
 		   & (__alignof__ (Elf64_Shdr) - 1)) == 0)))
@@ -604,22 +605,30 @@ read_file (int fildes, off_t offset, size_t maxsize,
 		  || cmd == ELF_C_WRITE_MMAP
 		  || cmd == ELF_C_READ_MMAP_PRIVATE);
 
+  if (parent == NULL)
+    {
+      if (maxsize == ~((size_t) 0))
+	{
+	  /* We don't know in the moment how large the file is.
+	     Determine it now.  */
+	  struct stat st;
+
+	  if (fstat (fildes, &st) == 0
+	      && (sizeof (size_t) >= sizeof (st.st_size)
+		  || st.st_size <= ~((size_t) 0)))
+	    maxsize = (size_t) st.st_size;
+	}
+    }
+  else
+    {
+      /* The parent is already loaded.  Use it.  */
+      assert (maxsize != ~((size_t) 0));
+    }
+
   if (use_mmap)
     {
       if (parent == NULL)
 	{
-	  if (maxsize == ~((size_t) 0))
-	    {
-	      /* We don't know in the moment how large the file is.
-		 Determine it now.  */
-	      struct stat st;
-
-	      if (fstat (fildes, &st) == 0
-		  && (sizeof (size_t) >= sizeof (st.st_size)
-		      || st.st_size <= ~((size_t) 0)))
-		maxsize = (size_t) st.st_size;
-	    }
-
 	  /* We try to map the file ourself.  */
 	  map_address = mmap (NULL, maxsize, (cmd == ELF_C_READ_MMAP
 					      ? PROT_READ
@@ -634,9 +643,6 @@ read_file (int fildes, off_t offset, size_t maxsize,
 	}
       else
 	{
-	  /* The parent is already loaded.  Use it.  */
-	  assert (maxsize != ~((size_t) 0));
-
 	  map_address = parent->map_address;
 	}
     }
@@ -775,8 +781,7 @@ read_long_names (Elf *elf)
 /* Read the next archive header.  */
 int
 internal_function
-__libelf_next_arhdr_wrlock (elf)
-     Elf *elf;
+__libelf_next_arhdr_wrlock (Elf *elf)
 {
   struct ar_hdr *ar_hdr;
   Elf_Arhdr *elf_ar_hdr;
@@ -1040,13 +1045,23 @@ write_file (int fd, Elf_Cmd cmd)
   return result;
 }
 
+/* Lock if necessary before dup an archive.  */
+static inline Elf *
+lock_dup_elf (int fildes, Elf_Cmd cmd, Elf *ref)
+{
+  /* We need wrlock to dup an archive.  */
+  if (ref->kind == ELF_K_AR)
+    {
+      rwlock_unlock (ref->lock);
+      rwlock_wrlock (ref->lock);
+    }
+    /* Duplicate the descriptor.  */
+  return dup_elf (fildes, cmd, ref);
+}
 
 /* Return a descriptor for the file belonging to FILDES.  */
 Elf *
-elf_begin (fildes, cmd, ref)
-     int fildes;
-     Elf_Cmd cmd;
-     Elf *ref;
+elf_begin (int fildes, Elf_Cmd cmd, Elf *ref)
 {
   Elf *retval;
 
@@ -1066,19 +1081,6 @@ elf_begin (fildes, cmd, ref)
       __libelf_seterrno (ELF_E_INVALID_FILE);
       return NULL;
     }
-
-  Elf *lock_dup_elf ()
-  {
-    /* We need wrlock to dup an archive.  */
-    if (ref->kind == ELF_K_AR)
-      {
-	rwlock_unlock (ref->lock);
-	rwlock_wrlock (ref->lock);
-      }
-
-    /* Duplicate the descriptor.  */
-    return dup_elf (fildes, cmd, ref);
-  }
 
   switch (cmd)
     {
@@ -1100,7 +1102,7 @@ elf_begin (fildes, cmd, ref)
     case ELF_C_READ:
     case ELF_C_READ_MMAP:
       if (ref != NULL)
-	retval = lock_dup_elf ();
+	retval = lock_dup_elf (fildes, cmd, ref);
       else
 	/* Create descriptor for existing file.  */
 	retval = read_file (fildes, 0, ~((size_t) 0), cmd, NULL);
@@ -1121,7 +1123,7 @@ elf_begin (fildes, cmd, ref)
 	      retval = NULL;
 	    }
 	  else
-	    retval = lock_dup_elf ();
+	    retval = lock_dup_elf (fildes, cmd, ref);
 	}
       else
 	/* Create descriptor for existing file.  */

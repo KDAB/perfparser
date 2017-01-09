@@ -9,6 +9,8 @@ SOURCES += \
     $$PWD/elf_begin.c \
     $$PWD/elf_clone.c \
     $$PWD/elf_cntl.c \
+    $$PWD/elf_compress.c \
+    $$PWD/elf_compress_gnu.c \
     $$PWD/elf_end.c \
     $$PWD/elf_error.c \
     $$PWD/elf_fill.c \
@@ -49,6 +51,7 @@ SOURCES += \
     $$PWD/gelf_checksum.c \
     $$PWD/gelf_fsize.c \
     $$PWD/gelf_getauxv.c \
+    $$PWD/gelf_getchdr.c \
     $$PWD/gelf_getclass.c \
     $$PWD/gelf_getdyn.c \
     $$PWD/gelf_getehdr.c \

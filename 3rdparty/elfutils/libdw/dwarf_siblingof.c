@@ -37,16 +37,13 @@
 
 
 int
-dwarf_siblingof (die, result)
-     Dwarf_Die *die;
-     Dwarf_Die *result;
+dwarf_siblingof (Dwarf_Die *die, Dwarf_Die *result)
 {
   /* Ignore previous errors.  */
   if (die == NULL)
     return -1;
 
-  if (result == NULL)
-    return -1;
+  /* result is declared NN */
 
   if (result != die)
     result->addr = NULL;

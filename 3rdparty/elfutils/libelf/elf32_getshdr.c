@@ -1,5 +1,5 @@
 /* Return section header.
-   Copyright (C) 1998-2002, 2005, 2007, 2009, 2012, 2014 Red Hat, Inc.
+   Copyright (C) 1998-2002, 2005, 2007, 2009, 2012, 2014, 2015 Red Hat, Inc.
    This file is part of elfutils.
    Written by Ulrich Drepper <drepper@redhat.com>, 1998.
 
@@ -99,6 +99,7 @@ load_shdr_wrlock (Elf_Scn *scn)
 
       assert ((elf->flags & ELF_F_MALLOCED)
 	      || ehdr->e_ident[EI_DATA] != MY_ELFDATA
+	      || elf->cmd == ELF_C_READ_MMAP
 	      || (! ALLOW_UNALIGNED
 		  && ((uintptr_t) file_shdr
 		      & (__alignof__ (ElfW2(LIBELFBITS,Shdr)) - 1)) != 0));
@@ -106,7 +107,9 @@ load_shdr_wrlock (Elf_Scn *scn)
       /* Now copy the data and at the same time convert the byte order.  */
       if (ehdr->e_ident[EI_DATA] == MY_ELFDATA)
 	{
-	  assert ((elf->flags & ELF_F_MALLOCED) || ! ALLOW_UNALIGNED);
+	  assert ((elf->flags & ELF_F_MALLOCED)
+		  || elf->cmd == ELF_C_READ_MMAP
+		  || ! ALLOW_UNALIGNED);
 	  memcpy (shdr, file_shdr, size);
 	}
       else
@@ -243,8 +246,8 @@ scn_valid (Elf_Scn *scn)
 }
 
 ElfW2(LIBELFBITS,Shdr) *
-__elfw2(LIBELFBITS,getshdr_rdlock) (scn)
-     Elf_Scn *scn;
+internal_function
+__elfw2(LIBELFBITS,getshdr_rdlock) (Elf_Scn *scn)
 {
   ElfW2(LIBELFBITS,Shdr) *result;
 
@@ -265,8 +268,8 @@ __elfw2(LIBELFBITS,getshdr_rdlock) (scn)
 }
 
 ElfW2(LIBELFBITS,Shdr) *
-__elfw2(LIBELFBITS,getshdr_wrlock) (scn)
-     Elf_Scn *scn;
+internal_function
+__elfw2(LIBELFBITS,getshdr_wrlock) (Elf_Scn *scn)
 {
   ElfW2(LIBELFBITS,Shdr) *result;
 
@@ -281,8 +284,7 @@ __elfw2(LIBELFBITS,getshdr_wrlock) (scn)
 }
 
 ElfW2(LIBELFBITS,Shdr) *
-elfw2(LIBELFBITS,getshdr) (scn)
-     Elf_Scn *scn;
+elfw2(LIBELFBITS,getshdr) (Elf_Scn *scn)
 {
   ElfW2(LIBELFBITS,Shdr) *result;
 

@@ -6,6 +6,7 @@ include(../elfheaders.pri)
 SOURCES += \
     $$PWD/../elf32_checksum.c \
     $$PWD/../elf32_fsize.c \
+    $$PWD/../elf32_getchdr.c \
     $$PWD/../elf32_getehdr.c \
     $$PWD/../elf32_getphdr.c \
     $$PWD/../elf32_getshdr.c \

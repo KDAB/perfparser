@@ -1,5 +1,5 @@
 /* Free resources associated with Elf descriptor.
-   Copyright (C) 1998,1999,2000,2001,2002,2004,2005,2007 Red Hat, Inc.
+   Copyright (C) 1998,1999,2000,2001,2002,2004,2005,2007,2015,2016 Red Hat, Inc.
    This file is part of elfutils.
    Written by Ulrich Drepper <drepper@redhat.com>, 1998.
 
@@ -40,8 +40,7 @@
 
 
 int
-elf_end (elf)
-     Elf *elf;
+elf_end (Elf *elf)
 {
   Elf *parent;
 
@@ -151,6 +150,12 @@ elf_end (elf)
 		  /* It doesn't matter which pointer.  */
 		  free (scn->shdr.e32);
 
+		/* Free zdata if uncompressed, but not yet used as
+		   rawdata_base.  If it is already used it will be
+		   freed below.  */
+		if (scn->zdata_base != scn->rawdata_base)
+		  free (scn->zdata_base);
+
 		/* If the file has the same byte order and the
 		   architecture doesn't require overly stringent
 		   alignment the raw data buffer is the same as the
@@ -159,8 +164,10 @@ elf_end (elf)
 		  free (scn->data_base);
 
 		/* The section data is allocated if we couldn't mmap
-		   the file.  */
-		if (elf->map_address == NULL)
+		   the file.  Or if we had to decompress.  */
+		if (elf->map_address == NULL
+		    || scn->rawdata_base == scn->zdata_base
+		    || (scn->flags & ELF_F_MALLOCED) != 0)
 		  free (scn->rawdata_base);
 
 		/* Free the list of data buffers for the section.

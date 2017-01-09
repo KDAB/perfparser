@@ -34,17 +34,21 @@
 #define RELOC_PREFIX	R_SPARC_
 #include "libebl_CPU.h"
 
+/* In SPARC some relocations use the most significative 24 bits of the
+   r_type field to encode a secondary addend.  Make sure the routines
+   in common-reloc.c acknowledge this.  */
+#define RELOC_TYPE_ID(type) ((type) & 0xff)
+
 /* This defines the common reloc hooks based on sparc_reloc.def.  */
 #include "common-reloc.c"
 
 extern __typeof (EBLHOOK (core_note)) sparc64_core_note attribute_hidden;
 
 const char *
-sparc_init (elf, machine, eh, ehlen)
-     Elf *elf __attribute__ ((unused));
-     GElf_Half machine __attribute__ ((unused));
-     Ebl *eh;
-     size_t ehlen;
+sparc_init (Elf *elf __attribute__ ((unused)),
+	    GElf_Half machine __attribute__ ((unused)),
+	    Ebl *eh,
+	    size_t ehlen)
 {
   /* Check whether the Elf_BH object has a sufficent size.  */
   if (ehlen < sizeof (Ebl))
@@ -71,6 +75,15 @@ sparc_init (elf, machine, eh, ehlen)
   HOOK (eh, auxv_info);
   HOOK (eh, register_info);
   HOOK (eh, return_value_location);
+  HOOK (eh, check_object_attribute);
+  HOOK (eh, abi_cfi);
+  /* gcc/config/sparc.h define FIRST_PSEUDO_REGISTER  */
+  eh->frame_nregs = 103;
+  /* The CFI Dwarf register with the "return address" in sparc
+     actually contains the call address.  The return address is
+     located 8 bytes after it.  */
+  eh->ra_offset = 8;
+  HOOK (eh, set_initial_registers_tid);
 
   return MODVERSION;
 }

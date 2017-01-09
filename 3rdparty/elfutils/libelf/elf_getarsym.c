@@ -74,9 +74,7 @@ read_number_entries (uint64_t *nump, Elf *elf, size_t *offp, bool index64_p)
 }
 
 Elf_Arsym *
-elf_getarsym (elf, ptr)
-     Elf *elf;
-     size_t *ptr;
+elf_getarsym (Elf *elf, size_t *ptr)
 {
   if (elf->kind != ELF_K_AR)
     {
@@ -203,11 +201,7 @@ elf_getarsym (elf, ptr)
       elf->state.ar.ar_sym = (Elf_Arsym *) malloc (ar_sym_len);
       if (elf->state.ar.ar_sym != NULL)
 	{
-	  union
-	  {
-	    uint32_t u32[n];
-	    uint64_t u64[n];
-	  } *file_data;
+	  void *file_data; /* unit32_t[n] or uint64_t[n] */
 	  char *str_data;
 	  size_t sz = n * w;
 
@@ -269,12 +263,14 @@ elf_getarsym (elf, ptr)
 
 	  /* Now we can build the data structure.  */
 	  Elf_Arsym *arsym = elf->state.ar.ar_sym;
+	  uint64_t (*u64)[n] = file_data;
+	  uint32_t (*u32)[n] = file_data;
 	  for (size_t cnt = 0; cnt < n; ++cnt)
 	    {
 	      arsym[cnt].as_name = str_data;
 	      if (index64_p)
 		{
-		  uint64_t tmp = file_data->u64[cnt];
+		  uint64_t tmp = (*u64)[cnt];
 		  if (__BYTE_ORDER == __LITTLE_ENDIAN)
 		    tmp = bswap_64 (tmp);
 
@@ -296,12 +292,20 @@ elf_getarsym (elf, ptr)
 		    }
 		}
 	      else if (__BYTE_ORDER == __LITTLE_ENDIAN)
-		arsym[cnt].as_off = bswap_32 (file_data->u32[cnt]);
+		arsym[cnt].as_off = bswap_32 ((*u32)[cnt]);
 	      else
-		arsym[cnt].as_off = file_data->u32[cnt];
+		arsym[cnt].as_off = (*u32)[cnt];
 
 	      arsym[cnt].as_hash = _dl_elf_hash (str_data);
+#if HAVE_DECL_RAWMEMCHR
 	      str_data = rawmemchr (str_data, '\0') + 1;
+#else
+	      char c;
+	      do {
+		c = *str_data;
+		str_data++;
+	      } while (c);
+#endif
 	    }
 
 	  /* At the end a special entry.  */

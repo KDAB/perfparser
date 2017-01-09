@@ -39,7 +39,7 @@
 # define __nonnull_attribute__(...) __attribute__ ((__nonnull__ (__VA_ARGS__)))
 # define __deprecated_attribute__ __attribute__ ((__deprecated__))
 #else
-# define __nonnull_attribute__(args...)
+# define __nonnull_attribute__(...)
 # define __deprecated_attribute__
 #endif
 

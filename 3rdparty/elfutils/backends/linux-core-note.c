@@ -41,7 +41,9 @@
 #define ALIGN_SHORT		2
 #define TYPE_SHORT		ELF_T_HALF
 #define	INT			int32_t
-#define ALIGN_INT		4
+#ifndef ALIGN_INT
+# define ALIGN_INT		4
+#endif
 #define TYPE_INT		ELF_T_SWORD
 #ifndef PR_REG
 # define PR_REG			ULONG
@@ -107,7 +109,11 @@ struct EBLHOOK(prstatus)
 #endif
     ;
   FIELD (INT, pr_fpvalid);
-};
+}
+#ifdef ALIGN_PRSTATUS
+  __attribute__ ((packed, aligned (ALIGN_PRSTATUS)))
+#endif
+;
 
 #define	FNAMESZ	16
 #define	PRARGSZ	80
@@ -204,14 +210,10 @@ static const Ebl_Core_Item vmcoreinfo_items[] =
 #undef	FIELD
 
 int
-EBLHOOK(core_note) (nhdr, name, regs_offset, nregloc, reglocs, nitems, items)
-     const GElf_Nhdr *nhdr;
-     const char *name;
-     GElf_Word *regs_offset;
-     size_t *nregloc;
-     const Ebl_Register_Location **reglocs;
-     size_t *nitems;
-     const Ebl_Core_Item **items;
+EBLHOOK(core_note) (const GElf_Nhdr *nhdr, const char *name,
+		    GElf_Word *regs_offset, size_t *nregloc,
+		    const Ebl_Register_Location **reglocs,
+		    size_t *nitems, const Ebl_Core_Item **items)
 {
   switch (nhdr->n_namesz)
     {
@@ -223,8 +225,8 @@ EBLHOOK(core_note) (nhdr, name, regs_offset, nregloc, reglocs, nitems, items)
     case sizeof "CORE":
       if (memcmp (name, "CORE", nhdr->n_namesz) == 0)
 	break;
-      /* Buggy old Linux kernels didn't terminate "LINUX".
-         Fall through.  */
+      /* Buggy old Linux kernels didn't terminate "LINUX".  */
+      /* Fall through. */
 
     case sizeof "LINUX":
       if (memcmp (name, "LINUX", nhdr->n_namesz) == 0)

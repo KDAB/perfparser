@@ -7,6 +7,7 @@ ElfUtilsStaticLib {
         files: [
             "elf32_checksum.c",
             "elf32_fsize.c",
+            "elf32_getchdr.c",
             "elf32_getehdr.c",
             "elf32_getphdr.c",
             "elf32_getshdr.c",

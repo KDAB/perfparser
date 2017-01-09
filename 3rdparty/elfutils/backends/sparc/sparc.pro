@@ -3,8 +3,11 @@ include(../backends.pri)
 
 SOURCES += \
     ../sparc_auxv.c \
+    ../sparc_attrs.c \
+    ../sparc_cfi.c \
     ../sparc_corenote.c \
     ../sparc_init.c \
+    ../sparc_initreg.c \
     ../sparc_regs.c \
     ../sparc_retval.c \
     ../sparc_symbol.c \

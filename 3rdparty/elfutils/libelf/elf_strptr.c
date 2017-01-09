@@ -32,16 +32,45 @@
 #endif
 
 #include <libelf.h>
+#include <stdbool.h>
 #include <stddef.h>
 
 #include "libelfP.h"
 
 
+static void *
+get_zdata (Elf_Scn *strscn)
+{
+  size_t zsize, zalign;
+  void *zdata = __libelf_decompress_elf (strscn, &zsize, &zalign);
+  if (zdata == NULL)
+    return NULL;
+
+  strscn->zdata_base = zdata;
+  strscn->zdata_size = zsize;
+  strscn->zdata_align = zalign;
+
+  return zdata;
+}
+
+static bool validate_str (const char *str, size_t from, size_t to)
+{
+#if HAVE_DECL_MEMRCHR
+  return memrchr (&str[from], '\0', to - from) != NULL;
+#else
+  do {
+    if (to <= from)
+      return false;
+
+    to--;
+  } while (str[to]);
+
+  return true;
+#endif
+}
+
 char *
-elf_strptr (elf, idx, offset)
-     Elf *elf;
-     size_t idx;
-     size_t offset;
+elf_strptr (Elf *elf, size_t idx, size_t offset)
 {
   if (elf == NULL)
     return NULL;
@@ -97,8 +126,16 @@ elf_strptr (elf, idx, offset)
 	  goto out;
 	}
 
-      sh_size = shdr->sh_size;
-      if (unlikely (offset >= shdr->sh_size))
+      if ((shdr->sh_flags & SHF_COMPRESSED) == 0)
+	sh_size = shdr->sh_size;
+      else
+	{
+	  if (strscn->zdata_base == NULL && get_zdata (strscn) == NULL)
+	    goto out;
+	  sh_size = strscn->zdata_size;
+	}
+
+      if (unlikely (offset >= sh_size))
 	{
 	  /* The given offset is too big, it is beyond this section.  */
 	  __libelf_seterrno (ELF_E_OFFSET_RANGE);
@@ -115,8 +152,16 @@ elf_strptr (elf, idx, offset)
 	  goto out;
 	}
 
-      sh_size = shdr->sh_size;
-      if (unlikely (offset >= shdr->sh_size))
+      if ((shdr->sh_flags & SHF_COMPRESSED) == 0)
+	sh_size = shdr->sh_size;
+      else
+	{
+	  if (strscn->zdata_base == NULL && get_zdata (strscn) == NULL)
+	    goto out;
+	  sh_size = strscn->zdata_size;
+	}
+
+      if (unlikely (offset >= sh_size))
 	{
 	  /* The given offset is too big, it is beyond this section.  */
 	  __libelf_seterrno (ELF_E_OFFSET_RANGE);
@@ -134,7 +179,16 @@ elf_strptr (elf, idx, offset)
 	goto out;
     }
 
-  if (likely (strscn->data_list_rear == NULL))
+  if (unlikely (strscn->zdata_base != NULL))
+    {
+      /* Make sure the string is NUL terminated.  Start from the end,
+         which very likely is a NUL char.  */
+      if (likely (validate_str (strscn->zdata_base, offset, sh_size)))
+        result = &strscn->zdata_base[offset];
+      else
+        __libelf_seterrno (ELF_E_INVALID_INDEX);
+    }
+  else if (likely (strscn->data_list_rear == NULL))
     {
       // XXX The above is currently correct since elf_newdata will
       // make sure to convert the rawdata into the datalist if
@@ -147,8 +201,7 @@ elf_strptr (elf, idx, offset)
 
       /* Make sure the string is NUL terminated.  Start from the end,
 	 which very likely is a NUL char.  */
-      if (likely (memrchr (&strscn->rawdata_base[offset],
-			  '\0', sh_size - offset) != NULL))
+      if (likely (validate_str (strscn->rawdata_base, offset, sh_size)))
 	result = &strscn->rawdata_base[offset];
       else
 	__libelf_seterrno (ELF_E_INVALID_INDEX);
@@ -165,10 +218,9 @@ elf_strptr (elf, idx, offset)
 	    {
 	      /* Make sure the string is NUL terminated.  Start from
 		 the end, which very likely is a NUL char.  */
-	      if (likely (memrchr ((char *) dl->data.d.d_buf
-				   + (offset - dl->data.d.d_off), '\0',
-				   (dl->data.d.d_size
-				    - (offset - dl->data.d.d_off))) != NULL))
+	      if (likely (validate_str ((char *) dl->data.d.d_buf,
+					offset - dl->data.d.d_off,
+					dl->data.d.d_size)))
 		result = ((char *) dl->data.d.d_buf
 			  + (offset - dl->data.d.d_off));
 	      else

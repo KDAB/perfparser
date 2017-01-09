@@ -57,7 +57,7 @@ state_fetch_pc (Dwfl_Frame *state)
 	    __libdwfl_seterrno (DWFL_E_LIBEBL_BAD);
 	    return false;
 	  }
-	state->pc = state->regs[ra];
+	state->pc = state->regs[ra] + ebl_ra_offset (ebl);
 	state->pc_state = DWFL_FRAME_STATE_PC_SET;
       }
       return true;
@@ -143,7 +143,8 @@ dwfl_attach_state (Dwfl *dwfl, Elf *elf, pid_t pid,
 
   /* Reset any previous error, we are just going to try again.  */
   dwfl->attacherr = DWFL_E_NOERROR;
-  if (thread_callbacks == NULL || thread_callbacks->next_thread == NULL
+  /* thread_callbacks is declared NN */
+  if (thread_callbacks->next_thread == NULL
       || thread_callbacks->set_initial_registers == NULL)
     {
       dwfl->attacherr = DWFL_E_INVALID_ARGUMENT;

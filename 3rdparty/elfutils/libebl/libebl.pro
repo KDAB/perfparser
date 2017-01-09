@@ -32,7 +32,6 @@ SOURCES += \
     $$PWD/eblmachinesectionflagcheck.c \
     $$PWD/eblnonerelocp.c \
     $$PWD/eblnormalizepc.c \
-    $$PWD/eblobjecttypename.c \
     $$PWD/eblobjnote.c \
     $$PWD/eblobjnotetypename.c \
     $$PWD/eblopenbackend.c \
@@ -49,7 +48,6 @@ SOURCES += \
     $$PWD/eblsectionstripp.c \
     $$PWD/eblsectiontypename.c \
     $$PWD/eblsegmenttypename.c \
-    $$PWD/eblshflagscombine.c \
     $$PWD/eblstother.c \
     $$PWD/eblstrtab.c \
     $$PWD/eblsymbolbindingname.c \

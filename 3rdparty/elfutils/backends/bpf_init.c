@@ -1,7 +1,5 @@
-/* Return combines section header flags value.
-   Copyright (C) 2001, 2002 Red Hat, Inc.
+/* Initialization of BPF specific backend library.
    This file is part of elfutils.
-   Written by Ulrich Drepper <drepper@redhat.com>, 2001.
 
    This file is free software; you can redistribute it and/or modify
    it under the terms of either
@@ -31,14 +29,32 @@
 # include <config.h>
 #endif
 
-#include <libeblP.h>
+#define BACKEND		bpf_
+#define RELOC_PREFIX	R_BPF_
+#include "libebl_CPU.h"
+
+/* This defines the common reloc hooks based on bpf_reloc.def.  */
+#define NO_RELATIVE_RELOC
+#define NO_COPY_RELOC
+#include "common-reloc.c"
 
 
-GElf_Word
-ebl_sh_flags_combine (ebl, flags1, flags2)
-     Ebl *ebl;
-     GElf_Word flags1;
-     GElf_Word flags2;
+const char *
+bpf_init (Elf *elf __attribute__ ((unused)),
+	  GElf_Half machine __attribute__ ((unused)),
+	  Ebl *eh, size_t ehlen)
 {
-  return ebl->sh_flags_combine (flags1, flags2);
+  /* Check whether the Elf_BH object has a sufficent size.  */
+  if (ehlen < sizeof (Ebl))
+    return NULL;
+
+  /* We handle it.  */
+  eh->name = "BPF";
+  bpf_init_reloc (eh);
+  HOOK (eh, register_info);
+#ifdef HAVE_LINUX_BPF_H
+  HOOK (eh, disasm);
+#endif
+
+  return MODVERSION;
 }

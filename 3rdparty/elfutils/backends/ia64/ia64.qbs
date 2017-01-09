@@ -2,5 +2,5 @@ import qbs
 
 ElfUtilsBackend {
     arch: "ia64"
-    additionalSources: ["regs.c"]
+    additionalSources: ["regs.c", "retval.c", "symbol.c"]
 }

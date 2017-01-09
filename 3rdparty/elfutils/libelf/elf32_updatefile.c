@@ -1,5 +1,5 @@
 /* Write changed data structures.
-   Copyright (C) 2000-2010, 2014, 2015 Red Hat, Inc.
+   Copyright (C) 2000-2010, 2014, 2015, 2016 Red Hat, Inc.
    This file is part of elfutils.
    Written by Ulrich Drepper <drepper@redhat.com>, 2000.
 
@@ -39,7 +39,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/mman.h>
-#include <sys/param.h>
 
 #include <system.h>
 #include "libelfP.h"
@@ -100,6 +99,29 @@ sort_sections (Elf_Scn **scns, Elf_ScnList *list)
   qsort (scns, scnp - scns, sizeof (*scns), compare_sections);
 }
 
+
+static inline void
+fill_mmap (size_t offset, char *last_position, char *scn_start,
+           char *const shdr_start, char *const shdr_end)
+{
+  size_t written = 0;
+
+  if (last_position < shdr_start)
+    {
+      written = MIN (scn_start + offset - last_position,
+                     shdr_start - last_position);
+
+      memset (last_position, __libelf_fill_byte, written);
+    }
+
+  if (last_position + written != scn_start + offset
+      && shdr_end < scn_start + offset)
+    {
+      char *fill_start = MAX (shdr_end, scn_start);
+      memset (fill_start, __libelf_fill_byte,
+              scn_start + offset - fill_start);
+    }
+}
 
 int
 internal_function
@@ -246,6 +268,7 @@ __elfw2(LIBELFBITS,updatemmap) (Elf *elf, int change_bo, size_t shnum)
 	      void *p = malloc (sizeof (ElfW2(LIBELFBITS,Shdr)));
 	      if (unlikely (p == NULL))
 		{
+		  free (scns);
 		  __libelf_seterrno (ELF_E_NOMEM);
 		  return -1;
 		}
@@ -272,6 +295,7 @@ __elfw2(LIBELFBITS,updatemmap) (Elf *elf, int change_bo, size_t shnum)
 	      void *p = malloc (scn->data_list.data.d.d_size);
 	      if (unlikely (p == NULL))
 		{
+		  free (scns);
 		  __libelf_seterrno (ELF_E_NOMEM);
 		  return -1;
 		}
@@ -303,27 +327,6 @@ __elfw2(LIBELFBITS,updatemmap) (Elf *elf, int change_bo, size_t shnum)
 	  Elf_Data_List *dl = &scn->data_list;
 	  bool scn_changed = false;
 
-	  void fill_mmap (size_t offset)
-	  {
-	    size_t written = 0;
-
-	    if (last_position < shdr_start)
-	      {
-		written = MIN (scn_start + offset - last_position,
-			       shdr_start - last_position);
-
-		memset (last_position, __libelf_fill_byte, written);
-	      }
-
-	    if (last_position + written != scn_start + offset
-		&& shdr_end < scn_start + offset)
-	      {
-		char *fill_start = MAX (shdr_end, scn_start);
-		memset (fill_start, __libelf_fill_byte,
-			scn_start + offset - fill_start);
-	      }
-	  }
-
 	  if (scn->data_list_rear != NULL)
 	    do
 	      {
@@ -338,7 +341,8 @@ __elfw2(LIBELFBITS,updatemmap) (Elf *elf, int change_bo, size_t shnum)
 			|| ((scn->flags | dl->flags | elf->flags)
 			    & ELF_F_DIRTY) != 0))
 		  {
-		    fill_mmap (dl->data.d.d_off);
+		    fill_mmap (dl->data.d.d_off, last_position, scn_start,
+		               shdr_start, shdr_end);
 		    last_position = scn_start + dl->data.d.d_off;
 		  }
 
@@ -390,7 +394,8 @@ __elfw2(LIBELFBITS,updatemmap) (Elf *elf, int change_bo, size_t shnum)
 	      /* If the previous section (or the ELF/program
 		 header) changed we might have to fill the gap.  */
 	      if (scn_start > last_position && previous_scn_changed)
-		fill_mmap (0);
+		fill_mmap (0, last_position, scn_start,
+		           shdr_start, shdr_end);
 
 	      /* We have to trust the existing section header information.  */
 	      last_position = scn_start + shdr->sh_size;

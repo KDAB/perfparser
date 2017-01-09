@@ -34,10 +34,10 @@
 #include "system.h"
 
 
-/* Try to open64 [DIR/][SUBDIR/]DEBUGLINK, return file descriptor or -1.
+/* Try to open [DIR/][SUBDIR/]DEBUGLINK, return file descriptor or -1.
    On success, *DEBUGINFO_FILE_NAME has the malloc'd name of the open file.  */
 static int
-try_open (const struct stat64 *main_stat,
+try_open (const struct stat *main_stat,
 	  const char *dir, const char *subdir, const char *debuglink,
 	  char **debuginfo_file_name)
 {
@@ -53,11 +53,11 @@ try_open (const struct stat64 *main_stat,
 	    : asprintf (&fname, "%s/%s/%s", dir, subdir, debuglink)) < 0)
     return -1;
 
-  struct stat64 st;
-  int fd = TEMP_FAILURE_RETRY (open64 (fname, O_RDONLY));
+  struct stat st;
+  int fd = TEMP_FAILURE_RETRY (open (fname, O_RDONLY));
   if (fd < 0)
     free (fname);
-  else if (fstat64 (fd, &st) == 0
+  else if (fstat (fd, &st) == 0
 	   && st.st_ino == main_stat->st_ino
 	   && st.st_dev == main_stat->st_dev)
     {
@@ -163,7 +163,11 @@ find_debuginfo_in_path (Dwfl_Module *mod, const char *file_name,
 
   const char *file_basename = file_name == NULL ? NULL : basename (file_name);
   char *localname = NULL;
-  if (debuglink_file == NULL)
+
+  /* We invent a debuglink .debug name if NULL, but then want to try the
+     basename too.  */
+  bool debuglink_null = debuglink_file == NULL;
+  if (debuglink_null)
     {
       /* For a alt debug multi file we need a name, for a separate debug
 	 name we may be able to fall back on file_basename.debug.  */
@@ -205,9 +209,9 @@ find_debuginfo_in_path (Dwfl_Module *mod, const char *file_name,
     }
 
   /* XXX dev/ino should be cached in struct dwfl_file.  */
-  struct stat64 main_stat;
-  if (unlikely ((mod->main.fd != -1 ? fstat64 (mod->main.fd, &main_stat)
-		 : file_name != NULL ? stat64 (file_name, &main_stat)
+  struct stat main_stat;
+  if (unlikely ((mod->main.fd != -1 ? fstat (mod->main.fd, &main_stat)
+		 : file_name != NULL ? stat (file_name, &main_stat)
 		 : -1) < 0))
     {
       main_stat.st_dev = 0;
@@ -231,6 +235,10 @@ find_debuginfo_in_path (Dwfl_Module *mod, const char *file_name,
 	check = *p++ == '+';
       check = check && cancheck;
 
+      /* Try the basename too, if we made up the debuglink name and this
+	 is not the main directory.  */
+      bool try_file_basename;
+
       const char *dir, *subdir, *file;
       switch (p[0])
 	{
@@ -239,6 +247,7 @@ find_debuginfo_in_path (Dwfl_Module *mod, const char *file_name,
 	  dir = file_dirname;
 	  subdir = NULL;
 	  file = debuglink_file;
+	  try_file_basename = false;
 	  break;
 	case '/':
 	  /* An absolute path says to look there for a subdirectory
@@ -252,7 +261,15 @@ find_debuginfo_in_path (Dwfl_Module *mod, const char *file_name,
 	  dir = p;
 	  if (mod->dw == NULL)
 	    {
-	      subdir = file_dirname + 1;
+	      subdir = file_dirname;
+	      /* We want to explore all sub-subdirs.  Chop off one slash
+		 at a time.  */
+	    explore_dir:
+	      subdir = strchr (subdir, '/');
+	      if (subdir != NULL)
+		subdir = subdir + 1;
+	      if (subdir && *subdir == 0)
+		continue;
 	      file = debuglink_file;
 	    }
 	  else
@@ -260,6 +277,7 @@ find_debuginfo_in_path (Dwfl_Module *mod, const char *file_name,
 	      subdir = NULL;
 	      file = basename (debuglink_file);
 	    }
+	  try_file_basename = debuglink_null;
 	  break;
 	default:
 	  /* A relative path says to try a subdirectory of that name
@@ -267,11 +285,14 @@ find_debuginfo_in_path (Dwfl_Module *mod, const char *file_name,
 	  dir = file_dirname;
 	  subdir = p;
 	  file = debuglink_file;
+	  try_file_basename = debuglink_null;
 	  break;
 	}
 
       char *fname = NULL;
       int fd = try_open (&main_stat, dir, subdir, file, &fname);
+      if (fd < 0 && try_file_basename)
+	fd = try_open (&main_stat, dir, subdir, file_basename, &fname);
       if (fd < 0)
 	switch (errno)
 	  {
@@ -292,6 +313,9 @@ find_debuginfo_in_path (Dwfl_Module *mod, const char *file_name,
 		  }
 		break;
 	      }
+	    /* If possible try again with a sub-subdir.  */
+	    if (mod->dw == NULL && subdir)
+	      goto explore_dir;
 	    continue;
 	  default:
 	    goto fail_free;

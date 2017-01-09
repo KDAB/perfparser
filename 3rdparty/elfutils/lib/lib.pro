@@ -9,7 +9,7 @@ SOURCES += \
     $$PWD/md5.c \
     $$PWD/next_prime.c \
     $$PWD/sha1.c \
+    $$PWD/version.c \
     $$PWD/xmalloc.c \
     $$PWD/xstrdup.c \
     $$PWD/xstrndup.c
-

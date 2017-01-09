@@ -4,8 +4,10 @@ SUBDIRS = \
     aarch64 \
     alpha \
     arm \
+    bpf \
     i386 \
     ia64 \
+    m68k \
     ppc \
     ppc64 \
     s390 \

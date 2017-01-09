@@ -7,6 +7,18 @@
 /* Should ar and ranlib use -D behavior by default? */
 #define DEFAULT_AR_DETERMINISTIC false
 
+/* Define to 1 if you have the declaration of `memrchr', and to 0 if you
+   don't. */
+#define HAVE_DECL_MEMRCHR 1
+
+/* Define to 1 if you have the declaration of `powerof2', and to 0 if you
+   don't. */
+#define HAVE_DECL_POWEROF2 1
+
+/* Define to 1 if you have the declaration of `rawmemchr', and to 0 if you
+   don't. */
+#define HAVE_DECL_RAWMEMCHR 1
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
 
@@ -43,9 +55,6 @@
 /* Identifier for modules in the build. */
 #define MODVERSION "Build for Qt Creator"
 
-/* Define to 32 or 64 if a specific implementation is wanted. */
-/* #undef NATIVE_ELF */
-
 /* Name of package */
 #define PACKAGE "elfutils"
 
@@ -56,7 +65,7 @@
 #define PACKAGE_NAME "elfutils"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "elfutils 0.163"
+#define PACKAGE_STRING "elfutils 0.168"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "elfutils"
@@ -65,7 +74,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.163"
+#define PACKAGE_VERSION "0.168"
 
 /* The size of `long', as computed by sizeof. */
 #if QMAKE_ARCH == 64
@@ -93,7 +102,7 @@
 #define USE_ZLIB 1
 
 /* Version number of package */
-#define VERSION "0.163"
+#define VERSION "0.168"
 
 /* Define to 1 if `lex' declares `yytext' as a `char *' by default, not a
    `char[]'. */

@@ -34,10 +34,10 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/param.h>
 
 #include <libdwP.h>
 #include <dwarf.h>
+#include <system.h>
 
 
 static int
@@ -140,11 +140,9 @@ get_offsets (Dwarf *dbg)
 
 
 ptrdiff_t
-dwarf_getpubnames (dbg, callback, arg, offset)
-     Dwarf *dbg;
-     int (*callback) (Dwarf *, Dwarf_Global *, void *);
-     void *arg;
-     ptrdiff_t offset;
+dwarf_getpubnames (Dwarf *dbg,
+		   int (*callback) (Dwarf *, Dwarf_Global *, void *),
+		   void *arg, ptrdiff_t offset)
 {
   if (dbg == NULL)
     return -1l;

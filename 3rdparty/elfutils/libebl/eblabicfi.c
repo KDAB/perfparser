@@ -34,9 +34,13 @@
 
 
 int
-ebl_abi_cfi (ebl, abi_info)
-     Ebl *ebl;
-     Dwarf_CIE *abi_info;
+ebl_abi_cfi (Ebl *ebl, Dwarf_CIE *abi_info)
 {
   return ebl == NULL ? -1 : ebl->abi_cfi (ebl, abi_info);
+}
+
+int
+ebl_ra_offset (Ebl *ebl)
+{
+  return ebl->ra_offset;
 }

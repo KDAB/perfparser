@@ -1,5 +1,7 @@
 TEMPLATE = subdirs
 
+# We're not compiling the "bpf" disassembler as that requires specific linux headers which aren't
+# available on most systems.
 SUBDIRS = \
     i386_dis \
     i386_gendis \

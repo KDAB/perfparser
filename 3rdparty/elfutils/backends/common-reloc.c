@@ -87,6 +87,10 @@ EBLHOOK(reloc_type_name) (int reloc,
 			  char *buf __attribute__ ((unused)),
 			  size_t len __attribute__ ((unused)))
 {
+#ifdef RELOC_TYPE_ID
+  reloc = RELOC_TYPE_ID (reloc);
+#endif
+
   if (reloc >= 0 && reloc < nreloc && EBLHOOK(reloc_nameidx)[reloc] != 0)
     return &reloc_namestr[EBLHOOK(reloc_nameidx)[reloc]];
   return NULL;
@@ -95,28 +99,38 @@ EBLHOOK(reloc_type_name) (int reloc,
 bool
 EBLHOOK(reloc_type_check) (int reloc)
 {
+#ifdef RELOC_TYPE_ID
+  reloc = RELOC_TYPE_ID (reloc);
+#endif
+
   return reloc >= 0 && reloc < nreloc && EBLHOOK(reloc_nameidx)[reloc] != 0;
 }
 
 bool
 EBLHOOK(reloc_valid_use) (Elf *elf, int reloc)
 {
-  uint8_t uses = EBLHOOK(reloc_valid)[reloc];
+  uint8_t uses;
 
   GElf_Ehdr ehdr_mem;
   GElf_Ehdr *ehdr = gelf_getehdr (elf, &ehdr_mem);
   assert (ehdr != NULL);
   uint8_t type = ehdr->e_type;
 
+#ifdef RELOC_TYPE_ID
+  reloc = RELOC_TYPE_ID (reloc);
+#endif
+
+  uses = EBLHOOK(reloc_valid)[reloc];
   return type > ET_NONE && type < ET_CORE && (uses & (1 << (type - 1)));
 }
 
-
+#ifndef NO_COPY_RELOC
 bool
 EBLHOOK(copy_reloc_p) (int reloc)
 {
   return reloc == R_TYPE (COPY);
 }
+#endif
 
 bool
 EBLHOOK(none_reloc_p) (int reloc)
@@ -138,8 +152,10 @@ EBLHOOK(init_reloc) (Ebl *ebl)
   ebl->reloc_type_name = EBLHOOK(reloc_type_name);
   ebl->reloc_type_check = EBLHOOK(reloc_type_check);
   ebl->reloc_valid_use = EBLHOOK(reloc_valid_use);
-  ebl->copy_reloc_p = EBLHOOK(copy_reloc_p);
   ebl->none_reloc_p = EBLHOOK(none_reloc_p);
+#ifndef NO_COPY_RELOC
+  ebl->copy_reloc_p = EBLHOOK(copy_reloc_p);
+#endif
 #ifndef NO_RELATIVE_RELOC
   ebl->relative_reloc_p = EBLHOOK(relative_reloc_p);
 #endif

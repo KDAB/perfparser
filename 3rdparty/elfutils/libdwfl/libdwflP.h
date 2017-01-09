@@ -1,5 +1,5 @@
 /* Internal definitions for libdwfl.
-   Copyright (C) 2005-2014 Red Hat, Inc.
+   Copyright (C) 2005-2015 Red Hat, Inc.
    This file is part of elfutils.
 
    This file is free software; you can redistribute it and/or modify
@@ -104,6 +104,16 @@ typedef enum { DWFL_ERRORS DWFL_E_NUM } Dwfl_Error;
 extern int __libdwfl_canon_error (Dwfl_Error) internal_function;
 extern void __libdwfl_seterrno (Dwfl_Error) internal_function;
 
+/* Resources we might keep for the user about the core file that the
+   Dwfl might have been created from.  Can currently only be set
+   through std-argp.  */
+struct Dwfl_User_Core
+{
+  char *executable_for_core;	/* --executable if --core was specified.  */
+  Elf *core;                    /* non-NULL if we need to free it.  */
+  int fd;                       /* close if >= 0.  */
+};
+
 struct Dwfl
 {
   const Dwfl_Callbacks *callbacks;
@@ -130,7 +140,7 @@ struct Dwfl
   GElf_Off lookup_tail_offset;
   int lookup_tail_ndx;
 
-  char *executable_for_core;	/* --executable if --core was specified.  */
+  struct Dwfl_User_Core *user_core;
 };
 
 #define OFFLINE_REDZONE		0x10000
@@ -400,7 +410,12 @@ struct dwfl_arange
    then get the instance through __libdwfl_get_pid_arg.  */
 struct __libdwfl_pid_arg
 {
+  /* /proc/PID/task/.  */
   DIR *dir;
+  /* Elf for /proc/PID/exe.  Set to NULL if it couldn't be opened.  */
+  Elf *elf;
+  /* fd for /proc/PID/exe.  Set to -1 if it couldn't be opened.  */
+  int elf_fd;
   /* It is 0 if not used.  */
   pid_t tid_attached;
   /* Valid only if TID_ATTACHED is not zero.  */
@@ -583,21 +598,21 @@ extern GElf_Addr __libdwfl_segment_end (Dwfl *dwfl, GElf_Addr end)
   internal_function;
 
 /* Decompression wrappers: decompress whole file into memory.  */
-extern Dwfl_Error __libdw_gunzip  (int fd, off64_t start_offset,
+extern Dwfl_Error __libdw_gunzip  (int fd, off_t start_offset,
 				   void *mapped, size_t mapped_size,
 				   void **whole, size_t *whole_size)
   internal_function;
-extern Dwfl_Error __libdw_bunzip2 (int fd, off64_t start_offset,
+extern Dwfl_Error __libdw_bunzip2 (int fd, off_t start_offset,
 				   void *mapped, size_t mapped_size,
 				   void **whole, size_t *whole_size)
   internal_function;
-extern Dwfl_Error __libdw_unlzma (int fd, off64_t start_offset,
+extern Dwfl_Error __libdw_unlzma (int fd, off_t start_offset,
 				  void *mapped, size_t mapped_size,
 				  void **whole, size_t *whole_size)
   internal_function;
 
 /* Skip the image header before a file image: updates *START_OFFSET.  */
-extern Dwfl_Error __libdw_image_header (int fd, off64_t *start_offset,
+extern Dwfl_Error __libdw_image_header (int fd, off_t *start_offset,
 					void *mapped, size_t mapped_size)
   internal_function;
 

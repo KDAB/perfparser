@@ -1,5 +1,5 @@
 /* Convenience function for string allocation.
-   Copyright (C) 2006 Red Hat, Inc.
+   Copyright (C) 2006, 2015 Red Hat, Inc.
    This file is part of elfutils.
 
    This file is free software; you can redistribute it and/or modify
@@ -30,15 +30,14 @@
 # include <config.h>
 #endif
 
+#include <stdint.h>
 #include <string.h>
-#include "system.h"
+#include "libeu.h"
 
 
 /* Return a newly allocated copy of STRING.  */
 char *
-xstrndup (string, n)
-     const char *string;
-     size_t n;
+xstrndup (const char *string, size_t n)
 {
   char *res;
   size_t len = strnlen (string, n);

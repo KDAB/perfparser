@@ -1,6 +1,7 @@
 HEADERS += \
     $$PWD/abstract.h \
     $$PWD/common.h \
+    $$PWD/chdr_xlate.h \
     $$PWD/dl-hash.h \
     $$PWD/elf-knowledge.h \
     $$PWD/elf.h \

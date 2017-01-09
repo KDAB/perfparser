@@ -1,5 +1,5 @@
 /* Define new symbol for current position in given section.
-   Copyright (C) 2002, 2005 Red Hat, Inc.
+   Copyright (C) 2002, 2005, 2016 Red Hat, Inc.
    This file is part of elfutils.
    Written by Ulrich Drepper <drepper@redhat.com>, 2002.
 
@@ -41,12 +41,8 @@
 
 
 AsmSym_t *
-asm_newsym (asmscn, name, size, type, binding)
-     AsmScn_t *asmscn;
-     const char *name;
-     GElf_Xword size;
-     int type;
-     int binding;
+asm_newsym (AsmScn_t *asmscn, const char *name, GElf_Xword size,
+	    int type, int binding)
 {
 #define TEMPSYMLEN 10
   char tempsym[TEMPSYMLEN];
@@ -87,8 +83,8 @@ asm_newsym (asmscn, name, size, type, binding)
   result->type = type;
   result->binding = binding;
   result->symidx = 0;
-  result->strent = ebl_strtabadd (asmscn->ctx->symbol_strtab,
-				  memcpy (result + 1, name, name_len), 0);
+  result->strent = dwelf_strtab_add (asmscn->ctx->symbol_strtab,
+				     memcpy (result + 1, name, name_len));
 
   if (unlikely (asmscn->ctx->textp))
     {
@@ -122,7 +118,7 @@ asm_newsym (asmscn, name, size, type, binding)
 	     reference in the string table to the string.  We can only
 	     fail to insert the symbol into the symbol table if there
 	     is already a symbol with this name.  In this case the
-	     ebl_strtabadd function would use the previously provided
+	     dwelf_strtab_add function would use the previously provided
 	     name.  */
 	  free (result);
 	  result = NULL;

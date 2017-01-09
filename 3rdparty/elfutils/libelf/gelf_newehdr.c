@@ -1,5 +1,5 @@
 /* Create new ELF header.
-   Copyright (C) 1998, 1999, 2000, 2001, 2002 Red Hat, Inc.
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2015 Red Hat, Inc.
    This file is part of elfutils.
    Written by Ulrich Drepper <drepper@redhat.com>, 1998.
 
@@ -37,12 +37,10 @@
 #include "libelfP.h"
 
 
-unsigned long int
-gelf_newehdr (elf, class)
-     Elf *elf;
-     int class;
+void *
+gelf_newehdr (Elf *elf, int class)
 {
   return (class == ELFCLASS32
-	  ? (unsigned long int) INTUSE(elf32_newehdr) (elf)
-	  : (unsigned long int) INTUSE(elf64_newehdr) (elf));
+	  ? (void *) INTUSE(elf32_newehdr) (elf)
+	  : (void *) INTUSE(elf64_newehdr) (elf));
 }

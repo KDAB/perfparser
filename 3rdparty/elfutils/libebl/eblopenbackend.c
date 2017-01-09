@@ -1,5 +1,5 @@
 /* Generate ELF backend handle.
-   Copyright (C) 2000-2015 Red Hat, Inc.
+   Copyright (C) 2000-2016 Red Hat, Inc.
    This file is part of elfutils.
 
    This file is free software; you can redistribute it and/or modify
@@ -73,7 +73,7 @@ static const struct
   { "s390", "ebl_s390", "s390", 4, EM_S390, 0, 0 },
 
   { "m32", "elf_m32", "m32", 3, EM_M32, 0, 0 },
-  { "m68k", "elf_m68k", "m68k", 4, EM_68K, 0, 0 },
+  { "m68k", "elf_m68k", "m68k", 4, EM_68K, ELFCLASS32, ELFDATA2MSB },
   { "m88k", "elf_m88k", "m88k", 4, EM_88K, 0, 0 },
   { "i860", "elf_i860", "i860", 4, EM_860, 0, 0 },
   { "s370", "ebl_s370", "s370", 4, EM_S370, 0, 0 },
@@ -132,6 +132,7 @@ static const struct
   { "arc", "elf_arc_a5", "arc_a5", 6, EM_ARC_A5, 0, 0 },
   { "xtensa", "elf_xtensa", "xtensa", 6, EM_XTENSA, 0, 0 },
   { "aarch64", "elf_aarch64", "aarch64", 7, EM_AARCH64, ELFCLASS64, 0 },
+  { "bpf", "elf_bpf", "bpf", 3, EM_BPF, 0, 0 },
 };
 #define nmachines (sizeof (machines) / sizeof (machines[0]))
 
@@ -139,8 +140,6 @@ static const struct
 #define MAX_PREFIX_LEN 16
 
 /* Default callbacks.  Mostly they just return the error value.  */
-static const char *default_object_type_name (int ignore, char *buf,
-					     size_t len);
 static const char *default_reloc_type_name (int ignore, char *buf, size_t len);
 static bool default_reloc_type_check (int ignore);
 static bool default_reloc_valid_use (Elf *elf, int ignore);
@@ -162,7 +161,6 @@ static const char *default_symbol_binding_name (int ignore, char *buf,
 static const char *default_dynamic_tag_name (int64_t ignore, char *buf,
 					     size_t len);
 static bool default_dynamic_tag_check (int64_t ignore);
-static GElf_Word default_sh_flags_combine (GElf_Word flags1, GElf_Word flags2);
 static const char *default_osabi_name (int ignore, char *buf, size_t len);
 static void default_destr (struct ebl *ignore);
 static const char *default_core_note_type_name (uint32_t, char *buf,
@@ -209,7 +207,6 @@ static int default_abi_cfi (Ebl *ebl, Dwarf_CIE *abi_info);
 static void
 fill_defaults (Ebl *result)
 {
-  result->object_type_name = default_object_type_name;
   result->reloc_type_name = default_reloc_type_name;
   result->reloc_type_check = default_reloc_type_check;
   result->reloc_valid_use = default_reloc_valid_use;
@@ -226,7 +223,6 @@ fill_defaults (Ebl *result)
   result->symbol_binding_name = default_symbol_binding_name;
   result->dynamic_tag_name = default_dynamic_tag_name;
   result->dynamic_tag_check = default_dynamic_tag_check;
-  result->sh_flags_combine = default_sh_flags_combine;
   result->osabi_name = default_osabi_name;
   result->core_note_type_name = default_core_note_type_name;
   result->object_note_type_name = default_object_note_type_name;
@@ -254,10 +250,7 @@ fill_defaults (Ebl *result)
 
 /* Find an appropriate backend for the file associated with ELF.  */
 static Ebl *
-openbackend (elf, emulation, machine)
-     Elf *elf;
-     const char *emulation;
-     GElf_Half machine;
+openbackend (Elf *elf, const char *emulation, GElf_Half machine)
 {
   Ebl *result;
   size_t cnt;
@@ -397,8 +390,7 @@ openbackend (elf, emulation, machine)
 
 /* Find an appropriate backend for the file associated with ELF.  */
 Ebl *
-ebl_openbackend (elf)
-     Elf *elf;
+ebl_openbackend (Elf *elf)
 {
   GElf_Ehdr ehdr_mem;
   GElf_Ehdr *ehdr;
@@ -418,8 +410,7 @@ ebl_openbackend (elf)
 
 /* Find backend without underlying ELF file.  */
 Ebl *
-ebl_openbackend_machine (machine)
-     GElf_Half machine;
+ebl_openbackend_machine (GElf_Half machine)
 {
   return openbackend (NULL, NULL, machine);
 }
@@ -434,14 +425,6 @@ ebl_openbackend_emulation (const char *emulation)
 
 
 /* Default callbacks.  Mostly they just return the error value.  */
-static const char *
-default_object_type_name (int ignore __attribute__ ((unused)),
-			  char *buf __attribute__ ((unused)),
-			  size_t len __attribute__ ((unused)))
-{
-  return NULL;
-}
-
 static const char *
 default_reloc_type_name (int ignore __attribute__ ((unused)),
 			 char *buf __attribute__ ((unused)),
@@ -559,12 +542,6 @@ default_dynamic_tag_check (int64_t ignore __attribute__ ((unused)))
   return false;
 }
 
-static GElf_Word
-default_sh_flags_combine (GElf_Word flags1, GElf_Word flags2)
-{
-  return SH_FLAGS_COMBINE (flags1, flags2);
-}
-
 static void
 default_destr (struct ebl *ignore __attribute__ ((unused)))
 {
@@ -667,7 +644,9 @@ default_debugscn_p (const char *name)
   const size_t ndwarf_scn_names = (sizeof (dwarf_scn_names)
 				   / sizeof (dwarf_scn_names[0]));
   for (size_t cnt = 0; cnt < ndwarf_scn_names; ++cnt)
-    if (strcmp (name, dwarf_scn_names[cnt]) == 0)
+    if (strcmp (name, dwarf_scn_names[cnt]) == 0
+	|| (strncmp (name, ".zdebug", strlen (".zdebug")) == 0
+	    && strcmp (&name[2], &dwarf_scn_names[cnt][1]) == 0))
       return true;
 
   return false;

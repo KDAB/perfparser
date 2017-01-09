@@ -1,7 +1,5 @@
-/* Return object file type name.
-   Copyright (C) 2001, 2002 Red Hat, Inc.
+/* Register names and numbers for BPF DWARF.
    This file is part of elfutils.
-   Written by Ulrich Drepper <drepper@redhat.com>, 2001.
 
    This file is free software; you can redistribute it and/or modify
    it under the terms of either
@@ -32,32 +30,35 @@
 #endif
 
 #include <stdio.h>
-#include <libeblP.h>
+#include <string.h>
 
+#ifdef HAVE_LINUX_BPF_H
+#include <linux/bpf.h>
+#else
+#define MAX_BPF_REG 10
+#endif
 
-const char *
-ebl_object_type_name (ebl, object, buf, len)
-     Ebl *ebl;
-     int object;
-     char *buf;
-     size_t len;
+#define BACKEND bpf_
+#include "libebl_CPU.h"
+
+ssize_t
+bpf_register_info (Ebl *ebl __attribute__ ((unused)),
+		   int regno, char *name, size_t namelen,
+		   const char **prefix, const char **setname,
+		   int *bits, int *type)
 {
-  const char *res;
+  ssize_t len;
 
-  res = ebl != NULL ? ebl->object_type_name (object, buf, len) : NULL;
-  if (res == NULL)
-    {
-      /* Handle OS-specific section names.  */
-      if (object >= ET_LOOS && object <= ET_HIOS)
-	snprintf (buf, len, "LOOS+%x", object - ET_LOOS);
-      /* Handle processor-specific section names.  */
-      else if (object >= ET_LOPROC && object <= ET_HIPROC)
-	snprintf (buf, len, "LOPROC+%x", object - ET_LOPROC);
-      else
-	snprintf (buf, len, "%s: %d", gettext ("<unknown>"), object);
+  if (name == NULL)
+    return MAX_BPF_REG;
+  if (regno < 0 || regno >= MAX_BPF_REG)
+    return -1;
 
-      res = buf;
-    }
+  *prefix = "";
+  *setname = "integer";
+  *bits = 64;
+  *type = DW_ATE_signed;
 
-  return res;
+  len = snprintf(name, namelen, "r%d", regno);
+  return ((size_t)len < namelen ? len : -1);
 }

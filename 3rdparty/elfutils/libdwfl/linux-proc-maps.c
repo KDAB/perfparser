@@ -1,5 +1,5 @@
 /* Standard libdwfl callbacks for debugging a live Linux process.
-   Copyright (C) 2005-2010, 2013, 2014 Red Hat, Inc.
+   Copyright (C) 2005-2010, 2013, 2014, 2016 Red Hat, Inc.
    This file is part of elfutils.
 
    This file is free software; you can redistribute it and/or modify
@@ -59,7 +59,7 @@ get_pid_class (pid_t pid)
   if (asprintf (&fname, PROCEXEFMT, pid) < 0)
     return ELFCLASSNONE;
 
-  int fd = open64 (fname, O_RDONLY);
+  int fd = open (fname, O_RDONLY);
   free (fname);
   if (fd < 0)
     return ELFCLASSNONE;
@@ -95,7 +95,7 @@ grovel_auxv (pid_t pid, Dwfl *dwfl, GElf_Addr *sysinfo_ehdr)
   if (asprintf (&fname, PROCAUXVFMT, pid) < 0)
     return ENOMEM;
 
-  int fd = open64 (fname, O_RDONLY);
+  int fd = open (fname, O_RDONLY);
   free (fname);
   if (fd < 0)
     return errno == ENOENT ? 0 : errno;
@@ -175,6 +175,23 @@ grovel_auxv (pid_t pid, Dwfl *dwfl, GElf_Addr *sysinfo_ehdr)
   return ENOEXEC;
 }
 
+static inline bool
+do_report (Dwfl *dwfl, char **plast_file, Dwarf_Addr low, Dwarf_Addr high)
+{
+  if (*plast_file != NULL)
+    {
+      Dwfl_Module *mod = INTUSE(dwfl_report_module) (dwfl, *plast_file,
+						     low, high);
+      free (*plast_file);
+      *plast_file = NULL;
+      if (unlikely (mod == NULL))
+        return true;
+    }
+  return false;
+}
+
+#define report() do_report(dwfl, &last_file, low, high)
+
 static int
 proc_maps_report (Dwfl *dwfl, FILE *f, GElf_Addr sysinfo_ehdr, pid_t pid)
 {
@@ -182,20 +199,6 @@ proc_maps_report (Dwfl *dwfl, FILE *f, GElf_Addr sysinfo_ehdr, pid_t pid)
   uint64_t last_ino = -1;
   char *last_file = NULL;
   Dwarf_Addr low = 0, high = 0;
-
-  inline bool report (void)
-    {
-      if (last_file != NULL)
-	{
-	  Dwfl_Module *mod = INTUSE(dwfl_report_module) (dwfl, last_file,
-							 low, high);
-	  free (last_file);
-	  last_file = NULL;
-	  if (unlikely (mod == NULL))
-	    return true;
-	}
-      return false;
-    }
 
   char *line = NULL;
   size_t linesz;
@@ -215,6 +218,7 @@ proc_maps_report (Dwfl *dwfl, FILE *f, GElf_Addr sysinfo_ehdr, pid_t pid)
 	  || nread <= 0)
 	{
 	  free (line);
+	  free (last_file);
 	  return ENOEXEC;
 	}
 
@@ -246,7 +250,10 @@ proc_maps_report (Dwfl *dwfl, FILE *f, GElf_Addr sysinfo_ehdr, pid_t pid)
 	{
 	  /* This is another portion of the same file's mapping.  */
 	  if (strcmp (last_file, file) != 0)
-	    goto bad_report;
+	    {
+	      free (last_file);
+	      goto bad_report;
+	    }
 	  high = end;
 	}
       else
@@ -315,10 +322,17 @@ read_proc_memory (void *arg, void *data, GElf_Addr address,
 		  size_t minread, size_t maxread)
 {
   const int fd = *(const int *) arg;
-  ssize_t nread = pread64 (fd, data, maxread, (off64_t) address);
-  /* Some kernels don't actually let us do this read, ignore those errors.  */
-  if (nread < 0 && (errno == EINVAL || errno == EPERM))
-    return 0;
+
+  /* This code relies on the fact the Linux kernel accepts negative
+     offsets when seeking /dev/$$/mem files, as a special case. In
+     particular pread cannot be used here, because it will always
+     return EINVAL when passed a negative offset.  */
+
+  if (lseek (fd, (off_t) address, SEEK_SET) == -1)
+    return -1;
+
+  ssize_t nread = read (fd, data, maxread);
+
   if (nread > 0 && (size_t) nread < minread)
     nread = 0;
   return nread;
@@ -362,7 +376,7 @@ dwfl_linux_proc_find_elf (Dwfl_Module *mod __attribute__ ((unused)),
 
       if (pid == -1)
 	{
-	  int fd = open64 (module_name, O_RDONLY);
+	  int fd = open (module_name, O_RDONLY);
 	  if (fd >= 0)
 	    {
 	      *file_name = strdup (module_name);
@@ -399,7 +413,7 @@ dwfl_linux_proc_find_elf (Dwfl_Module *mod __attribute__ ((unused)),
       if (asprintf (&fname, PROCMEMFMT, pid) < 0)
 	goto detach;
 
-      int fd = open64 (fname, O_RDONLY);
+      int fd = open (fname, O_RDONLY);
       free (fname);
       if (fd < 0)
 	goto detach;

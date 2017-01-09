@@ -26,10 +26,12 @@
    the GNU Lesser General Public License along with this program.  If
    not, see <http://www.gnu.org/licenses/>.  */
 
-/* We include this before config.h because it can't handle _FILE_OFFSET_BITS.
+/* In case we have a bad fts we include this before config.h because it
+   can't handle _FILE_OFFSET_BITS.
    Everything we need here is fine if its declarations just come first.  */
-
-#include <fts.h>
+#ifdef BAD_FTS
+  #include <fts.h>
+#endif
 
 #include <config.h>
 
@@ -44,6 +46,17 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+/* If fts.h is included before config.h, its indirect inclusions may not
+   give us the right LFS aliases of these functions, so map them manually.  */
+#ifdef BAD_FTS
+  #ifdef _FILE_OFFSET_BITS
+    #define open open64
+    #define fopen fopen64
+  #endif
+#else
+  #include <fts.h>
+#endif
+
 
 #define KERNEL_MODNAME	"kernel"
 
@@ -57,12 +70,9 @@
 #define MODULE_SECT_NAME_LEN 32	/* Minimum any linux/module.h has had.  */
 
 
-#if defined (USE_ZLIB) || defined (USE_BZLIB) || defined (USE_LZMA)
 static const char *vmlinux_suffixes[] =
   {
-#ifdef USE_ZLIB
     ".gz",
-#endif
 #ifdef USE_BZLIB
     ".bz2",
 #endif
@@ -70,7 +80,6 @@ static const char *vmlinux_suffixes[] =
     ".xz",
 #endif
   };
-#endif
 
 /* Try to open the given file as it is or under the debuginfo directory.  */
 static int
@@ -84,22 +93,26 @@ try_kernel_name (Dwfl *dwfl, char **fname, bool try_debug)
   int fd = ((((dwfl->callbacks->debuginfo_path
 	       ? *dwfl->callbacks->debuginfo_path : NULL)
 	      ?: DEFAULT_DEBUGINFO_PATH)[0] == ':') ? -1
-	    : TEMP_FAILURE_RETRY (open64 (*fname, O_RDONLY)));
+	    : TEMP_FAILURE_RETRY (open (*fname, O_RDONLY)));
 
   if (fd < 0)
     {
       Dwfl_Module fakemod = { .dwfl = dwfl };
-      /* First try the file's unadorned basename as DEBUGLINK_FILE,
-	 to look for "vmlinux" files.  */
-      fd = INTUSE(dwfl_standard_find_debuginfo) (&fakemod, NULL, NULL, 0,
-						 *fname, basename (*fname), 0,
-						 &fakemod.debug.name);
-      if (fd < 0 && try_debug)
-	/* Next, let the call use the default of basename + ".debug",
-	   to look for "vmlinux.debug" files.  */
+
+      if (try_debug)
+	/* Passing NULL for DEBUGLINK_FILE searches for both the basenamer
+	   "vmlinux" and the default of basename + ".debug", to look for
+	   "vmlinux.debug" files.  */
 	fd = INTUSE(dwfl_standard_find_debuginfo) (&fakemod, NULL, NULL, 0,
 						   *fname, NULL, 0,
 						   &fakemod.debug.name);
+      else
+	/* Try the file's unadorned basename as DEBUGLINK_FILE,
+	   to look only for "vmlinux" files.  */
+	fd = INTUSE(dwfl_standard_find_debuginfo) (&fakemod, NULL, NULL, 0,
+						   *fname, basename (*fname),
+						   0, &fakemod.debug.name);
+
       if (fakemod.debug.name != NULL)
 	{
 	  free (*fname);
@@ -107,7 +120,6 @@ try_kernel_name (Dwfl *dwfl, char **fname, bool try_debug)
 	}
     }
 
-#if defined (USE_ZLIB) || defined (USE_BZLIB) || defined (USE_LZMA)
   if (fd < 0)
     for (size_t i = 0;
 	 i < sizeof vmlinux_suffixes / sizeof vmlinux_suffixes[0];
@@ -116,7 +128,7 @@ try_kernel_name (Dwfl *dwfl, char **fname, bool try_debug)
 	char *zname;
 	if (asprintf (&zname, "%s%s", *fname, vmlinux_suffixes[i]) > 0)
 	  {
-	    fd = TEMP_FAILURE_RETRY (open64 (zname, O_RDONLY));
+	    fd = TEMP_FAILURE_RETRY (open (zname, O_RDONLY));
 	    if (fd < 0)
 	      free (zname);
 	    else
@@ -126,7 +138,6 @@ try_kernel_name (Dwfl *dwfl, char **fname, bool try_debug)
 	      }
 	  }
       }
-#endif
 
   if (fd < 0)
     {
@@ -296,9 +307,7 @@ check_suffix (const FTSENT *f, size_t namelen)
     return sizeof sfx - 1
 
   TRY (".ko");
-#if USE_ZLIB
   TRY (".ko.gz");
-#endif
 #if USE_BZLIB
   TRY (".ko.bz2");
 #endif
@@ -440,46 +449,55 @@ dwfl_linux_kernel_report_offline (Dwfl *dwfl, const char *release,
 INTDEF (dwfl_linux_kernel_report_offline)
 
 
+/* State of read_address used by intuit_kernel_bounds. */
+struct read_address_state {
+  FILE *f;
+  char *line;
+  size_t linesz;
+  size_t n;
+  char *p;
+  const char *type;
+};
+
+static inline bool
+read_address (struct read_address_state *state, Dwarf_Addr *addr)
+{
+  if ((state->n = getline (&state->line, &state->linesz, state->f)) < 1 ||
+      state->line[state->n - 2] == ']')
+    return false;
+  *addr = strtoull (state->line, &state->p, 16);
+  state->p += strspn (state->p, " \t");
+  state->type = strsep (&state->p, " \t\n");
+  if (state->type == NULL)
+    return false;
+  return state->p != NULL && state->p != state->line;
+}
+
+
 /* Grovel around to guess the bounds of the runtime kernel image.  */
 static int
 intuit_kernel_bounds (Dwarf_Addr *start, Dwarf_Addr *end, Dwarf_Addr *notes)
 {
-  FILE *f = fopen (KSYMSFILE, "r");
-  if (f == NULL)
+  struct read_address_state state = { NULL, NULL, 0, 0, NULL, NULL };
+
+  state.f = fopen (KSYMSFILE, "r");
+  if (state.f == NULL)
     return errno;
 
-  (void) __fsetlocking (f, FSETLOCKING_BYCALLER);
+  (void) __fsetlocking (state.f, FSETLOCKING_BYCALLER);
 
   *notes = 0;
 
-  char *line = NULL;
-  size_t linesz = 0;
-  size_t n;
-  char *p = NULL;
-  const char *type;
-
-  inline bool read_address (Dwarf_Addr *addr)
-  {
-    if ((n = getline (&line, &linesz, f)) < 1 || line[n - 2] == ']')
-      return false;
-    *addr = strtoull (line, &p, 16);
-    p += strspn (p, " \t");
-    type = strsep (&p, " \t\n");
-    if (type == NULL)
-      return false;
-    return p != NULL && p != line;
-  }
-
   int result;
   do
-    result = read_address (start) ? 0 : -1;
-  while (result == 0 && strchr ("TtRr", *type) == NULL);
+    result = read_address (&state, start) ? 0 : -1;
+  while (result == 0 && strchr ("TtRr", *state.type) == NULL);
 
   if (result == 0)
     {
       *end = *start;
-      while (read_address (end))
-	if (*notes == 0 && !strcmp (p, "__start_notes\n"))
+      while (read_address (&state, end))
+	if (*notes == 0 && !strcmp (state.p, "__start_notes\n"))
 	  *notes = *end;
 
       Dwarf_Addr round_kernel = sysconf (_SC_PAGE_SIZE);
@@ -489,12 +507,12 @@ intuit_kernel_bounds (Dwarf_Addr *start, Dwarf_Addr *end, Dwarf_Addr *notes)
       if (*start >= *end || *end - *start < round_kernel)
 	result = -1;
     }
-  free (line);
+  free (state.line);
 
   if (result == -1)
-    result = ferror_unlocked (f) ? errno : ENOEXEC;
+    result = ferror_unlocked (state.f) ? errno : ENOEXEC;
 
-  fclose (f);
+  fclose (state.f);
 
   return result;
 }
@@ -505,7 +523,7 @@ static int
 check_notes (Dwfl_Module *mod, const char *notesfile,
 	     Dwarf_Addr vaddr, const char *secname)
 {
-  int fd = open64 (notesfile, O_RDONLY);
+  int fd = open (notesfile, O_RDONLY);
   if (fd < 0)
     return 1;
 
@@ -619,12 +637,11 @@ check_module_notes (Dwfl_Module *mod)
 int
 dwfl_linux_kernel_report_kernel (Dwfl *dwfl)
 {
-  Dwarf_Addr start;
-  Dwarf_Addr end;
-  inline Dwfl_Module *report (void)
-    {
-      return INTUSE(dwfl_report_module) (dwfl, KERNEL_MODNAME, start, end);
-    }
+  Dwarf_Addr start = 0;
+  Dwarf_Addr end = 0;
+
+  #define report() \
+    (INTUSE(dwfl_report_module) (dwfl, KERNEL_MODNAME, start, end))
 
   /* This is a bit of a kludge.  If we already reported the kernel,
      don't bother figuring it out again--it never changes.  */
@@ -656,6 +673,29 @@ dwfl_linux_kernel_report_kernel (Dwfl *dwfl)
 }
 INTDEF (dwfl_linux_kernel_report_kernel)
 
+
+static inline bool
+subst_name (char from, char to,
+            const char * const module_name,
+            char * const alternate_name,
+            const size_t namelen)
+{
+  const char *n = memchr (module_name, from, namelen);
+  if (n == NULL)
+    return false;
+  char *a = mempcpy (alternate_name, module_name, n - module_name);
+  *a++ = to;
+  ++n;
+  const char *p;
+  while ((p = memchr (n, from, namelen - (n - module_name))) != NULL)
+    {
+      a = mempcpy (a, n, p - n);
+      *a++ = to;
+      n = p + 1;
+    }
+  memcpy (a, n, namelen - (n - module_name) + 1);
+  return true;
+}
 
 /* Dwfl_Callbacks.find_elf for the running Linux kernel and its modules.  */
 
@@ -713,25 +753,8 @@ dwfl_linux_kernel_find_elf (Dwfl_Module *mod,
       free (modulesdir[0]);
       return ENOMEM;
     }
-  inline bool subst_name (char from, char to)
-    {
-      const char *n = memchr (module_name, from, namelen);
-      if (n == NULL)
-	return false;
-      char *a = mempcpy (alternate_name, module_name, n - module_name);
-      *a++ = to;
-      ++n;
-      const char *p;
-      while ((p = memchr (n, from, namelen - (n - module_name))) != NULL)
-	{
-	  a = mempcpy (a, n, p - n);
-	  *a++ = to;
-	  n = p + 1;
-	}
-      memcpy (a, n, namelen - (n - module_name) + 1);
-      return true;
-    }
-  if (!subst_name ('-', '_') && !subst_name ('_', '-'))
+  if (!subst_name ('-', '_', module_name, alternate_name, namelen) &&
+      !subst_name ('_', '-', module_name, alternate_name, namelen))
     alternate_name[0] = '\0';
 
   FTSENT *f;
@@ -758,7 +781,7 @@ dwfl_linux_kernel_find_elf (Dwfl_Module *mod,
 	      && (!memcmp (f->fts_name, module_name, namelen)
 		  || !memcmp (f->fts_name, alternate_name, namelen)))
 	    {
-	      int fd = open64 (f->fts_accpath, O_RDONLY);
+	      int fd = open (f->fts_accpath, O_RDONLY);
 	      *file_name = strdup (f->fts_path);
 	      fts_close (fts);
 	      free (modulesdir[0]);

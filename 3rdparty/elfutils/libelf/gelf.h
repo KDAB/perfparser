@@ -1,5 +1,5 @@
 /* This file defines generic ELF types, structures, and macros.
-   Copyright (C) 1999, 2000, 2001, 2002, 2004, 2005, 2007 Red Hat, Inc.
+   Copyright (C) 1999, 2000, 2001, 2002, 2004, 2005, 2007, 2015 Red Hat, Inc.
    This file is part of elfutils.
 
    This file is free software; you can redistribute it and/or modify
@@ -85,6 +85,9 @@ typedef Elf64_Rela GElf_Rela;
 /* Program segment header.  */
 typedef Elf64_Phdr GElf_Phdr;
 
+/* Header of a compressed section.  */
+typedef Elf64_Chdr GElf_Chdr;
+
 /* Dynamic section entry.  */
 typedef Elf64_Dyn GElf_Dyn;
 
@@ -162,8 +165,10 @@ extern GElf_Ehdr *gelf_getehdr (Elf *__elf, GElf_Ehdr *__dest);
 /* Update the ELF header.  */
 extern int gelf_update_ehdr (Elf *__elf, GElf_Ehdr *__src);
 
-/* Create new ELF header if none exists.  */
-extern unsigned long int gelf_newehdr (Elf *__elf, int __class);
+/* Create new ELF header if none exists.  Creates an Elf32_Ehdr if CLASS
+   is ELFCLASS32 or an Elf64_Ehdr if CLASS is ELFCLASS64.  Returns NULL
+   on error.  */
+extern void *gelf_newehdr (Elf *__elf, int __class);
 
 /* Get section at OFFSET.  */
 extern Elf_Scn *gelf_offscn (Elf *__elf, GElf_Off __offset);
@@ -180,9 +185,14 @@ extern GElf_Phdr *gelf_getphdr (Elf *__elf, int __ndx, GElf_Phdr *__dst);
 /* Update the program header.  */
 extern int gelf_update_phdr (Elf *__elf, int __ndx, GElf_Phdr *__src);
 
-/* Create new program header with PHNUM entries.  */
-extern unsigned long int gelf_newphdr (Elf *__elf, size_t __phnum);
+/* Create new program header with PHNUM entries.  Creates either an
+   Elf32_Phdr or an Elf64_Phdr depending on whether the given ELF is
+   ELFCLASS32 or ELFCLASS64.  Returns NULL on error.  */
+extern void *gelf_newphdr (Elf *__elf, size_t __phnum);
 
+/* Get compression header of section if any.  Returns NULL and sets
+   elf_errno if the section isn't compressed or an error occurred.  */
+extern GElf_Chdr *gelf_getchdr (Elf_Scn *__scn, GElf_Chdr *__dst);
 
 /* Convert data structure from the representation in the file represented
    by ELF to their memory representation.  */

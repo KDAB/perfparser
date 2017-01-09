@@ -6,6 +6,8 @@ include(../libdw/dwheaders.pri)
 include(../libebl/eblheaders.pri)
 include(../libdwelf/dwelfheaders.pri)
 
+# We're not using lzma.c or bzip2.c as that would give us additional dependencies at for little
+# benefit
 SOURCES += \
     $$PWD/argp-std.c \
     $$PWD/core-file.c \
