@@ -313,20 +313,16 @@ void PerfUnwind::sendString(qint32 id, const QByteArray& string)
 void PerfUnwind::sendLocation(qint32 id, const PerfUnwind::Location &location)
 {
     QByteArray buffer;
-    const PerfRecordSample *sample = m_currentUnwind.sample;
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(LocationDefinition)
-                                               << sample->pid() << sample->tid()
-                                               << sample->time() << id << location;
+                                               << id << location;
     sendBuffer(buffer);
 }
 
 void PerfUnwind::sendSymbol(qint32 id, const PerfUnwind::Symbol &symbol)
 {
     QByteArray buffer;
-    const PerfRecordSample *sample = m_currentUnwind.sample;
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(SymbolDefinition)
-                                               << sample->pid() << sample->tid()
-                                               << sample->time() << id << symbol;
+                                               << id << symbol;
     sendBuffer(buffer);
 }
 
