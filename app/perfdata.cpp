@@ -24,10 +24,6 @@
 #include <QDebug>
 #include <limits>
 
-#ifndef PROT_EXEC
-#define PROT_EXEC 0x4
-#endif
-
 PerfData::PerfData(QIODevice *source, PerfUnwind *destination, const PerfHeader *header,
                    PerfAttributes *attributes) :
     m_source(source), m_destination(destination), m_header(header), m_attributes(attributes)
@@ -107,8 +103,7 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
     case PERF_RECORD_MMAP2: {
         PerfRecordMmap2 mmap2(&m_eventHeader, sampleType, sampleIdAll);
         stream >> mmap2;
-        if (mmap2.prot() & PROT_EXEC)
-            m_destination->registerElf(mmap2); // Throw out the extra data for now.
+        m_destination->registerElf(mmap2); // Throw out the extra data for now.
         break;
     }
     case PERF_RECORD_HEADER_ATTR: {

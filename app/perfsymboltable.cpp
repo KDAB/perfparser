@@ -197,7 +197,8 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QString &app
         fullPath.setFile(systemRoot + filePath);
     }
 
-    bool cacheInvalid = m_elfs.registerElf(mmap.addr(), mmap.len(), mmap.time(), fullPath);
+    bool cacheInvalid = m_elfs.registerElf(mmap.addr(), mmap.len(), mmap.pgoff(), mmap.time(),
+                                           fullPath);
 
     // There is no need to clear the symbol or location caches in PerfUnwind. Some locations become
     // stale this way, but we still need to keep their IDs, as the receiver might still use them for
@@ -333,18 +334,28 @@ void PerfSymbolTable::parseDwarf(Dwarf_Die *cudie, Dwarf_Addr bias, qint32 binar
     }
 }
 
+static void reportError(PerfElfMap::ConstIterator i, const char *message)
+{
+    qWarning() << "failed to report" << i.value().file.absoluteFilePath() << "for"
+               << hex << i.key() << dec << ":" << message;
+}
+
 Dwfl_Module *PerfSymbolTable::reportElf(PerfElfMap::ConstIterator i)
 {
     if (i == m_elfs.constEnd() || !i.value().found)
-        return 0;
+        return nullptr;
+
+    if (i.value().pgoff > 0) {
+        reportError(i, "Cannot report file fragments");
+        return nullptr;
+    }
+
     Dwfl_Module *ret = dwfl_report_elf(
                 m_dwfl, i.value().file.fileName().toLocal8Bit().constData(),
                 i.value().file.absoluteFilePath().toLocal8Bit().constData(), -1, i.key(),
                 false);
     if (!ret)
-        qWarning() << "failed to report" << i.value().file.absoluteFilePath() << "for"
-                   << QString::fromLatin1("0x%1").arg(i.key(), 0, 16).toLocal8Bit().constData()
-                   << ":" << dwfl_errmsg(dwfl_errno());
+        reportError(i, dwfl_errmsg(dwfl_errno()));
 
     if (m_lastMmapAddedTime < i->timeAdded)
         m_lastMmapAddedTime = i->timeAdded;
