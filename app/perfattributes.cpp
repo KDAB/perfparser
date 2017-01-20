@@ -32,7 +32,7 @@ QDataStream &operator>>(QDataStream &stream, PerfEventAttributes &attrs)
     quint64 flags;
     stream >> attrs.m_type >> attrs.m_size;
 
-    if (attrs.m_size < sizeof(PerfEventAttributes)) {
+    if (attrs.m_size < PerfEventAttributes::fixedLength()) {
         qWarning() << "unsupported file format";
         return stream;
     }
@@ -54,7 +54,7 @@ QDataStream &operator>>(QDataStream &stream, PerfEventAttributes &attrs)
 
     *(&attrs.m_readFormat + 1) = flags;
 
-    stream.skipRawData(attrs.m_size - sizeof(PerfEventAttributes));
+    stream.skipRawData(attrs.m_size - PerfEventAttributes::fixedLength());
 
     return stream;
 }
@@ -154,9 +154,18 @@ QByteArray PerfEventAttributes::name() const
     }
 }
 
+quint64 PerfEventAttributes::fixedLength()
+{
+    return sizeof(m_type) + sizeof(m_type) + sizeof(m_config) + sizeof(m_sampleFreq)
+            + sizeof(m_sampleType) + sizeof(m_readFormat) + sizeof(quint64) // flags
+            + sizeof(m_wakeupEvents) + sizeof(m_bpType) + sizeof(m_bpAddr) + sizeof(m_bpLen)
+            + sizeof(m_branchSampleType) + sizeof(m_sampleRegsUser) + sizeof(m_sampleStackUser)
+            + sizeof(m_reserved2);
+}
+
 bool PerfAttributes::read(QIODevice *device, PerfHeader *header)
 {
-    if (header->attrSize() < sizeof(PerfEventAttributes) + sizeof(PerfFileSection)) {
+    if (header->attrSize() < PerfEventAttributes::fixedLength() + PerfFileSection::fixedLength()) {
         qWarning() << "unsupported file format";
         return false;
     }
@@ -176,7 +185,7 @@ bool PerfAttributes::read(QIODevice *device, PerfHeader *header)
         stream.setByteOrder(header->byteOrder());
         stream >> attrs;
 
-        if (attrs.size() < sizeof(PerfEventAttributes))
+        if (attrs.size() < PerfEventAttributes::fixedLength())
             return false;
 
         if (i == 0)

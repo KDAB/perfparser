@@ -32,7 +32,7 @@ PerfData::PerfData(QIODevice *source, PerfUnwind *destination, const PerfHeader 
 
 PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
 {
-    qint64 headerSize = sizeof(PerfEventHeader);
+    qint64 headerSize = PerfEventHeader::fixedLength();
 
     if (m_eventHeader.size == 0) {
         if (stream.device()->bytesAvailable() < headerSize)
@@ -262,12 +262,16 @@ QDataStream &PerfRecordMmap::readSampleId(QDataStream &stream)
     return stream;
 }
 
+quint64 PerfRecordMmap::fixedLength() const
+{
+    return sizeof(m_pid) + sizeof(m_tid) + sizeof(m_addr) + sizeof(m_len) + sizeof(m_pgoff)
+            + m_header.fixedLength() + m_sampleId.fixedLength();
+}
+
 QDataStream &operator>>(QDataStream &stream, PerfRecordMmap &record)
 {
     record.readNumbers(stream);
-    quint64 filenameLength = record.m_header.size - sizeof(PerfRecordMmap) + sizeof(PerfSampleId) +
-            sizeof(record.m_filename) - record.m_sampleId.length();
-    record.readFilename(stream, filenameLength);
+    record.readFilename(stream, record.m_header.size - record.fixedLength());
     record.readSampleId(stream);
     return stream;
 }
@@ -284,12 +288,16 @@ QDataStream &PerfRecordMmap2::readNumbers(QDataStream &stream)
     return stream >> m_maj >> m_min >> m_ino >> m_ino_generation >> m_prot >> m_flags;
 }
 
+quint64 PerfRecordMmap2::fixedLength() const
+{
+    return PerfRecordMmap::fixedLength() + sizeof(m_maj) + sizeof(m_min) + sizeof(m_ino)
+            + sizeof(m_ino_generation) + sizeof(m_prot) + sizeof(m_flags);
+}
+
 QDataStream &operator>>(QDataStream &stream, PerfRecordMmap2 &record)
 {
     record.readNumbers(stream);
-    quint64 filenameLength = record.m_header.size - sizeof(PerfRecordMmap2) + sizeof(PerfSampleId) +
-            sizeof(record.m_filename) - record.m_sampleId.length();
-    record.readFilename(stream, filenameLength);
+    record.readFilename(stream, record.m_header.size - record.fixedLength());
     record.readSampleId(stream);
     return stream;
 }
@@ -302,8 +310,7 @@ PerfRecordComm::PerfRecordComm(PerfEventHeader *header, quint64 sampleType, bool
 QDataStream &operator>>(QDataStream &stream, PerfRecordComm &record)
 {
     stream >> record.m_pid >> record.m_tid;
-    quint64 commLength = record.m_header.size - sizeof(PerfRecordComm) + sizeof(PerfSampleId) +
-            sizeof(record.m_comm) - record.m_sampleId.length();
+    const quint64 commLength = record.m_header.size - record.fixedLength();
 
     if (commLength > static_cast<quint64>(std::numeric_limits<int>::max())) {
         qWarning() << "bad comm length";
@@ -353,7 +360,7 @@ QDataStream &operator>>(QDataStream &stream, PerfSampleId &sampleId)
 }
 
 
-quint64 PerfSampleId::length() const
+quint64 PerfSampleId::fixedLength() const
 {
     quint64 ret = 0;
     if (m_sampleType & PerfEventAttributes::SAMPLE_ID_ALL) {
@@ -535,7 +542,7 @@ PerfRecordAttr::PerfRecordAttr(const PerfEventHeader *header, quint64 sampleType
 QDataStream &operator>>(QDataStream &stream, PerfRecordAttr &record)
 {
     stream >> record.m_attr;
-    qint64 read = record.m_attr.size() + sizeof(PerfEventHeader);
+    quint32 read = record.m_attr.size() + PerfEventHeader::fixedLength();
     quint64 id = 0;
     for (quint64 i = 0; i < (record.m_header.size - read) / sizeof(quint64); ++i) {
         stream >> id;

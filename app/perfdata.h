@@ -239,7 +239,7 @@ struct PerfSampleId {
     quint32 tid() const { return m_tid; }
     quint64 time() const { return m_time; }
     quint64 id() const { return m_id; }
-    quint64 length() const;
+    quint64 fixedLength() const;
     quint64 sampleType() const { return m_sampleType; }
 
 private:
@@ -273,6 +273,8 @@ protected:
     PerfRecord(const PerfEventHeader *header, quint64 sampleType, bool sampleIdAll);
     PerfEventHeader m_header;
     PerfSampleId m_sampleId;
+
+    quint64 fixedLength() const { return m_header.fixedLength() + m_sampleId.fixedLength(); }
 };
 
 class PerfRecordMmap2;
@@ -293,6 +295,7 @@ protected:
     QDataStream &readNumbers(QDataStream &stream);
     QDataStream &readFilename(QDataStream &stream, quint64 filenameLength);
     QDataStream &readSampleId(QDataStream &stream);
+    quint64 fixedLength() const;
 
 private:
     quint32	m_pid;
@@ -326,6 +329,8 @@ private:
     quint32 m_prot;
     quint32 m_flags;
 
+    quint64 fixedLength() const;
+
     friend QDataStream &operator>>(QDataStream &stream, PerfRecordMmap2 &record);
 };
 
@@ -351,6 +356,8 @@ private:
     quint32 m_pid;
     quint32 m_tid;
     QByteArray m_comm;
+
+    quint64 fixedLength() const { return PerfRecord::fixedLength() + sizeof(m_pid) + sizeof(m_tid); }
 
     friend QDataStream &operator>>(QDataStream &stream, PerfRecordComm &record);
 };

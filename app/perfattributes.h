@@ -171,6 +171,8 @@ public:
         SOFTWARE_MAX,             /* non-ABI */
     };
 
+    static quint64 fixedLength();
+
 private:
 
     /*

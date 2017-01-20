@@ -139,8 +139,8 @@ QDataStream &operator>>(QDataStream &stream, PerfBuildId &buildId)
         stream.readRawData(build.id.data(), PerfBuildId::s_idLength);
         stream.skipRawData(PerfBuildId::s_idPadding);
 
-        uint fileNameLength = build.header.size - sizeof(build.header) - sizeof(build.pid) -
-                PerfBuildId::s_idPadding - PerfBuildId::s_idLength;
+        uint fileNameLength = build.header.size - PerfEventHeader::fixedLength() - sizeof(build.pid)
+                - PerfBuildId::s_idPadding - PerfBuildId::s_idLength;
         if (fileNameLength > static_cast<uint>(std::numeric_limits<int>::max())) {
             qWarning() << "bad file name length";
             return stream;

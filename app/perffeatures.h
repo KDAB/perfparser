@@ -32,6 +32,8 @@ struct PerfEventHeader {
     quint32 type;
     quint16 misc;
     quint16 size;
+
+    static quint64 fixedLength() { return sizeof(type) + sizeof(misc) + sizeof(size); }
 };
 
 QDataStream &operator>>(QDataStream &stream, PerfEventHeader &header);

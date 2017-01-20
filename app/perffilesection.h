@@ -27,6 +27,8 @@ struct PerfFileSection {
     PerfFileSection();
     quint64 offset;
     quint64 size;
+
+    static quint64 fixedLength() { return sizeof(offset) + sizeof(size); }
 };
 
 QDataStream &operator>>(QDataStream &stream, PerfFileSection &section);
