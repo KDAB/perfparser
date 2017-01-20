@@ -68,7 +68,7 @@ public:
         SAMPLE_PERIOD       = 1U << 8,
         SAMPLE_STREAM_ID    = 1U << 9,
         SAMPLE_RAW          = 1U << 10,
-        SAMPLE_BRANCH_STACK	= 1U << 11,
+        SAMPLE_BRANCH_STACK = 1U << 11,
         SAMPLE_REGS_USER    = 1U << 12,
         SAMPLE_STACK_USER   = 1U << 13,
         SAMPLE_WEIGHT       = 1U << 14,
@@ -183,22 +183,22 @@ private:
     /*
      * Size of the attr structure, for fwd/bwd compat.
      */
-    quint32	m_size;
+    quint32 m_size;
 
     /*
      * Type specific configuration information.
      */
-    quint64	m_config;
+    quint64 m_config;
 
     union {
-        quint64	m_samplePeriod;
-        quint64	m_sampleFreq;
+        quint64 m_samplePeriod;
+        quint64 m_sampleFreq;
     };
 
-    quint64	m_sampleType;
-    quint64	m_readFormat;
+    quint64 m_sampleType;
+    quint64 m_readFormat;
 
-    quint64	m_disabled      : 1, /* off by default         */
+    quint64 m_disabled      : 1, /* off by default         */
             m_inherit       : 1, /* children inherit it    */
             m_pinned        : 1, /* must always be on PMU  */
             m_exclusive     : 1, /* only group on PMU      */
@@ -233,36 +233,36 @@ private:
             m_reserved1     : 43;
 
     union {
-        quint32	m_wakeupEvents;	  /* wakeup every n events */
-        quint32	m_wakeupWatermark; /* bytes before wakeup   */
+        quint32 m_wakeupEvents;    /* wakeup every n events */
+        quint32 m_wakeupWatermark; /* bytes before wakeup   */
     };
 
-    quint32	m_bpType;
+    quint32 m_bpType;
     union {
-        quint64	m_bpAddr;
-        quint64	m_config1; /* extension of config */
+        quint64 m_bpAddr;
+        quint64 m_config1; /* extension of config */
     };
 
     union {
-        quint64	m_bpLen;
-        quint64	m_config2; /* extension of config1 */
+        quint64 m_bpLen;
+        quint64 m_config2; /* extension of config1 */
     };
 
-    quint64	m_branchSampleType; /* enum perf_branch_sample_type */
+    quint64 m_branchSampleType; /* enum perf_branch_sample_type */
 
-	/*
-	 * Defines set of user regs to dump on samples.
-	 * See asm/perf_regs.h for details.
-	 */
-	quint64	m_sampleRegsUser;
+    /*
+     * Defines set of user regs to dump on samples.
+     * See asm/perf_regs.h for details.
+     */
+    quint64 m_sampleRegsUser;
 
-	/*
-	 * Defines size of the user stack to dump on samples.
-	 */
-	quint32	m_sampleStackUser;
+    /*
+     * Defines size of the user stack to dump on samples.
+     */
+    quint32 m_sampleStackUser;
 
-	/* Align to u64. */
-	quint32	m_reserved2;
+    /* Align to u64. */
+    quint32 m_reserved2;
 
     friend QDataStream &operator>>(QDataStream &stream, PerfEventAttributes &attrs);
 };
