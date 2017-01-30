@@ -36,6 +36,8 @@
 #include <QTcpSocket>
 #include <limits>
 
+#include <fcntl.h>
+
 enum ErrorCodes {
     NoError,
     TcpSocketError,
@@ -145,6 +147,9 @@ int main(int argc, char *argv[])
             return CannotOpen;
     } else {
         outfile.reset(new QFile);
+#ifdef Q_OS_WIN
+        _setmode(fileno(stdout), O_BINARY);
+#endif
         if (!outfile->open(stdout, QIODevice::WriteOnly))
             return CannotOpen;
     }
