@@ -13,7 +13,12 @@
 
 /* Define to 1 if you have the declaration of `powerof2', and to 0 if you
    don't. */
+#ifdef __linux__
+// powerof2 is in sys/param.h on linux.
 #define HAVE_DECL_POWEROF2 1
+#else
+#define HAVE_DECL_POWEROF2 0
+#endif
 
 /* Define to 1 if you have the declaration of `rawmemchr', and to 0 if you
    don't. */
