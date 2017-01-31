@@ -453,7 +453,16 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, quint64 timestamp, bool isKernel
                                     PerfUnwind::Symbol(symId, binaryId, isKernel));
         }
     } else {
-        symname = symbolFromPerfMap(addressLocation.address, &off);
+        if (isKernel) {
+            const auto entry = m_unwind->findKallsymEntry(addressLocation.address);
+            off = addressLocation.address - entry.address;
+            symname = entry.symbol;
+            if (!entry.module.isEmpty())
+                binaryId = m_unwind->resolveString(entry.module);
+        } else {
+            symname = symbolFromPerfMap(addressLocation.address, &off);
+        }
+
         if (off)
             functionLocation.address -= off;
         else

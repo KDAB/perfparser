@@ -40,7 +40,8 @@ SOURCES += main.cpp \
     perfregisterinfo.cpp \
     perfstdin.cpp \
     perfsymboltable.cpp \
-    perfelfmap.cpp
+    perfelfmap.cpp \
+    perfkallsyms.cpp
 
 HEADERS += \
     perfattributes.h \
@@ -52,4 +53,5 @@ HEADERS += \
     perfregisterinfo.h \
     perfstdin.h \
     perfsymboltable.h \
-    perfelfmap.h
+    perfelfmap.h \
+    perfkallsyms.h

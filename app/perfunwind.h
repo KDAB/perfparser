@@ -23,6 +23,7 @@
 
 #include "perfdata.h"
 #include "perfregisterinfo.h"
+#include "perfkallsyms.h"
 
 #include <libdwfl.h>
 
@@ -94,7 +95,8 @@ public:
     static const int s_maxFrames = 64;
 
     PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugInfo,
-               const QString &extraLibs, const QString &appPath);
+               const QString &extraLibs, const QString &appPath,
+               const QString &kallsymsPath);
     ~PerfUnwind();
 
     PerfRegisterInfo::Architecture architecture() const { return m_architecture; }
@@ -123,6 +125,8 @@ public:
 
     bool hasSymbol(int locationId) const;
     void resolveSymbol(int locationId, const Symbol &symbol);
+
+    PerfKallsymEntry findKallsymEntry(quint64 address) const;
 
 private:
 
@@ -160,6 +164,7 @@ private:
 
     QList<PerfRecordSample> m_sampleBuffer;
     QHash<quint32, PerfSymbolTable *> m_symbolTables;
+    PerfKallsyms m_kallsyms;
 
     QHash<QByteArray, qint32> m_strings;
     QHash<Location, qint32> m_locations;

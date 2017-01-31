@@ -1,2 +1,4 @@
 TEMPLATE = subdirs
-SUBDIRS = elfmap
+SUBDIRS = \
+    elfmap \
+    kallsyms

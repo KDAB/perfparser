@@ -138,6 +138,15 @@ int main(int argc, char *argv[])
                                 "given in the data itself, to <arch>."),
                             QLatin1String("arch"));
     parser.addOption(arch);
+
+    QCommandLineOption kallsymsPath(QLatin1String("kallsyms"),
+                               QCoreApplication::translate(
+                                   "main", "Path to kallsyms mapping to resolve kernel symbols. "
+                                   "The default is: <sysroot>/proc/kallsyms ."),
+                               QLatin1String("path"),
+                               QLatin1String("/proc/kallsyms"));
+    parser.addOption(kallsymsPath);
+
     parser.process(app);
 
     QScopedPointer<QFile> outfile;
@@ -167,7 +176,9 @@ int main(int argc, char *argv[])
 
     PerfUnwind unwind(outfile.data(), parser.value(sysroot), parser.isSet(debug) ?
                           parser.value(debug) : parser.value(sysroot) + parser.value(debug),
-                      parser.value(extra), parser.value(appPath));
+                      parser.value(extra), parser.value(appPath), parser.isSet(kallsymsPath)
+                        ? parser.value(kallsymsPath)
+                        : parser.value(sysroot) + parser.value(kallsymsPath));
 
     PerfHeader header(infile.data());
     PerfAttributes attributes;

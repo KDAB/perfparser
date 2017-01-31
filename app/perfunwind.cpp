@@ -45,9 +45,11 @@ bool operator==(const PerfUnwind::Location &a, const PerfUnwind::Location &b)
 }
 
 PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugPath,
-                       const QString &extraLibsPath, const QString &appPath) :
+                       const QString &extraLibsPath, const QString &appPath,
+                       const QString &kallsymsPath) :
     m_output(output), m_architecture(PerfRegisterInfo::ARCH_INVALID), m_systemRoot(systemRoot),
-    m_extraLibsPath(extraLibsPath), m_appPath(appPath), m_nextAttributeId(0), m_sampleBufferSize(0)
+    m_extraLibsPath(extraLibsPath), m_appPath(appPath), m_kallsyms(kallsymsPath),
+    m_nextAttributeId(0), m_sampleBufferSize(0)
 {
     m_currentUnwind.unwind = this;
     m_offlineCallbacks.find_elf = dwfl_build_id_find_elf;
@@ -362,4 +364,9 @@ void PerfUnwind::resolveSymbol(int locationId, const PerfUnwind::Symbol &symbol)
 {
     m_symbols.insert(locationId, symbol);
     sendSymbol(locationId, symbol);
+}
+
+PerfKallsymEntry PerfUnwind::findKallsymEntry(quint64 address) const
+{
+    return m_kallsyms.findEntry(address);
 }
