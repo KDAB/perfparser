@@ -18,9 +18,9 @@ SUBDIRS = \
 
 libdw.depends = libelf libebl libdwelf libdwfl
 libelf.depends = libelf/elf32 libelf/elf64
-
+libasm.depends = libelf libdw
 libcpu.depends = lib
-backends.depends = libcpu
+backends.depends = libcpu libelf libdw
 
 OTHER_FILES += \
     COPYING \

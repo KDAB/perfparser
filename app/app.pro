@@ -28,7 +28,8 @@ include(../paths.pri)
     INCLUDEPATH += /usr/include/elfutils
 }
 
-LIBS += -ldw -lelf
+# We require major version 0 from elfutils
+LIBS += -l$$libraryRefName(dw, 0) -l$$libraryRefName(elf, 0)
 
 DESTDIR = $$PERFPARSER_APP_DESTDIR
 target.path = $$PERFPARSER_APP_INSTALLDIR

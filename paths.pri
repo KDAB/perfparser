@@ -13,3 +13,18 @@ isEmpty(PERFPARSER_ELFUTILS_INSTALLDIR) {
 isEmpty(PERFPARSER_ELFUTILS_BACKENDS_INSTALLDIR) {
     PERFPARSER_ELFUTILS_BACKENDS_INSTALLDIR = $$PERFPARSER_ELFUTILS_INSTALLDIR/elfutils
 }
+
+defineReplace(libraryName) {
+   RET = $$1$$qtPlatformTargetSuffix()
+   win32 {
+      VERSION_LIST = $$split(VERSION, .)
+      RET = $$RET$$first(VERSION_LIST)
+   }
+   return($$RET)
+}
+
+defineReplace(libraryRefName) {
+   RET = $$1$$qtPlatformTargetSuffix()
+   win32: RET = $$RET$$2
+   return($$RET)
+}

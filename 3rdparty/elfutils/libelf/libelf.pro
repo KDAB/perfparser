@@ -1,9 +1,10 @@
 TARGET = elf
 
+# Include libeu afterwards
+QMAKE_LFLAGS += -Wl,--whole-archive libelf32.a libelf64.a -Wl,--no-whole-archive
+
 include(../dynamic.pri)
 include(elfheaders.pri)
-
-LIBS += -Wl,--whole-archive libelf32.a libelf64.a -Wl,--no-whole-archive
 
 SOURCES += \
     $$PWD/elf_begin.c \

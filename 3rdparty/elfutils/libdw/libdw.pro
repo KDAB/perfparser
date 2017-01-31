@@ -1,14 +1,19 @@
 TARGET = dw
 
+QMAKE_LFLAGS += \
+        -Wl,--whole-archive \
+        ../libebl.a ../libdwelf.a ../libdwfl.a \
+        -Wl,--no-whole-archive \
+
 include(../dynamic.pri)
 include(../libelf/elfheaders.pri)
 include(dwheaders.pri)
 
-LIBS += \
-        -Wl,--whole-archive \
-        ../libebl.a ../libdwelf.a ../libdwfl.a \
-        -Wl,--no-whole-archive \
-        -lz -ldl -L$$DESTDIR -lelf
+LIBS += -L$$DESTDIR -l$$libraryName(elf)
+
+# libebl includes libasm headers, but doesn't actually use any symbols.
+# So, we don't link it here for now.
+linux: LIBS += -ldl
 
 SOURCES += \
     $$PWD/cfi.c \

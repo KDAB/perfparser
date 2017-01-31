@@ -1,6 +1,7 @@
 include(elfutils.pri)
 include(../../paths.pri)
 
+TARGET = $$TARGET$$qtPlatformTargetSuffix()
 DESTDIR = $$PERFPARSER_ELFUTILS_DESTDIR
 
 linux-* {
@@ -17,6 +18,7 @@ linux-* {
 
 TEMPLATE = lib
 CONFIG += shared dll
+LIBS += ../lib/libeu.a -lz
 
 win32 {
     DLLDESTDIR = $${PERFPARSER_APP_DESTDIR}

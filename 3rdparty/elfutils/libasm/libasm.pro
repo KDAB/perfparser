@@ -7,6 +7,8 @@ include(../libelf/elfheaders.pri)
 include(../libdwelf/dwelfheaders.pri)
 include(asmheaders.pri)
 
+LIBS += -L$$DESTDIR -l$$libraryName(elf) -l$$libraryName(dw)
+
 SOURCES += \
     $$PWD/asm_abort.c \
     $$PWD/asm_addint8.c \
