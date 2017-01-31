@@ -11,8 +11,11 @@ CONFIG -= app_bundle
 include(../paths.pri)
 
 !isEmpty(PERFPARSER_BUNDLED_ELFUTILS) {
-    RPATH = $$relative_path($$PERFPARSER_ELFUTILS_INSTALLDIR, $$PERFPARSER_APP_INSTALLDIR)
-    QMAKE_LFLAGS += -Wl,-z,origin \'-Wl,-rpath,\$\$ORIGIN/$$RPATH\'
+    linux-* {
+        RPATH = $$relative_path($$PERFPARSER_ELFUTILS_INSTALLDIR, $$PERFPARSER_APP_INSTALLDIR)
+        QMAKE_LFLAGS += -Wl,-z,origin \'-Wl,-rpath,\$\$ORIGIN/$$RPATH\'
+    }
+
     LIBS += -L$$PERFPARSER_ELFUTILS_DESTDIR
 
     include(../3rdparty/elfutils/libdwfl/dwflheaders.pri)
