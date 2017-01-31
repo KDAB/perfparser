@@ -1,5 +1,4 @@
 TARGET = i386
-DESTDIR = $$OUT_PWD/..
 
 include(../../static.pri)
 include(../../libelf/elfheaders.pri)

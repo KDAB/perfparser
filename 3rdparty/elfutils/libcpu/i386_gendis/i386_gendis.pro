@@ -2,6 +2,7 @@ TEMPLATE = app
 
 LIBS += ../../lib/libeu.a
 QMAKE_CFLAGS += -Wno-unused-function
+DESTDIR = $$OUT_PWD
 
 include(../../elfutils.pri)
 include(../../lib/libheaders.pri)

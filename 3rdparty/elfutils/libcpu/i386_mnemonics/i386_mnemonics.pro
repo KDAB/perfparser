@@ -1,8 +1,10 @@
 TEMPLATE = aux
-DESTDIR = $$OUT_PWD/..
+DESTDIR = $$OUT_PWD
+
+include(../tools.pri)
 
 mnemonics.target = i386.mnemonics
-mnemonics.commands = make -f $$PWD/../extras.mk srcdir=$$PWD/../ i386.mnemonics
+mnemonics.commands = $$MAKE -f $$PWD/../extras.mk srcdir=$$PWD/../ i386.mnemonics
 
 OTHER_FILES = \
     $$PWD/../extras.mk \

@@ -2,7 +2,7 @@ TARGET = ebl_x86_64
 
 # we need these before libeu, as they use symbols from libeu
 LIBS += \
-    ../../libcpu/libx86_64.a \
+    ../../libcpu/x86_64/libx86_64.a \
     x86_64_corenote/libx86_64_corenote.a \
     x32_corenote/libx32_corenote.a
 
