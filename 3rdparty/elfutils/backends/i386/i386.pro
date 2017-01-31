@@ -1,7 +1,9 @@
 TARGET = ebl_i386
-include(../backends.pri)
 
+# we need this before libeu, as it uses symbols from libeu
 LIBS += ../../libcpu/libi386.a
+
+include(../backends.pri)
 
 SOURCES += \
     ../i386_auxv.c \

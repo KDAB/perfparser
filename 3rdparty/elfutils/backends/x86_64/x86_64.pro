@@ -1,7 +1,9 @@
 TARGET = ebl_x86_64
-include(../backends.pri)
 
+# we need these before libeu, as they use symbols from libeu
 LIBS += ../../libcpu/libx86_64.a libx86_64_corenote.a libx32_corenote.a
+
+include(../backends.pri)
 
 SOURCES += \
     ../x86_64_cfi.c \
