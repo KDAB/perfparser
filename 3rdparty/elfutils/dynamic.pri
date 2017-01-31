@@ -18,5 +18,11 @@ linux-* {
 TEMPLATE = lib
 CONFIG += shared dll
 
-target.path = $$PERFPARSER_ELFUTILS_INSTALLDIR
-INSTALLS += target
+win32 {
+    DLLDESTDIR = $${PERFPARSER_APP_DESTDIR}
+    dlltarget.path = $${PERFPARSER_APP_INSTALLDIR}
+    INSTALLS += dlltarget
+} else {
+    target.path = $${PERFPARSER_ELFUTILS_INSTALLDIR}
+    INSTALLS += target
+}
