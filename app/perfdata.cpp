@@ -544,7 +544,7 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordAttr &record)
     stream >> record.m_attr;
     quint32 read = record.m_attr.size() + PerfEventHeader::fixedLength();
     quint64 id = 0;
-    for (quint64 i = 0; i < (record.m_header.size - read) / sizeof(quint64); ++i) {
+    for (quint32 i = 0; i < (record.m_header.size - read) / sizeof(quint64); ++i) {
         stream >> id;
         record.m_ids << id;
     }
