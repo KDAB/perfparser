@@ -82,10 +82,12 @@
 #define PACKAGE_VERSION "0.168"
 
 /* The size of `long', as computed by sizeof. */
-#if QMAKE_ARCH == 64
-#define SIZEOF_LONG 8
-#else
+#ifdef __SIZEOF_LONG__
+#define SIZEOF_LONG __SIZEOF_LONG__
+#elif defined(_WIN32)
 #define SIZEOF_LONG 4
+#else
+#error "Cannot determine SIZEOF_LONG"
 #endif
 
 /* Define to 1 if you have the ANSI C header files. */
@@ -119,7 +121,7 @@
 #endif
 
 /* Number of bits in a file offset, on hosts where this is settable. */
-#if QMAKE_ARCH == 32
+#ifdef __i386__
 #define _FILE_OFFSET_BITS 64
 #endif
 
