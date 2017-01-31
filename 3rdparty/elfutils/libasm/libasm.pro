@@ -1,7 +1,9 @@
 TARGET = asm
 
 include(../dynamic.pri)
+include(../libdw/dwheaders.pri)
 include(../libebl/eblheaders.pri)
+include(../libelf/elfheaders.pri)
 include(../libdwelf/dwelfheaders.pri)
 include(asmheaders.pri)
 

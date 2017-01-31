@@ -1,6 +1,9 @@
 TARGET = ../ebl
 
 include(../static.pri)
+include(../libelf/elfheaders.pri)
+include(../libasm/asmheaders.pri)
+include(../libdw/dwheaders.pri)
 include(eblheaders.pri)
 
 SOURCES += \

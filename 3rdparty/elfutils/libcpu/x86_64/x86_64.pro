@@ -2,8 +2,10 @@ TARGET = x86_64
 DESTDIR = $$OUT_PWD/..
 
 include(../../static.pri)
+include(../../libelf/elfheaders.pri)
 include(../../libasm/asmheaders.pri)
 include(../../libebl/eblheaders.pri)
+include(../../libdw/dwheaders.pri)
 include(../cpuheaders.pri)
 
 SOURCES += \

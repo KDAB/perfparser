@@ -16,8 +16,11 @@ include(../paths.pri)
     LIBS += -L$$PERFPARSER_ELFUTILS_DESTDIR
 
     include(../3rdparty/elfutils/libdwfl/dwflheaders.pri)
+    include(../3rdparty/elfutils/libelf/elfheaders.pri)
+    include(../3rdparty/elfutils/libdw/dwheaders.pri)
     include(../3rdparty/elfutils/libebl/eblheaders.pri)
     include(../3rdparty/elfutils/libdwelf/dwelfheaders.pri)
+    include(../3rdparty/elfutils/lib/libheaders.pri)
 } else {
     INCLUDEPATH += /usr/include/elfutils
 }

@@ -2,6 +2,7 @@ TARGET = ../dwfl
 
 include(../static.pri)
 include(dwflheaders.pri)
+include(../libelf/elfheaders.pri)
 include(../libdw/dwheaders.pri)
 include(../libebl/eblheaders.pri)
 include(../libdwelf/dwelfheaders.pri)

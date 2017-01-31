@@ -9,7 +9,10 @@ CONFIG += shared dll
 target.path = $$PERFPARSER_ELFUTILS_BACKENDS_INSTALLDIR
 INSTALLS += target
 
+include(../libasm/asmheaders.pri)
 include(../libebl/eblheaders.pri)
+include(../libelf/elfheaders.pri)
+include(../libdw/dwheaders.pri)
 
 HEADERS += \
     $$PWD/libebl_CPU.h \
