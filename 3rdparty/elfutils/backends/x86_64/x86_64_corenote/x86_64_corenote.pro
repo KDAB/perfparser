@@ -1,4 +1,4 @@
-TARGET = ../x86_64_corenote
+TARGET = x86_64_corenote
 
 include(../../../libebl/eblheaders.pri)
 include(../../../static.pri)
