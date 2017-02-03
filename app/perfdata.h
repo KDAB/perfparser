@@ -480,7 +480,6 @@ private:
     PerfAttributes *m_attributes;
     PerfEventHeader m_eventHeader;
 
-    QList<PerfRecordLost> m_lostRecords;
     ReadStatus processEvents(QDataStream &stream);
     ReadStatus doRead();
 };

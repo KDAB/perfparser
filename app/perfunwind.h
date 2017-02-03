@@ -56,6 +56,7 @@ public:
         SymbolDefinition,
         AttributesDefinition,
         StringDefinition,
+        LostDefinition,
         InvalidType
     };
 
@@ -114,6 +115,7 @@ public:
     void registerElf(const PerfRecordMmap &mmap);
     void comm(const PerfRecordComm &comm);
     void attr(const PerfRecordAttr &attr);
+    void lost(const PerfRecordLost &lost);
 
     Dwfl_Module *reportElf(quint64 ip, quint32 pid, quint64 timestamp);
     bool ipIsInKernelSpace(quint64 ip) const;

@@ -63,10 +63,12 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
         m_destination->registerElf(mmap);
         break;
     }
-    case PERF_RECORD_LOST:
-        m_lostRecords << PerfRecordLost(&m_eventHeader, sampleType, sampleIdAll);
-        stream >> m_lostRecords.last();
+    case PERF_RECORD_LOST: {
+        PerfRecordLost lost(&m_eventHeader, sampleType, sampleIdAll);
+        stream >> lost;
+        m_destination->lost(lost);
         break;
+    }
     case PERF_RECORD_COMM: {
         PerfRecordComm comm(&m_eventHeader, sampleType, sampleIdAll);
         stream >> comm;

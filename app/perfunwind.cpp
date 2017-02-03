@@ -137,6 +137,14 @@ void PerfUnwind::attr(const PerfRecordAttr &attr)
     ++m_nextAttributeId;
 }
 
+void PerfUnwind::lost(const PerfRecordLost &lost)
+{
+    QByteArray buffer;
+    QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(LostDefinition)
+                                               << lost.pid() << lost.tid() << lost.time();
+    sendBuffer(buffer);
+}
+
 Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid, quint64 timestamp)
 {
     auto symbols = symbolTable(pid);
