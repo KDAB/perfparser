@@ -417,6 +417,8 @@ public:
     PerfRecordAttr(const PerfEventHeader *header = 0, quint64 sampleType = 0,
                    bool sampleIdAll = false);
 
+    PerfRecordAttr(const PerfEventAttributes &attributes, const QList<quint64> &ids);
+
     const PerfEventAttributes &attr() const { return m_attr; }
     const QList<quint64> &ids() const { return m_ids; }
 

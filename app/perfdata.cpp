@@ -538,6 +538,10 @@ PerfRecordAttr::PerfRecordAttr(const PerfEventHeader *header, quint64 sampleType
 {
 }
 
+PerfRecordAttr::PerfRecordAttr(const PerfEventAttributes &attributes, const QList<quint64> &ids) :
+    PerfRecord(nullptr, 0, false), m_attr(attributes), m_ids(ids)
+{
+}
 
 QDataStream &operator>>(QDataStream &stream, PerfRecordAttr &record)
 {

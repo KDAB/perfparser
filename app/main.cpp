@@ -194,6 +194,11 @@ int main(int argc, char *argv[])
             attributes.read(infile.data(), &header);
             features.read(infile.data(), &header);
             infile->seek(filePos);
+
+            const auto& attrs = attributes.attributes();
+            for (auto it = attrs.begin(), end = attrs.end(); it != end; ++it) {
+                unwind.attr(PerfRecordAttr(it.value(), {it.key()}));
+            }
         }
 
         const QByteArray &featureArch = features.architecture();

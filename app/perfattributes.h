@@ -276,6 +276,7 @@ public:
     void addAttributes(quint64 id, const PerfEventAttributes &attributes);
     void setGlobalAttributes(const PerfEventAttributes &attributes);
 
+    const QHash<quint64, PerfEventAttributes> &attributes() const { return m_attributes; }
     const PerfEventAttributes &attributes(quint64 id) const;
     const PerfEventAttributes &globalAttributes() const { return m_globalAttributes; }
 
