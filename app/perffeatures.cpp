@@ -24,6 +24,15 @@
 
 // TODO: What to do if feature flags are set but features don't really exist in the file?
 
+static void removeTrailingZeros(QByteArray *string)
+{
+    int length = string->length();
+    // chop off trailing zeros to make the values directly usable
+    while (length > 0 && !string->at(length - 1))
+        --length;
+    string->resize(length);
+}
+
 void PerfFeatures::createFeature(QIODevice *device, QDataStream::ByteOrder byteOrder,
                                  const PerfFileSection &section, PerfHeader::Feature featureId)
 {
@@ -149,6 +158,8 @@ QDataStream &operator>>(QDataStream &stream, PerfBuildId &buildId)
         }
         build.fileName.resize(fileNameLength);
         stream.readRawData(build.fileName.data(), fileNameLength);
+        removeTrailingZeros(&build.fileName);
+
         next += header.size;
         buildId.buildIds << build;
     }
@@ -180,6 +191,7 @@ QDataStream &operator>>(QDataStream &stream, PerfStringFeature &string)
     }
     string.value.resize(length);
     stream.readRawData(string.value.data(), length);
+    removeTrailingZeros(&string.value);
     return stream;
 }
 
