@@ -158,6 +158,33 @@ void PerfUnwind::lost(const PerfRecordLost &lost)
     sendBuffer(buffer);
 }
 
+void PerfUnwind::features(const PerfFeatures &features)
+{
+    const auto &eventDescs = features.eventDesc().eventDescs;
+    for (const auto &desc : eventDescs) {
+        resolveAttr(desc.attrs, desc.name);
+    }
+
+    QByteArray buffer;
+    QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(FeaturesDefinition)
+                                               << features.hostName()
+                                               << features.osRelease()
+                                               << features.version()
+                                               << features.architecture()
+                                               << features.nrCpus()
+                                               << features.cpuDesc()
+                                               << features.cpuId()
+                                               << features.totalMem()
+                                               << features.cmdline()
+                                               << features.buildId()
+                                               << features.cpuTopology()
+                                               << features.numaTopology()
+                                               << features.branchStack()
+                                               << features.pmuMappings()
+                                               << features.groupDesc();
+    sendBuffer(buffer);
+}
+
 Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid, quint64 timestamp)
 {
     auto symbols = symbolTable(pid);

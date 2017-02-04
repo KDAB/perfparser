@@ -195,6 +195,9 @@ int main(int argc, char *argv[])
             features.read(infile.data(), &header);
             infile->seek(filePos);
 
+            // first send features, as it may contain better event descriptions
+            unwind.features(features);
+
             const auto& attrs = attributes.attributes();
             for (auto it = attrs.begin(), end = attrs.end(); it != end; ++it) {
                 unwind.attr(PerfRecordAttr(it.value(), {it.key()}));

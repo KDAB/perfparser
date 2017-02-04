@@ -56,6 +56,7 @@ struct PerfBuildId {
 };
 
 QDataStream &operator>>(QDataStream &stream, PerfBuildId &buildId);
+QDataStream &operator<<(QDataStream &stream, const PerfBuildId &buildId);
 
 struct PerfStringFeature {
     QByteArray value;
@@ -69,6 +70,7 @@ struct PerfNrCpus {
 };
 
 QDataStream &operator>>(QDataStream &stream, PerfNrCpus &numCpus);
+QDataStream &operator<<(QDataStream &stream, const PerfNrCpus &numCpus);
 
 struct PerfTotalMem {
     quint64 totalMem;
@@ -102,6 +104,7 @@ struct PerfCpuTopology {
 };
 
 QDataStream &operator>>(QDataStream &stream, PerfCpuTopology &cpuTopology);
+QDataStream &operator<<(QDataStream &stream, const PerfCpuTopology &cpuTopology);
 
 struct PerfNumaTopology {
 
@@ -116,11 +119,13 @@ struct PerfNumaTopology {
 };
 
 QDataStream &operator>>(QDataStream &stream, PerfNumaTopology &numaTopology);
+QDataStream &operator<<(QDataStream &stream, const PerfNumaTopology &numaTopology);
 
 struct PerfBranchStack {
 };
 
 QDataStream &operator>>(QDataStream &stream, PerfBranchStack &branchStack);
+QDataStream &operator<<(QDataStream &stream, const PerfBranchStack &branchStack);
 
 struct PerfPmuMappings {
 
@@ -132,6 +137,7 @@ struct PerfPmuMappings {
 };
 
 QDataStream &operator>>(QDataStream &stream, PerfPmuMappings &pmuMappings);
+QDataStream &operator<<(QDataStream &stream, const PerfPmuMappings &pmuMappings);
 
 struct PerfGroupDesc {
 
@@ -145,6 +151,7 @@ struct PerfGroupDesc {
 };
 
 QDataStream &operator>>(QDataStream &stream, PerfGroupDesc &groupDesc);
+QDataStream &operator<<(QDataStream &stream, const PerfGroupDesc &groupDesc);
 
 class PerfFeatures
 {
@@ -155,6 +162,22 @@ public:
     bool read(QIODevice *device, const PerfHeader *header);
     const QByteArray &architecture() const { return m_arch.value; }
     void setArchitecture(const QByteArray &arch) { m_arch.value = arch; }
+
+    PerfBuildId buildId() const { return m_buildId; }
+    QByteArray hostName() const { return m_hostName.value; }
+    QByteArray osRelease() const { return m_osRelease.value; }
+    QByteArray version() const { return m_version.value; }
+    PerfNrCpus nrCpus() const { return m_nrCpus; }
+    QByteArray cpuDesc() const { return m_cpuDesc.value; }
+    QByteArray cpuId() const { return m_cpuId.value; }
+    quint64 totalMem() const { return m_totalMem.totalMem; }
+    QList<QByteArray> cmdline() const { return m_cmdline.cmdline; }
+    PerfEventDesc eventDesc() const { return m_eventDesc; }
+    PerfCpuTopology cpuTopology() const { return m_cpuTopology; }
+    PerfNumaTopology numaTopology() const { return m_numaToplogy; }
+    PerfBranchStack branchStack() const { return m_branchStack; }
+    PerfPmuMappings pmuMappings() const { return m_pmuMappings; }
+    PerfGroupDesc groupDesc() const { return m_groupDesc; }
 
 private:
     void createFeature(QIODevice *device, QDataStream::ByteOrder byteOrder,

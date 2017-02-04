@@ -155,6 +155,16 @@ QDataStream &operator>>(QDataStream &stream, PerfBuildId &buildId)
     return stream;
 }
 
+QDataStream &operator<<(QDataStream &stream, const PerfBuildId::BuildId &buildId)
+{
+    return stream << buildId.pid << buildId.id << buildId.fileName;
+}
+
+QDataStream &operator<<(QDataStream &stream, const PerfBuildId &buildId)
+{
+    return stream << buildId.buildIds;
+}
+
 QDataStream &operator>>(QDataStream &stream, PerfEventHeader &header)
 {
     return stream >> header.type >> header.misc >> header.size;
@@ -176,6 +186,11 @@ QDataStream &operator>>(QDataStream &stream, PerfStringFeature &string)
 QDataStream &operator>>(QDataStream &stream, PerfNrCpus &nrCpus)
 {
     return stream >> nrCpus.online >> nrCpus.available;
+}
+
+QDataStream &operator<<(QDataStream &stream, const PerfNrCpus &nrCpus)
+{
+    return stream << nrCpus.online << nrCpus.available;
 }
 
 QDataStream &operator>>(QDataStream &stream, PerfTotalMem &totalMem)
@@ -240,6 +255,11 @@ QDataStream &operator>>(QDataStream &stream, PerfCpuTopology &cpuTopology)
     return stream;
 }
 
+QDataStream &operator<<(QDataStream &stream, const PerfCpuTopology &cpuTopology)
+{
+    return stream << cpuTopology.siblingCores << cpuTopology.siblingThreads;
+}
+
 QDataStream &operator>>(QDataStream &stream, PerfNumaTopology &numaTopology)
 {
     quint32 numNodes;
@@ -255,10 +275,26 @@ QDataStream &operator>>(QDataStream &stream, PerfNumaTopology &numaTopology)
     return stream;
 }
 
+QDataStream &operator<<(QDataStream &stream, const PerfNumaTopology::NumaNode &node)
+{
+    return stream << node.nodeId << node.memTotal << node.memFree << node.topology;
+}
+
+QDataStream &operator<<(QDataStream &stream, const PerfNumaTopology &numaTopology)
+{
+    return stream << numaTopology.nodes;
+}
+
 QDataStream &operator>>(QDataStream &stream, PerfBranchStack &branchStack)
 {
     // Doesn't really exist.
     Q_UNUSED(stream);
+    Q_UNUSED(branchStack);
+    return stream;
+}
+
+QDataStream &operator<<(QDataStream &stream, const PerfBranchStack &branchStack)
+{
     Q_UNUSED(branchStack);
     return stream;
 }
@@ -278,6 +314,16 @@ QDataStream &operator>>(QDataStream &stream, PerfPmuMappings &pmuMappings)
     return stream;
 }
 
+QDataStream &operator<<(QDataStream &stream, const PerfPmuMappings::Pmu &pmu)
+{
+    return stream << pmu.type << pmu.name;
+}
+
+QDataStream &operator<<(QDataStream &stream, const PerfPmuMappings &pmuMappings)
+{
+    return stream << pmuMappings.pmus;
+}
+
 QDataStream &operator>>(QDataStream &stream, PerfGroupDesc &groupDesc)
 {
     quint32 numGroups;
@@ -292,4 +338,14 @@ QDataStream &operator>>(QDataStream &stream, PerfGroupDesc &groupDesc)
         groupDesc.groupDescs << desc;
     }
     return stream;
+}
+
+QDataStream &operator<<(QDataStream &stream, const PerfGroupDesc::GroupDesc &groupDesc)
+{
+    return stream << groupDesc.name << groupDesc.leaderIndex << groupDesc.numMembers;
+}
+
+QDataStream &operator<<(QDataStream &stream, const PerfGroupDesc &groupDesc)
+{
+    return stream << groupDesc.groupDescs;
 }
