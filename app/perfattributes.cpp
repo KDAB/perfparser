@@ -163,6 +163,86 @@ quint64 PerfEventAttributes::fixedLength()
             + sizeof(m_reserved2);
 }
 
+bool PerfEventAttributes::operator==(const PerfEventAttributes &rhs) const
+{
+    return m_type == rhs.m_type
+        && m_size == rhs.m_size
+        && m_config == rhs.m_config
+        && m_samplePeriod == rhs.m_samplePeriod
+        && m_sampleType == rhs.m_sampleType
+        && m_readFormat == rhs.m_readFormat
+        && m_disabled == rhs.m_disabled
+        && m_inherit == rhs.m_inherit
+        && m_pinned == rhs.m_pinned
+        && m_exclusive == rhs.m_exclusive
+        && m_excludeUser == rhs.m_excludeUser
+        && m_excludeKernel == rhs.m_excludeKernel
+        && m_excludeHv == rhs.m_excludeHv
+        && m_excludeIdle == rhs.m_excludeIdle
+        && m_mmap == rhs.m_mmap
+        && m_comm == rhs.m_comm
+        && m_freq == rhs.m_freq
+        && m_inheritStat == rhs.m_inheritStat
+        && m_enableOnExec == rhs.m_enableOnExec
+        && m_task == rhs.m_task
+        && m_watermark == rhs.m_watermark
+        && m_preciseIp == rhs.m_preciseIp
+        && m_mmapData == rhs.m_mmapData
+        && m_sampleIdAll == rhs.m_sampleIdAll
+        && m_excludeHost == rhs.m_excludeHost
+        && m_excludeGuest == rhs.m_excludeGuest
+        && m_reserved1 == rhs.m_reserved1
+        && m_wakeupEvents == rhs.m_wakeupEvents
+        && m_bpType == rhs.m_bpType
+        && m_bpAddr == rhs.m_bpAddr
+        && m_bpLen == rhs.m_bpLen
+        && m_branchSampleType == rhs.m_branchSampleType
+        && m_sampleRegsUser == rhs.m_sampleRegsUser
+        && m_sampleStackUser == rhs.m_sampleStackUser
+        && m_reserved2 == rhs.m_reserved2;
+}
+
+uint qHash(const PerfEventAttributes &attrs, uint seed)
+{
+    QtPrivate::QHashCombine hash;
+    seed = hash(seed, attrs.m_type);
+    seed = hash(seed, attrs.m_size);
+    seed = hash(seed, attrs.m_config);
+    seed = hash(seed, attrs.m_samplePeriod);
+    seed = hash(seed, attrs.m_sampleType);
+    seed = hash(seed, attrs.m_readFormat);
+    seed = hash(seed, attrs.m_disabled);
+    seed = hash(seed, attrs.m_inherit);
+    seed = hash(seed, attrs.m_pinned);
+    seed = hash(seed, attrs.m_exclusive);
+    seed = hash(seed, attrs.m_excludeUser);
+    seed = hash(seed, attrs.m_excludeKernel);
+    seed = hash(seed, attrs.m_excludeHv);
+    seed = hash(seed, attrs.m_excludeIdle);
+    seed = hash(seed, attrs.m_mmap);
+    seed = hash(seed, attrs.m_comm);
+    seed = hash(seed, attrs.m_freq);
+    seed = hash(seed, attrs.m_inheritStat);
+    seed = hash(seed, attrs.m_enableOnExec);
+    seed = hash(seed, attrs.m_task);
+    seed = hash(seed, attrs.m_watermark);
+    seed = hash(seed, attrs.m_preciseIp);
+    seed = hash(seed, attrs.m_mmapData);
+    seed = hash(seed, attrs.m_sampleIdAll);
+    seed = hash(seed, attrs.m_excludeHost);
+    seed = hash(seed, attrs.m_excludeGuest);
+    seed = hash(seed, attrs.m_reserved1);
+    seed = hash(seed, attrs.m_wakeupEvents);
+    seed = hash(seed, attrs.m_bpType);
+    seed = hash(seed, attrs.m_bpAddr);
+    seed = hash(seed, attrs.m_bpLen);
+    seed = hash(seed, attrs.m_branchSampleType);
+    seed = hash(seed, attrs.m_sampleRegsUser);
+    seed = hash(seed, attrs.m_sampleStackUser);
+    seed = hash(seed, attrs.m_reserved2);
+    return seed;
+}
+
 bool PerfAttributes::read(QIODevice *device, PerfHeader *header)
 {
     if (header->attrSize() < PerfEventAttributes::fixedLength() + PerfFileSection::fixedLength()) {

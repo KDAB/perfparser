@@ -49,7 +49,7 @@ PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QStri
                        const QString &kallsymsPath) :
     m_output(output), m_architecture(PerfRegisterInfo::ARCH_INVALID), m_systemRoot(systemRoot),
     m_extraLibsPath(extraLibsPath), m_appPath(appPath), m_kallsyms(kallsymsPath),
-    m_nextAttributeId(0), m_sampleBufferSize(0)
+    m_sampleBufferSize(0)
 {
     m_currentUnwind.unwind = this;
     m_offlineCallbacks.find_elf = dwfl_build_id_find_elf;
@@ -116,25 +116,38 @@ void PerfUnwind::comm(const PerfRecordComm &comm)
 
 void PerfUnwind::attr(const PerfRecordAttr &attr)
 {
+    const qint32 internalId = resolveAttr(attr.attr(), attr.attr().name());
+
     if (attr.ids().isEmpty()) {
         // If we only get one attribute, it doesn't have an ID.
         // The default ID for samples is 0, so we assign that here,
         // in order to look it up in analyze().
-        m_attributeIds[0] = m_nextAttributeId;
+        m_attributeIds[0] = internalId;
     } else {
         foreach (quint64 id, attr.ids())
-            m_attributeIds[id] = m_nextAttributeId;
+            m_attributeIds[id] = internalId;
     }
+}
 
-    const qint32 attrNameId = resolveString(attr.attr().name());
+qint32 PerfUnwind::resolveAttr(const PerfEventAttributes &attributes, const QByteArray &name)
+{
+    auto it = m_attributes.find(attributes);
+    if (it == m_attributes.end()) {
+        it = m_attributes.insert(attributes, m_attributes.size());
+        sendAttributes(it.value(), attributes, name);
+    }
+    return it.value();
+}
+
+void PerfUnwind::sendAttributes(qint32 id, const PerfEventAttributes &attributes, const QByteArray &name)
+{
+    const qint32 attrNameId = resolveString(name);
 
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(AttributesDefinition)
-                                               << attr.pid() << attr.tid() << attr.time()
-                                               << m_nextAttributeId << attr.attr().type()
-                                               << attr.attr().config() << attrNameId;
+                                               << id << attributes.type()
+                                               << attributes.config() << attrNameId;
     sendBuffer(buffer);
-    ++m_nextAttributeId;
 }
 
 void PerfUnwind::lost(const PerfRecordLost &lost)

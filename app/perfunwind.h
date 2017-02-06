@@ -127,6 +127,7 @@ public:
     Dwfl *dwfl(quint32 pid, quint64 timestamp);
 
     qint32 resolveString(const QByteArray &string);
+    qint32 resolveAttr(const PerfEventAttributes &attributes, const QByteArray &name);
 
     int lookupLocation(const Location &location) const;
     int resolveLocation(const Location &location);
@@ -178,7 +179,7 @@ private:
     QHash<Location, qint32> m_locations;
     QHash<qint32, Symbol> m_symbols;
     QHash<quint64, qint32> m_attributeIds;
-    qint32 m_nextAttributeId;
+    QHash<PerfEventAttributes, qint32> m_attributes;
 
     uint m_sampleBufferSize;
 
@@ -191,6 +192,7 @@ private:
     void sendString(qint32 id, const QByteArray &string);
     void sendLocation(qint32 id, const Location &location);
     void sendSymbol(qint32 id, const Symbol &symbol);
+    void sendAttributes(qint32 id, const PerfEventAttributes &attributes, const QByteArray &name);
 };
 
 uint qHash(const PerfUnwind::Location &location, uint seed = 0);
