@@ -48,7 +48,7 @@ struct PerfBuildId {
     struct BuildId {
         PerfEventHeader header;
         quint32 pid;
-        QByteArray id;
+        QByteArray id; // raw id, use .toHex() to get something human-readable
         QByteArray fileName;
     };
 
