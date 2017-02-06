@@ -46,7 +46,6 @@ struct PerfBuildId {
     static const uint s_pathMax = 4096;
 
     struct BuildId {
-        PerfEventHeader header;
         quint32 pid;
         QByteArray id; // raw id, use .toHex() to get something human-readable
         QByteArray fileName;

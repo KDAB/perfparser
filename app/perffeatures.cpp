@@ -131,15 +131,17 @@ QDataStream &operator>>(QDataStream &stream, PerfBuildId &buildId)
 {
     quint64 next = 0;
     while (next < buildId.size) {
+        PerfEventHeader header;
+        stream >> header;
+
         PerfBuildId::BuildId build;
-        stream >> build.header;
         stream >> build.pid;
 
         build.id.resize(PerfBuildId::s_idLength);
         stream.readRawData(build.id.data(), PerfBuildId::s_idLength);
         stream.skipRawData(PerfBuildId::s_idPadding);
 
-        uint fileNameLength = build.header.size - PerfEventHeader::fixedLength() - sizeof(build.pid)
+        uint fileNameLength = header.size - PerfEventHeader::fixedLength() - sizeof(build.pid)
                 - PerfBuildId::s_idPadding - PerfBuildId::s_idLength;
         if (fileNameLength > static_cast<uint>(std::numeric_limits<int>::max())) {
             qWarning() << "bad file name length";
@@ -147,12 +149,11 @@ QDataStream &operator>>(QDataStream &stream, PerfBuildId &buildId)
         }
         build.fileName.resize(fileNameLength);
         stream.readRawData(build.fileName.data(), fileNameLength);
-        next += build.header.size;
+        next += header.size;
         buildId.buildIds << build;
     }
     return stream;
 }
-
 
 QDataStream &operator>>(QDataStream &stream, PerfEventHeader &header)
 {
