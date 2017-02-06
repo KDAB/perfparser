@@ -116,8 +116,15 @@ void PerfUnwind::comm(const PerfRecordComm &comm)
 
 void PerfUnwind::attr(const PerfRecordAttr &attr)
 {
-    foreach (quint64 id, attr.ids())
-        m_attributeIds[id] = m_nextAttributeId;
+    if (attr.ids().isEmpty()) {
+        // If we only get one attribute, it doesn't have an ID.
+        // The default ID for samples is 0, so we assign that here,
+        // in order to look it up in analyze().
+        m_attributeIds[0] = m_nextAttributeId;
+    } else {
+        foreach (quint64 id, attr.ids())
+            m_attributeIds[id] = m_nextAttributeId;
+    }
 
     const qint32 attrNameId = resolveString(attr.attr().name());
 
@@ -282,7 +289,7 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
     QDataStream(&buffer, QIODevice::WriteOnly)
             << static_cast<quint8>(Sample) << sample.pid()
             << sample.tid() << sample.time() << m_currentUnwind.frames
-            << numGuessedFrames << m_attributeIds[sample.id()];
+            << numGuessedFrames << m_attributeIds.value(sample.id(), -1);
     sendBuffer(buffer);
 }
 
