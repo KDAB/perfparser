@@ -3,7 +3,7 @@ import qbs
 QtcAutotest {
     name: "Kallsyms Autotest"
     files: [
-        "tst_perfkallsyms.cpp",
+        "tst_kallsyms.cpp",
         "../../../app/perfkallsyms.cpp",
         "../../../app/perfkallsyms.h"
     ]
