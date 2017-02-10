@@ -114,6 +114,6 @@ private slots:
     }
 };
 
-QTEST_MAIN(TestKallsyms)
+QTEST_GUILESS_MAIN(TestKallsyms)
 
 #include "tst_kallsyms.moc"

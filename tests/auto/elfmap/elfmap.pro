@@ -1,4 +1,5 @@
 QT += testlib
+QT -= gui
 
 CONFIG += testcase strict_flags warn_on
 

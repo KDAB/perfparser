@@ -137,6 +137,6 @@ private slots:
     }
 };
 
-QTEST_MAIN(TestElfMap)
+QTEST_GUILESS_MAIN(TestElfMap)
 
 #include "tst_elfmap.moc"
