@@ -63,6 +63,14 @@ private slots:
             QTest::newRow("serio_interrupt:0") << kallsyms << 0xffffffffa0000e80ull
                 << 0xffffffffa0000e80ull << QByteArrayLiteral("serio_interrupt") << QByteArrayLiteral("[serio]");
         }
+        {
+            const auto kallsyms = QByteArrayLiteral("0000000000000000 A irq_stack_union");
+            QTest::newRow("zeros-only") << kallsyms << 0x0ull
+                << 0x0ull << QByteArrayLiteral("irq_stack_union") << QByteArray();
+            QTest::newRow("zeros-only") << kallsyms << std::numeric_limits<quint64>::max()
+                << 0x0ull
+                << QByteArrayLiteral("irq_stack_union") << QByteArray();
+        }
     }
 
     void testResolve()
@@ -97,7 +105,6 @@ private slots:
         // just check that we find any entry
         const auto addr = std::numeric_limits<quint64>::max();
         const auto entry = kallsyms.findEntry(addr);
-        QVERIFY(entry.address);
         QVERIFY(!entry.symbol.isEmpty());
     }
 
