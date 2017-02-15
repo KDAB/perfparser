@@ -28,7 +28,6 @@ SOURCES += \
     $$PWD/eblelfdata.c \
     $$PWD/eblelfmachine.c \
     $$PWD/eblgotpcreloccheck.c \
-    $$PWD/eblgstrtab.c \
     $$PWD/eblinitreg.c \
     $$PWD/eblmachineflagcheck.c \
     $$PWD/eblmachineflagname.c \
@@ -52,9 +51,7 @@ SOURCES += \
     $$PWD/eblsectiontypename.c \
     $$PWD/eblsegmenttypename.c \
     $$PWD/eblstother.c \
-    $$PWD/eblstrtab.c \
     $$PWD/eblsymbolbindingname.c \
     $$PWD/eblsymboltypename.c \
     $$PWD/eblsysvhashentrysize.c \
-    $$PWD/eblunwind.c \
-    $$PWD/eblwstrtab.c
+    $$PWD/eblunwind.c
