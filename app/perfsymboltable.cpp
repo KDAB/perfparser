@@ -177,9 +177,14 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QString &app
                                   const QString &systemRoot, const QString &extraLibsPath)
 {
     QLatin1String filePath(mmap.filename());
+    // special regions, such as [heap], [vdso], [stack], ... as well as //anon
+    const bool isSpecialRegion = (filePath.at(0) == '[' && filePath.at(filePath.size() - 1) == ']')
+                              || filePath == QLatin1String("//anon");
     QFileInfo fileInfo(filePath);
     QFileInfo fullPath;
-    if (mmap.pid() != PerfUnwind::s_kernelPid) {
+    if (isSpecialRegion) {
+        // don not set fullPath, these regions don't represent a real file
+    } else if (mmap.pid() != PerfUnwind::s_kernelPid) {
         fullPath.setFile(appPath);
         if (!findInExtraPath(fullPath, fileInfo.fileName())) {
             bool found = false;
