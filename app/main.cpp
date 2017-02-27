@@ -131,12 +131,16 @@ int main(int argc, char *argv[])
                                QLatin1String("."));
     parser.addOption(appPath);
 
+    const auto defaultArch
+        = QLatin1String(PerfRegisterInfo::s_archNames[PerfRegisterInfo::s_defaultArchitecture]);
     QCommandLineOption arch(QLatin1String("arch"),
                             QCoreApplication::translate(
                                 "main",
                                 "Set the fallback architecture, in case the architecture is not "
-                                "given in the data itself, to <arch>."),
-                            QLatin1String("arch"));
+                                "given in the data itself, to <arch>. "
+                                "The default is: %1").arg(defaultArch),
+                            QLatin1String("arch"),
+                            defaultArch);
     parser.addOption(arch);
 
     QCommandLineOption kallsymsPath(QLatin1String("kallsyms"),
@@ -185,8 +189,7 @@ int main(int argc, char *argv[])
     PerfFeatures features;
     PerfData data(infile.data(), &unwind, &header, &attributes);
 
-    if (parser.isSet(arch))
-        features.setArchitecture(parser.value(arch).toLatin1());
+    features.setArchitecture(parser.value(arch).toLatin1());
 
     QObject::connect(&header, &PerfHeader::finished, [&]() {
         if (!header.isPipe()) {

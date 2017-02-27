@@ -59,6 +59,9 @@ public:
 
     // ranges of registers expected by libdw, but not provided by perf
     static const uint s_dummyRegisters[ARCH_INVALID][2];
+
+    // default architecture for the system which was used for compilation
+    static const Architecture s_defaultArchitecture;
 };
 
 #endif // PERFREGISTERINFO_H

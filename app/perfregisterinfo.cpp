@@ -92,3 +92,23 @@ const uint PerfRegisterInfo::s_dummyRegisters[ARCH_INVALID][2] = {
     {0, 0},
     {0, 0}
 };
+
+const PerfRegisterInfo::Architecture PerfRegisterInfo::s_defaultArchitecture = {
+#if defined(__aarch64__)
+    PerfRegisterInfo::ARCH_AARCH64
+#elif defined(__arm__)
+    PerfRegisterInfo::ARCH_ARM
+#elif defined(__powerpc__)
+    PerfRegisterInfo::ARCH_POWERPC
+#elif defined(__s390__)
+    PerfRegisterInfo::ARCH_S390
+#elif defined(__sh__)
+    PerfRegisterInfo::ARCH_SH
+#elif defined(__sparc__)
+    PerfRegisterInfo::ARCH_SPARC
+#elif defined(__i386__) || defined(__x86_64__)
+    PerfRegisterInfo::ARCH_X86
+#else
+    PerfRegisterInfo::ARCH_INVALID
+#endif
+};
