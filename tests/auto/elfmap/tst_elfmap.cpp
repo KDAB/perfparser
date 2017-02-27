@@ -20,6 +20,7 @@
 #include <QObject>
 #include <QTest>
 #include <QDebug>
+#include <QTemporaryFile>
 
 #include "perfelfmap.h"
 
@@ -71,16 +72,32 @@ private slots:
     void testOverwrite()
     {
         QFETCH(bool, reversed);
+        QFETCH(bool, firstIsFile);
+        QFETCH(bool, secondIsFile);
+
+        QTemporaryFile tmpFile1;
+        if (firstIsFile) {
+            QVERIFY(tmpFile1.open());
+        }
+        QFileInfo file1(tmpFile1.fileName());
+        QCOMPARE(file1.isFile(), firstIsFile);
+
+        QTemporaryFile tmpFile2;
+        if (secondIsFile) {
+            QVERIFY(tmpFile2.open());
+        }
+        QFileInfo file2(tmpFile2.fileName());
+        QCOMPARE(file2.isFile(), secondIsFile);
 
         PerfElfMap map;
         if (!reversed) {
-            QVERIFY(!map.registerElf(95, 20, 0, 0, {}));
-            QVERIFY(map.registerElf(105, 20, 0, 1, {}));
-            QVERIFY(map.registerElf(100, 20, 0, 2, {}));
+            QVERIFY(!map.registerElf(95, 20, 0, 0, file1));
+            QCOMPARE(map.registerElf(105, 20, 0, 1, file1), firstIsFile);
+            QCOMPARE(map.registerElf(100, 20, 0, 2, file2), firstIsFile || secondIsFile);
         } else {
-            QVERIFY(!map.registerElf(100, 20, 0, 2, {}));
-            QVERIFY(map.registerElf(105, 20, 0, 1, {}));
-            QVERIFY(map.registerElf(95, 20, 0, 0, {}));
+            QVERIFY(!map.registerElf(100, 20, 0, 2, file2));
+            QCOMPARE(map.registerElf(105, 20, 0, 1, file1), firstIsFile || secondIsFile);
+            QCOMPARE(map.registerElf(95, 20, 0, 0, file1), firstIsFile || secondIsFile);
         }
 
         auto first = map.findElf(110, 0);
@@ -89,6 +106,7 @@ private slots:
         QCOMPARE(first->pgoff, 0ull);
         QCOMPARE(first->timeAdded, 0ull);
         QCOMPARE(first->timeOverwritten, 1ull);
+        QCOMPARE(first->file, file1);
 
         auto second = map.findElf(110, 1);
         QCOMPARE(second.key(), 105ull);
@@ -96,6 +114,7 @@ private slots:
         QCOMPARE(second->pgoff, 0ull);
         QCOMPARE(second->timeAdded, 1ull);
         QCOMPARE(second->timeOverwritten, 2ull);
+        QCOMPARE(second->file, file1);
 
         auto third = map.findElf(110, 2);
         QCOMPARE(third.key(), 100ull);
@@ -103,6 +122,7 @@ private slots:
         QCOMPARE(third->pgoff, 0ull);
         QCOMPARE(third->timeAdded, 2ull);
         QCOMPARE(third->timeOverwritten, std::numeric_limits<quint64>::max());
+        QCOMPARE(third->file, file2);
 
         QCOMPARE(map.findElf(110, 3), third);
 
@@ -112,6 +132,7 @@ private slots:
         QCOMPARE(fragment1->pgoff, 0ull);
         QCOMPARE(fragment1->timeAdded, 1ull);
         QCOMPARE(fragment1->timeOverwritten, 2ull);
+        QCOMPARE(fragment1->file, file1);
 
         auto fragment2 = map.findElf(122, 2);
         QCOMPARE(fragment2.key(), 120ull);
@@ -119,6 +140,7 @@ private slots:
         QCOMPARE(fragment2->pgoff, 15ull);
         QCOMPARE(fragment2->timeAdded, 2ull);
         QCOMPARE(fragment2->timeOverwritten, std::numeric_limits<quint64>::max());
+        QCOMPARE(fragment2->file, file1);
 
         auto fragment3 = map.findElf(97, 2);
         QCOMPARE(fragment3.key(), 95ull);
@@ -126,14 +148,26 @@ private slots:
         QCOMPARE(fragment3->pgoff, 0ull);
         QCOMPARE(fragment3->timeAdded, 2ull);
         QCOMPARE(fragment3->timeOverwritten, std::numeric_limits<quint64>::max());
+        QCOMPARE(fragment3->file, file1);
     }
 
     void testOverwrite_data()
     {
         QTest::addColumn<bool>("reversed");
+        QTest::addColumn<bool>("firstIsFile");
+        QTest::addColumn<bool>("secondIsFile");
 
-        QTest::newRow("normal") << false;
-        QTest::newRow("reversed") << true;
+        QTest::newRow("normal") << false << true << true;
+        QTest::newRow("reversed") << true << true << true;
+
+        QTest::newRow("normal-one-file-A") << false << false << true;
+        QTest::newRow("reversed-one-file-A") << true << false << true;
+
+        QTest::newRow("normal-one-file-B") << false << true << false;
+        QTest::newRow("reversed-one-file-B") << true << true << false;
+
+        QTest::newRow("normal-no-files") << false << false << false;
+        QTest::newRow("reversed-no-files") << true << false << false;
     }
 };
 

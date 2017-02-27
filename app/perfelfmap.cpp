@@ -27,6 +27,7 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
     bool cacheInvalid = false;
     quint64 overwritten = std::numeric_limits<quint64>::max();
     const quint64 addrEnd = addr + len;
+    const bool isFile = fullPath.isFile();
 
     QMultiMap<quint64, ElfInfo> fragments;
     QMultiMap<quint64, ElfInfo>::ConstIterator firstOverwrite = m_elfs.end();
@@ -60,8 +61,11 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
             }
         }
 
-        // Overlapping module. Clear the cache
-        cacheInvalid = true;
+        // Overlapping module. Clear the cache, but only when the section is actually backed by a
+        // file. Otherwise, we will see tons of overlapping heap/anon sections which don't actually
+        // invalidate our caches
+        if (isFile || i->found)
+            cacheInvalid = true;
     }
 
     if (firstOverwrite != m_elfs.end()) {
@@ -75,7 +79,7 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
     }
 
     m_elfs.unite(fragments);
-    m_elfs.insertMulti(addr, ElfInfo(fullPath, len, pgoff, time, overwritten, fullPath.isFile()));
+    m_elfs.insertMulti(addr, ElfInfo(fullPath, len, pgoff, time, overwritten, isFile));
 
     return cacheInvalid;
 }
