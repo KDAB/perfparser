@@ -169,6 +169,72 @@ private slots:
         QTest::newRow("normal-no-files") << false << false << false;
         QTest::newRow("reversed-no-files") << true << false << false;
     }
+
+    void benchRegisterElfDisjunct()
+    {
+        QFETCH(int, numElfMaps);
+        const quint64 ADDR_STEP = 1024;
+        const quint64 MAX_ADDR = ADDR_STEP * numElfMaps;
+        const quint64 LEN = 1024;
+        QBENCHMARK {
+            PerfElfMap map;
+            quint64 time = 0;
+            for (quint64 addr = 0; addr < MAX_ADDR; addr += ADDR_STEP) {
+                map.registerElf(addr, LEN, 0, time++, {});
+            }
+        }
+    }
+
+    void benchRegisterElfDisjunct_data()
+    {
+        QTest::addColumn<int>("numElfMaps");
+        QTest::newRow("10") << 10;
+        QTest::newRow("100") << 100;
+        QTest::newRow("1000") << 1000;
+        QTest::newRow("2000") << 2000;
+    }
+
+    void benchRegisterElfOverlapping()
+    {
+        QFETCH(int, numElfMaps);
+        const quint64 ADDR_STEP = 1024;
+        const quint64 MAX_ADDR = ADDR_STEP * numElfMaps;
+        quint64 len = MAX_ADDR;
+        QBENCHMARK {
+            PerfElfMap map;
+            quint64 time = 0;
+            for (quint64 addr = 0; addr < MAX_ADDR; addr += ADDR_STEP, len -= ADDR_STEP) {
+                map.registerElf(addr, len, 0, time++, {});
+            }
+        }
+    }
+
+    void benchRegisterElfOverlapping_data()
+    {
+        benchRegisterElfDisjunct_data();
+    }
+
+
+    void benchRegisterElfExpanding()
+    {
+        QFETCH(int, numElfMaps);
+        const quint64 ADDR = 0;
+        const quint64 LEN_STEP = 1024;
+        const quint64 MAX_LEN = LEN_STEP * numElfMaps;
+        QBENCHMARK {
+            PerfElfMap map;
+            quint64 time = 0;
+            for (quint64 len = LEN_STEP; len <= MAX_LEN; len += LEN_STEP) {
+                map.registerElf(ADDR, len, 0, time++, {});
+            }
+        }
+    }
+
+    void benchRegisterElfExpanding_data()
+    {
+        benchRegisterElfDisjunct_data();
+    }
+
 };
 
 QTEST_GUILESS_MAIN(TestElfMap)
