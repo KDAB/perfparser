@@ -56,11 +56,11 @@ public:
     void registerElf(const PerfRecordMmap &mmap, const QString &appPath,
                      const QString &systemRoot, const QString &extraLibsPath);
 
-    PerfElfMap::ConstIterator findElf(quint64 ip, quint64 timestamp) const;
+    PerfElfMap::ElfInfo findElf(quint64 ip, quint64 timestamp) const;
 
     // Report an mmap to dwfl and parse it for symbols and inlines, or simply return it if dwfl has
     // it already
-    Dwfl_Module *reportElf(PerfElfMap::ConstIterator i);
+    Dwfl_Module *reportElf(const PerfElfMap::ElfInfo& elf);
 
     // Look up a frame and all its inline parents and append them to the given vector.
     // If the frame hits an elf that hasn't been reported, yet, report it.

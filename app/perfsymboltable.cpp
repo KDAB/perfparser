@@ -339,38 +339,38 @@ void PerfSymbolTable::parseDwarf(Dwarf_Die *cudie, Dwarf_Addr bias, qint32 binar
     }
 }
 
-static void reportError(PerfElfMap::ConstIterator i, const char *message)
+static void reportError(const PerfElfMap::ElfInfo& info, const char *message)
 {
-    qWarning() << "failed to report" << i.value().file.absoluteFilePath() << "for"
-               << hex << i.key() << dec << ":" << message;
+    qWarning() << "failed to report" << info.file.absoluteFilePath() << "for"
+               << hex << info.addr << dec << ":" << message;
 }
 
-Dwfl_Module *PerfSymbolTable::reportElf(PerfElfMap::ConstIterator i)
+Dwfl_Module *PerfSymbolTable::reportElf(const PerfElfMap::ElfInfo& info)
 {
-    if (i == m_elfs.constEnd() || !i.value().found)
+    if (!info.isValid() || !info.found)
         return nullptr;
 
-    if (i.value().pgoff > 0) {
-        reportError(i, "Cannot report file fragments");
+    if (info.pgoff > 0) {
+        reportError(info, "Cannot report file fragments");
         return nullptr;
     }
 
     Dwfl_Module *ret = dwfl_report_elf(
-                m_dwfl, i.value().file.fileName().toLocal8Bit().constData(),
-                i.value().file.absoluteFilePath().toLocal8Bit().constData(), -1, i.key(),
+                m_dwfl, info.file.fileName().toLocal8Bit().constData(),
+                info.file.absoluteFilePath().toLocal8Bit().constData(), -1, info.addr,
                 false);
     if (!ret)
-        reportError(i, dwfl_errmsg(dwfl_errno()));
+        reportError(info, dwfl_errmsg(dwfl_errno()));
 
-    if (m_lastMmapAddedTime < i->timeAdded)
-        m_lastMmapAddedTime = i->timeAdded;
-    if (m_nextMmapOverwrittenTime > i->timeOverwritten)
-        m_nextMmapOverwrittenTime = i->timeOverwritten;
+    if (m_lastMmapAddedTime < info.timeAdded)
+        m_lastMmapAddedTime = info.timeAdded;
+    if (m_nextMmapOverwrittenTime > info.timeOverwritten)
+        m_nextMmapOverwrittenTime = info.timeOverwritten;
 
     return ret;
 }
 
-PerfElfMap::ConstIterator PerfSymbolTable::findElf(quint64 ip, quint64 timestamp) const
+PerfElfMap::ElfInfo PerfSymbolTable::findElf(quint64 ip, quint64 timestamp) const
 {
     return m_elfs.findElf(ip, timestamp);
 }
@@ -392,12 +392,12 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, quint64 timestamp, bool isKernel
 
     quint64 elfStart = 0;
 
-    auto elfIt = findElf(ip, timestamp);
-    if (elfIt != m_elfs.constEnd()) {
-        binaryId = m_unwind->resolveString(elfIt.value().file.fileName().toLocal8Bit());
-        elfStart = elfIt.key();
+    const auto& elf = findElf(ip, timestamp);
+    if (elf.isValid()) {
+        binaryId = m_unwind->resolveString(elf.file.fileName().toLocal8Bit());
+        elfStart = elf.addr;
         if (m_dwfl && !mod)
-            mod = reportElf(elfIt);
+            mod = reportElf(elf);
     }
 
     PerfUnwind::Location addressLocation(
@@ -539,12 +539,7 @@ void PerfSymbolTable::updatePerfMap()
 
 bool PerfSymbolTable::containsAddress(quint64 address) const
 {
-    if (m_elfs.isEmpty())
-        return false;
-
-    const auto last = (--m_elfs.constEnd());
-    const auto first = m_elfs.constBegin();
-    return first.key() <= address && last.key() + last.value().length > address;
+    return m_elfs.isAddressInRange(address);
 }
 
 Dwfl *PerfSymbolTable::attachDwfl(quint64 timestamp, void *arg)
@@ -555,14 +550,14 @@ Dwfl *PerfSymbolTable::attachDwfl(quint64 timestamp, void *arg)
         return m_dwfl; // Already attached, nothing to do
 
     // Report some random elf, so that dwfl guesses the target architecture.
-    for (auto it = m_elfs.constBegin(), end = m_elfs.constEnd(); it != end; ++it) {
-        if (!it->found || it->timeAdded > timestamp || it->timeOverwritten <= timestamp)
+    for (const auto &elf : m_elfs) {
+        if (!elf.found || elf.timeAdded > timestamp || elf.timeOverwritten <= timestamp)
             continue;
-        if (dwfl_report_elf(m_dwfl, it.value().file.fileName().toLocal8Bit().constData(),
-                            it.value().file.absoluteFilePath().toLocal8Bit().constData(), -1,
-                            it.key(), false)) {
-            m_lastMmapAddedTime = it->timeAdded;
-            m_nextMmapOverwrittenTime = it->timeOverwritten;
+        if (dwfl_report_elf(m_dwfl, elf.file.fileName().toLocal8Bit().constData(),
+                            elf.file.absoluteFilePath().toLocal8Bit().constData(), -1,
+                            elf.addr, false)) {
+            m_lastMmapAddedTime = elf.timeAdded;
+            m_nextMmapOverwrittenTime = elf.timeOverwritten;
             break;
         }
     }

@@ -28,12 +28,30 @@ class PerfElfMap
 {
 public:
     struct ElfInfo {
-        ElfInfo(const QFileInfo &file = QFileInfo(), quint64 length = 0, quint64 pgoff = 0,
-                quint64 timeAdded = 0,
-                quint64 timeOverwritten = std::numeric_limits<quint64>::max(), bool found = true) :
-            file(file), length(length), pgoff(pgoff), timeAdded(timeAdded),
-            timeOverwritten(timeOverwritten), found(found) {}
+        ElfInfo(const QFileInfo &file = QFileInfo(), quint64 addr = 0, quint64 length = 0,
+                quint64 pgoff = 0, quint64 timeAdded = 0,
+                quint64 timeOverwritten = std::numeric_limits<quint64>::max()) :
+            file(file), addr(addr), length(length), pgoff(pgoff), timeAdded(timeAdded),
+            timeOverwritten(timeOverwritten), found(file.isFile()) {}
+
+        bool isValid() const
+        {
+            return length > 0;
+        }
+
+        bool operator==(const ElfInfo& rhs) const
+        {
+            return found == rhs.found
+                && (!found || file == rhs.file)
+                && addr == rhs.addr
+                && length == rhs.length
+                && pgoff == rhs.pgoff
+                && timeAdded == rhs.timeAdded
+                && timeOverwritten == rhs.timeOverwritten;
+        }
+
         QFileInfo file;
+        quint64 addr;
         quint64 length;
         quint64 pgoff;
         quint64 timeAdded;
@@ -46,25 +64,29 @@ public:
 
     bool registerElf(quint64 addr, quint64 len, quint64 pgoff, quint64 time,
                      const QFileInfo &fullPath);
-    ConstIterator findElf(quint64 ip, quint64 timestamp) const;
+    ElfInfo findElf(quint64 ip, quint64 timestamp) const;
 
     bool isEmpty() const
     {
         return m_elfs.isEmpty();
     }
 
-    ConstIterator constBegin() const
+    ConstIterator begin() const
     {
         return m_elfs.constBegin();
     }
 
-    ConstIterator constEnd() const
+    ConstIterator end() const
     {
         return m_elfs.constEnd();
     }
 
+    bool isAddressInRange(quint64 addr) const;
+
 private:
     QMultiMap<quint64, ElfInfo> m_elfs; // needs to be sorted
 };
+
+QDebug operator<<(QDebug stream, const PerfElfMap::ElfInfo& info);
 
 #endif

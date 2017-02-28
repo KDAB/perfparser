@@ -21,6 +21,21 @@
 #include "perfelfmap.h"
 #include "perfdata.h"
 
+#include <QDebug>
+
+QDebug operator<<(QDebug stream, const PerfElfMap::ElfInfo& info)
+{
+    stream.nospace() << "ElfInfo{"
+                     << "file=" << info.file.fileName() << ", "
+                     << "found=" << info.found << ", "
+                     << "addr=" << info.addr << ", "
+                     << "len=" << info.length << ", "
+                     << "pgoff=" << info.pgoff << ", "
+                     << "timeAdded=" << info.timeAdded << ", "
+                     << "timeOverwritten=" << info.timeOverwritten << "}";
+    return stream.space();
+}
+
 bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgoff,
                              const quint64 time, const QFileInfo &fullPath)
 {
@@ -42,13 +57,13 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
                 // reinsert any fragments of it that remain.
 
                 if (i.key() < addr) {
-                    fragments.insertMulti(i.key(), ElfInfo(i->file, addr - i.key(), i->pgoff, time,
-                                                           i->timeOverwritten, i->found));
+                    fragments.insertMulti(i.key(), ElfInfo(i->file, i.key(), addr - i.key(), i->pgoff,
+                                                           time, i->timeOverwritten));
                 }
                 if (iEnd > addrEnd) {
-                    fragments.insertMulti(addrEnd, ElfInfo(i->file, iEnd - addrEnd,
+                    fragments.insertMulti(addrEnd, ElfInfo(i->file, addrEnd, iEnd - addrEnd,
                                                            i->pgoff + addrEnd - i.key(), time,
-                                                           i->timeOverwritten, i->found));
+                                                           i->timeOverwritten));
                 }
                 i->timeOverwritten = time;
             }
@@ -79,29 +94,38 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
     }
 
     m_elfs.unite(fragments);
-    m_elfs.insertMulti(addr, ElfInfo(fullPath, len, pgoff, time, overwritten, isFile));
+    m_elfs.insertMulti(addr, ElfInfo(fullPath, addr, len, pgoff, time, overwritten));
 
     return cacheInvalid;
 }
 
-PerfElfMap::ConstIterator PerfElfMap::findElf(quint64 ip, quint64 timestamp) const
+PerfElfMap::ElfInfo PerfElfMap::findElf(quint64 ip, quint64 timestamp) const
 {
     QMap<quint64, ElfInfo>::ConstIterator i = m_elfs.upperBound(ip);
     if (i == m_elfs.constEnd() || i.key() != ip) {
         if (i != m_elfs.constBegin())
             --i;
         else
-            return m_elfs.constEnd();
+            return {};
     }
 
     while (true) {
         if (i->timeAdded <= timestamp && i->timeOverwritten > timestamp)
-            return (i.key() + i->length > ip) ? i : m_elfs.constEnd();
+            return (i.key() + i->length > ip) ? i.value() : ElfInfo();
 
         if (i == m_elfs.constBegin())
-            return m_elfs.constEnd();
+            return {};
 
         --i;
     }
 }
 
+bool PerfElfMap::isAddressInRange(quint64 addr) const
+{
+    if (m_elfs.isEmpty())
+        return false;
+
+    const auto &first = m_elfs.first();
+    const auto &last = m_elfs.last();
+    return first.addr <= addr && addr < (last.addr + last.length);
+}

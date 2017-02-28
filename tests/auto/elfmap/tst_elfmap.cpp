@@ -24,49 +24,69 @@
 
 #include "perfelfmap.h"
 
+namespace {
+bool registerElf(PerfElfMap *map, const PerfElfMap::ElfInfo &info)
+{
+    return map->registerElf(info.addr, info.length, info.pgoff, info.timeAdded,
+                            info.file);
+}
+}
+
+namespace QTest {
+template<>
+char *toString(const PerfElfMap::ElfInfo &info)
+{
+    QString string;
+    QDebug stream(&string);
+    stream << info;
+    return qstrdup(qPrintable(string));
+}
+}
+
 class TestElfMap : public QObject
 {
     Q_OBJECT
 private slots:
     void testNoOverlap()
     {
+        const PerfElfMap::ElfInfo invalid;
+
         PerfElfMap map;
         QVERIFY(map.isEmpty());
 
-        QVERIFY(!map.registerElf(100, 10, 0, 0, {}));
+        const PerfElfMap::ElfInfo first({}, 100, 10, 0, 0);
+
+        QVERIFY(!registerElf(&map, first));
         QVERIFY(!map.isEmpty());
 
-        QCOMPARE(map.constBegin().key(), 100ull);
-        QCOMPARE(map.constBegin()->length, 10ull);
-        QCOMPARE(map.constBegin()->timeAdded, 0ull);
+        QCOMPARE(std::distance(map.begin(), map.end()), 1);
+        QCOMPARE(*map.begin(), first);
 
-        QCOMPARE(map.findElf(99, 0), map.constEnd());
-        QCOMPARE(map.findElf(100, 0), map.constBegin());
-        QCOMPARE(map.findElf(109, 0), map.constBegin());
-        QCOMPARE(map.findElf(110, 0), map.constEnd());
-        QCOMPARE(map.findElf(105, 1), map.constBegin());
+        QCOMPARE(map.findElf(99, 0), invalid);
+        QCOMPARE(map.findElf(100, 0), first);
+        QCOMPARE(map.findElf(109, 0), first);
+        QCOMPARE(map.findElf(110, 0), invalid);
+        QCOMPARE(map.findElf(105, 1), first);
 
-        QVERIFY(!map.registerElf(0, 10, 0, 1, {}));
+        const PerfElfMap::ElfInfo second({}, 0, 10, 0, 1);
+        QVERIFY(!registerElf(&map, second));
 
-        QCOMPARE(map.constBegin().key(), 0ull);
-        QCOMPARE(map.constBegin()->length, 10ull);
-        QCOMPARE(map.constBegin()->timeAdded, 1ull);
+        QCOMPARE(std::distance(map.begin(), map.end()), 2);
+        QCOMPARE(*map.begin(), second);
+        QCOMPARE(*(map.begin()+1), first);
 
-        auto first = map.constBegin();
-        auto second = first + 1;
+        QCOMPARE(map.findElf(0, 0), invalid);
+        QCOMPARE(map.findElf(0, 1), second);
+        QCOMPARE(map.findElf(5, 1), second);
+        QCOMPARE(map.findElf(9, 1), second);
+        QCOMPARE(map.findElf(10, 0), invalid);
+        QCOMPARE(map.findElf(5, 2), second);
 
-        QCOMPARE(map.findElf(0, 0), map.constEnd());
-        QCOMPARE(map.findElf(0, 1), first);
-        QCOMPARE(map.findElf(5, 1), first);
-        QCOMPARE(map.findElf(9, 1), first);
-        QCOMPARE(map.findElf(10, 0), map.constEnd());
-        QCOMPARE(map.findElf(5, 2), first);
-
-        QCOMPARE(map.findElf(99, 0), map.constEnd());
-        QCOMPARE(map.findElf(100, 0), second);
-        QCOMPARE(map.findElf(109, 0), second);
-        QCOMPARE(map.findElf(110, 0), map.constEnd());
-        QCOMPARE(map.findElf(105, 1), second);
+        QCOMPARE(map.findElf(99, 0), invalid);
+        QCOMPARE(map.findElf(100, 0), first);
+        QCOMPARE(map.findElf(109, 0), first);
+        QCOMPARE(map.findElf(110, 0), invalid);
+        QCOMPARE(map.findElf(105, 1), first);
     }
 
     void testOverwrite()
@@ -89,66 +109,36 @@ private slots:
         QFileInfo file2(tmpFile2.fileName());
         QCOMPARE(file2.isFile(), secondIsFile);
 
+        const PerfElfMap::ElfInfo first(file1, 95, 20, 0, 0, 1);
+        const PerfElfMap::ElfInfo second(file1, 105, 20, 0, 1, 2);
+        const PerfElfMap::ElfInfo third(file2, 100, 20, 0, 2);
+
         PerfElfMap map;
         if (!reversed) {
-            QVERIFY(!map.registerElf(95, 20, 0, 0, file1));
-            QCOMPARE(map.registerElf(105, 20, 0, 1, file1), firstIsFile);
-            QCOMPARE(map.registerElf(100, 20, 0, 2, file2), firstIsFile || secondIsFile);
+            QCOMPARE(registerElf(&map, first), false);
+            QCOMPARE(registerElf(&map, second), firstIsFile);
+            QCOMPARE(registerElf(&map, third), firstIsFile || secondIsFile);
         } else {
-            QVERIFY(!map.registerElf(100, 20, 0, 2, file2));
-            QCOMPARE(map.registerElf(105, 20, 0, 1, file1), firstIsFile || secondIsFile);
-            QCOMPARE(map.registerElf(95, 20, 0, 0, file1), firstIsFile || secondIsFile);
+            QCOMPARE(registerElf(&map, third), false);
+            QCOMPARE(registerElf(&map, second), firstIsFile || secondIsFile);
+            QCOMPARE(registerElf(&map, first), firstIsFile || secondIsFile);
         }
 
-        auto first = map.findElf(110, 0);
-        QCOMPARE(first.key(), 95ull);
-        QCOMPARE(first->length, 20ull);
-        QCOMPARE(first->pgoff, 0ull);
-        QCOMPARE(first->timeAdded, 0ull);
-        QCOMPARE(first->timeOverwritten, 1ull);
-        QCOMPARE(first->file, file1);
+        QCOMPARE(map.findElf(110, 0), first);
 
-        auto second = map.findElf(110, 1);
-        QCOMPARE(second.key(), 105ull);
-        QCOMPARE(second->length, 20ull);
-        QCOMPARE(second->pgoff, 0ull);
-        QCOMPARE(second->timeAdded, 1ull);
-        QCOMPARE(second->timeOverwritten, 2ull);
-        QCOMPARE(second->file, file1);
+        QCOMPARE(map.findElf(110, 1), second);
 
-        auto third = map.findElf(110, 2);
-        QCOMPARE(third.key(), 100ull);
-        QCOMPARE(third->length, 20ull);
-        QCOMPARE(third->pgoff, 0ull);
-        QCOMPARE(third->timeAdded, 2ull);
-        QCOMPARE(third->timeOverwritten, std::numeric_limits<quint64>::max());
-        QCOMPARE(third->file, file2);
-
+        QCOMPARE(map.findElf(110, 2), third);
         QCOMPARE(map.findElf(110, 3), third);
 
-        auto fragment1 = map.findElf(97, 1);
-        QCOMPARE(fragment1.key(), 95ull);
-        QCOMPARE(fragment1->length, 10ull);
-        QCOMPARE(fragment1->pgoff, 0ull);
-        QCOMPARE(fragment1->timeAdded, 1ull);
-        QCOMPARE(fragment1->timeOverwritten, 2ull);
-        QCOMPARE(fragment1->file, file1);
+        const PerfElfMap::ElfInfo fragment1(file1, 95, 10, 0, 1, 2);
+        QCOMPARE(map.findElf(97, 1), fragment1);
 
-        auto fragment2 = map.findElf(122, 2);
-        QCOMPARE(fragment2.key(), 120ull);
-        QCOMPARE(fragment2->length, 5ull);
-        QCOMPARE(fragment2->pgoff, 15ull);
-        QCOMPARE(fragment2->timeAdded, 2ull);
-        QCOMPARE(fragment2->timeOverwritten, std::numeric_limits<quint64>::max());
-        QCOMPARE(fragment2->file, file1);
+        const PerfElfMap::ElfInfo fragment2(file1, 120, 5, 15, 2);
+        QCOMPARE(map.findElf(122, 2), fragment2);
 
-        auto fragment3 = map.findElf(97, 2);
-        QCOMPARE(fragment3.key(), 95ull);
-        QCOMPARE(fragment3->length, 5ull);
-        QCOMPARE(fragment3->pgoff, 0ull);
-        QCOMPARE(fragment3->timeAdded, 2ull);
-        QCOMPARE(fragment3->timeOverwritten, std::numeric_limits<quint64>::max());
-        QCOMPARE(fragment3->file, file1);
+        const PerfElfMap::ElfInfo fragment3(file1, 95, 5, 0, 2);
+        QCOMPARE(map.findElf(97, 2), fragment3);
     }
 
     void testOverwrite_data()
@@ -168,6 +158,31 @@ private slots:
 
         QTest::newRow("normal-no-files") << false << false << false;
         QTest::newRow("reversed-no-files") << true << false << false;
+    }
+
+    void testIsAddressInRange()
+    {
+        PerfElfMap map;
+        QVERIFY(!map.isAddressInRange(10));
+
+        const PerfElfMap::ElfInfo first({}, 10, 10, 0, 0);
+        QVERIFY(!registerElf(&map, first));
+        QVERIFY(!map.isAddressInRange(9));
+        QVERIFY(map.isAddressInRange(10));
+        QVERIFY(map.isAddressInRange(19));
+        QVERIFY(!map.isAddressInRange(20));
+
+        const PerfElfMap::ElfInfo second({}, 30, 10, 0, 1);
+        QVERIFY(!registerElf(&map, second));
+        QVERIFY(!map.isAddressInRange(9));
+        QVERIFY(map.isAddressInRange(10));
+        QVERIFY(map.isAddressInRange(19));
+        QVERIFY(map.isAddressInRange(30));
+        QVERIFY(map.isAddressInRange(39));
+        QVERIFY(!map.isAddressInRange(40));
+        // gaps are also within range
+        QVERIFY(map.isAddressInRange(20));
+        QVERIFY(map.isAddressInRange(29));
     }
 
     void benchRegisterElfDisjunct()
