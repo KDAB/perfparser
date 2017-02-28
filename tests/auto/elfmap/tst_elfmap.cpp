@@ -235,6 +235,93 @@ private slots:
         benchRegisterElfDisjunct_data();
     }
 
+    void benchFindElfDisjunct()
+    {
+        QFETCH(int, numElfMaps);
+
+        PerfElfMap map;
+
+        const quint64 ADDR_STEP = 1024;
+        const quint64 MAX_ADDR = ADDR_STEP * numElfMaps;
+        const quint64 LEN = 1024;
+        quint64 time = 0;
+        for (quint64 addr = 0; addr < MAX_ADDR; addr += ADDR_STEP) {
+            map.registerElf(addr, LEN, 0, time++, {});
+        }
+        time = 0;
+
+        const quint64 ADDR_STEP_FIND = 64;
+        QBENCHMARK {
+            for (quint64 addr = 0; addr < MAX_ADDR; addr += ADDR_STEP_FIND) {
+                auto it = map.findElf(addr, time++);
+                Q_UNUSED(it);
+            }
+        }
+    }
+
+    void benchFindElfDisjunct_data()
+    {
+        benchRegisterElfDisjunct_data();
+    }
+
+    void benchFindElfOverlapping()
+    {
+        QFETCH(int, numElfMaps);
+
+        PerfElfMap map;
+
+        const quint64 ADDR_STEP = 1024;
+        const quint64 MAX_ADDR = ADDR_STEP * numElfMaps;
+        quint64 LEN = MAX_ADDR;
+        quint64 time = 0;
+        for (quint64 addr = 0; addr < MAX_ADDR; addr += ADDR_STEP, LEN -= ADDR_STEP) {
+            map.registerElf(addr, LEN, 0, time++, {});
+        }
+        time = 0;
+
+        const quint64 ADDR_STEP_FIND = 64;
+        QBENCHMARK {
+            for (quint64 addr = 0; addr < MAX_ADDR; addr += ADDR_STEP_FIND) {
+                auto it = map.findElf(addr, time++);
+                Q_UNUSED(it);
+            }
+        }
+    }
+
+    void benchFindElfOverlapping_data()
+    {
+        benchRegisterElfDisjunct_data();
+    }
+
+    void benchFindElfExpanding()
+    {
+        QFETCH(int, numElfMaps);
+
+        PerfElfMap map;
+
+        const quint64 FIRST_ADDR = 0;
+        const quint64 LEN_STEP = 1024;
+        const quint64 MAX_LEN = LEN_STEP * numElfMaps;
+        quint64 time = 0;
+        for (quint64 len = LEN_STEP; len <= MAX_LEN; len += LEN_STEP) {
+            map.registerElf(FIRST_ADDR, len, 0, time++, {});
+        }
+
+        const quint64 MAX_ADDR = FIRST_ADDR + MAX_LEN;
+        const quint64 ADDR_STEP_FIND = 64;
+        QBENCHMARK {
+            quint64 time = 0;
+            for (quint64 addr = FIRST_ADDR; addr < MAX_ADDR; addr += ADDR_STEP_FIND) {
+                auto it = map.findElf(addr, time++);
+                Q_UNUSED(it);
+            }
+        }
+    }
+
+    void benchFindElfExpanding_data()
+    {
+        benchRegisterElfDisjunct_data();
+    }
 };
 
 QTEST_GUILESS_MAIN(TestElfMap)
