@@ -24,8 +24,6 @@
 #include <QFileInfo>
 #include <QMap>
 
-class PerfRecordMmap;
-
 class PerfElfMap
 {
 public:
