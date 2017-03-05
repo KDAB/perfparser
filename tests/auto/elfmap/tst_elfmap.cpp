@@ -59,7 +59,7 @@ private slots:
         QVERIFY(!registerElf(&map, first));
         QVERIFY(!map.isEmpty());
 
-        QCOMPARE(std::distance(map.begin(), map.end()), 1);
+        QCOMPARE(std::distance(map.begin(), map.end()), 1l);
         QCOMPARE(*map.begin(), first);
 
         QCOMPARE(map.findElf(99, 0), invalid);
@@ -71,7 +71,7 @@ private slots:
         const PerfElfMap::ElfInfo second({}, 0, 10, 0, 1);
         QVERIFY(!registerElf(&map, second));
 
-        QCOMPARE(std::distance(map.begin(), map.end()), 2);
+        QCOMPARE(std::distance(map.begin(), map.end()), 2l);
         QCOMPARE(*map.begin(), second);
         QCOMPARE(*(map.begin()+1), first);
 

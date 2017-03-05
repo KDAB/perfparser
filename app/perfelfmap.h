@@ -22,7 +22,7 @@
 #define PERFELFMAP_H
 
 #include <QFileInfo>
-#include <QMap>
+#include <QVector>
 
 class PerfElfMap
 {
@@ -59,7 +59,7 @@ public:
         bool found;
     };
 
-    using Map = QMultiMap<quint64, ElfInfo>;
+    using Map = QVector<ElfInfo>;
     using ConstIterator = Map::ConstIterator;
 
     bool registerElf(quint64 addr, quint64 len, quint64 pgoff, quint64 time,
@@ -84,8 +84,10 @@ public:
     bool isAddressInRange(quint64 addr) const;
 
 private:
-    QMultiMap<quint64, ElfInfo> m_elfs; // needs to be sorted
+    // elf sorted by start address
+    QVector<ElfInfo> m_elfs;
 };
+Q_DECLARE_TYPEINFO(PerfElfMap::ElfInfo, Q_MOVABLE_TYPE);
 
 QDebug operator<<(QDebug stream, const PerfElfMap::ElfInfo& info);
 

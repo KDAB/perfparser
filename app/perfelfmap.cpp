@@ -36,6 +36,21 @@ QDebug operator<<(QDebug stream, const PerfElfMap::ElfInfo& info)
     return stream.space();
 }
 
+namespace {
+struct SortByAddr
+{
+    bool operator()(const PerfElfMap::ElfInfo &lhs, const quint64 addr) const
+    {
+        return lhs.addr < addr;
+    }
+
+    bool operator()(const quint64 addr, const PerfElfMap::ElfInfo &rhs) const
+    {
+        return addr < rhs.addr;
+    }
+};
+}
+
 bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgoff,
                              const quint64 time, const QFileInfo &fullPath)
 {
@@ -44,9 +59,9 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
     const quint64 addrEnd = addr + len;
     const bool isFile = fullPath.isFile();
 
-    QMultiMap<quint64, ElfInfo> fragments;
-    for (auto i = m_elfs.begin(), end = m_elfs.end(); i != end && i.key() < addrEnd; ++i) {
-        const quint64 iEnd = i.key() + i->length;
+    QVarLengthArray<ElfInfo, 8> newElfs;
+    for (auto i = m_elfs.begin(), end = m_elfs.end(); i != end && i->addr < addrEnd; ++i) {
+        const quint64 iEnd = i->addr + i->length;
         if (iEnd <= addr)
             continue;
 
@@ -54,14 +69,14 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
             // Newly added elf overwrites existing one. Mark the existing one as overwritten and
             // reinsert any fragments of it that remain.
 
-            if (i.key() < addr) {
-                fragments.insertMulti(i.key(), ElfInfo(i->file, i.key(), addr - i.key(), i->pgoff,
-                                                        time, i->timeOverwritten));
+            if (i->addr < addr) {
+                newElfs.push_back(ElfInfo(i->file, i->addr, addr - i->addr, i->pgoff,
+                                          time, i->timeOverwritten));
             }
             if (iEnd > addrEnd) {
-                fragments.insertMulti(addrEnd, ElfInfo(i->file, addrEnd, iEnd - addrEnd,
-                                                        i->pgoff + addrEnd - i.key(), time,
-                                                        i->timeOverwritten));
+                newElfs.push_back(ElfInfo(i->file, addrEnd, iEnd - addrEnd,
+                                          i->pgoff + addrEnd - i->addr, time,
+                                          i->timeOverwritten));
             }
             i->timeOverwritten = time;
         }
@@ -73,16 +88,21 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
             cacheInvalid = true;
     }
 
-    m_elfs.unite(fragments);
-    m_elfs.insertMulti(addr, ElfInfo(fullPath, addr, len, pgoff, time, overwritten));
+    newElfs.push_back(ElfInfo(fullPath, addr, len, pgoff, time, overwritten));
+
+    for (const auto &elf : newElfs) {
+        auto it = std::lower_bound(m_elfs.begin(), m_elfs.end(),
+                                   elf.addr, SortByAddr());
+        m_elfs.insert(it, elf);
+    }
 
     return cacheInvalid;
 }
 
 PerfElfMap::ElfInfo PerfElfMap::findElf(quint64 ip, quint64 timestamp) const
 {
-    QMap<quint64, ElfInfo>::ConstIterator i = m_elfs.upperBound(ip);
-    if (i == m_elfs.constEnd() || i.key() != ip) {
+    auto i = std::upper_bound(m_elfs.begin(), m_elfs.end(), ip, SortByAddr());
+    if (i == m_elfs.constEnd() || i->addr != ip) {
         if (i != m_elfs.constBegin())
             --i;
         else
@@ -91,7 +111,7 @@ PerfElfMap::ElfInfo PerfElfMap::findElf(quint64 ip, quint64 timestamp) const
 
     while (true) {
         if (i->timeAdded <= timestamp && i->timeOverwritten > timestamp)
-            return (i.key() + i->length > ip) ? i.value() : ElfInfo();
+            return (i->addr + i->length > ip) ? *i : ElfInfo();
 
         if (i == m_elfs.constBegin())
             return {};
