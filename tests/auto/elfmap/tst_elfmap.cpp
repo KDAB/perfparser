@@ -79,19 +79,18 @@ private slots:
         QCOMPARE(map.findElf(0, 1), second);
         QCOMPARE(map.findElf(5, 1), second);
         QCOMPARE(map.findElf(9, 1), second);
-        QCOMPARE(map.findElf(10, 0), invalid);
+        QCOMPARE(map.findElf(10, 1), invalid);
         QCOMPARE(map.findElf(5, 2), second);
 
-        QCOMPARE(map.findElf(99, 0), invalid);
-        QCOMPARE(map.findElf(100, 0), first);
-        QCOMPARE(map.findElf(109, 0), first);
-        QCOMPARE(map.findElf(110, 0), invalid);
+        QCOMPARE(map.findElf(99, 1), invalid);
+        QCOMPARE(map.findElf(100, 1), first);
         QCOMPARE(map.findElf(105, 1), first);
+        QCOMPARE(map.findElf(109, 1), first);
+        QCOMPARE(map.findElf(110, 1), invalid);
     }
 
     void testOverwrite()
     {
-        QFETCH(bool, reversed);
         QFETCH(bool, firstIsFile);
         QFETCH(bool, secondIsFile);
 
@@ -114,15 +113,9 @@ private slots:
         const PerfElfMap::ElfInfo third(file2, 100, 20, 0, 2);
 
         PerfElfMap map;
-        if (!reversed) {
-            QCOMPARE(registerElf(&map, first), false);
-            QCOMPARE(registerElf(&map, second), firstIsFile);
-            QCOMPARE(registerElf(&map, third), firstIsFile || secondIsFile);
-        } else {
-            QCOMPARE(registerElf(&map, third), false);
-            QCOMPARE(registerElf(&map, second), firstIsFile || secondIsFile);
-            QCOMPARE(registerElf(&map, first), firstIsFile || secondIsFile);
-        }
+        QCOMPARE(registerElf(&map, first), false);
+        QCOMPARE(registerElf(&map, second), firstIsFile);
+        QCOMPARE(registerElf(&map, third), firstIsFile || secondIsFile);
 
         QCOMPARE(map.findElf(110, 0), first);
 
@@ -143,21 +136,13 @@ private slots:
 
     void testOverwrite_data()
     {
-        QTest::addColumn<bool>("reversed");
         QTest::addColumn<bool>("firstIsFile");
         QTest::addColumn<bool>("secondIsFile");
 
-        QTest::newRow("normal") << false << true << true;
-        QTest::newRow("reversed") << true << true << true;
-
-        QTest::newRow("normal-one-file-A") << false << false << true;
-        QTest::newRow("reversed-one-file-A") << true << false << true;
-
-        QTest::newRow("normal-one-file-B") << false << true << false;
-        QTest::newRow("reversed-one-file-B") << true << true << false;
-
-        QTest::newRow("normal-no-files") << false << false << false;
-        QTest::newRow("reversed-no-files") << true << false << false;
+        QTest::newRow("both-files") << true << true;
+        QTest::newRow("one-file-A") << false << true;
+        QTest::newRow("one-file-B") << true << false;
+        QTest::newRow("no-files") << false << false;
     }
 
     void testIsAddressInRange()

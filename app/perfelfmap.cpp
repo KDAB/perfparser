@@ -45,35 +45,25 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
     const bool isFile = fullPath.isFile();
 
     QMultiMap<quint64, ElfInfo> fragments;
-    QMultiMap<quint64, ElfInfo>::iterator firstOverwrite = m_elfs.end();
     for (auto i = m_elfs.begin(), end = m_elfs.end(); i != end && i.key() < addrEnd; ++i) {
         const quint64 iEnd = i.key() + i->length;
         if (iEnd <= addr)
             continue;
 
-        if (time >= i->timeAdded) {
-            if (i->timeOverwritten > time) {
-                // Newly added elf overwrites existing one. Mark the existing one as overwritten and
-                // reinsert any fragments of it that remain.
+        if (i->timeOverwritten > time) {
+            // Newly added elf overwrites existing one. Mark the existing one as overwritten and
+            // reinsert any fragments of it that remain.
 
-                if (i.key() < addr) {
-                    fragments.insertMulti(i.key(), ElfInfo(i->file, i.key(), addr - i.key(), i->pgoff,
-                                                           time, i->timeOverwritten));
-                }
-                if (iEnd > addrEnd) {
-                    fragments.insertMulti(addrEnd, ElfInfo(i->file, addrEnd, iEnd - addrEnd,
-                                                           i->pgoff + addrEnd - i.key(), time,
-                                                           i->timeOverwritten));
-                }
-                i->timeOverwritten = time;
+            if (i.key() < addr) {
+                fragments.insertMulti(i.key(), ElfInfo(i->file, i.key(), addr - i.key(), i->pgoff,
+                                                        time, i->timeOverwritten));
             }
-        } else {
-            // Newly added elf is overwritten by existing one. Note the first overwrite and insert
-            // the remaining fragments in further passes.
-            if (i->timeAdded < overwritten) {
-                overwritten = i->timeAdded;
-                firstOverwrite = i;
+            if (iEnd > addrEnd) {
+                fragments.insertMulti(addrEnd, ElfInfo(i->file, addrEnd, iEnd - addrEnd,
+                                                        i->pgoff + addrEnd - i.key(), time,
+                                                        i->timeOverwritten));
             }
+            i->timeOverwritten = time;
         }
 
         // Overlapping module. Clear the cache, but only when the section is actually backed by a
@@ -81,16 +71,6 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
         // invalidate our caches
         if (isFile || i->found)
             cacheInvalid = true;
-    }
-
-    if (firstOverwrite != m_elfs.end()) {
-        const quint64 overwriteEnd = firstOverwrite.key() + firstOverwrite->length;
-        if (addr < firstOverwrite.key())
-            registerElf(addr, firstOverwrite.key() - addr, pgoff, overwritten, fullPath);
-        if (addrEnd > overwriteEnd) {
-            registerElf(overwriteEnd, addrEnd - overwriteEnd, pgoff + overwriteEnd - addr,
-                        overwritten, fullPath);
-        }
     }
 
     m_elfs.unite(fragments);
