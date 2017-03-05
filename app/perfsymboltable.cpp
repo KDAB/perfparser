@@ -346,7 +346,7 @@ static void reportError(const PerfElfMap::ElfInfo& info, const char *message)
 
 Dwfl_Module *PerfSymbolTable::reportElf(const PerfElfMap::ElfInfo& info)
 {
-    if (!info.isValid() || !info.found)
+    if (!info.isValid() || !info.isFile())
         return nullptr;
 
     if (info.pgoff > 0) {
@@ -547,7 +547,7 @@ Dwfl *PerfSymbolTable::attachDwfl(quint64 timestamp, void *arg)
 
     // Report some random elf, so that dwfl guesses the target architecture.
     for (const auto &elf : m_elfs) {
-        if (!elf.found || elf.timeAdded > timestamp)
+        if (!elf.isFile() || elf.timeAdded > timestamp)
             continue;
         if (dwfl_report_elf(m_dwfl, elf.file.fileName().toLocal8Bit().constData(),
                             elf.file.absoluteFilePath().toLocal8Bit().constData(), -1,

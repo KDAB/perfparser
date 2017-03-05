@@ -27,7 +27,7 @@ QDebug operator<<(QDebug stream, const PerfElfMap::ElfInfo& info)
 {
     stream.nospace() << "ElfInfo{"
                      << "file=" << info.file.fileName() << ", "
-                     << "found=" << info.found << ", "
+                     << "isFile=" << info.isFile() << ", "
                      << "addr=" << info.addr << ", "
                      << "len=" << info.length << ", "
                      << "pgoff=" << info.pgoff << ", "
@@ -82,7 +82,7 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
         // Overlapping module. Clear the cache, but only when the section is actually backed by a
         // file. Otherwise, we will see tons of overlapping heap/anon sections which don't actually
         // invalidate our caches
-        if (isFile || i->found)
+        if (isFile || i->isFile())
             cacheInvalid = true;
     }
 

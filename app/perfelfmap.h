@@ -30,18 +30,23 @@ public:
     struct ElfInfo {
         ElfInfo(const QFileInfo &file = QFileInfo(), quint64 addr = 0, quint64 length = 0,
                 quint64 pgoff = 0, quint64 timeAdded = 0) :
-            file(file), addr(addr), length(length), pgoff(pgoff), timeAdded(timeAdded),
-            found(file.isFile()) {}
+            file(file), addr(addr), length(length), pgoff(pgoff), timeAdded(timeAdded)
+        {}
 
         bool isValid() const
         {
             return length > 0;
         }
 
+        bool isFile() const
+        {
+            return file.isFile();
+        }
+
         bool operator==(const ElfInfo& rhs) const
         {
-            return found == rhs.found
-                && (!found || file == rhs.file)
+            return isFile() == rhs.isFile()
+                && (!isFile() || file == rhs.file)
                 && addr == rhs.addr
                 && length == rhs.length
                 && pgoff == rhs.pgoff
@@ -53,7 +58,6 @@ public:
         quint64 length;
         quint64 pgoff;
         quint64 timeAdded;
-        bool found;
     };
 
     using Map = QVector<ElfInfo>;
