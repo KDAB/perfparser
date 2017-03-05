@@ -108,30 +108,34 @@ private slots:
         QFileInfo file2(tmpFile2.fileName());
         QCOMPARE(file2.isFile(), secondIsFile);
 
-        const PerfElfMap::ElfInfo first(file1, 95, 20, 0, 0, 1);
-        const PerfElfMap::ElfInfo second(file1, 105, 20, 0, 1, 2);
-        const PerfElfMap::ElfInfo third(file2, 100, 20, 0, 2);
-
         PerfElfMap map;
-        QCOMPARE(registerElf(&map, first), false);
-        QCOMPARE(registerElf(&map, second), firstIsFile);
-        QCOMPARE(registerElf(&map, third), firstIsFile || secondIsFile);
 
-        QCOMPARE(map.findElf(110, 0), first);
+        {
+            const PerfElfMap::ElfInfo first(file1, 95, 20, 0, 0);
+            QCOMPARE(registerElf(&map, first), false);
+            QCOMPARE(map.findElf(110, 0), first);
+        }
 
-        QCOMPARE(map.findElf(110, 1), second);
+        {
+            const PerfElfMap::ElfInfo second(file1, 105, 20, 0, 1);
+            QCOMPARE(registerElf(&map, second), firstIsFile);
+            QCOMPARE(map.findElf(110, 1), second);
 
-        QCOMPARE(map.findElf(110, 2), third);
-        QCOMPARE(map.findElf(110, 3), third);
+            const PerfElfMap::ElfInfo fragment1(file1, 95, 10, 0, 1);
+            QCOMPARE(map.findElf(97, 1), fragment1);
+        }
 
-        const PerfElfMap::ElfInfo fragment1(file1, 95, 10, 0, 1, 2);
-        QCOMPARE(map.findElf(97, 1), fragment1);
+        {
+            const PerfElfMap::ElfInfo third(file2, 100, 20, 0, 2);
+            QCOMPARE(registerElf(&map, third), firstIsFile || secondIsFile);
+            QCOMPARE(map.findElf(110, 2), third);
+            QCOMPARE(map.findElf(110, 3), third);
 
-        const PerfElfMap::ElfInfo fragment2(file1, 120, 5, 15, 2);
-        QCOMPARE(map.findElf(122, 2), fragment2);
-
-        const PerfElfMap::ElfInfo fragment3(file1, 95, 5, 0, 2);
-        QCOMPARE(map.findElf(97, 2), fragment3);
+            const PerfElfMap::ElfInfo fragment2(file1, 120, 5, 15, 2);
+            const PerfElfMap::ElfInfo fragment3(file1, 95, 5, 0, 2);
+            QCOMPARE(map.findElf(122, 2), fragment2);
+            QCOMPARE(map.findElf(97, 2), fragment3);
+        }
     }
 
     void testOverwrite_data()

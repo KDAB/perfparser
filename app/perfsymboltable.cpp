@@ -35,8 +35,7 @@
 
 PerfSymbolTable::PerfSymbolTable(quint32 pid, Dwfl_Callbacks *callbacks, PerfUnwind *parent) :
     m_perfMapFile(QString::fromLatin1("/tmp/perf-%1.map").arg(pid)),
-    m_unwind(parent), m_lastMmapAddedTime(0),
-    m_nextMmapOverwrittenTime(std::numeric_limits<quint64>::max()), m_callbacks(callbacks),
+    m_unwind(parent), m_lastMmapAddedTime(0), m_callbacks(callbacks),
     m_pid(pid)
 {
     m_dwfl = dwfl_begin(m_callbacks);
@@ -364,8 +363,6 @@ Dwfl_Module *PerfSymbolTable::reportElf(const PerfElfMap::ElfInfo& info)
 
     if (m_lastMmapAddedTime < info.timeAdded)
         m_lastMmapAddedTime = info.timeAdded;
-    if (m_nextMmapOverwrittenTime > info.timeOverwritten)
-        m_nextMmapOverwrittenTime = info.timeOverwritten;
 
     return ret;
 }
@@ -379,7 +376,6 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, quint64 timestamp, bool isKernel
                                  bool *isInterworking)
 {
     Q_ASSERT(timestamp >= m_lastMmapAddedTime);
-    Q_ASSERT(timestamp < m_nextMmapOverwrittenTime);
 
     auto it = m_addressCache.constFind(ip);
     if (it != m_addressCache.constEnd()) {
@@ -544,20 +540,19 @@ bool PerfSymbolTable::containsAddress(quint64 address) const
 
 Dwfl *PerfSymbolTable::attachDwfl(quint64 timestamp, void *arg)
 {
-    if (timestamp < m_lastMmapAddedTime || timestamp >= m_nextMmapOverwrittenTime)
+    if (timestamp < m_lastMmapAddedTime)
         clearCache();
     else if (static_cast<pid_t>(m_pid) == dwfl_pid(m_dwfl))
         return m_dwfl; // Already attached, nothing to do
 
     // Report some random elf, so that dwfl guesses the target architecture.
     for (const auto &elf : m_elfs) {
-        if (!elf.found || elf.timeAdded > timestamp || elf.timeOverwritten <= timestamp)
+        if (!elf.found || elf.timeAdded > timestamp)
             continue;
         if (dwfl_report_elf(m_dwfl, elf.file.fileName().toLocal8Bit().constData(),
                             elf.file.absoluteFilePath().toLocal8Bit().constData(), -1,
                             elf.addr, false)) {
             m_lastMmapAddedTime = elf.timeAdded;
-            m_nextMmapOverwrittenTime = elf.timeOverwritten;
             break;
         }
     }
@@ -573,7 +568,6 @@ Dwfl *PerfSymbolTable::attachDwfl(quint64 timestamp, void *arg)
 void PerfSymbolTable::clearCache()
 {
     m_lastMmapAddedTime = 0;
-    m_nextMmapOverwrittenTime = std::numeric_limits<quint64>::max();
     m_addressCache.clear();
     m_perfMap.clear();
     if (m_perfMapFile.isOpen())

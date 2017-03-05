@@ -32,7 +32,7 @@ QDebug operator<<(QDebug stream, const PerfElfMap::ElfInfo& info)
                      << "len=" << info.length << ", "
                      << "pgoff=" << info.pgoff << ", "
                      << "timeAdded=" << info.timeAdded << ", "
-                     << "timeOverwritten=" << info.timeOverwritten << "}";
+                     << "}";
     return stream.space();
 }
 
@@ -55,31 +55,29 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
                              const quint64 time, const QFileInfo &fullPath)
 {
     bool cacheInvalid = false;
-    quint64 overwritten = std::numeric_limits<quint64>::max();
     const quint64 addrEnd = addr + len;
     const bool isFile = fullPath.isFile();
 
     QVarLengthArray<ElfInfo, 8> newElfs;
+    QVarLengthArray<int, 8> removedElfs;
     for (auto i = m_elfs.begin(), end = m_elfs.end(); i != end && i->addr < addrEnd; ++i) {
         const quint64 iEnd = i->addr + i->length;
         if (iEnd <= addr)
             continue;
 
-        if (i->timeOverwritten > time) {
-            // Newly added elf overwrites existing one. Mark the existing one as overwritten and
-            // reinsert any fragments of it that remain.
+        // Newly added elf overwrites existing one. Mark the existing one as overwritten and
+        // reinsert any fragments of it that remain.
 
-            if (i->addr < addr) {
-                newElfs.push_back(ElfInfo(i->file, i->addr, addr - i->addr, i->pgoff,
-                                          time, i->timeOverwritten));
-            }
-            if (iEnd > addrEnd) {
-                newElfs.push_back(ElfInfo(i->file, addrEnd, iEnd - addrEnd,
-                                          i->pgoff + addrEnd - i->addr, time,
-                                          i->timeOverwritten));
-            }
-            i->timeOverwritten = time;
+        if (i->addr < addr) {
+            newElfs.push_back(ElfInfo(i->file, i->addr, addr - i->addr,
+                                      i->pgoff, time));
         }
+        if (iEnd > addrEnd) {
+            newElfs.push_back(ElfInfo(i->file, addrEnd, iEnd - addrEnd,
+                                      i->pgoff + addrEnd - i->addr, time));
+        }
+
+        removedElfs.push_back(std::distance(m_elfs.begin(), i));
 
         // Overlapping module. Clear the cache, but only when the section is actually backed by a
         // file. Otherwise, we will see tons of overlapping heap/anon sections which don't actually
@@ -88,7 +86,11 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
             cacheInvalid = true;
     }
 
-    newElfs.push_back(ElfInfo(fullPath, addr, len, pgoff, time, overwritten));
+    // remove the overwritten elfs, iterate from the back to not invalidate the indices
+    for (auto it = removedElfs.rbegin(), end = removedElfs.rend(); it != end; ++it)
+        m_elfs.remove(*it);
+
+    newElfs.push_back(ElfInfo(fullPath, addr, len, pgoff, time));
 
     for (const auto &elf : newElfs) {
         auto it = std::lower_bound(m_elfs.begin(), m_elfs.end(),
@@ -110,7 +112,7 @@ PerfElfMap::ElfInfo PerfElfMap::findElf(quint64 ip, quint64 timestamp) const
     }
 
     while (true) {
-        if (i->timeAdded <= timestamp && i->timeOverwritten > timestamp)
+        if (i->timeAdded <= timestamp)
             return (i->addr + i->length > ip) ? *i : ElfInfo();
 
         if (i == m_elfs.constBegin())

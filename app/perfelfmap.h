@@ -29,10 +29,9 @@ class PerfElfMap
 public:
     struct ElfInfo {
         ElfInfo(const QFileInfo &file = QFileInfo(), quint64 addr = 0, quint64 length = 0,
-                quint64 pgoff = 0, quint64 timeAdded = 0,
-                quint64 timeOverwritten = std::numeric_limits<quint64>::max()) :
+                quint64 pgoff = 0, quint64 timeAdded = 0) :
             file(file), addr(addr), length(length), pgoff(pgoff), timeAdded(timeAdded),
-            timeOverwritten(timeOverwritten), found(file.isFile()) {}
+            found(file.isFile()) {}
 
         bool isValid() const
         {
@@ -46,8 +45,7 @@ public:
                 && addr == rhs.addr
                 && length == rhs.length
                 && pgoff == rhs.pgoff
-                && timeAdded == rhs.timeAdded
-                && timeOverwritten == rhs.timeOverwritten;
+                && timeAdded == rhs.timeAdded;
         }
 
         QFileInfo file;
@@ -55,7 +53,6 @@ public:
         quint64 length;
         quint64 pgoff;
         quint64 timeAdded;
-        quint64 timeOverwritten;
         bool found;
     };
 

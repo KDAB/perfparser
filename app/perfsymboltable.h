@@ -87,7 +87,6 @@ private:
     Dwfl *m_dwfl;
 
     quint64 m_lastMmapAddedTime;
-    quint64 m_nextMmapOverwrittenTime;
 
     PerfElfMap m_elfs;
     Dwfl_Callbacks *m_callbacks;
