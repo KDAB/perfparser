@@ -56,7 +56,7 @@ public:
     void registerElf(const PerfRecordMmap &mmap, const QString &appPath,
                      const QString &systemRoot, const QString &extraLibsPath);
 
-    PerfElfMap::ElfInfo findElf(quint64 ip, quint64 timestamp) const;
+    PerfElfMap::ElfInfo findElf(quint64 ip) const;
 
     // Report an mmap to dwfl and parse it for symbols and inlines, or simply return it if dwfl has
     // it already
@@ -64,12 +64,12 @@ public:
 
     // Look up a frame and all its inline parents and append them to the given vector.
     // If the frame hits an elf that hasn't been reported, yet, report it.
-    int lookupFrame(Dwarf_Addr ip, quint64 timestamp, bool isKernel, bool *isInterworking);
+    int lookupFrame(Dwarf_Addr ip, bool isKernel, bool *isInterworking);
 
     void updatePerfMap();
     bool containsAddress(quint64 address) const;
 
-    Dwfl *attachDwfl(quint64 timestamp, void *arg);
+    Dwfl *attachDwfl(void *arg);
     void clearCache();
 
 private:
@@ -85,8 +85,6 @@ private:
 
     PerfUnwind *m_unwind;
     Dwfl *m_dwfl;
-
-    quint64 m_lastMmapAddedTime;
 
     PerfElfMap m_elfs;
     Dwfl_Callbacks *m_callbacks;

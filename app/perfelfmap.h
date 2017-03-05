@@ -29,8 +29,8 @@ class PerfElfMap
 public:
     struct ElfInfo {
         ElfInfo(const QFileInfo &file = QFileInfo(), quint64 addr = 0, quint64 length = 0,
-                quint64 pgoff = 0, quint64 timeAdded = 0) :
-            file(file), addr(addr), length(length), pgoff(pgoff), timeAdded(timeAdded)
+                quint64 pgoff = 0) :
+            file(file), addr(addr), length(length), pgoff(pgoff)
         {}
 
         bool isValid() const
@@ -49,23 +49,21 @@ public:
                 && (!isFile() || file == rhs.file)
                 && addr == rhs.addr
                 && length == rhs.length
-                && pgoff == rhs.pgoff
-                && timeAdded == rhs.timeAdded;
+                && pgoff == rhs.pgoff;
         }
 
         QFileInfo file;
         quint64 addr;
         quint64 length;
         quint64 pgoff;
-        quint64 timeAdded;
     };
 
     using Map = QVector<ElfInfo>;
     using ConstIterator = Map::ConstIterator;
 
-    bool registerElf(quint64 addr, quint64 len, quint64 pgoff, quint64 time,
+    bool registerElf(quint64 addr, quint64 len, quint64 pgoff,
                      const QFileInfo &fullPath);
-    ElfInfo findElf(quint64 ip, quint64 timestamp) const;
+    ElfInfo findElf(quint64 ip) const;
 
     bool isEmpty() const
     {

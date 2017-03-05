@@ -27,8 +27,7 @@
 namespace {
 bool registerElf(PerfElfMap *map, const PerfElfMap::ElfInfo &info)
 {
-    return map->registerElf(info.addr, info.length, info.pgoff, info.timeAdded,
-                            info.file);
+    return map->registerElf(info.addr, info.length, info.pgoff, info.file);
 }
 }
 
@@ -54,7 +53,7 @@ private slots:
         PerfElfMap map;
         QVERIFY(map.isEmpty());
 
-        const PerfElfMap::ElfInfo first({}, 100, 10, 0, 0);
+        const PerfElfMap::ElfInfo first({}, 100, 10, 0);
 
         QVERIFY(!registerElf(&map, first));
         QVERIFY(!map.isEmpty());
@@ -62,31 +61,29 @@ private slots:
         QCOMPARE(std::distance(map.begin(), map.end()), 1l);
         QCOMPARE(*map.begin(), first);
 
-        QCOMPARE(map.findElf(99, 0), invalid);
-        QCOMPARE(map.findElf(100, 0), first);
-        QCOMPARE(map.findElf(109, 0), first);
-        QCOMPARE(map.findElf(110, 0), invalid);
-        QCOMPARE(map.findElf(105, 1), first);
+        QCOMPARE(map.findElf(99), invalid);
+        QCOMPARE(map.findElf(100), first);
+        QCOMPARE(map.findElf(105), first);
+        QCOMPARE(map.findElf(109), first);
+        QCOMPARE(map.findElf(110), invalid);
 
-        const PerfElfMap::ElfInfo second({}, 0, 10, 0, 1);
+        const PerfElfMap::ElfInfo second({}, 0, 10, 0);
         QVERIFY(!registerElf(&map, second));
 
         QCOMPARE(std::distance(map.begin(), map.end()), 2l);
         QCOMPARE(*map.begin(), second);
         QCOMPARE(*(map.begin()+1), first);
 
-        QCOMPARE(map.findElf(0, 0), invalid);
-        QCOMPARE(map.findElf(0, 1), second);
-        QCOMPARE(map.findElf(5, 1), second);
-        QCOMPARE(map.findElf(9, 1), second);
-        QCOMPARE(map.findElf(10, 1), invalid);
-        QCOMPARE(map.findElf(5, 2), second);
+        QCOMPARE(map.findElf(0), second);
+        QCOMPARE(map.findElf(5), second);
+        QCOMPARE(map.findElf(9), second);
+        QCOMPARE(map.findElf(10), invalid);
 
-        QCOMPARE(map.findElf(99, 1), invalid);
-        QCOMPARE(map.findElf(100, 1), first);
-        QCOMPARE(map.findElf(105, 1), first);
-        QCOMPARE(map.findElf(109, 1), first);
-        QCOMPARE(map.findElf(110, 1), invalid);
+        QCOMPARE(map.findElf(99), invalid);
+        QCOMPARE(map.findElf(100), first);
+        QCOMPARE(map.findElf(105), first);
+        QCOMPARE(map.findElf(109), first);
+        QCOMPARE(map.findElf(110), invalid);
     }
 
     void testOverwrite()
@@ -111,30 +108,30 @@ private slots:
         PerfElfMap map;
 
         {
-            const PerfElfMap::ElfInfo first(file1, 95, 20, 0, 0);
+            const PerfElfMap::ElfInfo first(file1, 95, 20, 0);
             QCOMPARE(registerElf(&map, first), false);
-            QCOMPARE(map.findElf(110, 0), first);
+            QCOMPARE(map.findElf(110), first);
         }
 
         {
-            const PerfElfMap::ElfInfo second(file1, 105, 20, 0, 1);
+            const PerfElfMap::ElfInfo second(file1, 105, 20, 0);
             QCOMPARE(registerElf(&map, second), firstIsFile);
-            QCOMPARE(map.findElf(110, 1), second);
+            QCOMPARE(map.findElf(110), second);
 
-            const PerfElfMap::ElfInfo fragment1(file1, 95, 10, 0, 1);
-            QCOMPARE(map.findElf(97, 1), fragment1);
+            const PerfElfMap::ElfInfo fragment1(file1, 95, 10, 0);
+            QCOMPARE(map.findElf(97), fragment1);
         }
 
         {
-            const PerfElfMap::ElfInfo third(file2, 100, 20, 0, 2);
+            const PerfElfMap::ElfInfo third(file2, 100, 20, 0);
             QCOMPARE(registerElf(&map, third), firstIsFile || secondIsFile);
-            QCOMPARE(map.findElf(110, 2), third);
-            QCOMPARE(map.findElf(110, 3), third);
+            QCOMPARE(map.findElf(110), third);
+            QCOMPARE(map.findElf(110), third);
 
-            const PerfElfMap::ElfInfo fragment2(file1, 120, 5, 15, 2);
-            const PerfElfMap::ElfInfo fragment3(file1, 95, 5, 0, 2);
-            QCOMPARE(map.findElf(122, 2), fragment2);
-            QCOMPARE(map.findElf(97, 2), fragment3);
+            const PerfElfMap::ElfInfo fragment2(file1, 120, 5, 15);
+            const PerfElfMap::ElfInfo fragment3(file1, 95, 5, 0);
+            QCOMPARE(map.findElf(122), fragment2);
+            QCOMPARE(map.findElf(97), fragment3);
         }
     }
 
@@ -154,14 +151,14 @@ private slots:
         PerfElfMap map;
         QVERIFY(!map.isAddressInRange(10));
 
-        const PerfElfMap::ElfInfo first({}, 10, 10, 0, 0);
+        const PerfElfMap::ElfInfo first({}, 10, 10, 0);
         QVERIFY(!registerElf(&map, first));
         QVERIFY(!map.isAddressInRange(9));
         QVERIFY(map.isAddressInRange(10));
         QVERIFY(map.isAddressInRange(19));
         QVERIFY(!map.isAddressInRange(20));
 
-        const PerfElfMap::ElfInfo second({}, 30, 10, 0, 1);
+        const PerfElfMap::ElfInfo second({}, 30, 10, 0);
         QVERIFY(!registerElf(&map, second));
         QVERIFY(!map.isAddressInRange(9));
         QVERIFY(map.isAddressInRange(10));
@@ -182,9 +179,8 @@ private slots:
         const quint64 LEN = 1024;
         QBENCHMARK {
             PerfElfMap map;
-            quint64 time = 0;
             for (quint64 addr = 0; addr < MAX_ADDR; addr += ADDR_STEP) {
-                map.registerElf(addr, LEN, 0, time++, {});
+                map.registerElf(addr, LEN, 0, {});
             }
         }
     }
@@ -206,9 +202,8 @@ private slots:
         quint64 len = MAX_ADDR;
         QBENCHMARK {
             PerfElfMap map;
-            quint64 time = 0;
             for (quint64 addr = 0; addr < MAX_ADDR; addr += ADDR_STEP, len -= ADDR_STEP) {
-                map.registerElf(addr, len, 0, time++, {});
+                map.registerElf(addr, len, 0, {});
             }
         }
     }
@@ -227,9 +222,8 @@ private slots:
         const quint64 MAX_LEN = LEN_STEP * numElfMaps;
         QBENCHMARK {
             PerfElfMap map;
-            quint64 time = 0;
             for (quint64 len = LEN_STEP; len <= MAX_LEN; len += LEN_STEP) {
-                map.registerElf(ADDR, len, 0, time++, {});
+                map.registerElf(ADDR, len, 0, {});
             }
         }
     }
@@ -248,16 +242,14 @@ private slots:
         const quint64 ADDR_STEP = 1024;
         const quint64 MAX_ADDR = ADDR_STEP * numElfMaps;
         const quint64 LEN = 1024;
-        quint64 time = 0;
         for (quint64 addr = 0; addr < MAX_ADDR; addr += ADDR_STEP) {
-            map.registerElf(addr, LEN, 0, time++, {});
+            map.registerElf(addr, LEN, 0, {});
         }
-        time = 0;
 
         const quint64 ADDR_STEP_FIND = 64;
         QBENCHMARK {
             for (quint64 addr = 0; addr < MAX_ADDR; addr += ADDR_STEP_FIND) {
-                auto it = map.findElf(addr, time++);
+                auto it = map.findElf(addr);
                 Q_UNUSED(it);
             }
         }
@@ -277,16 +269,14 @@ private slots:
         const quint64 ADDR_STEP = 1024;
         const quint64 MAX_ADDR = ADDR_STEP * numElfMaps;
         quint64 LEN = MAX_ADDR;
-        quint64 time = 0;
         for (quint64 addr = 0; addr < MAX_ADDR; addr += ADDR_STEP, LEN -= ADDR_STEP) {
-            map.registerElf(addr, LEN, 0, time++, {});
+            map.registerElf(addr, LEN, 0, {});
         }
-        time = 0;
 
         const quint64 ADDR_STEP_FIND = 64;
         QBENCHMARK {
             for (quint64 addr = 0; addr < MAX_ADDR; addr += ADDR_STEP_FIND) {
-                auto it = map.findElf(addr, time++);
+                auto it = map.findElf(addr);
                 Q_UNUSED(it);
             }
         }
@@ -306,17 +296,15 @@ private slots:
         const quint64 FIRST_ADDR = 0;
         const quint64 LEN_STEP = 1024;
         const quint64 MAX_LEN = LEN_STEP * numElfMaps;
-        quint64 time = 0;
         for (quint64 len = LEN_STEP; len <= MAX_LEN; len += LEN_STEP) {
-            map.registerElf(FIRST_ADDR, len, 0, time++, {});
+            map.registerElf(FIRST_ADDR, len, 0, {});
         }
 
         const quint64 MAX_ADDR = FIRST_ADDR + MAX_LEN;
         const quint64 ADDR_STEP_FIND = 64;
         QBENCHMARK {
-            quint64 time = 0;
             for (quint64 addr = FIRST_ADDR; addr < MAX_ADDR; addr += ADDR_STEP_FIND) {
-                auto it = map.findElf(addr, time++);
+                auto it = map.findElf(addr);
                 Q_UNUSED(it);
             }
         }

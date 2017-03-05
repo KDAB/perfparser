@@ -31,7 +31,6 @@ QDebug operator<<(QDebug stream, const PerfElfMap::ElfInfo& info)
                      << "addr=" << info.addr << ", "
                      << "len=" << info.length << ", "
                      << "pgoff=" << info.pgoff << ", "
-                     << "timeAdded=" << info.timeAdded << ", "
                      << "}";
     return stream.space();
 }
@@ -52,7 +51,7 @@ struct SortByAddr
 }
 
 bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgoff,
-                             const quint64 time, const QFileInfo &fullPath)
+                             const QFileInfo &fullPath)
 {
     bool cacheInvalid = false;
     const quint64 addrEnd = addr + len;
@@ -70,11 +69,11 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
 
         if (i->addr < addr) {
             newElfs.push_back(ElfInfo(i->file, i->addr, addr - i->addr,
-                                      i->pgoff, time));
+                                      i->pgoff));
         }
         if (iEnd > addrEnd) {
             newElfs.push_back(ElfInfo(i->file, addrEnd, iEnd - addrEnd,
-                                      i->pgoff + addrEnd - i->addr, time));
+                                      i->pgoff + addrEnd - i->addr));
         }
 
         removedElfs.push_back(std::distance(m_elfs.begin(), i));
@@ -90,7 +89,7 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
     for (auto it = removedElfs.rbegin(), end = removedElfs.rend(); it != end; ++it)
         m_elfs.remove(*it);
 
-    newElfs.push_back(ElfInfo(fullPath, addr, len, pgoff, time));
+    newElfs.push_back(ElfInfo(fullPath, addr, len, pgoff));
 
     for (const auto &elf : newElfs) {
         auto it = std::lower_bound(m_elfs.begin(), m_elfs.end(),
@@ -101,7 +100,7 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
     return cacheInvalid;
 }
 
-PerfElfMap::ElfInfo PerfElfMap::findElf(quint64 ip, quint64 timestamp) const
+PerfElfMap::ElfInfo PerfElfMap::findElf(quint64 ip) const
 {
     auto i = std::upper_bound(m_elfs.begin(), m_elfs.end(), ip, SortByAddr());
     if (i == m_elfs.constEnd() || i->addr != ip) {
@@ -111,15 +110,7 @@ PerfElfMap::ElfInfo PerfElfMap::findElf(quint64 ip, quint64 timestamp) const
             return {};
     }
 
-    while (true) {
-        if (i->timeAdded <= timestamp)
-            return (i->addr + i->length > ip) ? *i : ElfInfo();
-
-        if (i == m_elfs.constBegin())
-            return {};
-
-        --i;
-    }
+    return (i->addr + i->length > ip) ? *i : ElfInfo();
 }
 
 bool PerfElfMap::isAddressInRange(quint64 addr) const

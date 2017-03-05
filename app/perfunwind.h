@@ -121,14 +121,14 @@ public:
     void features(const PerfFeatures &features);
     void finishedRound();
 
-    Dwfl_Module *reportElf(quint64 ip, quint32 pid, quint64 timestamp);
+    Dwfl_Module *reportElf(quint64 ip, quint32 pid);
     bool ipIsInKernelSpace(quint64 ip) const;
     void sample(const PerfRecordSample &sample);
 
     void fork(const PerfRecordFork &sample);
     void exit(const PerfRecordExit &sample);
     PerfSymbolTable *symbolTable(quint32 pid);
-    Dwfl *dwfl(quint32 pid, quint64 timestamp);
+    Dwfl *dwfl(quint32 pid);
 
     qint32 resolveString(const QByteArray &string);
 
