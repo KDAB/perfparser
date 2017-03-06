@@ -58,9 +58,6 @@ public:
         quint64 pgoff;
     };
 
-    using Map = QVector<ElfInfo>;
-    using ConstIterator = Map::ConstIterator;
-
     bool registerElf(quint64 addr, quint64 len, quint64 pgoff,
                      const QFileInfo &fullPath);
     ElfInfo findElf(quint64 ip) const;
@@ -68,16 +65,6 @@ public:
     bool isEmpty() const
     {
         return m_elfs.isEmpty();
-    }
-
-    ConstIterator begin() const
-    {
-        return m_elfs.constBegin();
-    }
-
-    ConstIterator end() const
-    {
-        return m_elfs.constEnd();
     }
 
     bool isAddressInRange(quint64 addr) const;

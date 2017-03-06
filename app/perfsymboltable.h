@@ -85,6 +85,9 @@ private:
 
     PerfUnwind *m_unwind;
     Dwfl *m_dwfl;
+    // elf used to detect architecture
+    QFile m_firstElfFile;
+    Elf *m_firstElf;
 
     PerfElfMap m_elfs;
     Dwfl_Callbacks *m_callbacks;

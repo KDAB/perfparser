@@ -35,8 +35,7 @@
 
 PerfSymbolTable::PerfSymbolTable(quint32 pid, Dwfl_Callbacks *callbacks, PerfUnwind *parent) :
     m_perfMapFile(QString::fromLatin1("/tmp/perf-%1.map").arg(pid)),
-    m_unwind(parent), m_callbacks(callbacks),
-    m_pid(pid)
+    m_unwind(parent), m_firstElf(nullptr), m_callbacks(callbacks), m_pid(pid)
 {
     m_dwfl = dwfl_begin(m_callbacks);
 }
@@ -44,6 +43,7 @@ PerfSymbolTable::PerfSymbolTable(quint32 pid, Dwfl_Callbacks *callbacks, PerfUnw
 PerfSymbolTable::~PerfSymbolTable()
 {
     dwfl_end(m_dwfl);
+    elf_end(m_firstElf);
 }
 
 static pid_t nextThread(Dwfl *dwfl, void *arg, void **threadArg)
@@ -196,6 +196,23 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QString &app
             }
             if (!found)
                 fullPath.setFile(systemRoot + filePath);
+        }
+
+        if (!m_firstElfFile.isOpen() && fullPath.exists()) {
+            m_firstElfFile.setFileName(fullPath.absoluteFilePath());
+            if (!m_firstElfFile.open(QIODevice::ReadOnly)) {
+                qWarning() << "Failed to open file:" << m_firstElfFile.errorString();
+            } else {
+                m_firstElf = elf_begin(m_firstElfFile.handle(), ELF_C_READ, nullptr);
+                if (!m_firstElf) {
+                    qWarning() << "Failed to begin elf:" << elf_errmsg(elf_errno());
+                    m_firstElfFile.close();
+                } else if (m_firstElf && elf_kind(m_firstElf) == ELF_K_NONE) {
+                    // not actually an elf object
+                    m_firstElf = nullptr;
+                    m_firstElfFile.close();
+                }
+            }
         }
     } else { // kernel
         fullPath.setFile(systemRoot + filePath);
@@ -537,18 +554,7 @@ Dwfl *PerfSymbolTable::attachDwfl(void *arg)
     if (static_cast<pid_t>(m_pid) == dwfl_pid(m_dwfl))
         return m_dwfl; // Already attached, nothing to do
 
-    // Report some random elf, so that dwfl guesses the target architecture.
-    for (const auto &elf : m_elfs) {
-        if (!elf.isFile())
-            continue;
-        if (dwfl_report_elf(m_dwfl, elf.file.fileName().toLocal8Bit().constData(),
-                            elf.file.absoluteFilePath().toLocal8Bit().constData(), -1,
-                            elf.addr, false)) {
-            break;
-        }
-    }
-
-    if (!dwfl_attach_state(m_dwfl, 0, m_pid, &threadCallbacks, arg)) {
+    if (!dwfl_attach_state(m_dwfl, m_firstElf, m_pid, &threadCallbacks, arg)) {
         qWarning() << m_pid << "failed to attach state" << dwfl_errmsg(dwfl_errno());
         return nullptr;
     }
