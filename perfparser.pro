@@ -8,3 +8,5 @@ SUBDIRS = app
     app.depends = 3rdparty/elfutils
     !isEmpty(BUILD_TESTS): tests.depends = 3rdparty/elfutils
 }
+
+QMAKE_EXTRA_TARGETS = docs install_docs # dummy targets for consistency
