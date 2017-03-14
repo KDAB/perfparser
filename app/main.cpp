@@ -27,6 +27,7 @@
 #include "perfstdin.h"
 
 #include <QFile>
+#include <QDir>
 #include <QDebug>
 #include <QtEndian>
 #include <QCoreApplication>
@@ -112,9 +113,9 @@ int main(int argc, char *argv[])
                                  "Look for debug information in <path>. "
                                  "You can specify multiple paths separated by ':'. "
                                  "Relative paths are relative to the original file's path. "
-                                 "The default is: <sysroot>/usr/lib/debug:.debug/ ."),
+                                 "The default is: <sysroot>/usr/lib/debug:~/.debug:.debug ."),
                              QLatin1String("path"),
-                             QLatin1String("/usr/lib/debug:.debug/"));
+                             QString("/usr/lib/debug:%1/.debug:.debug").arg(QDir::homePath()));
     parser.addOption(debug);
 
     QCommandLineOption extra(QLatin1String("extra"),
