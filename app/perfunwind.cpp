@@ -78,7 +78,7 @@ PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QStri
                        const QString &extraLibsPath, const QString &appPath,
                        const QString &kallsymsPath, bool printStats, uint maxEventBufferSize) :
     m_output(output), m_architecture(PerfRegisterInfo::ARCH_INVALID), m_systemRoot(systemRoot),
-    m_extraLibsPath(extraLibsPath), m_appPath(appPath), m_kallsyms(kallsymsPath),
+    m_extraLibsPath(extraLibsPath), m_appPath(appPath), m_debugPath(debugPath), m_kallsyms(kallsymsPath),
     m_maxEventBufferSize(maxEventBufferSize), m_eventBufferSize(0), m_lastFlushMaxTime(0)
 {
     m_stats.enabled = printStats;
@@ -247,6 +247,12 @@ void PerfUnwind::features(const PerfFeatures &features)
                                                << features.pmuMappings()
                                                << features.groupDesc();
     sendBuffer(buffer);
+
+    const auto &buildIds = features.buildId().buildIds;
+    m_buildIds.reserve(buildIds.size());
+    for (const auto &buildId : buildIds) {
+        m_buildIds[buildId.fileName] = buildId.id;
+    }
 }
 
 Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid)
@@ -597,9 +603,10 @@ void PerfUnwind::flushEventBuffer(uint desiredBufferSize)
 
         for (; mmapIt != mmapEnd && mmapIt->time() <= sample.time(); ++mmapIt) {
             if (!m_stats.enabled) {
-                symbolTable(mmapIt->pid())->registerElf(*mmapIt, m_appPath,
-                                                        m_systemRoot,
-                                                        m_extraLibsPath);
+                symbolTable(mmapIt->pid())->registerElf(*mmapIt,
+                                                        m_buildIds.value(mmapIt->filename()),
+                                                        m_appPath, m_systemRoot,
+                                                        m_extraLibsPath, m_debugPath);
             }
             m_eventBufferSize -= mmapIt->size();
         }

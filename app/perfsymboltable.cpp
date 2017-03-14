@@ -172,8 +172,9 @@ static bool findInExtraPath(QFileInfo &path, const QString &fileName)
     return false;
 }
 
-void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QString &appPath,
-                                  const QString &systemRoot, const QString &extraLibsPath)
+void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &buildId,
+                                  const QString &appPath, const QString &systemRoot,
+                                  const QString &extraLibsPath, const QString &debugInfoPath)
 {
     QLatin1String filePath(mmap.filename());
     // special regions, such as [heap], [vdso], [stack], ... as well as //anon
@@ -184,9 +185,26 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QString &app
     if (isSpecialRegion) {
         // don not set fullPath, these regions don't represent a real file
     } else if (mmap.pid() != PerfUnwind::s_kernelPid) {
-        fullPath.setFile(appPath);
-        if (!findInExtraPath(fullPath, fileInfo.fileName())) {
-            bool found = false;
+        bool found = false;
+        // first try to find the debug information via build id, if available
+        if (!buildId.isEmpty()) {
+            const QString buildIdPath = QString::fromUtf8(mmap.filename() + '/'
+                                                            + buildId.toHex() + "/elf");
+            foreach (const QString &extraPath, debugInfoPath.split(QLatin1Char(':'))) {
+                fullPath.setFile(extraPath);
+                if (findInExtraPath(fullPath, buildIdPath)) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+        if (!found) {
+            // try to find the file in the app path
+            fullPath.setFile(appPath);
+            found = findInExtraPath(fullPath, fileInfo.fileName());
+        }
+        if (!found) {
+            // try to find the file in the extra libs path
             foreach (const QString &extraPath, extraLibsPath.split(QLatin1Char(':'))) {
                 fullPath.setFile(extraPath);
                 if (findInExtraPath(fullPath, fileInfo.fileName())) {
@@ -194,9 +212,9 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QString &app
                     break;
                 }
             }
-            if (!found)
-                fullPath.setFile(systemRoot + filePath);
         }
+        if (!found) // last fall-back, try the system root
+            fullPath.setFile(systemRoot + filePath);
 
         if (!m_firstElfFile.isOpen() && fullPath.exists()) {
             m_firstElfFile.setFileName(fullPath.absoluteFilePath());
@@ -218,7 +236,8 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QString &app
         fullPath.setFile(systemRoot + filePath);
     }
 
-    bool cacheInvalid = m_elfs.registerElf(mmap.addr(), mmap.len(), mmap.pgoff(), fullPath);
+    bool cacheInvalid = m_elfs.registerElf(mmap.addr(), mmap.len(), mmap.pgoff(), fullPath,
+                                           fileInfo.fileName().toUtf8());
 
     // There is no need to clear the symbol or location caches in PerfUnwind. Some locations become
     // stale this way, but we still need to keep their IDs, as the receiver might still use them for
@@ -356,7 +375,7 @@ void PerfSymbolTable::parseDwarf(Dwarf_Die *cudie, Dwarf_Addr bias, qint32 binar
 
 static void reportError(const PerfElfMap::ElfInfo& info, const char *message)
 {
-    qWarning() << "failed to report" << info.file.absoluteFilePath() << "for"
+    qWarning() << "failed to report" << info.localFile.absoluteFilePath() << "for"
                << hex << info.addr << dec << ":" << message;
 }
 
@@ -371,8 +390,8 @@ Dwfl_Module *PerfSymbolTable::reportElf(const PerfElfMap::ElfInfo& info)
     }
 
     Dwfl_Module *ret = dwfl_report_elf(
-                m_dwfl, info.file.fileName().toLocal8Bit().constData(),
-                info.file.absoluteFilePath().toLocal8Bit().constData(), -1, info.addr,
+                m_dwfl, info.originalFileName.constData(),
+                info.localFile.absoluteFilePath().toLocal8Bit().constData(), -1, info.addr,
                 false);
     if (!ret)
         reportError(info, dwfl_errmsg(dwfl_errno()));
@@ -401,7 +420,7 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
 
     const auto& elf = findElf(ip);
     if (elf.isValid()) {
-        binaryId = m_unwind->resolveString(elf.file.fileName().toLocal8Bit());
+        binaryId = m_unwind->resolveString(elf.originalFileName);
         elfStart = elf.addr;
         if (m_dwfl && !mod)
             mod = reportElf(elf);

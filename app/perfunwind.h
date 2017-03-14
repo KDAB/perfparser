@@ -179,6 +179,9 @@ private:
     // binaries and debug symbols.
     QString m_appPath;
 
+    // Path to debug information, e.g. ~/.debug and /usr/local/debug
+    QString m_debugPath;
+
     QList<PerfRecordSample> m_sampleBuffer;
     QList<PerfRecordMmap> m_mmapBuffer;
     QHash<quint32, PerfSymbolTable *> m_symbolTables;
@@ -189,6 +192,7 @@ private:
     QHash<qint32, Symbol> m_symbols;
     QHash<quint64, qint32> m_attributeIds;
     QHash<PerfEventAttributes, qint32> m_attributes;
+    QHash<QByteArray, QByteArray> m_buildIds;
 
     uint m_maxEventBufferSize;
     uint m_eventBufferSize;

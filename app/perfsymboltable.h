@@ -53,8 +53,9 @@ public:
 
     // Announce an mmap. Invalidate the symbol and address cache and clear the dwfl if it overlaps
     // with an existing one.
-    void registerElf(const PerfRecordMmap &mmap, const QString &appPath,
-                     const QString &systemRoot, const QString &extraLibsPath);
+    void registerElf(const PerfRecordMmap &mmap, const QByteArray &buildId,
+                     const QString &appPath, const QString &systemRoot,
+                     const QString &extraLibsPath, const QString &debugInfoPath);
 
     PerfElfMap::ElfInfo findElf(quint64 ip) const;
 

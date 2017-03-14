@@ -28,9 +28,13 @@ class PerfElfMap
 {
 public:
     struct ElfInfo {
-        ElfInfo(const QFileInfo &file = QFileInfo(), quint64 addr = 0, quint64 length = 0,
-                quint64 pgoff = 0) :
-            file(file), addr(addr), length(length), pgoff(pgoff)
+        ElfInfo(const QFileInfo &localFile = QFileInfo(), quint64 addr = 0, quint64 length = 0,
+                quint64 pgoff = 0, const QByteArray &originalFileName = {}) :
+            localFile(localFile),
+            originalFileName(originalFileName.isEmpty()
+                ? localFile.fileName().toLocal8Bit()
+                : originalFileName),
+            addr(addr), length(length), pgoff(pgoff)
         {}
 
         bool isValid() const
@@ -40,26 +44,28 @@ public:
 
         bool isFile() const
         {
-            return file.isFile();
+            return localFile.isFile();
         }
 
         bool operator==(const ElfInfo& rhs) const
         {
             return isFile() == rhs.isFile()
-                && (!isFile() || file == rhs.file)
+                && (!isFile() || localFile == rhs.localFile)
+                && originalFileName == rhs.originalFileName
                 && addr == rhs.addr
                 && length == rhs.length
                 && pgoff == rhs.pgoff;
         }
 
-        QFileInfo file;
+        QFileInfo localFile;
+        QByteArray originalFileName;
         quint64 addr;
         quint64 length;
         quint64 pgoff;
     };
 
     bool registerElf(quint64 addr, quint64 len, quint64 pgoff,
-                     const QFileInfo &fullPath);
+                     const QFileInfo &fullPath, const QByteArray &originalFileName = {});
     ElfInfo findElf(quint64 ip) const;
 
     bool isEmpty() const
