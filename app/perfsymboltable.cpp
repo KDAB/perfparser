@@ -484,7 +484,7 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, quint64 timestamp, bool isKernel
     Q_ASSERT(m_unwind->hasSymbol(addressLocation.parentLocationId));
 
     int locationId = m_unwind->resolveLocation(addressLocation);
-    *isInterworking = (symname == "$at");
+    *isInterworking = (symname == "$a" || symname == "$t");
     m_addressCache.insert(ip, {locationId, *isInterworking});
     return locationId;
 }
