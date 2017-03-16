@@ -228,15 +228,20 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
     Dwarf_Addr pc_adjusted = pc - (isactivation ? 0 : 1);
 
     // isKernel = false as unwinding generally only works on user code
+    bool isInterworking = false;
     ui->frames.append(ui->unwind->symbolTable(ui->sample->pid())->lookupFrame(
-                          pc_adjusted, ui->sample->time(), false, &ui->isInterworking));
+                          pc_adjusted, ui->sample->time(), false, &isInterworking));
+    if (isInterworking && ui->frames.length() == 1)
+        ui->isInterworking = true;
     return DWARF_CB_OK;
 }
 
 void PerfUnwind::unwindStack(Dwfl *dwfl)
 {
     dwfl_getthread_frames(dwfl, m_currentUnwind.sample->pid(), frameCallback, &m_currentUnwind);
-    if (m_currentUnwind.frames.length() == 1 && m_currentUnwind.isInterworking) {
+    if (m_currentUnwind.isInterworking) {
+        QVector<qint32> savedFrames = m_currentUnwind.frames;
+
         // If it's an ARM interworking veneer, we assume that we can find a return address in LR and
         // no stack has been used for the veneer itself.
         // The reasoning is that any symbol jumped to by the veneer has to work with or without
@@ -244,7 +249,13 @@ void PerfUnwind::unwindStack(Dwfl *dwfl)
         // must be the same in both cases. Thus, the veneer cannot touch the stack pointer and there
         // has to be a return address in LR, provided by the caller.
         // So, just try again, and make setInitialRegisters use LR for IP.
+        m_currentUnwind.frames.resize(1); // Keep the actual veneer frame
         dwfl_getthread_frames(dwfl, m_currentUnwind.sample->pid(), frameCallback, &m_currentUnwind);
+
+        // If the LR trick didn't result in a longer stack trace than the regular unwinding, just
+        // revert it.
+        if (savedFrames.length() > m_currentUnwind.frames.length())
+            m_currentUnwind.frames.swap(savedFrames);
     }
 }
 
