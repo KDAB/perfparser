@@ -130,7 +130,7 @@ bool PerfFeatures::read(QIODevice *device, const PerfHeader *header)
     }
 
     QHash<PerfHeader::Feature, PerfFileSection>::ConstIterator i;
-    for (i = featureSections.begin(); i != featureSections.end(); ++i)
+    for (i = featureSections.constBegin(); i != featureSections.constEnd(); ++i)
         createFeature(device, stream.byteOrder(), i.value(), i.key());
 
     return true;

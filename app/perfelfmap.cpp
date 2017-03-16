@@ -30,7 +30,7 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
     const bool isFile = fullPath.isFile();
 
     QMultiMap<quint64, ElfInfo> fragments;
-    QMultiMap<quint64, ElfInfo>::ConstIterator firstOverwrite = m_elfs.end();
+    QMultiMap<quint64, ElfInfo>::iterator firstOverwrite = m_elfs.end();
     for (auto i = m_elfs.begin(), end = m_elfs.end(); i != end && i.key() < addrEnd; ++i) {
         const quint64 iEnd = i.key() + i->length;
         if (iEnd <= addr)
