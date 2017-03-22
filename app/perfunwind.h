@@ -104,7 +104,7 @@ public:
 
     PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugInfo,
                const QString &extraLibs, const QString &appPath,
-               const QString &kallsymsPath);
+               const QString &kallsymsPath, bool printStats);
     ~PerfUnwind();
 
     PerfRegisterInfo::Architecture architecture() const { return m_architecture; }
@@ -190,6 +190,27 @@ private:
     uint m_sampleBufferSize;
 
     static const uint s_maxSampleBufferSize = 1024 * 1024;
+
+    struct Stats
+    {
+        Stats()
+            : numSamples(0), numMmaps(0),
+            maxBufferSize(0),
+            maxTime(0), maxReorderTime(0),
+            enabled(false)
+        {}
+
+        void addEventTime(quint64 time);
+        void finishedRound();
+
+        quint64 numSamples;
+        quint64 numMmaps;
+        uint maxBufferSize;
+        quint64 maxTime;
+        quint64 maxReorderTime;
+        bool enabled;
+    };
+    Stats m_stats;
 
     void unwindStack(Dwfl *dwfl);
     void resolveCallchain();

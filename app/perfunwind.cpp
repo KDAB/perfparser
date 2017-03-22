@@ -44,13 +44,22 @@ bool operator==(const PerfUnwind::Location &a, const PerfUnwind::Location &b)
             && a.column == b.column;
 }
 
+void PerfUnwind::Stats::addEventTime(quint64 time)
+{
+    if (time && time < maxTime)
+        maxReorderTime = std::max(maxReorderTime, maxTime - time);
+    else
+        maxTime = time;
+}
+
 PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugPath,
                        const QString &extraLibsPath, const QString &appPath,
-                       const QString &kallsymsPath) :
+                       const QString &kallsymsPath, bool printStats) :
     m_output(output), m_architecture(PerfRegisterInfo::ARCH_INVALID), m_systemRoot(systemRoot),
     m_extraLibsPath(extraLibsPath), m_appPath(appPath), m_kallsyms(kallsymsPath),
     m_sampleBufferSize(0)
 {
+    m_stats.enabled = printStats;
     m_currentUnwind.unwind = this;
     m_offlineCallbacks.find_elf = dwfl_build_id_find_elf;
     m_offlineCallbacks.find_debuginfo =  dwfl_standard_find_debuginfo;
@@ -63,11 +72,13 @@ PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QStri
     std::memcpy(m_debugInfoPath, newDebugInfo.data(), newDebugInfo.length());
     m_offlineCallbacks.debuginfo_path = &m_debugInfoPath;
 
-    // Write minimal header, consisting of magic and data stream version we're going to use.
-    const char magic[] = "QPERFSTREAM";
-    output->write(magic, sizeof(magic));
-    qint32 dataStreamVersion = qToLittleEndian(QDataStream::Qt_DefaultCompiledVersion);
-    output->write(reinterpret_cast<const char *>(&dataStreamVersion), sizeof(qint32));
+    if (!printStats) {
+        // Write minimal header, consisting of magic and data stream version we're going to use.
+        const char magic[] = "QPERFSTREAM";
+        output->write(magic, sizeof(magic));
+        qint32 dataStreamVersion = qToLittleEndian(QDataStream::Qt_DefaultCompiledVersion);
+        output->write(reinterpret_cast<const char *>(&dataStreamVersion), sizeof(qint32));
+    }
 }
 
 PerfUnwind::~PerfUnwind()
@@ -77,6 +88,15 @@ PerfUnwind::~PerfUnwind()
 
     delete[] m_debugInfoPath;
     qDeleteAll(m_symbolTables);
+
+    if (m_stats.enabled) {
+        QTextStream out(m_output);
+        out << "samples: " << m_stats.numSamples << "\n";
+        out << "mmaps: " << m_stats.numMmaps << "\n";
+        out << "max buffer size: " << m_stats.maxBufferSize << "\n";
+        out << "max time: " << m_stats.maxTime << "\n";
+        out << "max reorder time: " << m_stats.maxReorderTime << "\n";
+    }
 }
 
 PerfSymbolTable *PerfUnwind::symbolTable(quint32 pid)
@@ -94,11 +114,20 @@ Dwfl *PerfUnwind::dwfl(quint32 pid, quint64 timestamp)
 
 void PerfUnwind::registerElf(const PerfRecordMmap &mmap)
 {
+    if (m_stats.enabled) {
+        m_stats.addEventTime(mmap.time());
+        ++m_stats.numMmaps;
+        return;
+    }
+
     symbolTable(mmap.pid())->registerElf(mmap, m_appPath, m_systemRoot, m_extraLibsPath);
 }
 
 void PerfUnwind::sendBuffer(const QByteArray &buffer)
 {
+    if (m_stats.enabled)
+        return;
+
     quint32 size = qToLittleEndian(buffer.length());
     m_output->write(reinterpret_cast<char *>(&size), sizeof(quint32));
     m_output->write(buffer);
@@ -312,6 +341,13 @@ void PerfUnwind::sample(const PerfRecordSample &sample)
     m_sampleBuffer.append(sample);
     m_sampleBufferSize += sample.size();
 
+    if (m_stats.enabled) {
+        m_stats.maxBufferSize = std::max(m_sampleBufferSize, m_stats.maxBufferSize);
+        m_stats.addEventTime(sample.time());
+        ++m_stats.numSamples;
+        // don't return early, stats should include our buffer behavior
+    }
+
     while (m_sampleBufferSize > s_maxSampleBufferSize) {
         const PerfRecordSample &sample = m_sampleBuffer.front();
         m_sampleBufferSize -= sample.size();
@@ -322,6 +358,9 @@ void PerfUnwind::sample(const PerfRecordSample &sample)
 
 void PerfUnwind::analyze(const PerfRecordSample &sample)
 {
+    if (m_stats.enabled) // don't do any time intensive work in stats mode
+        return;
+
     m_currentUnwind.isInterworking = false;
     m_currentUnwind.firstGuessedFrame = -1;
     m_currentUnwind.sample = &sample;

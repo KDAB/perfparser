@@ -152,6 +152,11 @@ int main(int argc, char *argv[])
                                QLatin1String("/proc/kallsyms"));
     parser.addOption(kallsymsPath);
 
+    QCommandLineOption printStats(QLatin1String("print-stats"),
+                               QCoreApplication::translate(
+                                   "main", "Print statistics instead of converting the data."));
+    parser.addOption(printStats);
+
     parser.process(app);
 
     QScopedPointer<QFile> outfile;
@@ -183,7 +188,8 @@ int main(int argc, char *argv[])
                           parser.value(debug) : parser.value(sysroot) + parser.value(debug),
                       parser.value(extra), parser.value(appPath), parser.isSet(kallsymsPath)
                         ? parser.value(kallsymsPath)
-                        : parser.value(sysroot) + parser.value(kallsymsPath));
+                        : parser.value(sysroot) + parser.value(kallsymsPath),
+                      parser.isSet(printStats));
 
     PerfHeader header(infile.data());
     PerfAttributes attributes;
