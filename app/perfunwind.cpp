@@ -116,20 +116,26 @@ void PerfUnwind::comm(const PerfRecordComm &comm)
 
 void PerfUnwind::attr(const PerfRecordAttr &attr)
 {
-    const qint32 internalId = resolveAttr(attr.attr(), attr.attr().name());
+    addAttributes(attr.attr(), attr.attr().name(), attr.ids());
+}
 
-    if (attr.ids().isEmpty()) {
+void PerfUnwind::addAttributes(const PerfEventAttributes &attributes, const QByteArray &name,
+                              const QList<quint64> &ids)
+{
+    const qint32 internalId = resolveAttributes(attributes, name);
+
+    if (ids.isEmpty()) {
         // If we only get one attribute, it doesn't have an ID.
         // The default ID for samples is 0, so we assign that here,
         // in order to look it up in analyze().
         m_attributeIds[0] = internalId;
     } else {
-        foreach (quint64 id, attr.ids())
+        foreach (quint64 id, ids)
             m_attributeIds[id] = internalId;
     }
 }
 
-qint32 PerfUnwind::resolveAttr(const PerfEventAttributes &attributes, const QByteArray &name)
+qint32 PerfUnwind::resolveAttributes(const PerfEventAttributes &attributes, const QByteArray &name)
 {
     auto it = m_attributes.find(attributes);
     if (it == m_attributes.end()) {
@@ -161,9 +167,8 @@ void PerfUnwind::lost(const PerfRecordLost &lost)
 void PerfUnwind::features(const PerfFeatures &features)
 {
     const auto &eventDescs = features.eventDesc().eventDescs;
-    for (const auto &desc : eventDescs) {
-        resolveAttr(desc.attrs, desc.name);
-    }
+    for (const auto &desc : eventDescs)
+        addAttributes(desc.attrs, desc.name, desc.ids);
 
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(FeaturesDefinition)
