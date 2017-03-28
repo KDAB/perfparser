@@ -414,7 +414,8 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
     QDataStream(&buffer, QIODevice::WriteOnly)
             << static_cast<quint8>(Sample) << sample.pid()
             << sample.tid() << sample.time() << m_currentUnwind.frames
-            << numGuessedFrames << m_attributeIds.value(sample.id(), -1);
+            << numGuessedFrames << m_attributeIds.value(sample.id(), -1)
+            << sample.period() << sample.weight();
     sendBuffer(buffer);
 }
 

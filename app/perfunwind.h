@@ -48,7 +48,7 @@ class PerfUnwind : public QObject
     Q_OBJECT
 public:
     enum EventType {
-        Sample,
+        Sample43, // now obsolete
         ThreadStart,
         ThreadEnd,
         Command,
@@ -59,6 +59,7 @@ public:
         LostDefinition,
         FeaturesDefinition,
         Error,
+        Sample,
         InvalidType
     };
 

@@ -373,6 +373,8 @@ public:
     quint64 ip() const { return m_ip; }
     const QByteArray &userStack() const { return m_userStack; }
     const QList<quint64> &callchain() const { return m_callchain; }
+    quint64 period() const { return m_period; }
+    quint64 weight() const { return m_weight; }
 
 private:
     struct ReadFormat {
