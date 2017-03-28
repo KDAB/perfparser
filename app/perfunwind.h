@@ -129,7 +129,11 @@ public:
     Dwfl *dwfl(quint32 pid, quint64 timestamp);
 
     qint32 resolveString(const QByteArray &string);
-    qint32 resolveAttr(const PerfEventAttributes &attributes, const QByteArray &name);
+
+    void addAttributes(const PerfEventAttributes &attributes, const QByteArray &name,
+                       const QList<quint64> &ids);
+    qint32 resolveAttributes(const PerfEventAttributes &attributes,
+                             const QByteArray &name);
 
     int lookupLocation(const Location &location) const;
     int resolveLocation(const Location &location);
