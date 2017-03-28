@@ -52,6 +52,24 @@ void PerfUnwind::Stats::addEventTime(quint64 time)
         maxTime = time;
 }
 
+void PerfUnwind::Stats::finishedRound()
+{
+    maxSamplesPerRound = std::max(maxSamplesPerRound, numSamplesInRound);
+    maxMmapsPerRound = std::max(maxMmapsPerRound, numMmapsInRound);
+    numSamplesInRound = 0;
+    numMmapsInRound = 0;
+    ++numRounds;
+
+    maxTotalEventSizePerRound = std::max(maxTotalEventSizePerRound,
+                                         totalEventSizePerRound);
+    totalEventSizePerRound = 0;
+
+    if (lastRoundTime > 0)
+        maxTimeBetweenRounds = std::max(maxTimeBetweenRounds, maxTime - lastRoundTime);
+
+    lastRoundTime = maxTime;
+}
+
 PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugPath,
                        const QString &extraLibsPath, const QString &appPath,
                        const QString &kallsymsPath, bool printStats) :
@@ -83,6 +101,8 @@ PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QStri
 
 PerfUnwind::~PerfUnwind()
 {
+    finishedRound();
+
     foreach (const PerfRecordSample &sample, m_sampleBuffer)
         analyze(sample);
 
@@ -93,8 +113,13 @@ PerfUnwind::~PerfUnwind()
         QTextStream out(m_output);
         out << "samples: " << m_stats.numSamples << "\n";
         out << "mmaps: " << m_stats.numMmaps << "\n";
+        out << "rounds: " << m_stats.numRounds << "\n";
+        out << "max samples per round: " << m_stats.maxSamplesPerRound << "\n";
+        out << "max mmaps per round: " << m_stats.maxMmapsPerRound << "\n";
         out << "max buffer size: " << m_stats.maxBufferSize << "\n";
+        out << "max total event size per round: " << m_stats.maxTotalEventSizePerRound << "\n";
         out << "max time: " << m_stats.maxTime << "\n";
+        out << "max time between rounds: " << m_stats.maxTimeBetweenRounds << "\n";
         out << "max reorder time: " << m_stats.maxReorderTime << "\n";
     }
 }
@@ -115,7 +140,9 @@ Dwfl *PerfUnwind::dwfl(quint32 pid, quint64 timestamp)
 void PerfUnwind::registerElf(const PerfRecordMmap &mmap)
 {
     if (m_stats.enabled) {
+        m_stats.totalEventSizePerRound += mmap.size();
         m_stats.addEventTime(mmap.time());
+        ++m_stats.numMmapsInRound;
         ++m_stats.numMmaps;
         return;
     }
@@ -343,7 +370,9 @@ void PerfUnwind::sample(const PerfRecordSample &sample)
 
     if (m_stats.enabled) {
         m_stats.maxBufferSize = std::max(m_sampleBufferSize, m_stats.maxBufferSize);
+        m_stats.totalEventSizePerRound += sample.size();
         m_stats.addEventTime(sample.time());
+        ++m_stats.numSamplesInRound;
         ++m_stats.numSamples;
         // don't return early, stats should include our buffer behavior
     }
@@ -479,4 +508,10 @@ void PerfUnwind::resolveSymbol(int locationId, const PerfUnwind::Symbol &symbol)
 PerfKallsymEntry PerfUnwind::findKallsymEntry(quint64 address) const
 {
     return m_kallsyms.findEntry(address);
+}
+
+void PerfUnwind::finishedRound()
+{
+    if (m_stats.enabled)
+        m_stats.finishedRound();
 }

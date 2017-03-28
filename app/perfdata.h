@@ -268,6 +268,7 @@ public:
     quint32 tid() const { return m_sampleId.tid(); }
     quint64 time() const { return m_sampleId.time(); }
     quint64 id() const { return m_sampleId.id(); }
+    uint size() const { return m_header.size; }
 
 protected:
     PerfRecord(const PerfEventHeader *header, quint64 sampleType, bool sampleIdAll);
@@ -372,7 +373,6 @@ public:
     quint64 ip() const { return m_ip; }
     const QByteArray &userStack() const { return m_userStack; }
     const QList<quint64> &callchain() const { return m_callchain; }
-    uint size() const { return m_header.size; }
 
 private:
     struct ReadFormat {

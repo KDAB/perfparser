@@ -118,6 +118,7 @@ public:
     void attr(const PerfRecordAttr &attr);
     void lost(const PerfRecordLost &lost);
     void features(const PerfFeatures &features);
+    void finishedRound();
 
     Dwfl_Module *reportElf(quint64 ip, quint32 pid, quint64 timestamp);
     bool ipIsInKernelSpace(quint64 ip) const;
@@ -194,9 +195,12 @@ private:
     struct Stats
     {
         Stats()
-            : numSamples(0), numMmaps(0),
-            maxBufferSize(0),
-            maxTime(0), maxReorderTime(0),
+            : numSamples(0), numMmaps(0), numRounds(0),
+            numSamplesInRound(0), numMmapsInRound(0),
+            maxSamplesPerRound(0), maxMmapsPerRound(0),
+            maxBufferSize(0), maxTotalEventSizePerRound(0),
+            maxTime(0), maxTimeBetweenRounds(0), maxReorderTime(0),
+            lastRoundTime(0), totalEventSizePerRound(0),
             enabled(false)
         {}
 
@@ -205,9 +209,18 @@ private:
 
         quint64 numSamples;
         quint64 numMmaps;
+        quint64 numRounds;
+        int numSamplesInRound;
+        int numMmapsInRound;
+        int maxSamplesPerRound;
+        int maxMmapsPerRound;
         uint maxBufferSize;
+        uint maxTotalEventSizePerRound;
         quint64 maxTime;
+        quint64 maxTimeBetweenRounds;
         quint64 maxReorderTime;
+        quint64 lastRoundTime;
+        uint totalEventSizePerRound;
         bool enabled;
     };
     Stats m_stats;

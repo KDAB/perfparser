@@ -132,6 +132,15 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
         m_destination->exit(exit);
         break;
     }
+    case PERF_RECORD_FINISHED_ROUND: {
+        m_destination->finishedRound();
+        if (contentSize != 0) {
+            qWarning() << "FINISHED_ROUND with non-zero content size detected"
+                       << contentSize;
+            stream.skipRawData(contentSize);
+        }
+        break;
+    }
 
     default:
         qWarning() << "unhandled event type" << m_eventHeader.type;
