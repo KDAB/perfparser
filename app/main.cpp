@@ -168,6 +168,15 @@ int main(int argc, char *argv[])
                                    QLatin1String("buffer-size"), QLatin1String("10240"));
     parser.addOption(bufferSize);
 
+    QCommandLineOption maxFrames(QLatin1String("max-frames"),
+                                  QCoreApplication::translate(
+                                   "main", "Maximum number of frames that will be unwound."
+                                   " Set the value to -1 to unwind as many frames as possible."
+                                   " Beware that this can then potentially lead to infinite loops "
+                                   " when the stack got corrupted. Default value is 64."),
+                                   QLatin1String("max-frames"), QLatin1String("64"));
+    parser.addOption(maxFrames);
+
     parser.process(app);
 
     QScopedPointer<QFile> outfile;
@@ -203,12 +212,19 @@ int main(int argc, char *argv[])
         return InvalidOption;
     }
 
+    int maxFramesValue = parser.value(maxFrames).toInt(&ok);
+    if (!ok) {
+        qWarning() << "Failed to parse max-frames argument. Expected integer, got:"
+                   << parser.value(maxFrames);
+        return InvalidOption;
+    }
+
     PerfUnwind unwind(outfile.data(), parser.value(sysroot), parser.isSet(debug) ?
                           parser.value(debug) : parser.value(sysroot) + parser.value(debug),
                       parser.value(extra), parser.value(appPath), parser.isSet(kallsymsPath)
                         ? parser.value(kallsymsPath)
                         : parser.value(sysroot) + parser.value(kallsymsPath),
-                      parser.isSet(printStats), maxEventBufferSize);
+                      parser.isSet(printStats), maxEventBufferSize, maxFramesValue);
 
     PerfHeader header(infile.data());
     PerfAttributes attributes;

@@ -76,13 +76,15 @@ void PerfUnwind::Stats::finishedRound()
 
 PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugPath,
                        const QString &extraLibsPath, const QString &appPath,
-                       const QString &kallsymsPath, bool printStats, uint maxEventBufferSize) :
+                       const QString &kallsymsPath, bool printStats, uint maxEventBufferSize,
+                       int maxFrames) :
     m_output(output), m_architecture(PerfRegisterInfo::ARCH_INVALID), m_systemRoot(systemRoot),
     m_extraLibsPath(extraLibsPath), m_appPath(appPath), m_debugPath(debugPath), m_kallsyms(kallsymsPath),
     m_maxEventBufferSize(maxEventBufferSize), m_eventBufferSize(0), m_lastFlushMaxTime(0)
 {
     m_stats.enabled = printStats;
     m_currentUnwind.unwind = this;
+    m_currentUnwind.maxFrames = maxFrames;
     m_offlineCallbacks.find_elf = dwfl_build_id_find_elf;
     m_offlineCallbacks.find_debuginfo =  dwfl_standard_find_debuginfo;
     m_offlineCallbacks.section_address = dwfl_offline_section_address;
@@ -288,7 +290,7 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
 
     bool isactivation;
     if (!dwfl_frame_pc(state, &pc, &isactivation)
-            || ui->frames.length() > PerfUnwind::s_maxFrames
+            || (ui->maxFrames != -1 && ui->frames.length() > ui->maxFrames)
             || pc == 0) {
         ui->firstGuessedFrame = ui->frames.length();
         qWarning() << dwfl_errmsg(dwfl_errno()) << ui->firstGuessedFrame;

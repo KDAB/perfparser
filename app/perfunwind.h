@@ -89,23 +89,24 @@ public:
     };
 
     struct UnwindInfo {
-        UnwindInfo() : frames(0), unwind(0), sample(0),
+        UnwindInfo() : frames(0), unwind(0), sample(0), maxFrames(64),
             firstGuessedFrame(-1), isInterworking(false) {}
 
         QHash<quint32, QHash<quint64, Dwarf_Word>> stackValues;
         QVector<qint32> frames;
         PerfUnwind *unwind;
         const PerfRecordSample *sample;
+        int maxFrames;
         int firstGuessedFrame;
         bool isInterworking;
     };
 
     static const quint32 s_kernelPid = std::numeric_limits<quint32>::max();
-    static const int s_maxFrames = 64;
 
     PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugInfo,
                const QString &extraLibs, const QString &appPath,
-               const QString &kallsymsPath, bool printStats, uint maxEventBufferSize);
+               const QString &kallsymsPath, bool printStats, uint maxEventBufferSize,
+               int maxFrames);
     ~PerfUnwind();
 
     PerfRegisterInfo::Architecture architecture() const { return m_architecture; }
