@@ -24,6 +24,7 @@
 
 #include <QDebug>
 #include <QtEndian>
+#include <QVersionNumber>
 
 #include <cstring>
 
@@ -54,6 +55,9 @@ void PerfUnwind::Stats::addEventTime(quint64 time)
 
 void PerfUnwind::Stats::finishedRound()
 {
+    numSamples += numSamplesInRound;
+    numMmaps += numMmapsInRound;
+
     maxSamplesPerRound = std::max(maxSamplesPerRound, numSamplesInRound);
     maxMmapsPerRound = std::max(maxMmapsPerRound, numMmapsInRound);
     numSamplesInRound = 0;
@@ -72,10 +76,10 @@ void PerfUnwind::Stats::finishedRound()
 
 PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugPath,
                        const QString &extraLibsPath, const QString &appPath,
-                       const QString &kallsymsPath, bool printStats) :
+                       const QString &kallsymsPath, bool printStats, uint maxEventBufferSize) :
     m_output(output), m_architecture(PerfRegisterInfo::ARCH_INVALID), m_systemRoot(systemRoot),
     m_extraLibsPath(extraLibsPath), m_appPath(appPath), m_kallsyms(kallsymsPath),
-    m_sampleBufferSize(0)
+    m_maxEventBufferSize(maxEventBufferSize), m_eventBufferSize(0), m_lastFlushMaxTime(0)
 {
     m_stats.enabled = printStats;
     m_currentUnwind.unwind = this;
@@ -102,9 +106,7 @@ PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QStri
 PerfUnwind::~PerfUnwind()
 {
     finishedRound();
-
-    foreach (const PerfRecordSample &sample, m_sampleBuffer)
-        analyze(sample);
+    flushEventBuffer(0);
 
     delete[] m_debugInfoPath;
     qDeleteAll(m_symbolTables);
@@ -114,8 +116,13 @@ PerfUnwind::~PerfUnwind()
         out << "samples: " << m_stats.numSamples << "\n";
         out << "mmaps: " << m_stats.numMmaps << "\n";
         out << "rounds: " << m_stats.numRounds << "\n";
+        out << "buffer flushes: " << m_stats.numBufferFlushes << "\n";
+        out << "samples time violations: " << m_stats.numTimeViolatingSamples << "\n";
+        out << "mmaps time violations: " << m_stats.numTimeViolatingMmaps << "\n";
         out << "max samples per round: " << m_stats.maxSamplesPerRound << "\n";
         out << "max mmaps per round: " << m_stats.maxMmapsPerRound << "\n";
+        out << "max samples per flush: " << m_stats.maxSamplesPerFlush << "\n";
+        out << "max mmaps per flush: " << m_stats.maxMmapsPerFlush << "\n";
         out << "max buffer size: " << m_stats.maxBufferSize << "\n";
         out << "max total event size per round: " << m_stats.maxTotalEventSizePerRound << "\n";
         out << "max time: " << m_stats.maxTime << "\n";
@@ -139,15 +146,7 @@ Dwfl *PerfUnwind::dwfl(quint32 pid, quint64 timestamp)
 
 void PerfUnwind::registerElf(const PerfRecordMmap &mmap)
 {
-    if (m_stats.enabled) {
-        m_stats.totalEventSizePerRound += mmap.size();
-        m_stats.addEventTime(mmap.time());
-        ++m_stats.numMmapsInRound;
-        ++m_stats.numMmaps;
-        return;
-    }
-
-    symbolTable(mmap.pid())->registerElf(mmap, m_appPath, m_systemRoot, m_extraLibsPath);
+    bufferEvent(mmap, &m_mmapBuffer, &m_stats.numMmapsInRound);
 }
 
 void PerfUnwind::sendBuffer(const QByteArray &buffer)
@@ -225,6 +224,10 @@ void PerfUnwind::features(const PerfFeatures &features)
     const auto &eventDescs = features.eventDesc().eventDescs;
     for (const auto &desc : eventDescs)
         addAttributes(desc.attrs, desc.name, desc.ids);
+
+    const auto perfVersion = QVersionNumber::fromString(QString::fromLatin1(features.version()));
+    if (perfVersion >= QVersionNumber(3, 17))
+        m_maxEventBufferSize = 0;
 
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(FeaturesDefinition)
@@ -365,24 +368,7 @@ void PerfUnwind::resolveCallchain()
 
 void PerfUnwind::sample(const PerfRecordSample &sample)
 {
-    m_sampleBuffer.append(sample);
-    m_sampleBufferSize += sample.size();
-
-    if (m_stats.enabled) {
-        m_stats.maxBufferSize = std::max(m_sampleBufferSize, m_stats.maxBufferSize);
-        m_stats.totalEventSizePerRound += sample.size();
-        m_stats.addEventTime(sample.time());
-        ++m_stats.numSamplesInRound;
-        ++m_stats.numSamples;
-        // don't return early, stats should include our buffer behavior
-    }
-
-    while (m_sampleBufferSize > s_maxSampleBufferSize) {
-        const PerfRecordSample &sample = m_sampleBuffer.front();
-        m_sampleBufferSize -= sample.size();
-        analyze(sample);
-        m_sampleBuffer.removeFirst();
-    }
+    bufferEvent(sample, &m_sampleBuffer, &m_stats.numSamplesInRound);
 }
 
 void PerfUnwind::analyze(const PerfRecordSample &sample)
@@ -467,6 +453,15 @@ void PerfUnwind::sendSymbol(qint32 id, const PerfUnwind::Symbol &symbol)
     sendBuffer(buffer);
 }
 
+void PerfUnwind::sendError(ErrorCode error, const QString &message)
+{
+    qWarning() << error << message;
+    QByteArray buffer;
+    QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(Error)
+                                               << error << message;
+    sendBuffer(buffer);
+}
+
 qint32 PerfUnwind::resolveString(const QByteArray& string)
 {
     if (string.isEmpty())
@@ -514,4 +509,114 @@ void PerfUnwind::finishedRound()
 {
     if (m_stats.enabled)
         m_stats.finishedRound();
+
+    // when we parse a perf data stream we may not know whether it contains
+    // FINISHED_ROUND events. now we know, and thus we set the m_maxEventBufferSize
+    // to 0 to disable the heuristic there. Instead, we will now rely on the finished
+    // round events to tell us when to flush the event buffer
+    if (!m_maxEventBufferSize) {
+        // we only flush half of the events we got in this round
+        // this work-arounds bugs in upstream perf which leads to time order violations
+        // across FINISHED_ROUND events which should in theory never happen
+        flushEventBuffer(m_eventBufferSize / 2);
+    } else {
+        m_maxEventBufferSize = 0;
+    }
+}
+
+template<typename Event>
+void PerfUnwind::bufferEvent(const Event &event, QList<Event> *buffer, int *eventCounter)
+{
+    buffer->append(event);
+    m_eventBufferSize += event.size();
+
+    if (m_stats.enabled) {
+        *eventCounter += 1;
+        m_stats.maxBufferSize = std::max(m_eventBufferSize, m_stats.maxBufferSize);
+        m_stats.totalEventSizePerRound += event.size();
+        m_stats.addEventTime(event.time());
+        // don't return early, stats should include our buffer behavior
+    }
+
+    if (m_maxEventBufferSize && m_eventBufferSize > m_maxEventBufferSize)
+        flushEventBuffer(m_maxEventBufferSize / 2);
+}
+
+void PerfUnwind::flushEventBuffer(uint desiredBufferSize)
+{
+    auto sortByTime = [](const PerfRecord &lhs, const PerfRecord &rhs) {
+        return lhs.time() < rhs.time();
+    };
+    std::sort(m_mmapBuffer.begin(), m_mmapBuffer.end(), sortByTime);
+    std::sort(m_sampleBuffer.begin(), m_sampleBuffer.end(), sortByTime);
+
+    if (m_stats.enabled) {
+        for (const auto &sample : m_sampleBuffer) {
+            if (sample.time() < m_lastFlushMaxTime)
+                ++m_stats.numTimeViolatingSamples;
+            else
+                break;
+        }
+        for (const auto &mmap : m_mmapBuffer) {
+            if (mmap.time() < m_lastFlushMaxTime)
+                ++m_stats.numTimeViolatingMmaps;
+            else
+                break;
+        }
+    }
+
+    if (!m_mmapBuffer.isEmpty() && m_mmapBuffer.first().time() < m_lastFlushMaxTime) {
+        // when an mmap event is not following our desired time order, it can
+        // severly break our analysis. as such we report a real error in these cases
+        sendError(TimeOrderViolation,
+                  tr("Time order violation of MMAP event across buffer flush detected. "
+                     "Event time is %1, max time during last buffer flush was %2. "
+                     "This potentially breaks the data analysis.")
+                    .arg(m_mmapBuffer.first().time()).arg(m_lastFlushMaxTime));
+    }
+
+    auto mmapIt = m_mmapBuffer.begin();
+    auto mmapEnd = m_mmapBuffer.end();
+
+    auto sampleIt = m_sampleBuffer.begin();
+    auto sampleEnd = m_sampleBuffer.end();
+
+    for (; m_eventBufferSize > desiredBufferSize && sampleIt != sampleEnd; ++sampleIt) {
+        const auto &sample = *sampleIt;
+
+        if (sample.time() < m_lastFlushMaxTime) {
+            qWarning() << "Time order violation across buffer flush detected:"
+                       << "Event time =" << sample.time() << ","
+                       << "max time during last buffer flush = " << m_lastFlushMaxTime;
+            // we don't send an error for samples with broken times, since these
+            // are usually harmless and actually occur relatively often
+            // if desired, one can detect these issues on the client side anyways,
+            // based on the sample times
+        } else {
+            m_lastFlushMaxTime = sample.time();
+        }
+
+        for (; mmapIt != mmapEnd && mmapIt->time() <= sample.time(); ++mmapIt) {
+            if (!m_stats.enabled) {
+                symbolTable(mmapIt->pid())->registerElf(*mmapIt, m_appPath,
+                                                        m_systemRoot,
+                                                        m_extraLibsPath);
+            }
+            m_eventBufferSize -= mmapIt->size();
+        }
+
+        analyze(sample);
+        m_eventBufferSize -= sample.size();
+    }
+
+    if (m_stats.enabled) {
+        ++m_stats.numBufferFlushes;
+        const int samples = std::distance(m_sampleBuffer.begin(), sampleIt);
+        m_stats.maxSamplesPerFlush = std::max(samples, m_stats.maxSamplesPerFlush);
+        const int mmaps = std::distance(m_mmapBuffer.begin(), mmapIt);
+        m_stats.maxMmapsPerFlush = std::max(mmaps, m_stats.maxMmapsPerFlush);
+    }
+
+    m_sampleBuffer.erase(m_sampleBuffer.begin(), sampleIt);
+    m_mmapBuffer.erase(m_mmapBuffer.begin(), mmapIt);
 }

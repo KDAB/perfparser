@@ -157,6 +157,17 @@ int main(int argc, char *argv[])
                                    "main", "Print statistics instead of converting the data."));
     parser.addOption(printStats);
 
+    QCommandLineOption bufferSize(QLatin1String("buffer-size"),
+                                  QCoreApplication::translate(
+                                   "main", "Size of event buffer in kilobytes. This influences how"
+                                   " many events get buffered before they get sorted by time and "
+                                   " then analyzed. Increase this value when your perf.data file"
+                                   " was recorded with a large buffer value (perf record -m)."
+                                   " Pass 0 to buffer events until a FINISHED_ROUND event is "
+                                   " encountered. Default value is 10MB"),
+                                   QLatin1String("buffer-size"), QLatin1String("10240"));
+    parser.addOption(bufferSize);
+
     parser.process(app);
 
     QScopedPointer<QFile> outfile;
@@ -184,12 +195,20 @@ int main(int argc, char *argv[])
             infile.reset(new PerfStdin);
     }
 
+    bool ok = false;
+    uint maxEventBufferSize = parser.value(bufferSize).toUInt(&ok) * 1024;
+    if (!ok) {
+        qWarning() << "Failed to parse buffer-size argument. Expected unsigned integer, got:"
+                   << parser.value(bufferSize);
+        return InvalidOption;
+    }
+
     PerfUnwind unwind(outfile.data(), parser.value(sysroot), parser.isSet(debug) ?
                           parser.value(debug) : parser.value(sysroot) + parser.value(debug),
                       parser.value(extra), parser.value(appPath), parser.isSet(kallsymsPath)
                         ? parser.value(kallsymsPath)
                         : parser.value(sysroot) + parser.value(kallsymsPath),
-                      parser.isSet(printStats));
+                      parser.isSet(printStats), maxEventBufferSize);
 
     PerfHeader header(infile.data());
     PerfAttributes attributes;

@@ -58,6 +58,7 @@ public:
         StringDefinition,
         LostDefinition,
         FeaturesDefinition,
+        Error,
         InvalidType
     };
 
@@ -104,7 +105,7 @@ public:
 
     PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugInfo,
                const QString &extraLibs, const QString &appPath,
-               const QString &kallsymsPath, bool printStats);
+               const QString &kallsymsPath, bool printStats, uint maxEventBufferSize);
     ~PerfUnwind();
 
     PerfRegisterInfo::Architecture architecture() const { return m_architecture; }
@@ -179,6 +180,7 @@ private:
     QString m_appPath;
 
     QList<PerfRecordSample> m_sampleBuffer;
+    QList<PerfRecordMmap> m_mmapBuffer;
     QHash<quint32, PerfSymbolTable *> m_symbolTables;
     PerfKallsyms m_kallsyms;
 
@@ -188,16 +190,18 @@ private:
     QHash<quint64, qint32> m_attributeIds;
     QHash<PerfEventAttributes, qint32> m_attributes;
 
-    uint m_sampleBufferSize;
-
-    static const uint s_maxSampleBufferSize = 1024 * 1024;
+    uint m_maxEventBufferSize;
+    uint m_eventBufferSize;
+    quint64 m_lastFlushMaxTime;
 
     struct Stats
     {
         Stats()
-            : numSamples(0), numMmaps(0), numRounds(0),
+            : numSamples(0), numMmaps(0), numRounds(0), numBufferFlushes(0),
+            numTimeViolatingSamples(0), numTimeViolatingMmaps(0),
             numSamplesInRound(0), numMmapsInRound(0),
             maxSamplesPerRound(0), maxMmapsPerRound(0),
+            maxSamplesPerFlush(0), maxMmapsPerFlush(0),
             maxBufferSize(0), maxTotalEventSizePerRound(0),
             maxTime(0), maxTimeBetweenRounds(0), maxReorderTime(0),
             lastRoundTime(0), totalEventSizePerRound(0),
@@ -210,10 +214,15 @@ private:
         quint64 numSamples;
         quint64 numMmaps;
         quint64 numRounds;
+        quint64 numBufferFlushes;
+        quint64 numTimeViolatingSamples;
+        quint64 numTimeViolatingMmaps;
         int numSamplesInRound;
         int numMmapsInRound;
         int maxSamplesPerRound;
         int maxMmapsPerRound;
+        int maxSamplesPerFlush;
+        int maxMmapsPerFlush;
         uint maxBufferSize;
         uint maxTotalEventSizePerRound;
         quint64 maxTime;
@@ -233,6 +242,14 @@ private:
     void sendLocation(qint32 id, const Location &location);
     void sendSymbol(qint32 id, const Symbol &symbol);
     void sendAttributes(qint32 id, const PerfEventAttributes &attributes, const QByteArray &name);
+    enum ErrorCode {
+        TimeOrderViolation = 1
+    };
+    void sendError(ErrorCode error, const QString &message);
+
+    template<typename Event>
+    void bufferEvent(const Event &event, QList<Event> *buffer, int *eventCounter);
+    void flushEventBuffer(uint desiredBufferSize);
 };
 
 uint qHash(const PerfUnwind::Location &location, uint seed = 0);
