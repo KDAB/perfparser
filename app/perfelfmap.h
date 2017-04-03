@@ -79,7 +79,10 @@ private:
     // elf sorted by start address
     QVector<ElfInfo> m_elfs;
 };
+
+QT_BEGIN_NAMESPACE
 Q_DECLARE_TYPEINFO(PerfElfMap::ElfInfo, Q_MOVABLE_TYPE);
+QT_END_NAMESPACE
 
 QDebug operator<<(QDebug stream, const PerfElfMap::ElfInfo& info);
 

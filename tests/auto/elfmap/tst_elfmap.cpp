@@ -32,6 +32,7 @@ bool registerElf(PerfElfMap *map, const PerfElfMap::ElfInfo &info)
 }
 }
 
+QT_BEGIN_NAMESPACE
 namespace QTest {
 template<>
 char *toString(const PerfElfMap::ElfInfo &info)
@@ -42,6 +43,7 @@ char *toString(const PerfElfMap::ElfInfo &info)
     return qstrdup(qPrintable(string));
 }
 }
+QT_END_NAMESPACE
 
 class TestElfMap : public QObject
 {
