@@ -159,8 +159,6 @@ static bool findInExtraPath(QFileInfo &path, const QString &fileName)
     path.setFile(path.absoluteFilePath() + QDir::separator() + fileName);
     if (path.isFile())
         return true;
-    else if (!path.isDir())
-        return false;
 
     QDir absDir = path.absoluteDir();
     foreach (const QString &entry, absDir.entryList(QStringList(),
@@ -422,8 +420,20 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
     if (elf.isValid()) {
         binaryId = m_unwind->resolveString(elf.originalFileName);
         elfStart = elf.addr;
-        if (m_dwfl && !mod)
-            mod = reportElf(elf);
+        if (m_dwfl) {
+            if (mod) {
+                // If dwfl has a module and it's not the same as what we want, report the module
+                // we want. Many modules overlap ld.so, so if we've reported even one sample from
+                // ld.so we would otherwise be blocked from reporting anything that overlaps it.
+                Dwarf_Addr mod_start = 0;
+                dwfl_module_info(mod, nullptr, &mod_start, nullptr, nullptr, nullptr, nullptr,
+                                 nullptr);
+                if (elfStart != mod_start)
+                    mod = reportElf(elf);
+            } else {
+                mod = reportElf(elf);
+            }
+        }
     }
 
     PerfUnwind::Location addressLocation(
