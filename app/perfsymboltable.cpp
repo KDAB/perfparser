@@ -394,8 +394,20 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, quint64 timestamp, bool isKernel
     if (elfIt != m_elfs.constEnd()) {
         binaryId = m_unwind->resolveString(elfIt.value().file.fileName().toLocal8Bit());
         elfStart = elfIt.key();
-        if (m_dwfl && !mod)
-            mod = reportElf(elfIt);
+        if (m_dwfl) {
+            if (mod) {
+                // If dwfl has a module and it's not the same as what we want, report the module
+                // we want. Many modules overlap ld.so, so if we've reported even one sample from
+                // ld.so we would otherwise be blocked from reporting anything that overlaps it.
+                Dwarf_Addr mod_start = 0;
+                dwfl_module_info(mod, nullptr, &mod_start, nullptr, nullptr, nullptr, nullptr,
+                                 nullptr);
+                if (elfIt.key() != mod_start)
+                    mod = reportElf(elfIt);
+            } else {
+                mod = reportElf(elfIt);
+            }
+        }
     }
 
     PerfUnwind::Location addressLocation(
