@@ -160,8 +160,6 @@ static bool findInExtraPath(QFileInfo &path, const QString &fileName)
     path.setFile(path.absoluteFilePath() + QDir::separator() + fileName);
     if (path.isFile())
         return true;
-    else if (!path.isDir())
-        return false;
 
     QDir absDir = path.absoluteDir();
     foreach (const QString &entry, absDir.entryList(QStringList(),
