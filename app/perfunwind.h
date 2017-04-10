@@ -147,6 +147,12 @@ public:
 
     PerfKallsymEntry findKallsymEntry(quint64 address) const;
 
+    enum ErrorCode {
+        TimeOrderViolation = 1,
+        MissingElfFile = 2,
+    };
+    void sendError(ErrorCode error, const QString &message);
+
 private:
 
     enum CallchainContext {
@@ -248,10 +254,6 @@ private:
     void sendLocation(qint32 id, const Location &location);
     void sendSymbol(qint32 id, const Symbol &symbol);
     void sendAttributes(qint32 id, const PerfEventAttributes &attributes, const QByteArray &name);
-    enum ErrorCode {
-        TimeOrderViolation = 1
-    };
-    void sendError(ErrorCode error, const QString &message);
 
     template<typename Event>
     void bufferEvent(const Event &event, QList<Event> *buffer, int *eventCounter);

@@ -211,10 +211,18 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &
                 }
             }
         }
-        if (!found) // last fall-back, try the system root
+        if (!found) {
+            // last fall-back, try the system root
             fullPath.setFile(systemRoot + filePath);
+            found = fullPath.exists();
+        }
 
-        if (!m_firstElfFile.isOpen() && fullPath.exists()) {
+        if (!found) {
+            m_unwind->sendError(PerfUnwind::MissingElfFile,
+                                PerfUnwind::tr("Could not find ELF file for %1. "
+                                               "This can break stack unwinding "
+                                               "and lead to missing symbols.").arg(filePath));
+        } else if (!m_firstElfFile.isOpen()) {
             m_firstElfFile.setFileName(fullPath.absoluteFilePath());
             if (!m_firstElfFile.open(QIODevice::ReadOnly)) {
                 qWarning() << "Failed to open file:" << m_firstElfFile.errorString();
