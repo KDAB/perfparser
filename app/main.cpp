@@ -121,15 +121,13 @@ int main(int argc, char *argv[])
     QCommandLineOption extra(QLatin1String("extra"),
                              QCoreApplication::translate(
                                  "main", "Look for additional libraries in <path> (default: .)."),
-                             QLatin1String("path"),
-                             QLatin1String("."));
+                             QLatin1String("path"));
     parser.addOption(extra);
 
     QCommandLineOption appPath(QLatin1String("app"),
                                QCoreApplication::translate(
                                    "main", "Look for application binary in <path> (default: .)."),
-                               QLatin1String("path"),
-                               QLatin1String("."));
+                               QLatin1String("path"));
     parser.addOption(appPath);
 
     const auto defaultArch

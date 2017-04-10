@@ -170,6 +170,11 @@ static bool findInExtraPath(QFileInfo &path, const QString &fileName)
     return false;
 }
 
+static QStringList splitPath(const QString &path)
+{
+    return path.split(QLatin1Char(':'), QString::SkipEmptyParts);
+}
+
 void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &buildId,
                                   const QString &appPath, const QString &systemRoot,
                                   const QString &extraLibsPath, const QString &debugInfoPath)
@@ -188,7 +193,7 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &
         if (!buildId.isEmpty()) {
             const QString buildIdPath = QString::fromUtf8(mmap.filename() + '/'
                                                             + buildId.toHex() + "/elf");
-            foreach (const QString &extraPath, debugInfoPath.split(QLatin1Char(':'))) {
+            foreach (const QString &extraPath, splitPath(debugInfoPath)) {
                 fullPath.setFile(extraPath);
                 if (findInExtraPath(fullPath, buildIdPath)) {
                     found = true;
@@ -196,14 +201,14 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &
                 }
             }
         }
-        if (!found) {
+        if (!found && !appPath.isEmpty()) {
             // try to find the file in the app path
             fullPath.setFile(appPath);
             found = findInExtraPath(fullPath, fileInfo.fileName());
         }
         if (!found) {
             // try to find the file in the extra libs path
-            foreach (const QString &extraPath, extraLibsPath.split(QLatin1Char(':'))) {
+            foreach (const QString &extraPath, splitPath(extraLibsPath)) {
                 fullPath.setFile(extraPath);
                 if (findInExtraPath(fullPath, fileInfo.fileName())) {
                     found = true;
