@@ -86,7 +86,9 @@ private slots:
         file.write(kallsymsContents);
         file.flush();
 
-        PerfKallsyms kallsyms(file.fileName());
+        PerfKallsyms kallsyms;
+        QVERIFY(kallsyms.parseMapping(file.fileName()));
+        QVERIFY(kallsyms.errorString().isEmpty());
 
         const auto entry = kallsyms.findEntry(address);
         QCOMPARE(entry.address, expectedAddress);
@@ -100,12 +102,45 @@ private slots:
         if (!QFile::exists(path))
             QSKIP("/proc/kallsysms not available");
 
-        PerfKallsyms kallsyms(path);
+        PerfKallsyms kallsyms;
+        QVERIFY(kallsyms.parseMapping(path));
+        QVERIFY(kallsyms.errorString().isEmpty());
 
         // just check that we find any entry
         const auto addr = std::numeric_limits<quint64>::max();
         const auto entry = kallsyms.findEntry(addr);
         QVERIFY(!entry.symbol.isEmpty());
+    }
+
+    void testParseErrors()
+    {
+        QTemporaryFile file;
+        QVERIFY(file.open());
+        const auto fileName = file.fileName();
+
+        {
+            PerfKallsyms kallsyms;
+            QVERIFY(!kallsyms.parseMapping(fileName));
+            qDebug() << kallsyms.errorString(); // file is empty
+            QVERIFY(!kallsyms.errorString().isEmpty());
+        }
+
+        file.write("this is garbage and not a valid mapping\n");
+        file.flush();
+        {
+            PerfKallsyms kallsyms;
+            QVERIFY(!kallsyms.parseMapping(fileName));
+            qDebug() << kallsyms.errorString(); // invalid address
+            QVERIFY(!kallsyms.errorString().isEmpty());
+        }
+
+        QVERIFY(file.remove());
+        {
+            PerfKallsyms kallsyms;
+            QVERIFY(!kallsyms.parseMapping(fileName));
+            qDebug() << kallsyms.errorString(); // file not found
+            QVERIFY(!kallsyms.errorString().isEmpty());
+        }
     }
 
     void benchmarkProc()
@@ -115,8 +150,9 @@ private slots:
             QSKIP("/proc/kallsysms not available");
 
         QBENCHMARK {
-            PerfKallsyms kallsyms(path);
-            Q_UNUSED(kallsyms);
+            PerfKallsyms kallsyms;
+            bool parsed = kallsyms.parseMapping(path);
+            Q_UNUSED(parsed);
         }
     }
 };

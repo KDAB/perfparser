@@ -24,12 +24,15 @@
 
 #include <algorithm>
 
-PerfKallsyms::PerfKallsyms(const QString &path)
+bool PerfKallsyms::parseMapping(const QString &path)
 {
+    m_entries.clear();
+    m_errorString.clear();
+
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning("Failed to open kallsyms file \"%s\".", qPrintable(path));
-        return;
+        m_errorString = file.errorString();
+        return false;
     }
 
     QTextStream stream(&file);
@@ -38,6 +41,7 @@ PerfKallsyms::PerfKallsyms(const QString &path)
     QByteArray address;
 
     // NOTE: don't use atEnd here, as /proc/kallsyms is has size of 0
+    bool valid = true;
     while (true) {
         PerfKallsymEntry entry;
         char type = 0;
@@ -50,7 +54,8 @@ PerfKallsyms::PerfKallsyms(const QString &path)
         bool ok = false;
         entry.address = address.toULongLong(&ok, 16);
         if (!ok) {
-            qWarning("Failed to parse kallsyms file, invalid address: %s.", address.constData());
+            m_errorString = tr("Invalid address: %1").arg(QString::fromUtf8(address));
+            valid = false;
             break;
         }
 
@@ -60,10 +65,17 @@ PerfKallsyms::PerfKallsyms(const QString &path)
         m_entries.push_back(entry);
     }
 
+    if (valid && m_entries.isEmpty()) {
+        m_errorString = tr("Mapping is empty.");
+        return false;
+    }
+
     std::sort(m_entries.begin(), m_entries.end(),
         [](const PerfKallsymEntry& lhs, const PerfKallsymEntry& rhs) -> bool {
             return lhs.address < rhs.address;
         });
+
+    return valid;
 }
 
 PerfKallsymEntry PerfKallsyms::findEntry(quint64 address) const

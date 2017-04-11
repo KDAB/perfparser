@@ -150,6 +150,7 @@ public:
     enum ErrorCode {
         TimeOrderViolation = 1,
         MissingElfFile = 2,
+        InvalidKallsyms = 3,
     };
     void sendError(ErrorCode error, const QString &message);
 

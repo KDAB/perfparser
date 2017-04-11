@@ -79,7 +79,7 @@ PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QStri
                        const QString &kallsymsPath, bool printStats, uint maxEventBufferSize,
                        int maxFrames) :
     m_output(output), m_architecture(PerfRegisterInfo::ARCH_INVALID), m_systemRoot(systemRoot),
-    m_extraLibsPath(extraLibsPath), m_appPath(appPath), m_debugPath(debugPath), m_kallsyms(kallsymsPath),
+    m_extraLibsPath(extraLibsPath), m_appPath(appPath), m_debugPath(debugPath),
     m_maxEventBufferSize(maxEventBufferSize), m_eventBufferSize(0), m_lastFlushMaxTime(0)
 {
     m_stats.enabled = printStats;
@@ -103,6 +103,11 @@ PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QStri
         qint32 dataStreamVersion = qToLittleEndian(QDataStream::Qt_DefaultCompiledVersion);
         output->write(reinterpret_cast<const char *>(&dataStreamVersion), sizeof(qint32));
     }
+
+    if (!m_kallsyms.parseMapping(kallsymsPath))
+        sendError(InvalidKallsyms,
+                  tr("Failed to parse kernel symbol mapping file \"%1\": %2")
+                    .arg(kallsymsPath, m_kallsyms.errorString()));
 }
 
 PerfUnwind::~PerfUnwind()

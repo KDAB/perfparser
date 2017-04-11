@@ -20,6 +20,7 @@
 #ifndef PERFKALLSYMS_H
 #define PERFKALLSYMS_H
 
+#include <QCoreApplication>
 #include <QByteArray>
 #include <QVector>
 
@@ -36,13 +37,16 @@ QT_END_NAMESPACE
 
 class PerfKallsyms
 {
+    Q_DECLARE_TR_FUNCTIONS(PerfKallsyms)
 public:
-    PerfKallsyms(const QString &path);
+    bool parseMapping(const QString &path);
+    QString errorString() const { return m_errorString; }
 
     PerfKallsymEntry findEntry(quint64 address) const;
 
 private:
     QVector<PerfKallsymEntry> m_entries;
+    QString m_errorString;
 };
 
 #endif // PERFKALLSYMS_H
