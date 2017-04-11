@@ -35,7 +35,14 @@ void PerfHeader::read()
 
     QDataStream stream(m_source);
     if (m_size == 0) {
-        if (m_source->bytesAvailable() < static_cast<qint64>(sizeof(m_magic) + sizeof(m_size)))
+        const auto expectedSize = static_cast<qint64>(sizeof(m_magic) + sizeof(m_size));
+        if (!m_source->isSequential() && m_source->size() < expectedSize) {
+            qWarning() << "File is too small for perf header.";
+            emit error();
+            return;
+        }
+
+        if (m_source->bytesAvailable() < expectedSize)
             return;
 
         stream >> m_magic;
@@ -52,6 +59,12 @@ void PerfHeader::read()
     }
 
     if (m_size == s_perfHeaderSize) {
+        if (!m_source->isSequential() && m_source->size() < static_cast<qint64>(m_size)) {
+            qWarning() << "File is too small for perf header.";
+            emit error();
+            return;
+        }
+
         if (m_source->bytesAvailable() < static_cast<qint64>(m_size - sizeof(m_magic) -
                                                              sizeof(m_size)))
             return;
@@ -74,6 +87,13 @@ void PerfHeader::read()
                     m_features[i] = 0;
                 setFeature(BUILD_ID);
             }
+        }
+
+        const auto minimumFileSize = static_cast<qint64>(dataOffset() + dataSize());
+        if (!m_source->isSequential() && m_source->size() < minimumFileSize) {
+            qWarning() << "File is too small to hold perf data.";
+            emit error();
+            return;
         }
     } else {
         // pipe header, anything to do here?
