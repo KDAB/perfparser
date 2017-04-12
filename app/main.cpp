@@ -234,8 +234,16 @@ int main(int argc, char *argv[])
     QObject::connect(&header, &PerfHeader::finished, [&]() {
         if (!header.isPipe()) {
             const qint64 filePos = infile->pos();
-            attributes.read(infile.data(), &header);
-            features.read(infile.data(), &header);
+            if (!attributes.read(infile.data(), &header)) {
+                qWarning() << "Failed to read attributes";
+                qApp->exit(DataError);
+                return;
+            }
+            if (!features.read(infile.data(), &header)) {
+                qWarning() << "Failed to read features";
+                qApp->exit(DataError);
+                return;
+            }
             infile->seek(filePos);
 
             // first send features, as it may contain better event descriptions
