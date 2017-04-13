@@ -31,7 +31,9 @@
 #include <QStack>
 
 #include <cstring>
+#ifdef Q_OS_UNIX
 #include <cxxabi.h>
+#endif
 
 PerfSymbolTable::PerfSymbolTable(quint32 pid, Dwfl_Callbacks *callbacks, PerfUnwind *parent) :
     m_perfMapFile(QString::fromLatin1("/tmp/perf-%1.map").arg(pid)),
@@ -287,6 +289,7 @@ static QByteArray dieName(Dwarf_Die *die)
 
 static QByteArray demangle(const QByteArray &mangledName)
 {
+#ifdef Q_OS_UNIX
     if (mangledName.length() < 3) {
         return mangledName;
     } else {
@@ -302,6 +305,7 @@ static QByteArray demangle(const QByteArray &mangledName)
                 return demangleBuffer = dsymname;
         }
     }
+#endif
     return mangledName;
 }
 
