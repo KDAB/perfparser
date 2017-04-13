@@ -28,8 +28,9 @@ class PerfElfMap
 {
 public:
     struct ElfInfo {
-        ElfInfo(const QFileInfo &localFile = QFileInfo(), quint64 addr = 0, quint64 length = 0,
-                quint64 pgoff = 0, const QByteArray &originalFileName = {}) :
+        explicit ElfInfo(const QFileInfo &localFile = QFileInfo(), quint64 addr = 0,
+                         quint64 length = 0, quint64 pgoff = 0,
+                         const QByteArray &originalFileName = {}) :
             localFile(localFile),
             originalFileName(originalFileName.isEmpty()
                 ? localFile.fileName().toLocal8Bit()
