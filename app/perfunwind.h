@@ -60,6 +60,7 @@ public:
         FeaturesDefinition,
         Error,
         Sample,
+        Progress,
         InvalidType
     };
 
@@ -153,6 +154,7 @@ public:
         InvalidKallsyms = 3,
     };
     void sendError(ErrorCode error, const QString &message);
+    void sendProgress(float percent);
 
 private:
 

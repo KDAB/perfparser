@@ -190,11 +190,22 @@ PerfData::ReadStatus PerfData::doRead()
         qWarning() << "cannot seek to" << m_header->dataOffset();
         returnCode = SignalError;
     } else {
-        while (static_cast<quint64>(m_source->pos()) <
-               m_header->dataOffset() + m_header->dataSize()) {
+        const auto dataOffset = m_header->dataOffset();
+        const auto dataSize = m_header->dataSize();
+        const auto endOfDataSection = dataOffset + dataSize;
+
+        m_destination->sendProgress(float(m_source->pos() - dataOffset) / dataSize);
+        const qint64 posDeltaBetweenProgress = dataSize / 100;
+        qint64 nextProgressAt = m_source->pos() + posDeltaBetweenProgress;
+
+        while (static_cast<quint64>(m_source->pos()) < endOfDataSection) {
             if (processEvents(stream) != SignalFinished) {
                 returnCode = SignalError;
                 break;
+            }
+            if (m_source->pos() >= nextProgressAt) {
+                m_destination->sendProgress(float(m_source->pos() - dataOffset) / dataSize);
+                nextProgressAt += posDeltaBetweenProgress;
             }
         }
     }

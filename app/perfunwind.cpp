@@ -475,6 +475,14 @@ void PerfUnwind::sendError(ErrorCode error, const QString &message)
     sendBuffer(buffer);
 }
 
+void PerfUnwind::sendProgress(float percent)
+{
+    QByteArray buffer;
+    QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(Progress)
+                                               << percent;
+    sendBuffer(buffer);
+}
+
 qint32 PerfUnwind::resolveString(const QByteArray& string)
 {
     if (string.isEmpty())
