@@ -43,7 +43,7 @@ static uint aarch64[] = { 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13,
 static uint x86[] = {0, 2, 3, 1, 7, 6, 4, 5, 8};
 static uint x86_64[] = {0, 3, 2, 1, 4, 5, 6, 7, 16, 17, 18, 19, 20, 21, 22, 23, 8};
 
-static uint none[] = {};
+static uint none[] = {0};
 
 const uint *PerfRegisterInfo::s_perfToDwarf[PerfRegisterInfo::ARCH_INVALID][PerfRegisterInfo::s_numAbis] = {
     {arm,     arm    },

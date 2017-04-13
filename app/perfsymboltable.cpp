@@ -126,10 +126,11 @@ static bool setInitialRegisters(Dwfl_Thread *thread, void *arg)
     Q_ASSERT(abi < PerfRegisterInfo::s_numAbis);
     uint architecture = ui->unwind->architecture();
     uint numRegs = PerfRegisterInfo::s_numRegisters[architecture][abi];
-    Dwarf_Word dwarfRegs[numRegs];
-    for (uint i = 0; i < numRegs; ++i)
+    QVarLengthArray<Dwarf_Word, 64> dwarfRegs(numRegs);
+    for (uint i = 0; i < numRegs; ++i) {
         dwarfRegs[i] = ui->sample->registerValue(
                     PerfRegisterInfo::s_perfToDwarf[architecture][abi][i]);
+    }
 
     // Go one frame up to get the rest of the stack at interworking veneers.
     if (ui->isInterworking) {
@@ -141,13 +142,13 @@ static bool setInitialRegisters(Dwfl_Thread *thread, void *arg)
     uint dummyNum = PerfRegisterInfo::s_dummyRegisters[architecture][1] - dummyBegin;
 
     if (dummyNum > 0) {
-        Dwarf_Word dummyRegs[dummyNum];
-        std::memset(dummyRegs, 0, dummyNum * sizeof(Dwarf_Word));
-        if (!dwfl_thread_state_registers(thread, dummyBegin, dummyNum, dummyRegs))
+        QVarLengthArray<Dwarf_Word, 64> dummyRegs(dummyNum);
+        std::memset(dummyRegs.data(), 0, dummyNum * sizeof(Dwarf_Word));
+        if (!dwfl_thread_state_registers(thread, dummyBegin, dummyNum, dummyRegs.data()))
             return false;
     }
 
-    return dwfl_thread_state_registers(thread, 0, numRegs, dwarfRegs);
+    return dwfl_thread_state_registers(thread, 0, numRegs, dwarfRegs.data());
 }
 
 static const Dwfl_Thread_Callbacks threadCallbacks = {

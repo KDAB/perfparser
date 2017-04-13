@@ -419,11 +419,11 @@ PerfRecordSample::PerfRecordSample(const PerfEventHeader *header,
 
 quint64 PerfRecordSample::registerValue(uint reg) const
 {
-    Q_ASSERT(m_registerAbi && m_registerMask & (1 << reg));
+    Q_ASSERT(m_registerAbi && m_registerMask & (1ull << reg));
 
     int index = 0;
     for (uint i = 0; i < reg; i++) {
-        if (m_registerMask & (1 << i))
+        if (m_registerMask & (1ull << i))
             index++;
     }
 
