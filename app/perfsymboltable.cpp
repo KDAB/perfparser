@@ -170,6 +170,19 @@ static bool findInExtraPath(QFileInfo &path, const QString &fileName)
     return false;
 }
 
+static bool findBuildIdPath(QFileInfo &path, const QString &fileName)
+{
+    path.setFile(path.absoluteFilePath() + QDir::separator() + fileName);
+    if (path.isFile())
+        return true;
+
+    path.setFile(path.absoluteFilePath() + QDir::separator() + QLatin1String("elf"));
+    if (path.isFile())
+        return true;
+
+    return false;
+}
+
 static QStringList splitPath(const QString &path)
 {
     return path.split(QLatin1Char(':'), QString::SkipEmptyParts);
@@ -192,10 +205,10 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &
         // first try to find the debug information via build id, if available
         if (!buildId.isEmpty()) {
             const QString buildIdPath = QString::fromUtf8(mmap.filename() + '/'
-                                                            + buildId.toHex() + "/elf");
+                                                            + buildId.toHex());
             foreach (const QString &extraPath, splitPath(debugInfoPath)) {
                 fullPath.setFile(extraPath);
-                if (findInExtraPath(fullPath, buildIdPath)) {
+                if (findBuildIdPath(fullPath, buildIdPath)) {
                     found = true;
                     break;
                 }
