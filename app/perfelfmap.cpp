@@ -108,7 +108,7 @@ PerfElfMap::ElfInfo PerfElfMap::findElf(quint64 ip) const
         if (i != m_elfs.constBegin())
             --i;
         else
-            return {};
+            return ElfInfo();
     }
 
     return (i->addr + i->length > ip) ? *i : ElfInfo();
