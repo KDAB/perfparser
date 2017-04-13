@@ -105,20 +105,22 @@ int main(int argc, char *argv[])
 
     QCommandLineOption sysroot(QLatin1String("sysroot"),
                                QCoreApplication::translate(
-                                   "main", "Look for system libraries in <path> (default: /)."),
+                                   "main", "Look for system libraries in <path> (default: %1).")
+                               .arg(QDir::rootPath()),
                                QLatin1String("path"),
-                               QLatin1String("/"));
+                               QDir::rootPath());
     parser.addOption(sysroot);
 
+    const auto defaultDebug = QString::fromLatin1("%1usr%1lib%1debug%2%3%1.debug%2.debug")
+            .arg(QDir::separator(), QDir::listSeparator(), QDir::homePath());
     QCommandLineOption debug(QLatin1String("debug"),
                              QCoreApplication::translate(
                                  "main",
                                  "Look for debug information in <path>. "
                                  "You can specify multiple paths separated by ':'. "
                                  "Relative paths are relative to the original file's path. "
-                                 "The default is: <sysroot>/usr/lib/debug:~/.debug:.debug ."),
-                             QLatin1String("path"),
-                             QString("/usr/lib/debug:%1/.debug:.debug").arg(QDir::homePath()));
+                                 "The default is: <sysroot>%1 .").arg(defaultDebug),
+                             QLatin1String("path"), defaultDebug);
     parser.addOption(debug);
 
     QCommandLineOption extra(QLatin1String("extra"),
@@ -145,12 +147,12 @@ int main(int argc, char *argv[])
                             defaultArch);
     parser.addOption(arch);
 
+    const auto defaultKallsyms = QString::fromLatin1("%1proc%1kallsyms").arg(QDir::separator());
     QCommandLineOption kallsymsPath(QLatin1String("kallsyms"),
-                               QCoreApplication::translate(
-                                   "main", "Path to kallsyms mapping to resolve kernel symbols. "
-                                   "The default is: <sysroot>/proc/kallsyms ."),
-                               QLatin1String("path"),
-                               QLatin1String("/proc/kallsyms"));
+                                    QCoreApplication::translate(
+                                        "main", "Path to kallsyms mapping to resolve kernel "
+                                        "symbols. The default is: <sysroot>%1 .")
+                                    .arg(defaultKallsyms), QLatin1String("path"), defaultKallsyms);
     parser.addOption(kallsymsPath);
 
     QCommandLineOption printStats(QLatin1String("print-stats"),

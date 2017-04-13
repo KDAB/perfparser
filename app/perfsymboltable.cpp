@@ -36,7 +36,8 @@
 #endif
 
 PerfSymbolTable::PerfSymbolTable(quint32 pid, Dwfl_Callbacks *callbacks, PerfUnwind *parent) :
-    m_perfMapFile(QString::fromLatin1("/tmp/perf-%1.map").arg(pid)),
+    m_perfMapFile(QDir::tempPath() + QDir::separator()
+                  + QString::fromLatin1("perf-%1.map").arg(pid)),
     m_cacheIsDirty(false),
     m_unwind(parent),
     m_firstElf(nullptr),
@@ -215,7 +216,7 @@ static bool findBuildIdPath(QFileInfo &path, const QString &fileName)
 
 static QStringList splitPath(const QString &path)
 {
-    return path.split(QLatin1Char(':'), QString::SkipEmptyParts);
+    return path.split(QDir::listSeparator(), QString::SkipEmptyParts);
 }
 
 void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &buildId,
@@ -234,8 +235,8 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &
         bool found = false;
         // first try to find the debug information via build id, if available
         if (!buildId.isEmpty()) {
-            const QString buildIdPath = QString::fromUtf8(mmap.filename() + '/'
-                                                            + buildId.toHex());
+            const QString buildIdPath = QString::fromUtf8(mmap.filename()) + QDir::separator()
+                    + QString::fromUtf8(buildId.toHex());
             foreach (const QString &extraPath, splitPath(debugInfoPath)) {
                 fullPath.setFile(extraPath);
                 if (findBuildIdPath(fullPath, buildIdPath)) {

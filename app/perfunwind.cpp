@@ -25,6 +25,7 @@
 #include <QDebug>
 #include <QtEndian>
 #include <QVersionNumber>
+#include <QDir>
 
 #include <cstring>
 
@@ -88,9 +89,9 @@ PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QStri
     m_offlineCallbacks.find_elf = dwfl_build_id_find_elf;
     m_offlineCallbacks.find_debuginfo =  dwfl_standard_find_debuginfo;
     m_offlineCallbacks.section_address = dwfl_offline_section_address;
-    const QChar colon = QLatin1Char(':');
-    QByteArray newDebugInfo = (colon + debugPath + colon + appPath + colon + extraLibsPath + colon
-                               + systemRoot).toUtf8();
+    const QChar separator = QDir::listSeparator();
+    QByteArray newDebugInfo = (separator + debugPath + separator + appPath + separator
+                               + extraLibsPath + separator + systemRoot).toUtf8();
     m_debugInfoPath = new char[newDebugInfo.length() + 1];
     m_debugInfoPath[newDebugInfo.length()] = 0;
     std::memcpy(m_debugInfoPath, newDebugInfo.data(), newDebugInfo.length());
