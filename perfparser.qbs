@@ -9,7 +9,6 @@ Project {
     property bool withAutotests: qbs.buildVariant === "debug"
 
     references: [
-        "3rdparty/elfutils",
         "app",
         "tests",
     ]

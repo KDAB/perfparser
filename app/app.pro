@@ -10,29 +10,17 @@ CONFIG -= app_bundle
 
 include(../paths.pri)
 
-!isEmpty(PERFPARSER_BUNDLED_ELFUTILS) {
-    LIBS += -L$$PERFPARSER_ELFUTILS_DESTDIR
-    LIBS += -l$$libraryName(dw) -l$$libraryName(elf)
+!isEmpty(ELFUTILS_INSTALL_DIR) {
+    INCLUDEPATH += $$ELFUTILS_INSTALL_DIR/include $$ELFUTILS_INSTALL_DIR/include/elfutils
+    LIBS += -L$$ELFUTILS_INSTALL_DIR/lib
+} else:unix {
+    INCLUDEPATH += /usr/include/elfutils
+}
 
-    include(../3rdparty/elfutils/libdwfl/dwflheaders.pri)
-    include(../3rdparty/elfutils/libelf/elfheaders.pri)
-    include(../3rdparty/elfutils/libdw/dwheaders.pri)
-    include(../3rdparty/elfutils/libebl/eblheaders.pri)
-    include(../3rdparty/elfutils/libdwelf/dwelfheaders.pri)
-    include(../3rdparty/elfutils/lib/libheaders.pri)
-} else {
-    !isEmpty(ELFUTILS_INSTALL_DIR) {
-        INCLUDEPATH += $$ELFUTILS_INSTALL_DIR/include $$ELFUTILS_INSTALL_DIR/include/elfutils
-        LIBS += -L$$ELFUTILS_INSTALL_DIR/lib
-    } else:unix {
-        INCLUDEPATH += /usr/include/elfutils
-    }
+LIBS += -ldw -lelf
 
-    LIBS += -ldw -lelf
-
-    win32 {
-        LIBS += -leu_compat
-    }
+win32 {
+    LIBS += -leu_compat
 }
 
 linux-g++*:!isEmpty(PERFPARSER_ELFUTILS_INSTALLDIR) {
