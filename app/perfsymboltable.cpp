@@ -34,7 +34,7 @@
 #include <cxxabi.h>
 
 PerfSymbolTable::PerfSymbolTable(quint32 pid, Dwfl_Callbacks *callbacks, PerfUnwind *parent) :
-    m_perfMapFile(QString::fromLatin1("/tmp/perf-%1.map").arg(pid)),
+    m_perfMapFile(QString::fromLatin1("/tmp/perf-%1.map").arg(pid)), m_cacheIsDirty(false),
     m_unwind(parent), m_lastMmapAddedTime(0),
     m_nextMmapOverwrittenTime(std::numeric_limits<quint64>::max()), m_callbacks(callbacks),
     m_pid(pid)
@@ -357,8 +357,11 @@ Dwfl_Module *PerfSymbolTable::reportElf(PerfElfMap::ConstIterator i)
                 m_dwfl, i.value().file.fileName().toLocal8Bit().constData(),
                 i.value().file.absoluteFilePath().toLocal8Bit().constData(), -1, i.key(),
                 false);
-    if (!ret)
+
+    if (!ret) {
         reportError(i, dwfl_errmsg(dwfl_errno()));
+        m_cacheIsDirty = true;
+    }
 
     if (m_lastMmapAddedTime < i->timeAdded)
         m_lastMmapAddedTime = i->timeAdded;
@@ -597,4 +600,6 @@ void PerfSymbolTable::clearCache()
     // Throw out the dwfl state
     dwfl_end(m_dwfl);
     m_dwfl = dwfl_begin(m_callbacks);
+
+    m_cacheIsDirty = false;
 }

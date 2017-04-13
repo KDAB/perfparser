@@ -232,10 +232,15 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
 
     Dwarf_Addr pc_adjusted = pc - (isactivation ? 0 : 1);
 
+    auto* symbolTable = ui->unwind->symbolTable(ui->sample->pid());
     // isKernel = false as unwinding generally only works on user code
     bool isInterworking = false;
-    ui->frames.append(ui->unwind->symbolTable(ui->sample->pid())->lookupFrame(
-                          pc_adjusted, ui->sample->time(), false, &isInterworking));
+    const auto frame = symbolTable->lookupFrame(pc_adjusted, ui->sample->time(), false,
+                                                &isInterworking);
+    if (symbolTable->cacheIsDirty())
+        return DWARF_CB_ABORT;
+
+    ui->frames.append(frame);
     if (isInterworking && ui->frames.length() == 1)
         ui->isInterworking = true;
     return DWARF_CB_OK;
@@ -304,6 +309,9 @@ void PerfUnwind::resolveCallchain()
                                               ip, m_currentUnwind.sample->time(), isKernel,
                                               &m_currentUnwind.isInterworking));
         }
+
+        if (symbols->cacheIsDirty())
+            break;
     }
 }
 
@@ -322,23 +330,37 @@ void PerfUnwind::sample(const PerfRecordSample &sample)
 
 void PerfUnwind::analyze(const PerfRecordSample &sample)
 {
-    m_currentUnwind.isInterworking = false;
-    m_currentUnwind.firstGuessedFrame = -1;
-    m_currentUnwind.sample = &sample;
-    m_currentUnwind.frames.clear();
-
     const bool isKernel = ipIsInKernelSpace(sample.ip());
 
     PerfSymbolTable *userSymbols = symbolTable(sample.pid());
-    userSymbols->updatePerfMap();
 
-    // Do this before any lookupFrame() calls; we want to clear the caches if timestamps reset.
-    Dwfl *userDwfl = userSymbols->attachDwfl(sample.time(), &m_currentUnwind);
-    if (sample.callchain().length() > 0)
-        resolveCallchain();
+    for (int unwindingAttempt = 0; unwindingAttempt < 2; ++unwindingAttempt) {
+        m_currentUnwind.isInterworking = false;
+        m_currentUnwind.firstGuessedFrame = -1;
+        m_currentUnwind.sample = &sample;
+        m_currentUnwind.frames.clear();
 
-    if (userDwfl && sample.registerAbi() != 0 && sample.userStack().length() > 0)
-        unwindStack(userDwfl);
+        userSymbols->updatePerfMap();
+
+        Dwfl *userDwfl = userSymbols->attachDwfl(sample.time(), &m_currentUnwind);
+        if (sample.callchain().length() > 0)
+            resolveCallchain();
+
+        // only try to unwind when resolveCallchain did not dirty the cache
+        if (!userSymbols->cacheIsDirty()) {
+            if (userDwfl && sample.registerAbi() != 0 && sample.userStack().length() > 0)
+                unwindStack(userDwfl);
+            else
+                break;
+        }
+
+        // when the cache is dirty, we clean it up and try again, otherwise we can
+        // stop as unwinding should have succeeded
+        if (userSymbols->cacheIsDirty())
+            userSymbols->clearCache(); // fail, try again
+        else
+            break; // success
+    }
 
     // If nothing was found, at least look up the IP
     if (m_currentUnwind.frames.isEmpty()) {
