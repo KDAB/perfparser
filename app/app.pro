@@ -11,12 +11,8 @@ CONFIG -= app_bundle
 include(../paths.pri)
 
 !isEmpty(PERFPARSER_BUNDLED_ELFUTILS) {
-    linux-* {
-        RPATH = $$relative_path($$PERFPARSER_ELFUTILS_INSTALLDIR, $$PERFPARSER_APP_INSTALLDIR)
-        QMAKE_LFLAGS += -Wl,-z,origin \'-Wl,-rpath,\$\$ORIGIN/$$RPATH\'
-    }
-
     LIBS += -L$$PERFPARSER_ELFUTILS_DESTDIR
+    LIBS += -l$$libraryName(dw) -l$$libraryName(elf)
 
     include(../3rdparty/elfutils/libdwfl/dwflheaders.pri)
     include(../3rdparty/elfutils/libelf/elfheaders.pri)
@@ -25,11 +21,20 @@ include(../paths.pri)
     include(../3rdparty/elfutils/libdwelf/dwelfheaders.pri)
     include(../3rdparty/elfutils/lib/libheaders.pri)
 } else {
-    INCLUDEPATH += /usr/include/elfutils
+    !isEmpty(ELFUTILS_INSTALL_DIR) {
+        INCLUDEPATH += $$ELFUTILS_INSTALL_DIR/include $$ELFUTILS_INSTALL_DIR/include/elfutils
+        LIBS += -L$$ELFUTILS_INSTALL_DIR/lib
+    } else:unix {
+        INCLUDEPATH += /usr/include/elfutils
+    }
+
+    LIBS += -ldw -lelf
 }
 
-# We require major version 0 from elfutils
-LIBS += -l$$libraryRefName(dw, 0) -l$$libraryRefName(elf, 0)
+linux-g++*:!isEmpty(PERFPARSER_ELFUTILS_INSTALLDIR) {
+    RPATH = $$relative_path($$PERFPARSER_ELFUTILS_INSTALLDIR, $$PERFPARSER_APP_INSTALLDIR)
+    QMAKE_LFLAGS += -Wl,-z,origin \'-Wl,-rpath,\$\$ORIGIN/$$RPATH\'
+}
 
 DESTDIR = $$PERFPARSER_APP_DESTDIR
 target.path = $$PERFPARSER_APP_INSTALLDIR
