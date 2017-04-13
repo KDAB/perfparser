@@ -37,7 +37,10 @@
 #include <QTcpSocket>
 #include <limits>
 
+#ifdef Q_OS_WIN
+#include <io.h>
 #include <fcntl.h>
+#endif
 
 enum ErrorCodes {
     NoError,
