@@ -37,7 +37,11 @@
 
 PerfSymbolTable::PerfSymbolTable(quint32 pid, Dwfl_Callbacks *callbacks, PerfUnwind *parent) :
     m_perfMapFile(QString::fromLatin1("/tmp/perf-%1.map").arg(pid)),
-    m_unwind(parent), m_firstElf(nullptr), m_callbacks(callbacks), m_pid(pid)
+    m_cacheIsDirty(false),
+    m_unwind(parent),
+    m_firstElf(nullptr),
+    m_callbacks(callbacks),
+    m_pid(pid)
 {
     m_dwfl = dwfl_begin(m_callbacks);
 }
@@ -422,8 +426,10 @@ Dwfl_Module *PerfSymbolTable::reportElf(const PerfElfMap::ElfInfo& info)
                 m_dwfl, info.originalFileName.constData(),
                 info.localFile.absoluteFilePath().toLocal8Bit().constData(), -1, info.addr,
                 false);
-    if (!ret)
+    if (!ret) {
         reportError(info, dwfl_errmsg(dwfl_errno()));
+        m_cacheIsDirty = true;
+    }
 
     return ret;
 }
@@ -632,4 +638,6 @@ void PerfSymbolTable::clearCache()
     // Throw out the dwfl state
     dwfl_end(m_dwfl);
     m_dwfl = dwfl_begin(m_callbacks);
+
+    m_cacheIsDirty = false;
 }

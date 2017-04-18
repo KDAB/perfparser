@@ -72,6 +72,7 @@ public:
 
     Dwfl *attachDwfl(void *arg);
     void clearCache();
+    bool cacheIsDirty() const { return m_cacheIsDirty; }
 
 private:
 
@@ -83,6 +84,7 @@ private:
     QFile m_perfMapFile;
     QVector<PerfMapSymbol> m_perfMap;
     QHash<Dwarf_Addr, AddressCacheEntry> m_addressCache;
+    bool m_cacheIsDirty;
 
     PerfUnwind *m_unwind;
     Dwfl *m_dwfl;
