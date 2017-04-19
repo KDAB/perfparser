@@ -29,6 +29,10 @@ include(../paths.pri)
     }
 
     LIBS += -ldw -lelf
+
+    win32 {
+        LIBS += -leu_compat
+    }
 }
 
 linux-g++*:!isEmpty(PERFPARSER_ELFUTILS_INSTALLDIR) {

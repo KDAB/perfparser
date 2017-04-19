@@ -31,8 +31,26 @@
 #include <QStack>
 
 #include <cstring>
-#ifdef Q_OS_UNIX
+#include <fcntl.h>
+#ifdef Q_OS_WIN
+#include <io.h>
+extern "C" {
+    extern char *eu_compat_demangle(const char *mangled_name, char *output_buffer,
+                                    size_t *length, int *status);
+    extern int eu_compat_open(const char *, int);
+    extern int eu_compat_close(int);
+    extern void *eu_compat_malloc(size_t);
+    extern void eu_compat_free(void *);
+}
+#else
 #include <cxxabi.h>
+#include <unistd.h>
+#define eu_compat_open open
+#define eu_compat_close close
+#define eu_compat_malloc malloc
+#define eu_compat_free free
+#define eu_compat_demangle abi::__cxa_demangle
+#define O_BINARY 0
 #endif
 
 PerfSymbolTable::PerfSymbolTable(quint32 pid, Dwfl_Callbacks *callbacks, PerfUnwind *parent) :
@@ -40,6 +58,7 @@ PerfSymbolTable::PerfSymbolTable(quint32 pid, Dwfl_Callbacks *callbacks, PerfUnw
                   + QString::fromLatin1("perf-%1.map").arg(pid)),
     m_cacheIsDirty(false),
     m_unwind(parent),
+    m_firstElfFile(-1),
     m_firstElf(nullptr),
     m_callbacks(callbacks),
     m_pid(pid)
@@ -51,6 +70,7 @@ PerfSymbolTable::~PerfSymbolTable()
 {
     dwfl_end(m_dwfl);
     elf_end(m_firstElf);
+    eu_compat_close(m_firstElfFile);
 }
 
 static pid_t nextThread(Dwfl *dwfl, void *arg, void **threadArg)
@@ -271,19 +291,23 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &
                                 PerfUnwind::tr("Could not find ELF file for %1. "
                                                "This can break stack unwinding "
                                                "and lead to missing symbols.").arg(filePath));
-        } else if (!m_firstElfFile.isOpen()) {
-            m_firstElfFile.setFileName(fullPath.absoluteFilePath());
-            if (!m_firstElfFile.open(QIODevice::ReadOnly)) {
-                qWarning() << "Failed to open file:" << m_firstElfFile.errorString();
+        } else if (!m_firstElf) {
+            m_firstElfFile = eu_compat_open(fullPath.absoluteFilePath().toLocal8Bit().constData(),
+                                            O_RDONLY | O_BINARY);
+            if (m_firstElfFile == -1) {
+                qWarning() << "Failed to open file:" << fullPath.absoluteFilePath();
             } else {
-                m_firstElf = elf_begin(m_firstElfFile.handle(), ELF_C_READ, nullptr);
+                m_firstElf = elf_begin(m_firstElfFile, ELF_C_READ, nullptr);
                 if (!m_firstElf) {
                     qWarning() << "Failed to begin elf:" << elf_errmsg(elf_errno());
-                    m_firstElfFile.close();
-                } else if (m_firstElf && elf_kind(m_firstElf) == ELF_K_NONE) {
+                    eu_compat_close(m_firstElfFile);
+                    m_firstElfFile = -1;
+                } else if (elf_kind(m_firstElf) == ELF_K_NONE) {
                     // not actually an elf object
+                    elf_end(m_firstElf);
                     m_firstElf = nullptr;
-                    m_firstElfFile.close();
+                    eu_compat_close(m_firstElfFile);
+                    m_firstElfFile = -1;
                 }
             }
         }
@@ -317,7 +341,6 @@ static QByteArray dieName(Dwarf_Die *die)
 
 static QByteArray demangle(const QByteArray &mangledName)
 {
-#ifdef Q_OS_UNIX
     if (mangledName.length() < 3) {
         return mangledName;
     } else {
@@ -327,13 +350,12 @@ static QByteArray demangle(const QByteArray &mangledName)
         // Require GNU v3 ABI by the "_Z" prefix.
         if (mangledName[0] == '_' && mangledName[1] == 'Z') {
             int status = -1;
-            char *dsymname = abi::__cxa_demangle(mangledName, demangleBuffer, &demangleBufferLength,
-                                                 &status);
+            char *dsymname = eu_compat_demangle(mangledName, demangleBuffer, &demangleBufferLength,
+                                            &status);
             if (status == 0)
                 return demangleBuffer = dsymname;
         }
     }
-#endif
     return mangledName;
 }
 
@@ -540,7 +562,7 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
                     break;
                 }
             }
-            free(scopes);
+            eu_compat_free(scopes);
 
             addressLocation.parentLocationId = m_unwind->lookupLocation(functionLocation);
             if (die && !m_unwind->hasSymbol(addressLocation.parentLocationId))

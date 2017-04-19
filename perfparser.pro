@@ -24,6 +24,8 @@ defineReplace(elfutilsLibraryName) {
         $$ELFUTILS_INSTALL_DIR/lib/$$elfutilsLibraryName(elf, 1) \
         $$ELFUTILS_INSTALL_DIR/lib/$$elfutilsLibraryName(dw, 1)
 
+    win32: inst_elfutils.files += $$ELFUTILS_INSTALL_DIR/lib/eu_compat.dll
+
     inst_elfutils.path = $$PERFPARSER_ELFUTILS_INSTALLDIR
     inst_elfutils.CONFIG += no_check_exist no_default_install
 
