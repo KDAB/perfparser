@@ -34,6 +34,16 @@ const uint PerfRegisterInfo::s_numRegisters[PerfRegisterInfo::ARCH_INVALID][Perf
     { 9, 17},
 };
 
+const uint PerfRegisterInfo::s_wordWidth[PerfRegisterInfo::ARCH_INVALID][PerfRegisterInfo::s_numAbis] = {
+    {4, 4},
+    {8, 8},
+    {0, 0},
+    {0, 0},
+    {0, 0},
+    {0, 0},
+    {4, 8},
+};
+
 // Perf and Dwarf register layouts are the same for ARM and ARM64
 static uint arm[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 static uint aarch64[] = { 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,

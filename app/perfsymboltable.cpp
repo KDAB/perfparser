@@ -62,8 +62,30 @@ static pid_t nextThread(Dwfl *dwfl, void *arg, void **threadArg)
     return dwfl_pid(dwfl);
 }
 
+static void *memcpyTarget(Dwarf_Word *result, uint wordWidth)
+{
+    if (wordWidth == 4)
+        return (uint32_t *)result;
+
+    Q_ASSERT(wordWidth == 8);
+    return result;
+}
+
+static void doMemcpy(Dwarf_Word *result, const void *src, uint wordWidth)
+{
+    *result = 0; // initialize, as we might only overwrite half of it
+    std::memcpy(memcpyTarget(result, wordWidth), src, wordWidth);
+}
+
+static uint registerAbi(const PerfRecordSample *sample)
+{
+    const uint abi = sample->registerAbi();
+    Q_ASSERT(abi > 0); // ABI 0 means "no registers" - we shouldn't unwind in this case.
+    return abi - 1;
+}
+
 static bool accessDsoMem(Dwfl *dwfl, const PerfUnwind::UnwindInfo *ui, Dwarf_Addr addr,
-                         Dwarf_Word *result)
+                         Dwarf_Word *result, uint wordWidth)
 {
     // TODO: Take the pgoff into account? Or does elf_getdata do that already?
     Dwfl_Module *mod = dwfl_addrmodule(dwfl, addr);
@@ -79,7 +101,7 @@ static bool accessDsoMem(Dwfl *dwfl, const PerfUnwind::UnwindInfo *ui, Dwarf_Add
     if (section) {
         Elf_Data *data = elf_getdata(section, NULL);
         if (data && data->d_buf && data->d_size > addr) {
-            std::memcpy(result, static_cast<char *>(data->d_buf) + addr, sizeof(Dwarf_Word));
+            doMemcpy(result, static_cast<char *>(data->d_buf) + addr, wordWidth);
             return true;
         }
     }
@@ -90,6 +112,8 @@ static bool accessDsoMem(Dwfl *dwfl, const PerfUnwind::UnwindInfo *ui, Dwarf_Add
 static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *arg)
 {
     PerfUnwind::UnwindInfo *ui = static_cast<PerfUnwind::UnwindInfo *>(arg);
+    const uint wordWidth =
+            PerfRegisterInfo::s_wordWidth[ui->unwind->architecture()][registerAbi(ui->sample)];
 
     /* Check overflow. */
     if (addr + sizeof(Dwarf_Word) < addr) {
@@ -108,7 +132,7 @@ static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *ar
         // not stack, try reading from ELF
         if (ui->unwind->ipIsInKernelSpace(addr))
             dwfl = ui->unwind->dwfl(PerfUnwind::s_kernelPid);
-        if (!accessDsoMem(dwfl, ui, addr, result)) {
+        if (!accessDsoMem(dwfl, ui, addr, result, wordWidth)) {
             ui->firstGuessedFrame = ui->frames.length();
             const QHash<quint64, Dwarf_Word> &stackValues = ui->stackValues[ui->sample->pid()];
             auto it = stackValues.find(addr);
@@ -119,7 +143,7 @@ static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *ar
             }
         }
     } else {
-        std::memcpy(result, &(stack.data()[addr - start]), sizeof(Dwarf_Word));
+        doMemcpy(result, &(stack.data()[addr - start]), wordWidth);
         ui->stackValues[ui->sample->pid()][addr] = *result;
     }
     return true;
@@ -128,10 +152,9 @@ static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *ar
 static bool setInitialRegisters(Dwfl_Thread *thread, void *arg)
 {
     const PerfUnwind::UnwindInfo *ui = static_cast<PerfUnwind::UnwindInfo *>(arg);
-    quint64 abi = ui->sample->registerAbi() - 1; // ABI 0 means "no registers"
-    Q_ASSERT(abi < PerfRegisterInfo::s_numAbis);
-    uint architecture = ui->unwind->architecture();
-    uint numRegs = PerfRegisterInfo::s_numRegisters[architecture][abi];
+    const uint abi = registerAbi(ui->sample);
+    const uint architecture = ui->unwind->architecture();
+    const uint numRegs = PerfRegisterInfo::s_numRegisters[architecture][abi];
     QVarLengthArray<Dwarf_Word, 64> dwarfRegs(numRegs);
     for (uint i = 0; i < numRegs; ++i) {
         dwarfRegs[i] = ui->sample->registerValue(

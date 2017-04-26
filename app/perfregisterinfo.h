@@ -41,6 +41,7 @@ public:
 
     static const char *s_archNames[ARCH_INVALID];
     static const uint s_numRegisters[ARCH_INVALID][s_numAbis];
+    static const uint s_wordWidth[ARCH_INVALID][s_numAbis];
 
     // Translation table for converting perf register layout to dwarf register layout
     // This is specific to ABI as the different ABIs may have different numbers of registers.
