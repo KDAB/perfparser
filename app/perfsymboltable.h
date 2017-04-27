@@ -53,15 +53,16 @@ public:
 
     // Announce an mmap. Invalidate the symbol and address cache and clear the dwfl if it overlaps
     // with an existing one.
-    void registerElf(const PerfRecordMmap &mmap, const QByteArray &buildId,
-                     const QString &appPath, const QString &systemRoot,
-                     const QString &extraLibsPath, const QString &debugInfoPath);
+    void registerElf(const PerfRecordMmap &mmap, const QByteArray &buildId);
 
     PerfElfMap::ElfInfo findElf(quint64 ip) const;
 
     // Report an mmap to dwfl and parse it for symbols and inlines, or simply return it if dwfl has
     // it already
     Dwfl_Module *reportElf(const PerfElfMap::ElfInfo& elf);
+    int findDebugInfo(Dwfl_Module *module, const char *moduleName, Dwarf_Addr base,
+                      const char *file, const char *debugLink,
+                      GElf_Word crc, char **debugInfoFilename);
 
     // Look up a frame and all its inline parents and append them to the given vector.
     // If the frame hits an elf that hasn't been reported, yet, report it.
@@ -75,6 +76,8 @@ public:
     bool cacheIsDirty() const { return m_cacheIsDirty; }
 
 private:
+    QFileInfo findFile(const char *path, const QString &fileName,
+                       const QByteArray &buildId = QByteArray()) const;
 
     struct AddressCacheEntry {
         int locationId;

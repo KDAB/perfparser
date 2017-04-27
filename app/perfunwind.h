@@ -150,6 +150,11 @@ public:
     void sendError(ErrorCode error, const QString &message);
     void sendProgress(float percent);
 
+    QString systemRoot() const { return m_systemRoot; }
+    QString extraLibsPath() const { return m_extraLibsPath; }
+    QString appPath() const { return m_appPath; }
+    QString debugPath() const { return m_debugPath; }
+
 private:
 
     enum CallchainContext {

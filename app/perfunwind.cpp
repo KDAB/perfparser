@@ -75,6 +75,16 @@ void PerfUnwind::Stats::finishedRound()
     lastRoundTime = maxTime;
 }
 
+static int find_debuginfo(Dwfl_Module *module, void **userData, const char *moduleName,
+                          Dwarf_Addr base, const char *file, const char *debugLink,
+                          GElf_Word crc, char **debugInfoFilename)
+{
+    // data should have been set from PerfSymbolTable::reportElf
+    Q_ASSERT(*userData);
+    auto* symbolTable = reinterpret_cast<PerfSymbolTable*>(*userData);
+    return symbolTable->findDebugInfo(module, moduleName, base, file, debugLink, crc, debugInfoFilename);
+}
+
 PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugPath,
                        const QString &extraLibsPath, const QString &appPath,
                        const QString &kallsymsPath, bool printStats, uint maxEventBufferSize,
@@ -87,7 +97,7 @@ PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QStri
     m_currentUnwind.unwind = this;
     m_currentUnwind.maxFrames = maxFrames;
     m_offlineCallbacks.find_elf = dwfl_build_id_find_elf;
-    m_offlineCallbacks.find_debuginfo =  dwfl_standard_find_debuginfo;
+    m_offlineCallbacks.find_debuginfo = find_debuginfo;
     m_offlineCallbacks.section_address = dwfl_offline_section_address;
     const QChar separator = QDir::listSeparator();
     QByteArray newDebugInfo = (separator + debugPath + separator + appPath + separator
@@ -641,10 +651,8 @@ void PerfUnwind::flushEventBuffer(uint desiredBufferSize)
 
         for (; mmapIt != mmapEnd && mmapIt->time() <= sample.time(); ++mmapIt) {
             if (!m_stats.enabled) {
-                symbolTable(mmapIt->pid())->registerElf(*mmapIt,
-                                                        m_buildIds.value(mmapIt->filename()),
-                                                        m_appPath, m_systemRoot,
-                                                        m_extraLibsPath, m_debugPath);
+                const auto &buildId = m_buildIds.value(mmapIt->filename());
+                symbolTable(mmapIt->pid())->registerElf(*mmapIt, buildId);
             }
             m_eventBufferSize -= mmapIt->size();
         }

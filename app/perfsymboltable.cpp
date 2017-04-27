@@ -41,6 +41,13 @@ extern "C" {
     extern int eu_compat_close(int);
     extern void *eu_compat_malloc(size_t);
     extern void eu_compat_free(void *);
+    static char* eu_compat_strdup(const char* string)
+    {
+        const size_t length = strlen(string) + 1; // include null char
+        char* ret = reinterpret_cast<char*>(eu_compat_malloc(length));
+        std::memcpy(ret, string, length);
+        return ret;
+    }
 }
 #else
 #include <cxxabi.h>
@@ -50,6 +57,7 @@ extern "C" {
 #define eu_compat_malloc malloc
 #define eu_compat_free free
 #define eu_compat_demangle abi::__cxa_demangle
+#define eu_compat_strdup strdup
 #define O_BINARY 0
 #endif
 
@@ -239,54 +247,54 @@ static QStringList splitPath(const QString &path)
     return path.split(QDir::listSeparator(), QString::SkipEmptyParts);
 }
 
-void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &buildId,
-                                  const QString &appPath, const QString &systemRoot,
-                                  const QString &extraLibsPath, const QString &debugInfoPath)
+QFileInfo PerfSymbolTable::findFile(const char *path, const QString &fileName,
+                                    const QByteArray &buildId) const
+{
+    QFileInfo fullPath;
+    // first try to find the debug information via build id, if available
+    if (!buildId.isEmpty()) {
+        const QString buildIdPath = QString::fromUtf8(path) + QDir::separator()
+                + QString::fromUtf8(buildId.toHex());
+        foreach (const QString &extraPath, splitPath(m_unwind->debugPath())) {
+            fullPath.setFile(extraPath);
+            if (findBuildIdPath(fullPath, buildIdPath))
+                return fullPath;
+        }
+    }
+
+    if (!m_unwind->appPath().isEmpty()) {
+        // try to find the file in the app path
+        fullPath.setFile(m_unwind->appPath());
+        if (findInExtraPath(fullPath, fileName))
+            return fullPath;
+    }
+
+    // try to find the file in the extra libs path
+    foreach (const QString &extraPath, splitPath(m_unwind->extraLibsPath())) {
+        fullPath.setFile(extraPath);
+        if (findInExtraPath(fullPath, fileName))
+            return fullPath;
+    }
+
+    // last fall-back, try the system root
+    fullPath.setFile(m_unwind->systemRoot() + QString::fromUtf8(path));
+    return fullPath;
+}
+
+void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &buildId)
 {
     QLatin1String filePath(mmap.filename());
     // special regions, such as [heap], [vdso], [stack], ... as well as //anon
     const bool isSpecialRegion = (mmap.filename().startsWith('[') && mmap.filename().endsWith(']'))
                               || filePath == QLatin1String("//anon");
-    QFileInfo fileInfo(filePath);
+    const auto fileName = QFileInfo(filePath).fileName();
     QFileInfo fullPath;
     if (isSpecialRegion) {
         // don not set fullPath, these regions don't represent a real file
     } else if (mmap.pid() != PerfUnwind::s_kernelPid) {
-        bool found = false;
-        // first try to find the debug information via build id, if available
-        if (!buildId.isEmpty()) {
-            const QString buildIdPath = QString::fromUtf8(mmap.filename()) + QDir::separator()
-                    + QString::fromUtf8(buildId.toHex());
-            foreach (const QString &extraPath, splitPath(debugInfoPath)) {
-                fullPath.setFile(extraPath);
-                if (findBuildIdPath(fullPath, buildIdPath)) {
-                    found = true;
-                    break;
-                }
-            }
-        }
-        if (!found && !appPath.isEmpty()) {
-            // try to find the file in the app path
-            fullPath.setFile(appPath);
-            found = findInExtraPath(fullPath, fileInfo.fileName());
-        }
-        if (!found) {
-            // try to find the file in the extra libs path
-            foreach (const QString &extraPath, splitPath(extraLibsPath)) {
-                fullPath.setFile(extraPath);
-                if (findInExtraPath(fullPath, fileInfo.fileName())) {
-                    found = true;
-                    break;
-                }
-            }
-        }
-        if (!found) {
-            // last fall-back, try the system root
-            fullPath.setFile(systemRoot + filePath);
-            found = fullPath.exists();
-        }
+        fullPath = findFile(mmap.filename(), fileName, buildId);
 
-        if (!found) {
+        if (!fullPath.isFile()) {
             m_unwind->sendError(PerfUnwind::MissingElfFile,
                                 PerfUnwind::tr("Could not find ELF file for %1. "
                                                "This can break stack unwinding "
@@ -312,11 +320,11 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &
             }
         }
     } else { // kernel
-        fullPath.setFile(systemRoot + filePath);
+        fullPath.setFile(m_unwind->systemRoot() + filePath);
     }
 
     bool cacheInvalid = m_elfs.registerElf(mmap.addr(), mmap.len(), mmap.pgoff(), fullPath,
-                                           fileInfo.fileName().toUtf8());
+                                           fileName.toUtf8());
 
     // There is no need to clear the symbol or location caches in PerfUnwind. Some locations become
     // stale this way, but we still need to keep their IDs, as the receiver might still use them for
@@ -475,8 +483,41 @@ Dwfl_Module *PerfSymbolTable::reportElf(const PerfElfMap::ElfInfo& info)
     if (!ret) {
         reportError(info, dwfl_errmsg(dwfl_errno()));
         m_cacheIsDirty = true;
+    } else {
+        // set symbol table as user data, cf. find_debuginfo callback in perfunwind.cpp
+        void** userData;
+        dwfl_module_info(ret, &userData, nullptr, nullptr, nullptr, nullptr,
+                         nullptr, nullptr);
+        *userData = this;
     }
 
+    return ret;
+}
+
+int PerfSymbolTable::findDebugInfo(Dwfl_Module *module, const char *moduleName, Dwarf_Addr base,
+                                   const char *file, const char *debugLink,
+                                   GElf_Word crc, char **debugInfoFilename)
+{
+    int ret = dwfl_standard_find_debuginfo(module, nullptr, moduleName, base, file,
+                                           debugLink, crc, debugInfoFilename);
+    if (ret >= 0 || !debugLink || strlen(debugLink) == 0)
+        return ret;
+
+    // fall-back, mostly for situations where we loaded a file via it's build-id.
+    // search all known paths for the debug link in that case
+    const auto debugLinkFile = findFile(debugLink, QFile(debugLink).fileName());
+    if (!debugLinkFile.isFile())
+        return ret;
+
+    const auto path = eu_compat_strdup(debugLinkFile.absoluteFilePath().toUtf8().constData());
+    // ugh, nasty - we have to return a fd here :-/
+    ret = eu_compat_open(path, O_RDONLY | O_BINARY);
+    if (ret < 0 ) {
+        qWarning() << "Failed to open debug info file" << path;
+        eu_compat_free(path);
+    } else {
+        *debugInfoFilename = path;
+    }
     return ret;
 }
 
