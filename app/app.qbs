@@ -8,12 +8,8 @@ QtcTool {
 
     Depends { name: "Qt.network" }
 
-    Properties {
-        cpp.includePaths: ["/usr/include/elfutils"]
-        cpp.dynamicLibraries: ["dw", "elf"]
-    }
-
-    cpp.allowUnresolvedSymbols: true
+    cpp.includePaths: ["/usr/include/elfutils"]
+    cpp.dynamicLibraries: ["dw", "elf"]
 
     files: [
         "main.cpp",
