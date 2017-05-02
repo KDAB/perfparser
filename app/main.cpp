@@ -135,8 +135,11 @@ int main(int argc, char *argv[])
                                QLatin1String("path"));
     parser.addOption(appPath);
 
-    const auto defaultArch
-        = QLatin1String(PerfRegisterInfo::s_archNames[PerfRegisterInfo::s_defaultArchitecture]);
+    const auto defaultArch =
+            PerfRegisterInfo::s_defaultArchitecture != PerfRegisterInfo::ARCH_INVALID
+            ? QLatin1String(PerfRegisterInfo::s_archNames[PerfRegisterInfo::s_defaultArchitecture])
+            : QString();
+
     QCommandLineOption arch(QLatin1String("arch"),
                             QCoreApplication::translate(
                                 "main",
