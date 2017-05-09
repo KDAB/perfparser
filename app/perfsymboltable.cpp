@@ -117,7 +117,8 @@ static bool accessDsoMem(Dwfl *dwfl, const PerfUnwind::UnwindInfo *ui, Dwarf_Add
                          Dwarf_Word *result, uint wordWidth)
 {
     // TODO: Take the pgoff into account? Or does elf_getdata do that already?
-    Dwfl_Module *mod = dwfl_addrmodule(dwfl, addr);
+    Dwfl_Module *mod = dwfl ? dwfl_addrmodule(dwfl, addr) : nullptr;
+
     if (!mod) {
         mod = ui->unwind->reportElf(addr, ui->sample->pid());
         if (!mod)
