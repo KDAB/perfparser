@@ -326,7 +326,7 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &
     }
 
     bool cacheInvalid = m_elfs.registerElf(mmap.addr(), mmap.len(), mmap.pgoff(), fullPath,
-                                           fileName.toUtf8());
+                                           fileName.toUtf8(), mmap.filename());
 
     // There is no need to clear the symbol or location caches in PerfUnwind. Some locations become
     // stale this way, but we still need to keep their IDs, as the receiver might still use them for
@@ -507,7 +507,20 @@ int PerfSymbolTable::findDebugInfo(Dwfl_Module *module, const char *moduleName, 
 
     // fall-back, mostly for situations where we loaded a file via it's build-id.
     // search all known paths for the debug link in that case
-    const auto debugLinkFile = findFile(debugLink, QFile(debugLink).fileName());
+    const auto debugLinkString = QFile(debugLink).fileName();
+    auto debugLinkFile = findFile(debugLink, debugLinkString);
+    if (!debugLinkFile.isFile()) {
+        // fall-back to original file path with debug link file name
+        const auto &elf = m_elfs.findElf(base);
+        const auto &dir = QFileInfo(m_unwind->systemRoot() +
+                            QString::fromUtf8(elf.originalPath)).absoluteDir();
+        debugLinkFile.setFile(dir, debugLinkString);
+        if (!debugLinkFile.isFile()) { // try again in .debug folder
+            debugLinkFile.setFile(dir, QLatin1String(".debug") +
+                                        QDir::separator() + debugLinkString);
+        }
+    }
+
     if (!debugLinkFile.isFile())
         return ret;
 

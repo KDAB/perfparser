@@ -29,6 +29,7 @@ QDebug operator<<(QDebug stream, const PerfElfMap::ElfInfo& info)
                      << "localFile=" << info.localFile.absoluteFilePath() << ", "
                      << "isFile=" << info.isFile() << ", "
                      << "originalFileName=" << info.originalFileName << ", "
+                     << "originalPath=" << info.originalPath << ", "
                      << "addr=" << info.addr << ", "
                      << "len=" << info.length << ", "
                      << "pgoff=" << info.pgoff << ", "
@@ -52,7 +53,8 @@ struct SortByAddr
 }
 
 bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgoff,
-                             const QFileInfo &fullPath, const QByteArray &originalFileName)
+                             const QFileInfo &fullPath, const QByteArray &originalFileName,
+                             const QByteArray &originalPath)
 {
     bool cacheInvalid = false;
     const quint64 addrEnd = addr + len;
@@ -69,12 +71,13 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
         // reinsert any fragments of it that remain.
 
         if (i->addr < addr) {
-            newElfs.push_back(ElfInfo(i->localFile, i->addr, addr - i->addr,
-                                      i->pgoff, i->originalFileName));
+            newElfs.push_back(ElfInfo(i->localFile, i->addr, addr - i->addr, i->pgoff,
+                                      i->originalFileName, i->originalPath));
         }
         if (iEnd > addrEnd) {
             newElfs.push_back(ElfInfo(i->localFile, addrEnd, iEnd - addrEnd,
-                                      i->pgoff + addrEnd - i->addr, i->originalFileName));
+                                      i->pgoff + addrEnd - i->addr,
+                                      i->originalFileName, i->originalPath));
         }
 
         removedElfs.push_back(std::distance(m_elfs.begin(), i));
@@ -90,7 +93,7 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
     for (auto it = removedElfs.rbegin(), end = removedElfs.rend(); it != end; ++it)
         m_elfs.remove(*it);
 
-    newElfs.push_back(ElfInfo(fullPath, addr, len, pgoff, originalFileName));
+    newElfs.push_back(ElfInfo(fullPath, addr, len, pgoff, originalFileName, originalPath));
 
     for (const auto &elf : newElfs) {
         auto it = std::lower_bound(m_elfs.begin(), m_elfs.end(),
