@@ -27,8 +27,8 @@
 namespace {
 bool registerElf(PerfElfMap *map, const PerfElfMap::ElfInfo &info)
 {
-    return map->registerElf(info.addr, info.length, info.pgoff,
-                            info.localFile, info.originalFileName);
+    return map->registerElf(info.addr, info.length, info.pgoff, info.localFile,
+                            info.originalFileName, info.originalPath);
 }
 }
 
