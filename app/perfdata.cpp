@@ -488,7 +488,7 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordSample &record)
         quint64 numIps;
         quint64 ip;
         stream >> numIps;
-        while (numIps-- > 0) {
+        while (numIps && numIps-- > 0) {
             stream >> ip;
             record.m_callchain << ip;
         }

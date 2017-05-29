@@ -215,7 +215,7 @@ QDataStream &operator>>(QDataStream &stream, PerfCmdline &cmdline)
     quint32 numParts;
     stream >> numParts;
     PerfStringFeature stringFeature;
-    while (numParts-- > 0) {
+    while (numParts && numParts-- > 0) {
         stream >> stringFeature;
         cmdline.cmdline << stringFeature.value;
     }
@@ -230,14 +230,14 @@ QDataStream &operator>>(QDataStream &stream, PerfEventDesc &eventDesc)
     quint64 id;
     stream >> numEvents >> eventSize;
     PerfStringFeature stringFeature;
-    while (numEvents-- > 0) {
+    while (numEvents && numEvents-- > 0) {
         eventDesc.eventDescs << PerfEventDesc::EventDesc();
         PerfEventDesc::EventDesc &currentEvent = eventDesc.eventDescs.last();
         stream >> currentEvent.attrs;
         stream >> numIds;
         stream >> stringFeature;
         currentEvent.name = stringFeature.value;
-        while (numIds-- > 0) {
+        while (numIds && numIds-- > 0) {
             stream >> id;
             currentEvent.ids << id;
         }
@@ -254,13 +254,13 @@ QDataStream &operator>>(QDataStream &stream, PerfCpuTopology &cpuTopology)
     PerfStringFeature stringFeature;
     stream >> numSiblings;
 
-    while (numSiblings-- > 0) {
+    while (numSiblings && numSiblings-- > 0) {
         stream >> stringFeature;
         cpuTopology.siblingCores << stringFeature.value;
     }
 
     stream >> numSiblings;
-    while (numSiblings-- > 0) {
+    while (numSiblings && numSiblings-- > 0) {
         stream >> stringFeature;
         cpuTopology.siblingThreads << stringFeature.value;
     }
@@ -278,7 +278,7 @@ QDataStream &operator>>(QDataStream &stream, PerfNumaTopology &numaTopology)
     stream >> numNodes;
 
     PerfStringFeature stringFeature;
-    while (numNodes-- > 0) {
+    while (numNodes && numNodes-- > 0) {
         PerfNumaTopology::NumaNode node;
         stream >> node.nodeId >> node.memTotal >> node.memFree >> stringFeature;
         node.topology = stringFeature.value;
@@ -317,7 +317,7 @@ QDataStream &operator>>(QDataStream &stream, PerfPmuMappings &pmuMappings)
     stream >> numPmus;
 
     PerfStringFeature stringFeature;
-    while (numPmus-- > 0) {
+    while (numPmus && numPmus-- > 0) {
         PerfPmuMappings::Pmu pmu;
         stream >> pmu.type >> stringFeature;
         pmu.name = stringFeature.value;
@@ -342,7 +342,7 @@ QDataStream &operator>>(QDataStream &stream, PerfGroupDesc &groupDesc)
     stream >> numGroups;
 
     PerfStringFeature stringFeature;
-    while (numGroups-- > 0) {
+    while (numGroups && numGroups-- > 0) {
         PerfGroupDesc::GroupDesc desc;
         stream >> stringFeature;
         desc.name = stringFeature.value;
