@@ -26,7 +26,7 @@
 QDebug operator<<(QDebug stream, const PerfElfMap::ElfInfo& info)
 {
     stream.nospace() << "ElfInfo{"
-                     << "localFile=" << info.localFile.fileName() << ", "
+                     << "localFile=" << info.localFile.absoluteFilePath() << ", "
                      << "isFile=" << info.isFile() << ", "
                      << "originalFileName=" << info.originalFileName << ", "
                      << "originalPath=" << info.originalPath << ", "
