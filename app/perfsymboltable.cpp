@@ -146,7 +146,7 @@ static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *ar
             PerfRegisterInfo::s_wordWidth[ui->unwind->architecture()][registerAbi(ui->sample)];
 
     /* Check overflow. */
-    if (addr + sizeof(Dwarf_Word) < addr) {
+    if (addr > std::numeric_limits<Dwarf_Addr>::max() - sizeof(Dwarf_Word)) {
         qWarning() << "Invalid memory read requested by dwfl" << addr;
         ui->firstGuessedFrame = ui->frames.length();
         return false;
