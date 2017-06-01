@@ -230,7 +230,8 @@ int main(int argc, char *argv[])
                       parser.value(extra), parser.value(appPath), parser.isSet(kallsymsPath)
                         ? parser.value(kallsymsPath)
                         : parser.value(sysroot) + parser.value(kallsymsPath),
-                      parser.isSet(printStats), maxEventBufferSize, maxFramesValue);
+                      parser.isSet(kallsymsPath), parser.isSet(printStats),
+                      maxEventBufferSize, maxFramesValue);
 
     PerfHeader header(infile.data());
     PerfAttributes attributes;

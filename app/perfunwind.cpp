@@ -87,11 +87,12 @@ static int find_debuginfo(Dwfl_Module *module, void **userData, const char *modu
 
 PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugPath,
                        const QString &extraLibsPath, const QString &appPath,
-                       const QString &kallsymsPath, bool printStats, uint maxEventBufferSize,
-                       int maxFrames) :
+                       const QString &kallsymsPath, bool ignoreKallsymsBuildId,
+                       bool printStats, uint maxEventBufferSize, int maxFrames) :
     m_output(output), m_architecture(PerfRegisterInfo::ARCH_INVALID), m_systemRoot(systemRoot),
     m_extraLibsPath(extraLibsPath), m_appPath(appPath), m_debugPath(debugPath),
-    m_kallsymsPath(kallsymsPath), m_maxEventBufferSize(maxEventBufferSize), m_eventBufferSize(0),
+    m_kallsymsPath(kallsymsPath), m_ignoreKallsymsBuildId(ignoreKallsymsBuildId),
+    m_maxEventBufferSize(maxEventBufferSize), m_eventBufferSize(0),
     m_lastFlushMaxTime(0)
 {
     m_stats.enabled = printStats;
@@ -562,10 +563,30 @@ void PerfUnwind::resolveSymbol(int locationId, const PerfUnwind::Symbol &symbol)
 PerfKallsymEntry PerfUnwind::findKallsymEntry(quint64 address)
 {
     if (m_kallsyms.isEmpty() && m_kallsyms.errorString().isEmpty()) {
-        if (!m_kallsyms.parseMapping(m_kallsymsPath))
+        auto path = m_kallsymsPath;
+        if (!m_ignoreKallsymsBuildId) {
+            const auto &buildId = m_buildIds.value(QByteArrayLiteral("[kernel.kallsyms]"));
+            if (!buildId.isEmpty()) {
+                const auto debugPaths = m_debugPath.split(QDir::listSeparator(),
+                                                        QString::SkipEmptyParts);
+                for (const auto &debugPath : debugPaths) {
+                    const QString buildIdPath = debugPath + QDir::separator() +
+                                                QLatin1String("[kernel.kallsyms]") +
+                                                QDir::separator() +
+                                                QString::fromUtf8(buildId.toHex()) +
+                                                QDir::separator() + QLatin1String("kallsyms");
+                    if (QFile::exists(buildIdPath)) {
+                        path = buildIdPath;
+                        break;
+                    }
+                }
+            }
+        }
+        if (!m_kallsyms.parseMapping(path)) {
             sendError(InvalidKallsyms,
                       tr("Failed to parse kernel symbol mapping file \"%1\": %2")
-                            .arg(m_kallsymsPath, m_kallsyms.errorString()));
+                            .arg(path, m_kallsyms.errorString()));
+        }
     }
     return m_kallsyms.findEntry(address);
 }
