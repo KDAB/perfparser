@@ -140,7 +140,7 @@ public:
     bool hasSymbol(int locationId) const;
     void resolveSymbol(int locationId, const Symbol &symbol);
 
-    PerfKallsymEntry findKallsymEntry(quint64 address) const;
+    PerfKallsymEntry findKallsymEntry(quint64 address);
 
     enum ErrorCode {
         TimeOrderViolation = 1,
@@ -191,6 +191,9 @@ private:
 
     // Path to debug information, e.g. ~/.debug and /usr/local/debug
     QString m_debugPath;
+
+    // Path to kallsyms path
+    QString m_kallsymsPath;
 
     QList<PerfRecordSample> m_sampleBuffer;
     QList<PerfRecordMmap> m_mmapBuffer;
