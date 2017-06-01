@@ -552,10 +552,27 @@ void PerfUnwind::resolveSymbol(int locationId, const PerfUnwind::Symbol &symbol)
 PerfKallsymEntry PerfUnwind::findKallsymEntry(quint64 address)
 {
     if (m_kallsyms.isEmpty() && m_kallsyms.errorString().isEmpty()) {
-        if (!m_kallsyms.parseMapping(m_kallsymsPath))
+        auto path = m_kallsymsPath;
+        const auto &buildId = m_buildIds.value(QByteArrayLiteral("[kernel.kallsyms]"));
+        if (!buildId.isEmpty()) {
+            const auto debugPaths = m_debugPath.split(QDir::listSeparator(),
+                                                      QString::SkipEmptyParts);
+            for (const auto &debugPath : debugPaths) {
+                const QString buildIdPath = debugPath + QDir::separator() +
+                                            QLatin1String("[kernel.kallsyms]") +
+                                            QDir::separator() +
+                                            QString::fromUtf8(buildId.toHex()) +
+                                            QDir::separator() + QLatin1String("kallsyms");
+                if (QFile::exists(buildIdPath)) {
+                    path = buildIdPath;
+                    break;
+                }
+            }
+        }
+        if (!m_kallsyms.parseMapping(path))
             sendError(InvalidKallsyms,
                       tr("Failed to parse kernel symbol mapping file \"%1\": %2")
-                            .arg(m_kallsymsPath, m_kallsyms.errorString()));
+                            .arg(path, m_kallsyms.errorString()));
     }
     return m_kallsyms.findEntry(address);
 }
