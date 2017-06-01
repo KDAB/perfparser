@@ -41,6 +41,7 @@ class PerfKallsyms
 public:
     bool parseMapping(const QString &path);
     QString errorString() const { return m_errorString; }
+    bool isEmpty() const { return m_entries.isEmpty(); }
 
     PerfKallsymEntry findEntry(quint64 address) const;
 
