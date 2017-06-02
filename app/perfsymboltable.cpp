@@ -117,13 +117,7 @@ static bool accessDsoMem(Dwfl *dwfl, const PerfUnwind::UnwindInfo *ui, Dwarf_Add
                          Dwarf_Word *result, uint wordWidth)
 {
     // TODO: Take the pgoff into account? Or does elf_getdata do that already?
-    Dwfl_Module *mod = dwfl ? dwfl_addrmodule(dwfl, addr) : nullptr;
-
-    if (!mod) {
-        mod = ui->unwind->reportElf(addr, ui->sample->pid());
-        if (!mod)
-            return false;
-    }
+    auto mod = ui->unwind->symbolTable(ui->sample->pid())->module(addr);
 
     Dwarf_Addr bias;
     Elf_Scn *section = dwfl_module_address_section(mod, &addr, &bias);
@@ -496,6 +490,27 @@ Dwfl_Module *PerfSymbolTable::reportElf(const PerfElfMap::ElfInfo& info)
     return ret;
 }
 
+Dwfl_Module *PerfSymbolTable::module(quint64 addr)
+{
+    if (!m_dwfl)
+        return nullptr;
+
+    Dwfl_Module *mod = dwfl_addrmodule(m_dwfl, addr);
+    const auto &elf = findElf(addr);
+
+    if (mod) {
+        // If dwfl has a module and it's not the same as what we want, report the module
+        // we want. Many modules overlap ld.so, so if we've reported even one sample from
+        // ld.so we would otherwise be blocked from reporting anything that overlaps it.
+        Dwarf_Addr mod_start = 0;
+        dwfl_module_info(mod, nullptr, &mod_start, nullptr, nullptr, nullptr, nullptr,
+                         nullptr);
+        if (elf.addr == mod_start)
+            return mod;
+    }
+    return reportElf(elf);
+}
+
 int PerfSymbolTable::findDebugInfo(Dwfl_Module *module, const char *moduleName, Dwarf_Addr base,
                                    const char *file, const char *debugLink,
                                    GElf_Word crc, char **debugInfoFilename)
@@ -547,30 +562,16 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
         return it->locationId;
     }
 
-    Dwfl_Module *mod = m_dwfl ? dwfl_addrmodule(m_dwfl, ip) : 0;
     qint32 binaryId = -1;
-
     quint64 elfStart = 0;
 
     const auto& elf = findElf(ip);
     if (elf.isValid()) {
         binaryId = m_unwind->resolveString(elf.originalFileName);
         elfStart = elf.addr;
-        if (m_dwfl) {
-            if (mod) {
-                // If dwfl has a module and it's not the same as what we want, report the module
-                // we want. Many modules overlap ld.so, so if we've reported even one sample from
-                // ld.so we would otherwise be blocked from reporting anything that overlaps it.
-                Dwarf_Addr mod_start = 0;
-                dwfl_module_info(mod, nullptr, &mod_start, nullptr, nullptr, nullptr, nullptr,
-                                 nullptr);
-                if (elfStart != mod_start)
-                    mod = reportElf(elf);
-            } else {
-                mod = reportElf(elf);
-            }
-        }
     }
+
+    Dwfl_Module *mod = module(ip);
 
     PerfUnwind::Location addressLocation(
                 (m_unwind->architecture() != PerfRegisterInfo::ARCH_ARM || (ip & 1))
