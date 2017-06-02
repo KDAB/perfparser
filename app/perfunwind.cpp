@@ -300,8 +300,10 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
     Dwarf_Addr pc = 0;
     PerfUnwind::UnwindInfo *ui = static_cast<PerfUnwind::UnwindInfo *>(arg);
 
-    bool isactivation;
-    if (!dwfl_frame_pc(state, &pc, &isactivation)
+    // do not query for activation directly, as this could potentially advance
+    // the unwinder internally - we must first ensure the module for the pc
+    // is reported
+    if (!dwfl_frame_pc(state, &pc, NULL)
             || (ui->maxFrames != -1 && ui->frames.length() > ui->maxFrames)
             || pc == 0) {
         ui->firstGuessedFrame = ui->frames.length();
@@ -309,9 +311,17 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
         return DWARF_CB_ABORT;
     }
 
+    auto* symbolTable = ui->unwind->symbolTable(ui->sample->pid());
+
+    // ensure the module is reported
+    // if that fails, we will still try to unwind based on frame pointer
+    symbolTable->module(pc);
+
+    // now we can query for the activation flag
+    bool isactivation = false;
+    dwfl_frame_pc(state, &pc, &isactivation);
     Dwarf_Addr pc_adjusted = pc - (isactivation ? 0 : 1);
 
-    auto* symbolTable = ui->unwind->symbolTable(ui->sample->pid());
     // isKernel = false as unwinding generally only works on user code
     bool isInterworking = false;
     const auto frame = symbolTable->lookupFrame(pc_adjusted, false, &isInterworking);
