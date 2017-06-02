@@ -60,6 +60,9 @@ public:
     // Report an mmap to dwfl and parse it for symbols and inlines, or simply return it if dwfl has
     // it already
     Dwfl_Module *reportElf(const PerfElfMap::ElfInfo& elf);
+    // Find the module for the given address and report it if needed
+    Dwfl_Module *module(quint64 addr);
+    Dwfl_Module *module(quint64 addr, const PerfElfMap::ElfInfo &elf);
     int findDebugInfo(Dwfl_Module *module, const char *moduleName, Dwarf_Addr base,
                       const char *file, const char *debugLink,
                       GElf_Word crc, char **debugInfoFilename);
