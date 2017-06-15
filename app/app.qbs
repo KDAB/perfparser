@@ -8,6 +8,7 @@ QtcTool {
 
     Depends { name: "Qt.network" }
 
+    cpp.defines: base.filter(function(def) { return def != "QT_RESTRICTED_CAST_FROM_ASCII"; })
     cpp.includePaths: ["/usr/include/elfutils"]
     cpp.dynamicLibraries: ["dw", "elf"]
 
