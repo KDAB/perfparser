@@ -570,6 +570,77 @@ PerfElfMap::ElfInfo PerfSymbolTable::findElf(quint64 ip) const
     return m_elfs.findElf(ip);
 }
 
+// based on MIT licensed https://github.com/bombela/backward-cpp
+static bool die_has_pc(Dwarf_Die* die, Dwarf_Addr pc)
+{
+    Dwarf_Addr low, high;
+
+    // continuous range
+    if (dwarf_hasattr(die, DW_AT_low_pc) && dwarf_hasattr(die, DW_AT_high_pc)) {
+        if (dwarf_lowpc(die, &low) != 0)
+            return false;
+        if (dwarf_highpc(die, &high) != 0) {
+            Dwarf_Attribute attr_mem;
+            Dwarf_Attribute* attr = dwarf_attr(die, DW_AT_high_pc, &attr_mem);
+            Dwarf_Word value;
+            if (dwarf_formudata(attr, &value) != 0)
+                return false;
+            high = low + value;
+        }
+        return pc >= low && pc < high;
+    }
+
+    // non-continuous range.
+    Dwarf_Addr base;
+    ptrdiff_t offset = 0;
+    while ((offset = dwarf_ranges(die, offset, &base, &low, &high)) > 0) {
+        if (pc >= low && pc < high)
+            return true;
+    }
+    return false;
+}
+
+static bool find_fundie_by_pc(Dwarf_Die* parent_die, Dwarf_Addr pc)
+{
+    Dwarf_Die die;
+    if (dwarf_child(parent_die, &die) != 0)
+        return false;
+
+    do {
+        switch (dwarf_tag(&die)) {
+        case DW_TAG_subprogram:
+        case DW_TAG_inlined_subroutine:
+            if (die_has_pc(&die, pc))
+                return true;
+        };
+        bool declaration = false;
+        Dwarf_Attribute attr_mem;
+        dwarf_formflag(dwarf_attr(&die, DW_AT_declaration, &attr_mem), &declaration);
+        if (!declaration) {
+            // let's be curious and look deeper in the tree,
+            // function are not necessarily at the first level, but
+            // might be nested inside a namespace, structure etc.
+            if (find_fundie_by_pc(&die, pc))
+                return true;
+        }
+    } while (dwarf_siblingof(&die, &die) == 0);
+    return false;
+}
+
+Dwarf_Die *find_die(Dwfl_Module *mod, Dwarf_Addr addr, Dwarf_Addr *bias)
+{
+    auto die = dwfl_module_addrdie(mod, addr, bias);
+    if (die)
+        return die;
+
+    while ((die = dwfl_module_nextcu(mod, die, bias))) {
+        if (find_fundie_by_pc(die, addr - *bias))
+            return die;
+    }
+
+    return nullptr;
+}
+
 int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
                                  bool *isInterworking)
 {
@@ -602,12 +673,6 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
     if (mod) {
         // For addrinfo we need the raw pointer into symtab, so we need to adjust ourselves.
         symname = dwfl_module_addrinfo(mod, addressLocation.address, &off, &sym, 0, 0, 0);
-        Dwfl_Line *srcLine = dwfl_module_getsrc(mod, addressLocation.address);
-        if (srcLine) {
-            const QByteArray file = dwfl_lineinfo(srcLine, NULL, &addressLocation.line,
-                                                 &addressLocation.column, NULL, NULL);
-            addressLocation.file = m_unwind->resolveString(file);
-        }
 
         if (off == addressLocation.address) {// no symbol found
             functionLocation.address = elfStart; // use the start of the elf as "function"
@@ -615,7 +680,23 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
         } else {
             Dwarf_Addr bias = 0;
             functionLocation.address -= off; // in case we don't find anything better
-            Dwarf_Die *die = dwfl_module_addrdie(mod, addressLocation.address, &bias);
+            Dwarf_Die *die = find_die(mod, addressLocation.address, &bias);
+
+            if (die) {
+                auto srcloc = dwarf_getsrc_die(die, addressLocation.address - bias);
+                if (srcloc) {
+                    const char* srcfile = dwarf_linesrc(srcloc, nullptr, nullptr);
+                    int line, column;
+                    dwarf_lineno(srcloc, &line);
+                    dwarf_linecol(srcloc, &column);
+                    if (srcfile) {
+                        const QByteArray file = srcfile;
+                        addressLocation.file = m_unwind->resolveString(file);
+                        addressLocation.line = line;
+                        addressLocation.column = column;
+                    }
+                }
+            }
 
             Dwarf_Die *scopes = NULL;
             int nscopes = dwarf_getscopes(die, addressLocation.address - bias, &scopes);
