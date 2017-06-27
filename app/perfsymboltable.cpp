@@ -559,6 +559,40 @@ PerfElfMap::ElfInfo PerfSymbolTable::findElf(quint64 ip) const
     return m_elfs.findElf(ip);
 }
 
+static QByteArray fakeSymbolFromSection(Dwfl_Module *mod, Dwarf_Addr addr)
+{
+    Dwarf_Addr bias = 0;
+    auto elf = dwfl_module_getelf(mod, &bias);
+    const auto moduleAddr = addr - bias;
+    auto section = dwfl_module_address_section(mod, &addr, &bias);
+    if (!elf || !section)
+        return {};
+
+    size_t textSectionIndex = 0;
+    if (elf_getshdrstrndx(elf, &textSectionIndex) != 0)
+        return {};
+
+    size_t offset = 0;
+    if (auto shdr = elf64_getshdr(section)) {
+        offset = shdr->sh_name;
+    } else if (auto shdr = elf32_getshdr(section)) {
+        offset = shdr->sh_name;
+    }
+
+    auto str = elf_strptr(elf, textSectionIndex, offset);
+    if (!str || str == QLatin1String(".text"))
+        return {};
+
+    // mark .plt entries etc. by section name, see also:
+    // http://www.mail-archive.com/elfutils-devel@sourceware.org/msg00019.html
+    QByteArray sym = str;
+    sym.prepend('<');
+    sym.append('+');
+    sym.append(QByteArray::number(quint64(moduleAddr), 16));
+    sym.append('>');
+    return sym;
+}
+
 int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
                                  bool *isInterworking)
 {
@@ -626,6 +660,7 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
         }
 
         if (off == addressLocation.address) {// no symbol found
+            symname = fakeSymbolFromSection(mod, addressLocation.address);
             functionLocation.address = elfStart; // use the start of the elf as "function"
             addressLocation.parentLocationId = m_unwind->resolveLocation(functionLocation);
         } else {
