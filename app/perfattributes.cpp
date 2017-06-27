@@ -279,7 +279,7 @@ bool PerfAttributes::read(QIODevice *device, PerfHeader *header)
             }
 
             QDataStream idStream(device);
-            stream.setByteOrder(header->byteOrder());
+            idStream.setByteOrder(header->byteOrder());
             quint64 id;
             for (uint i = 0; i < ids.size / sizeof(quint64); ++i) {
                 idStream >> id;
