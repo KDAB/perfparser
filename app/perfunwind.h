@@ -101,7 +101,8 @@ public:
 
     PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugInfo,
                const QString &extraLibs, const QString &appPath,
-               const QString &kallsymsPath, bool printStats, uint maxEventBufferSize,
+               const QString &kallsymsPath, bool ignoreKallsymsBuildId,
+               bool printStats, uint maxEventBufferSize,
                int maxFrames);
     ~PerfUnwind();
 
@@ -194,6 +195,7 @@ private:
 
     // Path to kallsyms path
     QString m_kallsymsPath;
+    bool m_ignoreKallsymsBuildId;
 
     QList<PerfRecordSample> m_sampleBuffer;
     QList<PerfRecordMmap> m_mmapBuffer;
