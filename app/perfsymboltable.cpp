@@ -624,6 +624,136 @@ Dwarf_Die *find_die(Dwfl_Module *mod, Dwarf_Addr addr, Dwarf_Addr *bias)
     return nullptr;
 }
 
+int symbolIndex(const Elf64_Rel &rel)
+{
+    return ELF64_R_SYM(rel.r_info);
+}
+
+int symbolIndex(const Elf64_Rela &rel)
+{
+    return ELF64_R_SYM(rel.r_info);
+}
+
+int symbolIndex(const Elf32_Rel &rel)
+{
+    return ELF32_R_SYM(rel.r_info);
+}
+
+int symbolIndex(const Elf32_Rela &rel)
+{
+    return ELF32_R_SYM(rel.r_info);
+}
+
+template<typename elf_relocation_t, typename elf_shdr_t>
+int findPltSymbolIndex(Elf_Scn *section, const elf_shdr_t *shdr, Dwarf_Addr addr)
+{
+    if (shdr->sh_entsize != sizeof(elf_relocation_t)) {
+        qWarning() << "size mismatch:" << shdr->sh_entsize << sizeof(elf_relocation_t);
+        return -1;
+    }
+    const size_t numEntries = shdr->sh_size / shdr->sh_entsize;
+    const auto *data = elf_getdata(section, nullptr);
+    const auto *entries = reinterpret_cast<const elf_relocation_t *>(data->d_buf);
+    const auto *entriesEnd = entries + numEntries;
+    auto it = std::lower_bound(entries, entriesEnd, addr,
+                               [](const elf_relocation_t &lhs, Dwarf_Addr addr) {
+                                   return lhs.r_offset < addr;
+                                });
+    if (it == entriesEnd || it->r_offset != addr)
+        return -1;
+    return symbolIndex(*it);
+}
+
+template<typename elf_dyn_t, typename elf_shdr_t>
+Elf64_Addr findPltGotAddr(Elf_Scn *section, elf_shdr_t* shdr)
+{
+    const auto *data = elf_getdata(section, nullptr);
+    const size_t numEntries = shdr->sh_size / shdr->sh_entsize;
+    const auto *entries = reinterpret_cast<const elf_dyn_t *>(data->d_buf);
+    for (size_t i = 0; i < numEntries; ++i) {
+        if (entries[i].d_tag == DT_PLTGOT) {
+            return entries[i].d_un.d_ptr;
+        }
+    }
+    return 0;
+}
+
+const char *findPltSymbol(Elf *elf, int index)
+{
+    if (!index) // first plt entry is special, skip it
+        return nullptr;
+
+    size_t numSections = 0;
+    if (elf_getshdrnum(elf, &numSections) != 0)
+        return nullptr;
+
+    Elf64_Addr pltGotAddr = 0;
+    Elf_Scn *symtab = nullptr;
+    for (size_t i = 0; (!pltGotAddr || !symtab) && i < numSections; ++i) {
+        auto *section = elf_getscn(elf, i);
+        if (const auto *shdr = elf64_getshdr(section)) {
+            if (shdr->sh_type == SHT_DYNAMIC)
+                pltGotAddr = findPltGotAddr<Elf64_Dyn>(section, shdr);
+            else if (shdr->sh_type == SHT_DYNSYM)
+                symtab = section;
+        } else if (const auto *shdr = elf32_getshdr(section)) {
+            if (shdr->sh_type == SHT_DYNAMIC)
+                pltGotAddr = findPltGotAddr<Elf32_Dyn>(section, shdr);
+            else if (shdr->sh_type == SHT_DYNSYM)
+                symtab = section;
+        }
+    }
+
+    if (!pltGotAddr || !symtab)
+        return nullptr;
+
+    Elf64_Addr indexAddr = 0;
+    for (size_t i = 0; !indexAddr && i < numSections; ++i) {
+        auto *section = elf_getscn(elf, i);
+        if (const auto *shdr = elf64_getshdr(section)) {
+            if (shdr->sh_addr <= pltGotAddr && pltGotAddr < shdr->sh_addr + shdr->sh_size)
+                indexAddr = shdr->sh_addr + (index + 2) * sizeof(Elf64_Addr);
+        } else if (const auto *shdr = elf32_getshdr(section)) {
+            if (shdr->sh_addr <= pltGotAddr && pltGotAddr < shdr->sh_addr + shdr->sh_size)
+                indexAddr = shdr->sh_addr + (index + 2) * sizeof(Elf32_Addr);
+        }
+    }
+
+    if (!indexAddr)
+        return nullptr;
+
+    int symbolIndex = -1;
+    for (size_t i = 0; symbolIndex == -1 && i < numSections; ++i) {
+        auto section = elf_getscn(elf, i);
+        if (const auto *shdr = elf64_getshdr(section)) {
+            if (shdr->sh_type == SHT_REL)
+                symbolIndex = findPltSymbolIndex<Elf64_Rel>(section, shdr, indexAddr);
+            else if (shdr->sh_type == SHT_RELA)
+                symbolIndex = findPltSymbolIndex<Elf64_Rela>(section, shdr, indexAddr);
+        } else if (const auto *shdr = elf32_getshdr(section)) {
+            if (shdr->sh_type == SHT_REL)
+                symbolIndex = findPltSymbolIndex<Elf32_Rel>(section, shdr, indexAddr);
+            else if (shdr->sh_type == SHT_RELA)
+                symbolIndex = findPltSymbolIndex<Elf32_Rela>(section, shdr, indexAddr);
+        }
+    }
+
+    if (symbolIndex == -1)
+        return nullptr;
+
+    const auto *symtabData = elf_getdata(symtab, nullptr)->d_buf;
+    if (const auto *shdr = elf64_getshdr(symtab)) {
+        const auto *symbols = reinterpret_cast<const Elf64_Sym *>(symtabData);
+        if (symbolIndex >= 0 && symbolIndex < (shdr->sh_size / shdr->sh_entsize))
+            return elf_strptr(elf, shdr->sh_link, symbols[symbolIndex].st_name);
+    } else if (const auto *shdr = elf32_getshdr(symtab)) {
+        const auto *symbols = reinterpret_cast<const Elf32_Sym *>(symtabData);
+        if (symbolIndex >= 0 && symbolIndex < (shdr->sh_size / shdr->sh_entsize))
+            return elf_strptr(elf, shdr->sh_link, symbols[symbolIndex].st_name);
+    }
+    return nullptr;
+}
+
 static QByteArray fakeSymbolFromSection(Dwfl_Module *mod, Dwarf_Addr addr)
 {
     Dwarf_Addr bias = 0;
@@ -637,18 +767,27 @@ static QByteArray fakeSymbolFromSection(Dwfl_Module *mod, Dwarf_Addr addr)
     if (elf_getshdrstrndx(elf, &textSectionIndex) != 0)
         return {};
 
-    size_t offset = 0;
-    if (auto shdr = elf64_getshdr(section)) {
-        offset = shdr->sh_name;
-    } else if (auto shdr = elf32_getshdr(section)) {
-        offset = shdr->sh_name;
+    size_t nameOffset = 0;
+    size_t entsize = 0;
+    if (const auto *shdr = elf64_getshdr(section)) {
+        nameOffset = shdr->sh_name;
+        entsize = shdr->sh_entsize;
+    } else if (const auto *shdr = elf32_getshdr(section)) {
+        nameOffset = shdr->sh_name;
+        entsize = shdr->sh_entsize;
     }
 
-    auto str = elf_strptr(elf, textSectionIndex, offset);
+    auto str = elf_strptr(elf, textSectionIndex, nameOffset);
     if (!str || str == QLatin1String(".text"))
         return {};
 
-    // mark .plt entries etc. by section name, see also:
+    if (str == QLatin1String(".plt")) {
+        const auto *pltSymbol = findPltSymbol(elf, addr / entsize);
+        if (pltSymbol)
+            return demangle(pltSymbol) + "@plt";
+    }
+
+    // mark other entries by section name, see also:
     // http://www.mail-archive.com/elfutils-devel@sourceware.org/msg00019.html
     QByteArray sym = str;
     sym.prepend('<');
