@@ -661,7 +661,6 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
 
         if (off == addressLocation.address) {// no symbol found
             symname = fakeSymbolFromSection(mod, addressLocation.address);
-            functionLocation.address = elfStart; // use the start of the elf as "function"
             addressLocation.parentLocationId = m_unwind->resolveLocation(functionLocation);
         } else {
             Dwarf_Addr bias = 0;
