@@ -48,6 +48,8 @@ public:
     quint32 type() const { return m_type; }
     quint64 config() const { return m_config; }
     int sampleIdOffset() const;
+    bool usesFrequency() const { return m_freq; };
+    quint64 frequenyOrPeriod() const { return m_sampleFreq; }
 
     QByteArray name() const;
 

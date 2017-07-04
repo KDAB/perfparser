@@ -260,7 +260,8 @@ void PerfUnwind::sendAttributes(qint32 id, const PerfEventAttributes &attributes
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(AttributesDefinition)
                                                << id << attributes.type()
-                                               << attributes.config() << attrNameId;
+                                               << attributes.config() << attrNameId
+                                               << attributes.usesFrequency() << attributes.frequenyOrPeriod();
     sendBuffer(buffer);
 }
 

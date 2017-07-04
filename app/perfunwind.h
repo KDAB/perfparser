@@ -50,7 +50,7 @@ public:
         Command,
         LocationDefinition,
         SymbolDefinition,
-        AttributesDefinition,
+        AttributesDefinition49,
         StringDefinition,
         LostDefinition,
         FeaturesDefinition,
@@ -59,6 +59,7 @@ public:
         Progress,
         TracePointFormat,
         TracePointSample,
+        AttributesDefinition,
         InvalidType
     };
 
