@@ -55,6 +55,7 @@ public:
         LAST_FEATURE,
         FEAT_BITS	= 256,
     };
+    Q_ENUM(Feature);
 
     QDataStream::ByteOrder byteOrder() const;
 
