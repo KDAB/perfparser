@@ -264,7 +264,10 @@ int main(int argc, char *argv[])
             }
         }
 
-        const QByteArray &featureArch = features.architecture();
+        auto featureArch = features.architecture();
+        if (featureArch == "i586") {
+            featureArch = "x86";
+        }
         for (uint i = 0; i < PerfRegisterInfo::ARCH_INVALID; ++i) {
             if (featureArch.startsWith(PerfRegisterInfo::s_archNames[i])) {
                 unwind.setArchitecture(static_cast<PerfRegisterInfo::Architecture>(i));
