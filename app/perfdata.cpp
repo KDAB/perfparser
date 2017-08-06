@@ -175,6 +175,12 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
         }
         break;
     }
+    case PERF_RECORD_SWITCH: {
+        PerfRecordContextSwitch switchEvent(&m_eventHeader, sampleType, sampleIdAll);
+        stream >> switchEvent;
+        m_destination->contextSwitch(switchEvent);
+        break;
+    }
 
     default:
         qWarning() << "unhandled event type" << m_eventHeader.type;
@@ -627,4 +633,14 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordFork &record)
 {
     return stream >> record.m_pid >> record.m_ppid >> record.m_tid >> record.m_ptid >> record.m_time
                   >> record.m_sampleId;
+}
+
+PerfRecordContextSwitch::PerfRecordContextSwitch(PerfEventHeader *header, quint64 sampleType, bool sampleIdAll) :
+    PerfRecord(header, sampleType, sampleIdAll)
+{
+}
+
+QDataStream &operator>>(QDataStream &stream, PerfRecordContextSwitch &record)
+{
+    return stream >> record.m_sampleId;
 }

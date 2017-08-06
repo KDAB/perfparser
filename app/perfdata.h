@@ -213,6 +213,18 @@ enum PerfEventType {
      */
     PERF_RECORD_MMAP2             = 10,
 
+    /*
+     * Records a context switch in or out (flagged by
+     * PERF_RECORD_MISC_SWITCH_OUT). See also
+     * PERF_RECORD_SWITCH_CPU_WIDE.
+     *
+     * struct {
+     *    struct perf_event_header header;
+     *    struct sample_id         sample_id;
+     * };
+     */
+    PERF_RECORD_SWITCH            = 14,
+
     PERF_RECORD_MAX,              /* non-ABI */
 
     PERF_RECORD_USER_TYPE_START     = 64,
@@ -222,6 +234,10 @@ enum PerfEventType {
     PERF_RECORD_HEADER_BUILD_ID     = 67,
     PERF_RECORD_FINISHED_ROUND      = 68,
     PERF_RECORD_HEADER_MAX
+};
+
+enum PERF_RECORD_MISC {
+    PERF_RECORD_MISC_SWITCH_OUT = (1 << 13),
 };
 
 class PerfRecordSample;
@@ -269,6 +285,7 @@ public:
     quint64 time() const { return m_sampleId.time(); }
     quint64 id() const { return m_sampleId.id(); }
     quint16 size() const { return m_header.size; }
+    quint16 misc() const { return m_header.misc; }
 
 protected:
     PerfRecord(const PerfEventHeader *header, quint64 sampleType, bool sampleIdAll);
@@ -457,6 +474,18 @@ private:
 QDataStream &operator>>(QDataStream &stream, PerfRecordFork &record);
 
 typedef PerfRecordFork PerfRecordExit;
+
+class PerfRecordContextSwitch : public PerfRecord
+{
+public:
+    PerfRecordContextSwitch(PerfEventHeader *header = 0, quint64 sampleType = 0,
+                            bool sampleIdAll = false);
+
+private:
+    friend QDataStream &operator>>(QDataStream &stream, PerfRecordContextSwitch &record);
+};
+
+QDataStream &operator>>(QDataStream &stream, PerfRecordContextSwitch &record);
 
 class PerfUnwind;
 class PerfData : public QObject
