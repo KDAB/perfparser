@@ -56,6 +56,7 @@ public:
         Error,
         Sample,
         Progress,
+        ContextSwitchDefinition,
         InvalidType
     };
 
@@ -103,9 +104,9 @@ public:
         Stats()
             : numSamples(0), numMmaps(0), numRounds(0), numBufferFlushes(0),
             numTimeViolatingSamples(0), numTimeViolatingMmaps(0),
-            numSamplesInRound(0), numMmapsInRound(0),
-            maxSamplesPerRound(0), maxMmapsPerRound(0),
-            maxSamplesPerFlush(0), maxMmapsPerFlush(0),
+            numSamplesInRound(0), numMmapsInRound(0), numContextSwitchesInRound(0),
+            maxSamplesPerRound(0), maxMmapsPerRound(0), maxContextSwitchesPerRound(0),
+            maxSamplesPerFlush(0), maxMmapsPerFlush(0), maxContextSwitchesPerFlush(0),
             maxBufferSize(0), maxTotalEventSizePerRound(0),
             maxTime(0), maxTimeBetweenRounds(0), maxReorderTime(0),
             lastRoundTime(0), totalEventSizePerRound(0),
@@ -123,10 +124,13 @@ public:
         quint64 numTimeViolatingMmaps;
         uint numSamplesInRound;
         uint numMmapsInRound;
+        uint numContextSwitchesInRound;
         uint maxSamplesPerRound;
         uint maxMmapsPerRound;
+        uint maxContextSwitchesPerRound;
         uint maxSamplesPerFlush;
         uint maxMmapsPerFlush;
+        uint maxContextSwitchesPerFlush;
         uint maxBufferSize;
         uint maxTotalEventSizePerRound;
         quint64 maxTime;
@@ -171,6 +175,7 @@ public:
     void lost(const PerfRecordLost &lost);
     void features(const PerfFeatures &features);
     void finishedRound();
+    void contextSwitch(const PerfRecordContextSwitch &contextSwitch);
 
     Dwfl_Module *reportElf(quint64 ip, qint32 pid);
     bool ipIsInKernelSpace(quint64 ip) const;
@@ -258,6 +263,7 @@ private:
 
     QList<PerfRecordSample> m_sampleBuffer;
     QList<PerfRecordMmap> m_mmapBuffer;
+    QList<PerfRecordContextSwitch> m_contextSwitchBuffer;
     QHash<qint32, PerfSymbolTable *> m_symbolTables;
     PerfKallsyms m_kallsyms;
 
@@ -282,6 +288,7 @@ private:
     void sendLocation(qint32 id, const Location &location);
     void sendSymbol(qint32 id, const Symbol &symbol);
     void sendAttributes(qint32 id, const PerfEventAttributes &attributes, const QByteArray &name);
+    void sendContextSwitch(const PerfRecordContextSwitch &contextSwitch);
 
     template<typename Event>
     void bufferEvent(const Event &event, QList<Event> *buffer, uint *eventCounter);
