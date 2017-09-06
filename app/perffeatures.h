@@ -142,10 +142,10 @@ QDataStream &operator<<(QDataStream &stream, const PerfPmuMappings &pmuMappings)
 struct PerfGroupDesc {
 
     struct GroupDesc {
-		QByteArray name;
-		quint32 leaderIndex;
-		quint32 numMembers;
-	};
+        QByteArray name;
+        quint32 leaderIndex;
+        quint32 numMembers;
+    };
 
     QList<GroupDesc> groupDescs;
 };

@@ -299,7 +299,7 @@ protected:
     quint64 fixedLength() const;
 
 private:
-    quint32	m_pid;
+    quint32 m_pid;
     quint32 m_tid;
     quint64 m_addr;
     quint64 m_len;

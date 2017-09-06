@@ -209,7 +209,7 @@ private:
             m_excludeHv     : 1, /* ditto hypervisor       */
             m_excludeIdle   : 1, /* don't count when idle  */
             m_mmap          : 1, /* include mmap data      */
-            m_comm	        : 1, /* include comm data      */
+            m_comm          : 1, /* include comm data      */
             m_freq          : 1, /* use freq, not period   */
             m_inheritStat   : 1, /* per task counts        */
             m_enableOnExec  : 1, /* next exec enables      */

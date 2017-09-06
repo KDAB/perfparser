@@ -32,9 +32,9 @@ public:
     PerfHeader(QIODevice *source);
 
     enum Feature {
-        RESERVED		= 0,	/* always cleared */
-        FIRST_FEATURE	= 1,
-        TRACING_DATA	= 1,
+        RESERVED       = 0, /* always cleared */
+        FIRST_FEATURE  = 1,
+        TRACING_DATA   = 1,
         BUILD_ID,
 
         HOSTNAME,
@@ -53,7 +53,7 @@ public:
         PMU_MAPPINGS,
         GROUP_DESC,
         LAST_FEATURE,
-        FEAT_BITS	= 256,
+        FEAT_BITS      = 256,
     };
     Q_ENUM(Feature);
 
