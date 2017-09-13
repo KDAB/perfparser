@@ -85,19 +85,26 @@ static int find_debuginfo(Dwfl_Module *module, void **userData, const char *modu
     return symbolTable->findDebugInfo(module, moduleName, base, file, debugLink, crc, debugInfoFilename);
 }
 
+QString PerfUnwind::defaultDebugInfoPath()
+{
+    return QString::fromLatin1("%1usr%1lib%1debug%2%3%1.debug%2.debug")
+            .arg(QDir::separator(), QDir::listSeparator(), QDir::homePath());
+}
+
+QString PerfUnwind::defaultKallsymsPath()
+{
+    return QString::fromLatin1("%1proc%1kallsyms").arg(QDir::separator());
+}
+
 PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugPath,
-                       const QString &extraLibsPath, const QString &appPath,
-                       const QString &kallsymsPath, bool ignoreKallsymsBuildId,
-                       bool printStats, uint maxEventBufferSize, int maxFrames) :
+                       const QString &extraLibsPath, const QString &appPath, bool printStats) :
     m_output(output), m_architecture(PerfRegisterInfo::ARCH_INVALID), m_systemRoot(systemRoot),
     m_extraLibsPath(extraLibsPath), m_appPath(appPath), m_debugPath(debugPath),
-    m_kallsymsPath(kallsymsPath), m_ignoreKallsymsBuildId(ignoreKallsymsBuildId),
-    m_maxEventBufferSize(maxEventBufferSize), m_eventBufferSize(0),
-    m_lastFlushMaxTime(0)
+    m_kallsymsPath(QDir::rootPath() + defaultKallsymsPath()), m_ignoreKallsymsBuildId(false),
+    m_maxEventBufferSize(10 * (1 << 20)), m_eventBufferSize(0), m_lastFlushMaxTime(0)
 {
     m_stats.enabled = printStats;
     m_currentUnwind.unwind = this;
-    m_currentUnwind.maxFrames = maxFrames;
     m_offlineCallbacks.find_elf = dwfl_build_id_find_elf;
     m_offlineCallbacks.find_debuginfo = find_debuginfo;
     m_offlineCallbacks.section_address = dwfl_offline_section_address;

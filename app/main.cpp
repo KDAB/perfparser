@@ -111,8 +111,7 @@ int main(int argc, char *argv[])
                                QDir::rootPath());
     parser.addOption(sysroot);
 
-    const auto defaultDebug = QString::fromLatin1("%1usr%1lib%1debug%2%3%1.debug%2.debug")
-            .arg(QDir::separator(), QDir::listSeparator(), QDir::homePath());
+    const auto defaultDebug = PerfUnwind::defaultDebugInfoPath();
     QCommandLineOption debug(QLatin1String("debug"),
                              QCoreApplication::translate(
                                  "main",
@@ -150,7 +149,7 @@ int main(int argc, char *argv[])
                             defaultArch);
     parser.addOption(arch);
 
-    const auto defaultKallsyms = QString::fromLatin1("%1proc%1kallsyms").arg(QDir::separator());
+    const auto defaultKallsyms = PerfUnwind::defaultKallsymsPath();
     QCommandLineOption kallsymsPath(QLatin1String("kallsyms"),
                                     QCoreApplication::translate(
                                         "main", "Path to kallsyms mapping to resolve kernel "
@@ -227,11 +226,16 @@ int main(int argc, char *argv[])
 
     PerfUnwind unwind(outfile.data(), parser.value(sysroot), parser.isSet(debug) ?
                           parser.value(debug) : parser.value(sysroot) + parser.value(debug),
-                      parser.value(extra), parser.value(appPath), parser.isSet(kallsymsPath)
-                        ? parser.value(kallsymsPath)
-                        : parser.value(sysroot) + parser.value(kallsymsPath),
-                      parser.isSet(kallsymsPath), parser.isSet(printStats),
-                      maxEventBufferSize, maxFramesValue);
+                      parser.value(extra), parser.value(appPath), parser.isSet(printStats));
+
+    unwind.setKallsymsPath(parser.isSet(kallsymsPath)
+                           ? parser.value(kallsymsPath)
+                           : (parser.value(sysroot) + parser.value(kallsymsPath)));
+
+    unwind.setIgnoreKallsymsBuildId(parser.isSet(kallsymsPath));
+
+    unwind.setMaxEventBufferSize(maxEventBufferSize);
+    unwind.setMaxUnwindFrames(maxFramesValue);
 
     PerfHeader header(infile.data());
     PerfAttributes attributes;

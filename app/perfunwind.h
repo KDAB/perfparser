@@ -33,6 +33,7 @@
 #include <QIODevice>
 #include <QByteArray>
 #include <QString>
+#include <QDir>
 
 #include <limits>
 
@@ -97,14 +98,66 @@ public:
         bool isInterworking;
     };
 
-    static const quint32 s_kernelPid = std::numeric_limits<quint32>::max();
+    struct Stats
+    {
+        Stats()
+            : numSamples(0), numMmaps(0), numRounds(0), numBufferFlushes(0),
+            numTimeViolatingSamples(0), numTimeViolatingMmaps(0),
+            numSamplesInRound(0), numMmapsInRound(0),
+            maxSamplesPerRound(0), maxMmapsPerRound(0),
+            maxSamplesPerFlush(0), maxMmapsPerFlush(0),
+            maxBufferSize(0), maxTotalEventSizePerRound(0),
+            maxTime(0), maxTimeBetweenRounds(0), maxReorderTime(0),
+            lastRoundTime(0), totalEventSizePerRound(0),
+            enabled(false)
+        {}
 
-    PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugInfo,
-               const QString &extraLibs, const QString &appPath,
-               const QString &kallsymsPath, bool ignoreKallsymsBuildId,
-               bool printStats, uint maxEventBufferSize,
-               int maxFrames);
+        void addEventTime(quint64 time);
+        void finishedRound();
+
+        quint64 numSamples;
+        quint64 numMmaps;
+        quint64 numRounds;
+        quint64 numBufferFlushes;
+        quint64 numTimeViolatingSamples;
+        quint64 numTimeViolatingMmaps;
+        int numSamplesInRound;
+        int numMmapsInRound;
+        int maxSamplesPerRound;
+        int maxMmapsPerRound;
+        int maxSamplesPerFlush;
+        int maxMmapsPerFlush;
+        uint maxBufferSize;
+        uint maxTotalEventSizePerRound;
+        quint64 maxTime;
+        quint64 maxTimeBetweenRounds;
+        quint64 maxReorderTime;
+        quint64 lastRoundTime;
+        uint totalEventSizePerRound;
+        bool enabled;
+    };
+
+    static const quint32 s_kernelPid = std::numeric_limits<quint32>::max();
+    static QString defaultDebugInfoPath();
+    static QString defaultKallsymsPath();
+
+    PerfUnwind(QIODevice *output, const QString &systemRoot = QDir::rootPath(),
+               const QString &debugPath = defaultDebugInfoPath(),
+               const QString &extraLibs = QString(), const QString &appPath = QString(),
+               bool printStats = false);
     ~PerfUnwind();
+
+    QString kallsymsPath() const { return m_kallsymsPath; }
+    void setKallsymsPath(const QString &kallsymsPath) { m_kallsymsPath = kallsymsPath; }
+
+    bool ignoreKallsymsBuildId() const { return m_ignoreKallsymsBuildId; }
+    void setIgnoreKallsymsBuildId(bool ignore) { m_ignoreKallsymsBuildId = ignore; }
+
+    uint maxEventBufferSize() const { return m_maxEventBufferSize; }
+    void setMaxEventBufferSize(uint size) { m_maxEventBufferSize = size; }
+
+    int maxUnwindFrames() const { return m_currentUnwind.maxFrames; }
+    void setMaxUnwindFrames(int maxUnwindFrames) { m_currentUnwind.maxFrames = maxUnwindFrames; }
 
     PerfRegisterInfo::Architecture architecture() const { return m_architecture; }
     void setArchitecture(PerfRegisterInfo::Architecture architecture)
@@ -155,6 +208,9 @@ public:
     QString extraLibsPath() const { return m_extraLibsPath; }
     QString appPath() const { return m_appPath; }
     QString debugPath() const { return m_debugPath; }
+    Stats stats() const { return m_stats; }
+
+    void flushEventBuffer() { flushEventBuffer(0); }
 
 private:
 
@@ -213,44 +269,6 @@ private:
     uint m_eventBufferSize;
     quint64 m_lastFlushMaxTime;
 
-    struct Stats
-    {
-        Stats()
-            : numSamples(0), numMmaps(0), numRounds(0), numBufferFlushes(0),
-            numTimeViolatingSamples(0), numTimeViolatingMmaps(0),
-            numSamplesInRound(0), numMmapsInRound(0),
-            maxSamplesPerRound(0), maxMmapsPerRound(0),
-            maxSamplesPerFlush(0), maxMmapsPerFlush(0),
-            maxBufferSize(0), maxTotalEventSizePerRound(0),
-            maxTime(0), maxTimeBetweenRounds(0), maxReorderTime(0),
-            lastRoundTime(0), totalEventSizePerRound(0),
-            enabled(false)
-        {}
-
-        void addEventTime(quint64 time);
-        void finishedRound();
-
-        quint64 numSamples;
-        quint64 numMmaps;
-        quint64 numRounds;
-        quint64 numBufferFlushes;
-        quint64 numTimeViolatingSamples;
-        quint64 numTimeViolatingMmaps;
-        int numSamplesInRound;
-        int numMmapsInRound;
-        int maxSamplesPerRound;
-        int maxMmapsPerRound;
-        int maxSamplesPerFlush;
-        int maxMmapsPerFlush;
-        uint maxBufferSize;
-        uint maxTotalEventSizePerRound;
-        quint64 maxTime;
-        quint64 maxTimeBetweenRounds;
-        quint64 maxReorderTime;
-        quint64 lastRoundTime;
-        uint totalEventSizePerRound;
-        bool enabled;
-    };
     Stats m_stats;
 
     void unwindStack(Dwfl *dwfl);
