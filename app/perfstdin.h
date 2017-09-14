@@ -26,13 +26,13 @@
 class PerfStdin : public QIODevice
 {
 public:
-    bool open(OpenMode mode);
-    bool isSequential() const;
-    qint64 bytesAvailable() const;
+    bool open(OpenMode mode) override;
+    bool isSequential() const override;
+    qint64 bytesAvailable() const override;
 
 protected:
-    qint64 readData(char *data, qint64 maxlen);
-    qint64 writeData(const char *data, qint64 len);
+    qint64 readData(char *data, qint64 maxlen) override;
+    qint64 writeData(const char *data, qint64 len) override;
 };
 
 #endif // PERFSTDIN_H

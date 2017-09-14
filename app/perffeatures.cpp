@@ -94,7 +94,7 @@ void PerfFeatures::createFeature(QIODevice *device, QDataStream::ByteOrder byteO
         break;
     }
 
-    quint64 readSize = device->pos() - section.offset;
+    qint64 readSize = device->pos() - section.offset;
     if (section.size != readSize)
         qWarning() << "feature not properly read" << featureId << section.size << readSize;
 }
@@ -119,7 +119,7 @@ bool PerfFeatures::read(QIODevice *device, const PerfHeader *header)
     QHash<PerfHeader::Feature, PerfFileSection> featureSections;
     PerfFileSection section;
     for (uint i = 0; i < PerfHeader::LAST_FEATURE; ++i) {
-        PerfHeader::Feature feature = (PerfHeader::Feature)i;
+        PerfHeader::Feature feature = static_cast<PerfHeader::Feature>(i);
         if (header->hasFeature(feature)) {
             stream >> section;
             if (section.size > 0)
@@ -138,7 +138,7 @@ bool PerfFeatures::read(QIODevice *device, const PerfHeader *header)
 
 QDataStream &operator>>(QDataStream &stream, PerfBuildId &buildId)
 {
-    quint64 next = 0;
+    qint64 next = 0;
     while (next < buildId.size) {
         PerfEventHeader header;
         stream >> header;
@@ -150,12 +150,8 @@ QDataStream &operator>>(QDataStream &stream, PerfBuildId &buildId)
         stream.readRawData(build.id.data(), PerfBuildId::s_idLength);
         stream.skipRawData(PerfBuildId::s_idPadding);
 
-        uint fileNameLength = header.size - PerfEventHeader::fixedLength() - sizeof(build.pid)
+        quint16 fileNameLength = header.size - PerfEventHeader::fixedLength() - sizeof(build.pid)
                 - PerfBuildId::s_idPadding - PerfBuildId::s_idLength;
-        if (fileNameLength > static_cast<uint>(std::numeric_limits<int>::max())) {
-            qWarning() << "bad file name length";
-            return stream;
-        }
         build.fileName.resize(fileNameLength);
         stream.readRawData(build.fileName.data(), fileNameLength);
         removeTrailingZeros(&build.fileName);
@@ -185,12 +181,15 @@ QDataStream &operator>>(QDataStream &stream, PerfStringFeature &string)
 {
     quint32 length;
     stream >> length;
-    if (length > static_cast<quint32>(std::numeric_limits<int>::max())) {
-        qWarning() << "bad string length";
+    static const int intMax = std::numeric_limits<int>::max();
+    if (length > intMax) {
+        qWarning() << "Excessively long string" << length;
+        stream.skipRawData(intMax);
+        stream.skipRawData(static_cast<int>(length - intMax));
         return stream;
     }
-    string.value.resize(length);
-    stream.readRawData(string.value.data(), length);
+    string.value.resize(static_cast<int>(length));
+    stream.readRawData(string.value.data(), string.value.length());
     removeTrailingZeros(&string.value);
     return stream;
 }

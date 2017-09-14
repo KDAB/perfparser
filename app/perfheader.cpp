@@ -65,8 +65,8 @@ void PerfHeader::read()
             return;
         }
 
-        if (m_source->bytesAvailable() < static_cast<qint64>(m_size - sizeof(m_magic) -
-                                                             sizeof(m_size)))
+        if (m_source->bytesAvailable()
+                < m_size - static_cast<qint64>(sizeof(m_magic) + sizeof(m_size)))
             return;
 
         // file header

@@ -37,29 +37,29 @@ public:
         ARCH_INVALID
     };
 
-    static const uint s_numAbis = 2; // maybe more for some archs?
+    static const int s_numAbis = 2; // maybe more for some archs?
 
     static const char *s_archNames[ARCH_INVALID];
-    static const uint s_numRegisters[ARCH_INVALID][s_numAbis];
-    static const uint s_wordWidth[ARCH_INVALID][s_numAbis];
+    static const int s_numRegisters[ARCH_INVALID][s_numAbis];
+    static const int s_wordWidth[ARCH_INVALID][s_numAbis];
 
     // Translation table for converting perf register layout to dwarf register layout
     // This is specific to ABI as the different ABIs may have different numbers of registers.
-    static const uint *s_perfToDwarf[ARCH_INVALID][s_numAbis];
+    static const int *s_perfToDwarf[ARCH_INVALID][s_numAbis];
 
     // location of IP register or equivalent in perf register layout for each arch/abi
     // This is not specific to ABI as perf makes sure IP is always in the same spot
-    static const uint s_perfIp[ARCH_INVALID];
+    static const int s_perfIp[ARCH_INVALID];
     // location of SP register or equivalent in perf register layout for each arch/abi
-    static const uint s_perfSp[ARCH_INVALID];
+    static const int s_perfSp[ARCH_INVALID];
 
     // location of LR register or equivalent in dwarf register layout for each arch/abi
-    static const uint s_dwarfLr[ARCH_INVALID][s_numAbis];
+    static const int s_dwarfLr[ARCH_INVALID][s_numAbis];
     // location of IP register or equivalent in dwarf register layout for each arch/abi
-    static const uint s_dwarfIp[ARCH_INVALID][s_numAbis];
+    static const int s_dwarfIp[ARCH_INVALID][s_numAbis];
 
     // ranges of registers expected by libdw, but not provided by perf
-    static const uint s_dummyRegisters[ARCH_INVALID][2];
+    static const int s_dummyRegisters[ARCH_INVALID][2];
 
     // default architecture for the system which was used for compilation
     static const Architecture s_defaultArchitecture;

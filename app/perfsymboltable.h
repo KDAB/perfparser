@@ -35,7 +35,7 @@
 class PerfSymbolTable
 {
 public:
-    PerfSymbolTable(quint32 pid, Dwfl_Callbacks *callbacks, PerfUnwind *parent);
+    PerfSymbolTable(qint32 pid, Dwfl_Callbacks *callbacks, PerfUnwind *parent);
     ~PerfSymbolTable();
 
     struct PerfMapSymbol {
@@ -48,7 +48,7 @@ public:
 
     struct DieAndLocation {
         Dwarf_Die die;
-        int locationId;
+        qint32 locationId;
     };
 
     // Announce an mmap. Invalidate the symbol and address cache and clear the dwfl if it overlaps
@@ -100,7 +100,7 @@ private:
 
     PerfElfMap m_elfs;
     Dwfl_Callbacks *m_callbacks;
-    quint32 m_pid;
+    qint32 m_pid;
 
     QByteArray symbolFromPerfMap(quint64 ip, GElf_Off *offset) const;
     int parseDie(Dwarf_Die *top, qint32 binaryId, Dwarf_Files *files, Dwarf_Addr entry,

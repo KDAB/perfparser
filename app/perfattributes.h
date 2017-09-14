@@ -171,7 +171,7 @@ public:
         SOFTWARE_MAX,             /* non-ABI */
     };
 
-    static quint64 fixedLength();
+    static quint16 fixedLength();
 
     bool operator==(const PerfEventAttributes &rhs) const;
 

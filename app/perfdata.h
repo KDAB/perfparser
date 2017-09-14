@@ -232,19 +232,20 @@ class PerfRecordSample;
 struct PerfSampleId {
     PerfSampleId(quint64 sampleType = 0, bool sampleIdAll = false) : m_pid(0), m_tid(0), m_time(0),
         m_id(0), m_streamId(0), m_cpu(0), m_res(0),
-        m_sampleType(sampleType | (sampleIdAll ? (quint64)PerfEventAttributes::SAMPLE_ID_ALL : 0))
+        m_sampleType(sampleType
+                     | (sampleIdAll ? static_cast<quint64>(PerfEventAttributes::SAMPLE_ID_ALL) : 0))
     {}
 
-    quint32 pid() const { return m_pid; }
-    quint32 tid() const { return m_tid; }
+    qint32 pid() const { return m_pid; }
+    qint32 tid() const { return m_tid; }
     quint64 time() const { return m_time; }
     quint64 id() const { return m_id; }
-    quint64 fixedLength() const;
+    quint16 fixedLength() const;
     quint64 sampleType() const { return m_sampleType; }
 
 private:
-    quint32 m_pid;
-    quint32 m_tid;
+    qint32 m_pid;
+    qint32 m_tid;
     quint64 m_time;
     quint64 m_id;
     quint64 m_streamId;
@@ -264,18 +265,18 @@ QDataStream &operator>>(QDataStream &stream, PerfSampleId &sampleId);
 
 class PerfRecord {
 public:
-    quint32 pid() const { return m_sampleId.pid(); }
-    quint32 tid() const { return m_sampleId.tid(); }
+    qint32 pid() const { return m_sampleId.pid(); }
+    qint32 tid() const { return m_sampleId.tid(); }
     quint64 time() const { return m_sampleId.time(); }
     quint64 id() const { return m_sampleId.id(); }
-    uint size() const { return m_header.size; }
+    quint16 size() const { return m_header.size; }
 
 protected:
     PerfRecord(const PerfEventHeader *header, quint64 sampleType, bool sampleIdAll);
     PerfEventHeader m_header;
     PerfSampleId m_sampleId;
 
-    quint64 fixedLength() const { return m_header.fixedLength() + m_sampleId.fixedLength(); }
+    quint16 fixedLength() const { return m_header.fixedLength() + m_sampleId.fixedLength(); }
 };
 
 class PerfRecordMmap2;
@@ -284,8 +285,8 @@ public:
     PerfRecordMmap(PerfEventHeader *header = 0, quint64 sampleType = 0, bool sampleIdAll = false);
 
     // The pids and tids in the sampleId are always 0 in this case. Go figure ...
-    quint32 pid() const { return m_pid; }
-    quint32 tid() const { return m_tid; }
+    qint32 pid() const { return m_pid; }
+    qint32 tid() const { return m_tid; }
 
     quint64 addr() const { return m_addr; }
     quint64 len() const { return m_len; }
@@ -294,13 +295,13 @@ public:
 
 protected:
     QDataStream &readNumbers(QDataStream &stream);
-    QDataStream &readFilename(QDataStream &stream, quint64 filenameLength);
+    QDataStream &readFilename(QDataStream &stream, quint16 filenameLength);
     QDataStream &readSampleId(QDataStream &stream);
-    quint64 fixedLength() const;
+    quint16 fixedLength() const;
 
 private:
-    quint32 m_pid;
-    quint32 m_tid;
+    qint32 m_pid;
+    qint32 m_tid;
     quint64 m_addr;
     quint64 m_len;
     quint64 m_pgoff;
@@ -330,7 +331,7 @@ private:
     quint32 m_prot;
     quint32 m_flags;
 
-    quint64 fixedLength() const;
+    quint16 fixedLength() const;
 
     friend QDataStream &operator>>(QDataStream &stream, PerfRecordMmap2 &record);
 };
@@ -354,11 +355,11 @@ public:
     PerfRecordComm(PerfEventHeader *header = 0, quint64 sampleType = 0, bool sampleIdAll = false);
     const QByteArray &comm() const { return m_comm; }
 private:
-    quint32 m_pid;
-    quint32 m_tid;
+    qint32 m_pid;
+    qint32 m_tid;
     QByteArray m_comm;
 
-    quint64 fixedLength() const { return PerfRecord::fixedLength() + sizeof(m_pid) + sizeof(m_tid); }
+    quint16 fixedLength() const { return PerfRecord::fixedLength() + sizeof(m_pid) + sizeof(m_tid); }
 
     friend QDataStream &operator>>(QDataStream &stream, PerfRecordComm &record);
 };
@@ -369,7 +370,7 @@ class PerfRecordSample : public PerfRecord {
 public:
     PerfRecordSample(const PerfEventHeader *header = 0, const PerfEventAttributes *attributes = 0);
     quint64 registerAbi() const { return m_registerAbi; }
-    quint64 registerValue(uint reg) const;
+    quint64 registerValue(int reg) const;
     quint64 ip() const { return m_ip; }
     const QByteArray &userStack() const { return m_userStack; }
     const QList<quint64> &callchain() const { return m_callchain; }
@@ -437,11 +438,11 @@ class PerfRecordFork : public PerfRecord
 {
 public:
     PerfRecordFork(PerfEventHeader *header = 0, quint64 sampleType = 0, bool sampleIdAll = false);
-    quint32 childTid() const { return m_tid; }
-    quint32 childPid() const { return m_pid; }
+    qint32 childTid() const { return m_tid; }
+    qint32 childPid() const { return m_pid; }
 private:
-    quint32 m_pid, m_ppid;
-    quint32 m_tid, m_ptid;
+    qint32 m_pid, m_ppid;
+    qint32 m_tid, m_ptid;
     quint64 m_time;
 
     friend QDataStream &operator>>(QDataStream &stream, PerfRecordFork &record);

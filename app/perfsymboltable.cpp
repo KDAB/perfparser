@@ -61,7 +61,7 @@ extern "C" {
 #define O_BINARY 0
 #endif
 
-PerfSymbolTable::PerfSymbolTable(quint32 pid, Dwfl_Callbacks *callbacks, PerfUnwind *parent) :
+PerfSymbolTable::PerfSymbolTable(qint32 pid, Dwfl_Callbacks *callbacks, PerfUnwind *parent) :
     m_perfMapFile(QDir::tempPath() + QDir::separator()
                   + QString::fromLatin1("perf-%1.map").arg(pid)),
     m_cacheIsDirty(false),
@@ -91,7 +91,7 @@ static pid_t nextThread(Dwfl *dwfl, void *arg, void **threadArg)
     return dwfl_pid(dwfl);
 }
 
-static void *memcpyTarget(Dwarf_Word *result, uint wordWidth)
+static void *memcpyTarget(Dwarf_Word *result, int wordWidth)
 {
     if (wordWidth == 4)
         return (uint32_t *)result;
@@ -100,22 +100,24 @@ static void *memcpyTarget(Dwarf_Word *result, uint wordWidth)
     return result;
 }
 
-static void doMemcpy(Dwarf_Word *result, const void *src, uint wordWidth)
+static void doMemcpy(Dwarf_Word *result, const void *src, int wordWidth)
 {
+    Q_ASSERT(wordWidth > 0);
     *result = 0; // initialize, as we might only overwrite half of it
-    std::memcpy(memcpyTarget(result, wordWidth), src, wordWidth);
+    std::memcpy(memcpyTarget(result, wordWidth), src, static_cast<size_t>(wordWidth));
 }
 
-static uint registerAbi(const PerfRecordSample *sample)
+static quint64 registerAbi(const PerfRecordSample *sample)
 {
-    const uint abi = sample->registerAbi();
+    const quint64 abi = sample->registerAbi();
     Q_ASSERT(abi > 0); // ABI 0 means "no registers" - we shouldn't unwind in this case.
     return abi - 1;
 }
 
 static bool accessDsoMem(const PerfUnwind::UnwindInfo *ui, Dwarf_Addr addr,
-                         Dwarf_Word *result, uint wordWidth)
+                         Dwarf_Word *result, int wordWidth)
 {
+    Q_ASSERT(wordWidth > 0);
     // TODO: Take the pgoff into account? Or does elf_getdata do that already?
     auto mod = ui->unwind->symbolTable(ui->sample->pid())->module(addr);
     if (!mod)
@@ -138,7 +140,7 @@ static bool accessDsoMem(const PerfUnwind::UnwindInfo *ui, Dwarf_Addr addr,
 static bool memoryRead(Dwfl *, Dwarf_Addr addr, Dwarf_Word *result, void *arg)
 {
     PerfUnwind::UnwindInfo *ui = static_cast<PerfUnwind::UnwindInfo *>(arg);
-    const uint wordWidth =
+    const int wordWidth =
             PerfRegisterInfo::s_wordWidth[ui->unwind->architecture()][registerAbi(ui->sample)];
 
     /* Check overflow. */
@@ -152,7 +154,8 @@ static bool memoryRead(Dwfl *, Dwarf_Addr addr, Dwarf_Word *result, void *arg)
 
     quint64 start = ui->sample->registerValue(
                 PerfRegisterInfo::s_perfSp[ui->unwind->architecture()]);
-    quint64 end = start + stack.size();
+    Q_ASSERT(stack.size() >= 0);
+    quint64 end = start + static_cast<quint64>(stack.size());
 
     if (addr < start || addr + sizeof(Dwarf_Word) > end) {
         // not stack, try reading from ELF
@@ -181,32 +184,34 @@ static bool memoryRead(Dwfl *, Dwarf_Addr addr, Dwarf_Word *result, void *arg)
 static bool setInitialRegisters(Dwfl_Thread *thread, void *arg)
 {
     const PerfUnwind::UnwindInfo *ui = static_cast<PerfUnwind::UnwindInfo *>(arg);
-    const uint abi = registerAbi(ui->sample);
+    const quint64 abi = registerAbi(ui->sample);
     const uint architecture = ui->unwind->architecture();
-    const uint numRegs = PerfRegisterInfo::s_numRegisters[architecture][abi];
+    const int numRegs = PerfRegisterInfo::s_numRegisters[architecture][abi];
+    Q_ASSERT(numRegs >= 0);
     QVarLengthArray<Dwarf_Word, 64> dwarfRegs(numRegs);
-    for (uint i = 0; i < numRegs; ++i) {
+    for (int i = 0; i < numRegs; ++i) {
         dwarfRegs[i] = ui->sample->registerValue(
                     PerfRegisterInfo::s_perfToDwarf[architecture][abi][i]);
     }
 
     // Go one frame up to get the rest of the stack at interworking veneers.
     if (ui->isInterworking) {
-        dwarfRegs[PerfRegisterInfo::s_dwarfIp[architecture][abi]] =
-                dwarfRegs[PerfRegisterInfo::s_dwarfLr[architecture][abi]];
+        dwarfRegs[static_cast<int>(PerfRegisterInfo::s_dwarfIp[architecture][abi])] =
+                dwarfRegs[static_cast<int>(PerfRegisterInfo::s_dwarfLr[architecture][abi])];
     }
 
-    uint dummyBegin = PerfRegisterInfo::s_dummyRegisters[architecture][0];
-    uint dummyNum = PerfRegisterInfo::s_dummyRegisters[architecture][1] - dummyBegin;
+    int dummyBegin = PerfRegisterInfo::s_dummyRegisters[architecture][0];
+    int dummyNum = PerfRegisterInfo::s_dummyRegisters[architecture][1] - dummyBegin;
 
     if (dummyNum > 0) {
         QVarLengthArray<Dwarf_Word, 64> dummyRegs(dummyNum);
-        std::memset(dummyRegs.data(), 0, dummyNum * sizeof(Dwarf_Word));
-        if (!dwfl_thread_state_registers(thread, dummyBegin, dummyNum, dummyRegs.data()))
+        std::memset(dummyRegs.data(), 0, static_cast<size_t>(dummyNum) * sizeof(Dwarf_Word));
+        if (!dwfl_thread_state_registers(thread, dummyBegin, static_cast<uint>(dummyNum),
+                                         dummyRegs.data()))
             return false;
     }
 
-    return dwfl_thread_state_registers(thread, 0, numRegs, dwarfRegs.data());
+    return dwfl_thread_state_registers(thread, 0, static_cast<uint>(numRegs), dwarfRegs.data());
 }
 
 static const Dwfl_Thread_Callbacks threadCallbacks = {
@@ -401,10 +406,10 @@ int PerfSymbolTable::parseDie(Dwarf_Die *top, qint32 binaryId, Dwarf_Files *file
         location.file = m_unwind->resolveString(file);
         location.line
                 = (dwarf_formudata(dwarf_attr(top, DW_AT_call_line, &attr), &val) == 0)
-                ? val : -1;
+                ? static_cast<qint32>(val) : -1;
         location.column
                 = (dwarf_formudata(dwarf_attr(top, DW_AT_call_column, &attr), &val) == 0)
-                ? val : -1;
+                ? static_cast<qint32>(val) : -1;
 
         auto it = stack.end();
         --it;

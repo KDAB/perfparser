@@ -54,7 +54,13 @@ QDataStream &operator>>(QDataStream &stream, PerfEventAttributes &attrs)
 
     *(&attrs.m_readFormat + 1) = flags;
 
-    stream.skipRawData(attrs.m_size - PerfEventAttributes::fixedLength());
+    static const int intMax = std::numeric_limits<int>::max();
+    quint32 skip = attrs.m_size - PerfEventAttributes::fixedLength();
+    if (skip > intMax) {
+        stream.skipRawData(intMax);
+        skip -= intMax;
+    }
+    stream.skipRawData(static_cast<int>(skip));
 
     return stream;
 }
@@ -154,7 +160,7 @@ QByteArray PerfEventAttributes::name() const
     }
 }
 
-quint64 PerfEventAttributes::fixedLength()
+quint16 PerfEventAttributes::fixedLength()
 {
     return sizeof(m_type) + sizeof(m_type) + sizeof(m_config) + sizeof(m_sampleFreq)
             + sizeof(m_sampleType) + sizeof(m_readFormat) + sizeof(quint64) // flags
@@ -281,7 +287,8 @@ bool PerfAttributes::read(QIODevice *device, PerfHeader *header)
             QDataStream idStream(device);
             idStream.setByteOrder(header->byteOrder());
             quint64 id;
-            for (uint i = 0; i < ids.size / sizeof(quint64); ++i) {
+            for (qint64 i = 0, num = ids.size / static_cast<qint64>(sizeof(quint64));
+                 i < num; ++i) {
                 idStream >> id;
                 m_attributes[id] = attrs;
             }

@@ -33,7 +33,7 @@ struct PerfEventHeader {
     quint16 misc;
     quint16 size;
 
-    static quint64 fixedLength() { return sizeof(type) + sizeof(misc) + sizeof(size); }
+    static quint16 fixedLength() { return sizeof(type) + sizeof(misc) + sizeof(size); }
 };
 
 QDataStream &operator>>(QDataStream &stream, PerfEventHeader &header);
@@ -41,17 +41,17 @@ QDataStream &operator>>(QDataStream &stream, PerfEventHeader &header);
 struct PerfBuildId {
     PerfBuildId() : size(0) {}
 
-    static const uint s_idLength = 20;
-    static const uint s_idPadding = 4; // 20 aligned to 8 gives 24 => 4 unused bytes
-    static const uint s_pathMax = 4096;
+    static const quint16 s_idLength = 20;
+    static const quint16 s_idPadding = 4; // 20 aligned to 8 gives 24 => 4 unused bytes
+    static const quint16 s_pathMax = 4096;
 
     struct BuildId {
-        quint32 pid;
+        qint32 pid;
         QByteArray id; // raw id, use .toHex() to get something human-readable
         QByteArray fileName;
     };
 
-    quint64 size;
+    qint64 size;
     QList<BuildId> buildIds;
 };
 

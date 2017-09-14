@@ -29,6 +29,8 @@
 
 #include <cstring>
 
+const qint32 PerfUnwind::s_kernelPid = -1;
+
 uint qHash(const PerfUnwind::Location &location, uint seed)
 {
     QtPrivate::QHashCombine hash;
@@ -111,9 +113,11 @@ PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QStri
     const QChar separator = QDir::listSeparator();
     QByteArray newDebugInfo = (separator + debugPath + separator + appPath + separator
                                + extraLibsPath + separator + systemRoot).toUtf8();
-    m_debugInfoPath = new char[newDebugInfo.length() + 1];
-    m_debugInfoPath[newDebugInfo.length()] = 0;
-    std::memcpy(m_debugInfoPath, newDebugInfo.data(), newDebugInfo.length());
+    Q_ASSERT(newDebugInfo.length() >= 0);
+    const uint debugInfoLength = static_cast<uint>(newDebugInfo.length());
+    m_debugInfoPath = new char[debugInfoLength + 1];
+    m_debugInfoPath[debugInfoLength] = 0;
+    std::memcpy(m_debugInfoPath, newDebugInfo.data(), debugInfoLength);
     m_offlineCallbacks.debuginfo_path = &m_debugInfoPath;
 
     if (!printStats) {
@@ -153,7 +157,7 @@ PerfUnwind::~PerfUnwind()
     }
 }
 
-PerfSymbolTable *PerfUnwind::symbolTable(quint32 pid)
+PerfSymbolTable *PerfUnwind::symbolTable(qint32 pid)
 {
     PerfSymbolTable *&symbolTable = m_symbolTables[pid];
     if (!symbolTable)
@@ -161,7 +165,7 @@ PerfSymbolTable *PerfUnwind::symbolTable(quint32 pid)
     return symbolTable;
 }
 
-Dwfl *PerfUnwind::dwfl(quint32 pid)
+Dwfl *PerfUnwind::dwfl(qint32 pid)
 {
     return symbolTable(pid)->attachDwfl(&m_currentUnwind);
 }
@@ -176,7 +180,7 @@ void PerfUnwind::sendBuffer(const QByteArray &buffer)
     if (m_stats.enabled)
         return;
 
-    quint32 size = qToLittleEndian(buffer.length());
+    qint32 size = qToLittleEndian(buffer.length());
     m_output->write(reinterpret_cast<char *>(&size), sizeof(quint32));
     m_output->write(buffer);
 }
@@ -277,7 +281,7 @@ void PerfUnwind::features(const PerfFeatures &features)
     }
 }
 
-Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid)
+Dwfl_Module *PerfUnwind::reportElf(quint64 ip, qint32 pid)
 {
     auto symbols = symbolTable(pid);
     return symbols->reportElf(symbols->findElf(ip));
@@ -285,7 +289,7 @@ Dwfl_Module *PerfUnwind::reportElf(quint64 ip, quint32 pid)
 
 bool PerfUnwind::ipIsInKernelSpace(quint64 ip) const
 {
-    auto symbolTableIt = m_symbolTables.constFind(quint32(s_kernelPid));
+    auto symbolTableIt = m_symbolTables.constFind(s_kernelPid);
     if (symbolTableIt == m_symbolTables.constEnd())
         return false;
 
@@ -459,8 +463,16 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
                                                            &m_currentUnwind.isInterworking));
     }
 
-    const quint8 numGuessedFrames = (m_currentUnwind.firstGuessedFrame == -1)
-            ? 0 : m_currentUnwind.frames.length() - m_currentUnwind.firstGuessedFrame;
+
+    quint8 numGuessedFrames = 0;
+    if (m_currentUnwind.firstGuessedFrame != -1) {
+        // Squeeze it into 8 bits.
+        int numGuessed = m_currentUnwind.frames.length() - m_currentUnwind.firstGuessedFrame;
+        Q_ASSERT(numGuessed >= 0);
+        numGuessedFrames
+                = static_cast<quint8>(qMin(static_cast<int>(std::numeric_limits<quint8>::max()),
+                                           numGuessed));
+    }
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly)
             << static_cast<quint8>(Sample) << sample.pid()
@@ -618,7 +630,7 @@ void PerfUnwind::finishedRound()
 }
 
 template<typename Event>
-void PerfUnwind::bufferEvent(const Event &event, QList<Event> *buffer, int *eventCounter)
+void PerfUnwind::bufferEvent(const Event &event, QList<Event> *buffer, uint *eventCounter)
 {
     buffer->append(event);
     m_eventBufferSize += event.size();
@@ -703,10 +715,14 @@ void PerfUnwind::flushEventBuffer(uint desiredBufferSize)
 
     if (m_stats.enabled) {
         ++m_stats.numBufferFlushes;
-        const int samples = std::distance(m_sampleBuffer.begin(), sampleIt);
-        m_stats.maxSamplesPerFlush = std::max(samples, m_stats.maxSamplesPerFlush);
-        const int mmaps = std::distance(m_mmapBuffer.begin(), mmapIt);
-        m_stats.maxMmapsPerFlush = std::max(mmaps, m_stats.maxMmapsPerFlush);
+        const auto samples = std::distance(m_sampleBuffer.begin(), sampleIt);
+        Q_ASSERT(samples >= 0 && samples < std::numeric_limits<uint>::max());
+        m_stats.maxSamplesPerFlush = std::max(static_cast<uint>(samples),
+                                              m_stats.maxSamplesPerFlush);
+        const auto mmaps = std::distance(m_mmapBuffer.begin(), mmapIt);
+        Q_ASSERT(mmaps >= 0 && mmaps < std::numeric_limits<uint>::max());
+        m_stats.maxMmapsPerFlush = std::max(static_cast<uint>(mmaps),
+                                            m_stats.maxMmapsPerFlush);
     }
 
     m_sampleBuffer.erase(m_sampleBuffer.begin(), sampleIt);

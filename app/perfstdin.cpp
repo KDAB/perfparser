@@ -33,13 +33,16 @@ bool PerfStdin::open(QIODevice::OpenMode mode)
 
 qint64 PerfStdin::readData(char *data, qint64 maxlen)
 {
-    size_t read = fread(data, 1, maxlen, stdin);
+    if (maxlen <= 0)
+        return 0;
+    size_t read = fread(data, 1, static_cast<size_t>(maxlen), stdin);
     if (feof(stdin) || ferror(stdin))
         QTimer::singleShot(0, this, &QIODevice::close);
-    if (read == 0 && maxlen > 0) {
+    if (read == 0) {
         return -1;
     } else {
-        return read;
+        Q_ASSERT(read <= static_cast<size_t>(maxlen));
+        return static_cast<qint64>(read);
     }
 }
 

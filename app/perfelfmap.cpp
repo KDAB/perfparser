@@ -80,7 +80,7 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
                                       i->originalFileName, i->originalPath));
         }
 
-        removedElfs.push_back(std::distance(m_elfs.begin(), i));
+        removedElfs.push_back(static_cast<int>(std::distance(m_elfs.begin(), i)));
 
         // Overlapping module. Clear the cache, but only when the section is actually backed by a
         // file. Otherwise, we will see tons of overlapping heap/anon sections which don't actually

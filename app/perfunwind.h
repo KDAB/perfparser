@@ -121,12 +121,12 @@ public:
         quint64 numBufferFlushes;
         quint64 numTimeViolatingSamples;
         quint64 numTimeViolatingMmaps;
-        int numSamplesInRound;
-        int numMmapsInRound;
-        int maxSamplesPerRound;
-        int maxMmapsPerRound;
-        int maxSamplesPerFlush;
-        int maxMmapsPerFlush;
+        uint numSamplesInRound;
+        uint numMmapsInRound;
+        uint maxSamplesPerRound;
+        uint maxMmapsPerRound;
+        uint maxSamplesPerFlush;
+        uint maxMmapsPerFlush;
         uint maxBufferSize;
         uint maxTotalEventSizePerRound;
         quint64 maxTime;
@@ -137,7 +137,7 @@ public:
         bool enabled;
     };
 
-    static const quint32 s_kernelPid = std::numeric_limits<quint32>::max();
+    static const qint32 s_kernelPid;
     static QString defaultDebugInfoPath();
     static QString defaultKallsymsPath();
 
@@ -172,14 +172,14 @@ public:
     void features(const PerfFeatures &features);
     void finishedRound();
 
-    Dwfl_Module *reportElf(quint64 ip, quint32 pid);
+    Dwfl_Module *reportElf(quint64 ip, qint32 pid);
     bool ipIsInKernelSpace(quint64 ip) const;
     void sample(const PerfRecordSample &sample);
 
     void fork(const PerfRecordFork &sample);
     void exit(const PerfRecordExit &sample);
-    PerfSymbolTable *symbolTable(quint32 pid);
-    Dwfl *dwfl(quint32 pid);
+    PerfSymbolTable *symbolTable(qint32 pid);
+    Dwfl *dwfl(qint32 pid);
 
     qint32 resolveString(const QByteArray &string);
 
@@ -215,15 +215,15 @@ public:
 private:
 
     enum CallchainContext {
-        PERF_CONTEXT_HV             = (quint64)-32,
-        PERF_CONTEXT_KERNEL         = (quint64)-128,
-        PERF_CONTEXT_USER           = (quint64)-512,
+        PERF_CONTEXT_HV             = static_cast<quint64>(-32),
+        PERF_CONTEXT_KERNEL         = static_cast<quint64>(-128),
+        PERF_CONTEXT_USER           = static_cast<quint64>(-512),
 
-        PERF_CONTEXT_GUEST          = (quint64)-2048,
-        PERF_CONTEXT_GUEST_KERNEL   = (quint64)-2176,
-        PERF_CONTEXT_GUEST_USER     = (quint64)-2560,
+        PERF_CONTEXT_GUEST          = static_cast<quint64>(-2048),
+        PERF_CONTEXT_GUEST_KERNEL   = static_cast<quint64>(-2176),
+        PERF_CONTEXT_GUEST_USER     = static_cast<quint64>(-2560),
 
-        PERF_CONTEXT_MAX            = (quint64)-4095,
+        PERF_CONTEXT_MAX            = static_cast<quint64>(-4095),
     };
 
     UnwindInfo m_currentUnwind;
@@ -255,7 +255,7 @@ private:
 
     QList<PerfRecordSample> m_sampleBuffer;
     QList<PerfRecordMmap> m_mmapBuffer;
-    QHash<quint32, PerfSymbolTable *> m_symbolTables;
+    QHash<qint32, PerfSymbolTable *> m_symbolTables;
     PerfKallsyms m_kallsyms;
 
     QHash<QByteArray, qint32> m_strings;
@@ -281,7 +281,7 @@ private:
     void sendAttributes(qint32 id, const PerfEventAttributes &attributes, const QByteArray &name);
 
     template<typename Event>
-    void bufferEvent(const Event &event, QList<Event> *buffer, int *eventCounter);
+    void bufferEvent(const Event &event, QList<Event> *buffer, uint *eventCounter);
     void flushEventBuffer(uint desiredBufferSize);
 };
 

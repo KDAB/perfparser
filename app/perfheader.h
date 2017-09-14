@@ -55,7 +55,7 @@ public:
         LAST_FEATURE,
         FEAT_BITS      = 256,
     };
-    Q_ENUM(Feature);
+    Q_ENUM(Feature)
 
     QDataStream::ByteOrder byteOrder() const;
 
@@ -63,13 +63,13 @@ public:
     void setFeature(Feature feature);
     void clearFeature(Feature feature);
 
-    uint numAttrs() const { return m_attrs.size > 0 ? m_attrs.size / m_attrSize : 0; }
-    quint64 attrSize() const { return m_attrSize; }
+    qint64 numAttrs() const { return m_attrs.size > 0 ? m_attrs.size / m_attrSize : 0ll; }
+    qint64 attrSize() const { return m_attrSize; }
     const PerfFileSection &attrs() const { return m_attrs; }
 
-    quint64 featureOffset() const { return m_data.offset + m_data.size; }
-    quint64 dataOffset() const { return m_data.offset; }
-    quint64 dataSize() const { return m_data.size; }
+    qint64 featureOffset() const { return m_data.offset + m_data.size; }
+    qint64 dataOffset() const { return m_data.offset; }
+    qint64 dataSize() const { return m_data.size; }
     bool isPipe() const { return m_size == s_pipeHeaderSize; }
 
 public slots:
@@ -82,9 +82,9 @@ signals:
 private:
     QIODevice *m_source;
 
-    quint64 m_magic;
-    quint64 m_size;
-    quint64 m_attrSize;
+    qint64 m_magic;
+    qint64 m_size;
+    qint64 m_attrSize;
 
     PerfFileSection m_attrs;
     PerfFileSection m_data;
@@ -92,10 +92,10 @@ private:
 
     quint64 m_features[FEAT_BITS / 64 + ((FEAT_BITS % 64) > 0 ? 1 : 0)];
 
-    static const quint64 s_magicSame = 0x32454c4946524550ULL;
-    static const quint64 s_magicSwitched = 0x50455246494c4532ULL;
-    static const quint64 s_pipeHeaderSize = 16ULL;
-    static const quint64 s_perfHeaderSize = 104;
+    static const qint64 s_magicSame = 0x32454c4946524550LL;
+    static const qint64 s_magicSwitched = 0x50455246494c4532LL;
+    static const qint64 s_pipeHeaderSize = 16LL;
+    static const qint64 s_perfHeaderSize = 104LL;
 };
 
 #endif // PERFHEADER_H
