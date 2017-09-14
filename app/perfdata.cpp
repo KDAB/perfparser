@@ -561,6 +561,10 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordSample &record)
 
         quint64 contentSize;
         stream >> contentSize;
+        if (contentSize > sectionSize)
+            qWarning() << "Truncated stack snapshot" << contentSize << sectionSize;
+        else
+            record.m_userStack.resize(static_cast<int>(contentSize));
     }
 
     if (sampleType & PerfEventAttributes::SAMPLE_WEIGHT)
