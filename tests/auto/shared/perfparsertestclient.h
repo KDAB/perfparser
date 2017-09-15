@@ -22,6 +22,8 @@
 #include <QObject>
 #include <QIODevice>
 #include <QVector>
+#include <QHash>
+#include <QVariant>
 
 class PerfParserTestClient : public QObject
 {
@@ -64,10 +66,17 @@ public:
 
     struct SampleEvent : public ThreadEvent {
         QVector<qint32> frames;
+        QHash<qint32, QVariant> tracePointData;
         quint64 period;
         quint64 weight;
         qint32 attributeId;
         quint8 numGuessedFrames;
+    };
+
+    struct TracePointFormatEvent {
+        qint32 system;
+        qint32 name;
+        quint32 flags;
     };
 
     // Repeated here, as we want to check against accidental changes in enum values.
@@ -85,6 +94,8 @@ public:
         Error,
         Sample,
         Progress,
+        TracePointFormat,
+        TracePointSample,
         InvalidType
     };
     Q_ENUM(EventType)
@@ -97,6 +108,8 @@ public:
     AttributeEvent attribute(qint32 id) const { return m_attributes.value(id); }
     QVector<SampleEvent> samples() const { return m_samples; }
 
+    TracePointFormatEvent tracePointFormat(qint32 id) { return m_tracePointFormats.value(id); }
+
 private:
     QVector<QByteArray> m_strings;
     QVector<AttributeEvent> m_attributes;
@@ -105,4 +118,5 @@ private:
     QVector<LocationEvent> m_locations;
     QVector<SymbolEvent> m_symbols;
     QVector<SampleEvent> m_samples;
+    QHash<qint32, TracePointFormatEvent> m_tracePointFormats;
 };

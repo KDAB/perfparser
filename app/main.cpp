@@ -251,6 +251,7 @@ int main(int argc, char *argv[])
     features.setArchitecture(parser.value(arch).toLatin1());
 
     QObject::connect(&header, &PerfHeader::finished, [&]() {
+        unwind.setByteOrder(static_cast<QSysInfo::Endian>(header.byteOrder()));
         if (!header.isPipe()) {
             const qint64 filePos = infile->pos();
             if (!attributes.read(infile.data(), &header)) {

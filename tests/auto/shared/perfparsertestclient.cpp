@@ -134,7 +134,8 @@ void PerfParserTestClient::extractTrace(QIODevice *device)
             // Ignore this: We cannot find the elfs of course.
             break;
         }
-        case Sample: {
+        case Sample:
+        case TracePointSample: {
             SampleEvent sample;
             stream >> sample.pid >> sample.tid >> sample.time >> sample.frames
                    >> sample.numGuessedFrames >> sample.attributeId >> sample.period
@@ -142,6 +143,16 @@ void PerfParserTestClient::extractTrace(QIODevice *device)
             for (qint32 locationId : qAsConst(sample.frames))
                 checkLocation(locationId);
             checkAttribute(sample.attributeId);
+
+            if (eventType == TracePointSample) {
+                stream >> sample.tracePointData;
+                for (auto it = sample.tracePointData.constBegin(),
+                     end = sample.tracePointData.constEnd();
+                     it != end; ++it) {
+                    checkString(it.key());
+                }
+            }
+
             m_samples.append(sample);
             break;
         }
@@ -149,6 +160,17 @@ void PerfParserTestClient::extractTrace(QIODevice *device)
             const float oldProgress = progress;
             stream >> progress;
             QVERIFY(progress > oldProgress);
+            break;
+        }
+        case TracePointFormat: {
+            qint32 id;
+            TracePointFormatEvent tracePointFormat;
+            stream >> id >> tracePointFormat.system >> tracePointFormat.name
+                   >> tracePointFormat.flags;
+            checkString(tracePointFormat.system);
+            checkString(tracePointFormat.name);
+            QVERIFY(!m_tracePointFormats.contains(id));
+            m_tracePointFormats.insert(id, tracePointFormat);
             break;
         }
         default:

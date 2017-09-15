@@ -35,6 +35,8 @@ QtcTool {
         "perfelfmap.cpp",
         "perfelfmap.h",
         "perfkallsyms.cpp",
-        "perfkallsyms.h"
+        "perfkallsyms.h",
+        "perftracingdata.cpp",
+        "perftracingdata.h",
     ]
 }

@@ -28,7 +28,8 @@ SOURCES += main.cpp \
     perfstdin.cpp \
     perfsymboltable.cpp \
     perfelfmap.cpp \
-    perfkallsyms.cpp
+    perfkallsyms.cpp \
+    perftracingdata.cpp
 
 HEADERS += \
     perfattributes.h \
@@ -41,6 +42,7 @@ HEADERS += \
     perfstdin.h \
     perfsymboltable.h \
     perfelfmap.h \
-    perfkallsyms.h
+    perfkallsyms.h \
+    perftracingdata.h
 
 OTHER_FILES += app.qbs

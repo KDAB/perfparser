@@ -376,6 +376,7 @@ public:
     const QList<quint64> &callchain() const { return m_callchain; }
     quint64 period() const { return m_period; }
     quint64 weight() const { return m_weight; }
+    const QByteArray &rawData() const { return m_rawData; }
 
 private:
     struct ReadFormat {

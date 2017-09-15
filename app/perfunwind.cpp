@@ -229,6 +229,23 @@ void PerfUnwind::sendAttributes(qint32 id, const PerfEventAttributes &attributes
     sendBuffer(buffer);
 }
 
+void PerfUnwind::sendEventFormat(qint32 id, const EventFormat &format)
+{
+    const qint32 systemId = resolveString(format.system);
+    const qint32 nameId = resolveString(format.name);
+
+    for (const FormatField &field : format.commonFields)
+        resolveString(field.name);
+
+    for (const FormatField &field : format.fields)
+        resolveString(field.name);
+
+    QByteArray buffer;
+    QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(TracePointFormat) << id
+                                               << systemId << nameId << format.flags;
+    sendBuffer(buffer);
+}
+
 void PerfUnwind::lost(const PerfRecordLost &lost)
 {
     QByteArray buffer;
@@ -239,6 +256,8 @@ void PerfUnwind::lost(const PerfRecordLost &lost)
 
 void PerfUnwind::features(const PerfFeatures &features)
 {
+    tracing(features.tracingData());
+
     const auto &eventDescs = features.eventDesc().eventDescs;
     for (const auto &desc : eventDescs)
         addAttributes(desc.attrs, desc.name, desc.ids);
@@ -271,6 +290,14 @@ void PerfUnwind::features(const PerfFeatures &features)
     for (const auto &buildId : buildIds) {
         m_buildIds[buildId.fileName] = buildId.id;
     }
+}
+
+void PerfUnwind::tracing(const PerfTracingData &tracingData)
+{
+    m_tracingData = tracingData;
+    const auto &formats = tracingData.eventFormats();
+    for (auto it = formats.constBegin(), end = formats.constEnd(); it != end; ++it)
+        sendEventFormat(it.key(), it.value());
 }
 
 Dwfl_Module *PerfUnwind::reportElf(quint64 ip, qint32 pid)
@@ -411,6 +438,71 @@ void PerfUnwind::sample(const PerfRecordSample &sample)
     bufferEvent(sample, &m_sampleBuffer, &m_stats.numSamplesInRound);
 }
 
+template<typename Number>
+Number readFromArray(const QByteArray &data, quint32 offset, bool byteSwap)
+{
+    const Number number = *reinterpret_cast<const Number *>(data.data() + offset);
+    return byteSwap ? qbswap(number) : number;
+}
+
+QVariant readTraceItem(const QByteArray &data, quint32 offset, quint32 size, bool isSigned,
+                       bool byteSwap)
+{
+    if (isSigned) {
+        switch (size) {
+        case 1: return readFromArray<qint8>(data, offset, byteSwap);
+        case 2: return readFromArray<qint16>(data, offset, byteSwap);
+        case 4: return readFromArray<qint32>(data, offset, byteSwap);
+        case 8: return readFromArray<qint64>(data, offset, byteSwap);
+        default: return QVariant::Invalid;
+        }
+    } else {
+        switch (size) {
+        case 1: return readFromArray<quint8>(data, offset, byteSwap);
+        case 2: return readFromArray<quint16>(data, offset, byteSwap);
+        case 4: return readFromArray<quint32>(data, offset, byteSwap);
+        case 8: return readFromArray<quint64>(data, offset, byteSwap);
+        default: return QVariant::Invalid;
+        }
+    }
+}
+
+QVariant PerfUnwind::readTraceData(const QByteArray &data, const FormatField &field, bool byteSwap)
+{
+    // TODO: validate that it actually works like this.
+    if (field.offset > std::numeric_limits<int>::max()
+            || field.size > std::numeric_limits<int>::max()
+            || field.offset + field.size > std::numeric_limits<int>::max()
+            || static_cast<int>(field.offset + field.size) > data.length()) {
+        return QVariant::Invalid;
+    }
+
+    if (field.flags & FIELD_IS_ARRAY) {
+        if (field.flags & FIELD_IS_DYNAMIC) {
+            const quint32 dynamicOffsetAndSize = readTraceItem(data, field.offset, field.size,
+                                                               false, byteSwap).toUInt();
+            FormatField newField = field;
+            newField.offset = dynamicOffsetAndSize & 0xffff;
+            newField.size = dynamicOffsetAndSize >> 16;
+            newField.flags = field.flags & (~FIELD_IS_DYNAMIC);
+            return readTraceData(data, newField, byteSwap);
+        }
+        if (field.flags & FIELD_IS_STRING) {
+            return data.mid(static_cast<int>(field.offset), static_cast<int>(field.size));
+        } else {
+            QList<QVariant> result;
+            for (quint32 i = 0; i < field.size; i += field.elementsize) {
+                result.append(readTraceItem(data, field.offset + i, field.elementsize,
+                                            field.flags & FIELD_IS_SIGNED, byteSwap));
+            }
+            return result;
+        }
+    } else {
+        return readTraceItem(data, field.offset, field.size, field.flags & FIELD_IS_SIGNED,
+                             byteSwap);
+    }
+}
+
 void PerfUnwind::analyze(const PerfRecordSample &sample)
 {
     if (m_stats.enabled) // don't do any time intensive work in stats mode
@@ -465,12 +557,36 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
                 = static_cast<quint8>(qMin(static_cast<int>(std::numeric_limits<quint8>::max()),
                                            numGuessed));
     }
+
+    EventType type = Sample;
+    qint32 eventFormatId = -1;
+    const qint32 attributesId = m_attributeIds.value(sample.id(), -1);
+    if (attributesId != -1) {
+        const auto &attribute = m_attributes.at(attributesId);
+        if (attribute.type() == PerfEventAttributes::TYPE_TRACEPOINT) {
+            type = TracePointSample;
+            eventFormatId = attribute.config();
+        }
+    }
+
     QByteArray buffer;
-    QDataStream(&buffer, QIODevice::WriteOnly)
-            << static_cast<quint8>(Sample) << sample.pid()
-            << sample.tid() << sample.time() << m_currentUnwind.frames
-            << numGuessedFrames << m_attributeIds.value(sample.id(), -1)
-            << sample.period() << sample.weight();
+    QDataStream stream(&buffer, QIODevice::WriteOnly);
+    stream << static_cast<quint8>(type) << sample.pid()
+           << sample.tid() << sample.time() << m_currentUnwind.frames
+           << numGuessedFrames << attributesId
+           << sample.period() << sample.weight();
+
+    if (type == TracePointSample) {
+        QHash<qint32, QVariant> traceData;
+        const QByteArray &data = sample.rawData();
+        const EventFormat &format = m_tracingData.eventFormat(eventFormatId);
+        for (const FormatField &field : format.fields) {
+            traceData[lookupString(field.name)]
+                    = readTraceData(data, field, m_byteOrder != QSysInfo::ByteOrder);
+        }
+        stream << traceData;
+    }
+
     sendBuffer(buffer);
 }
 
@@ -543,6 +659,11 @@ qint32 PerfUnwind::resolveString(const QByteArray& string)
         sendString(stringIt.value(), string);
     }
     return stringIt.value();
+}
+
+qint32 PerfUnwind::lookupString(const QByteArray &string)
+{
+    return m_strings.value(string, -1);
 }
 
 int PerfUnwind::lookupLocation(const PerfUnwind::Location &location) const

@@ -41,6 +41,16 @@ void PerfFeatures::createFeature(QIODevice *device, QDataStream::ByteOrder byteO
     stream.setByteOrder(byteOrder);
 
     switch (featureId) {
+    case PerfHeader::TRACING_DATA:
+        if (section.size > std::numeric_limits<quint32>::max()) {
+            qWarning() << "Excessively large tracing data section" << section.size;
+        } else if (section.size < 0) {
+            qWarning() << "Tracing data section with negative size" << section.size;
+        } else {
+            m_tracingData.setSize(static_cast<quint32>(section.size));
+            stream >> m_tracingData;
+        }
+        break;
     case PerfHeader::BUILD_ID:
         m_buildId.size = section.size;
         stream >> m_buildId;

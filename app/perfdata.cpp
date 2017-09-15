@@ -20,6 +20,7 @@
 
 #include "perfdata.h"
 #include "perfunwind.h"
+#include "perftracingdata.h"
 
 #include <QDebug>
 #include <limits>
@@ -141,9 +142,12 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
         if (contentSize == 4) {
             // The content is actually another 4 byte integer,
             // describing the size of the real content that follows.
-            quint32 content;
-            stream >> content;
-            stream.skipRawData(content);
+            PerfTracingData tracing;
+            quint32 size;
+            stream >> size;
+            tracing.setSize(size);
+            stream >> tracing;
+            m_destination->tracing(tracing);
         } else {
             // Maybe someone with a brain will fix this eventually ...
             // then we'll hit this branch.

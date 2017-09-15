@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>probe.data.stream</file>
+        <file>probe.data.file</file>
         <file>contentsize.data</file>
     </qresource>
 </RCC>
