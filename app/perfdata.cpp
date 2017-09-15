@@ -132,6 +132,21 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
         m_destination->exit(exit);
         break;
     }
+    case PERF_RECORD_HEADER_TRACING_DATA: {
+        if (contentSize == 4) {
+            // The content is actually another 4 byte integer,
+            // describing the size of the real content that follows.
+            quint32 content;
+            stream >> content;
+            stream.skipRawData(content);
+        } else {
+            // Maybe someone with a brain will fix this eventually ...
+            // then we'll hit this branch.
+            qWarning() << "HEADER_TRACING_DATA with unexpected contentSize" << contentSize;
+            stream.skipRawData(contentSize);
+        }
+        break;
+    }
     case PERF_RECORD_FINISHED_ROUND: {
         m_destination->finishedRound();
         if (contentSize != 0) {

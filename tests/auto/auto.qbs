@@ -4,6 +4,6 @@ Project {
     name: "PerfParserAutotests"
     condition: project.withAutotests
     references: [
-        "elfmap", "kallsyms"
+        "elfmap", "kallsyms", "perfdata"
     ]
 }
