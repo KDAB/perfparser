@@ -376,6 +376,11 @@ public:
     PerfRecordComm(PerfEventHeader *header = nullptr, quint64 sampleType = 0,
                    bool sampleIdAll = false);
     const QByteArray &comm() const { return m_comm; }
+
+    // The pids and tids in the sampleId are always 0 in this case. Go figure ...
+    qint32 pid() const { return m_pid; }
+    qint32 tid() const { return m_tid; }
+
 private:
     qint32 m_pid;
     qint32 m_tid;
