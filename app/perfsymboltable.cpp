@@ -286,26 +286,25 @@ QFileInfo PerfSymbolTable::findFile(const char *path, const QString &fileName,
     return fullPath;
 }
 
+// returns true for special regions, such as [heap], [vdso], [stack], ... as well as //anon
+static bool isSpecialRegion(const QByteArray& filePath)
+{
+    return (filePath.startsWith('[') && filePath.endsWith(']'))
+        || filePath == "//anon"
+        || filePath == "/SYSV00000000 (deleted)";
+}
+
 void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &buildId)
 {
     QLatin1String filePath(mmap.filename());
-    // special regions, such as [heap], [vdso], [stack], ... as well as //anon
-    const bool isSpecialRegion = (mmap.filename().startsWith('[') && mmap.filename().endsWith(']'))
-                              || filePath == QLatin1String("//anon")
-                              || filePath == QLatin1String("/SYSV00000000 (deleted)");
     const auto fileName = QFileInfo(filePath).fileName();
     QFileInfo fullPath;
-    if (isSpecialRegion) {
+    if (isSpecialRegion(mmap.filename())) {
         // don not set fullPath, these regions don't represent a real file
     } else if (mmap.pid() != PerfUnwind::s_kernelPid) {
         fullPath = findFile(mmap.filename(), fileName, buildId);
 
-        if (!fullPath.isFile()) {
-            m_unwind->sendError(PerfUnwind::MissingElfFile,
-                                PerfUnwind::tr("Could not find ELF file for %1. "
-                                               "This can break stack unwinding "
-                                               "and lead to missing symbols.").arg(filePath));
-        } else if (!m_firstElf) {
+        if (fullPath.isFile() && !m_firstElf) {
             m_firstElfFile = eu_compat_open(fullPath.absoluteFilePath().toLocal8Bit().constData(),
                                             O_RDONLY | O_BINARY);
             if (m_firstElfFile == -1) {
@@ -567,7 +566,16 @@ int PerfSymbolTable::findDebugInfo(Dwfl_Module *module, const char *moduleName, 
 
 PerfElfMap::ElfInfo PerfSymbolTable::findElf(quint64 ip) const
 {
-    return m_elfs.findElf(ip);
+    const auto& elf = m_elfs.findElf(ip);
+
+    if (elf.isValid() && !elf.isFile() && !isSpecialRegion(elf.originalFileName)) {
+        m_unwind->sendError(PerfUnwind::MissingElfFile,
+                            PerfUnwind::tr("Could not find ELF file for %1. "
+                                            "This can break stack unwinding "
+                                            "and lead to missing symbols.")
+                                .arg(QString::fromUtf8(elf.originalFileName)));
+    }
+    return elf;
 }
 
 // based on MIT licensed https://github.com/bombela/backward-cpp
