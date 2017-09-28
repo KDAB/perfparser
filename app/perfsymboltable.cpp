@@ -568,7 +568,13 @@ PerfElfMap::ElfInfo PerfSymbolTable::findElf(quint64 ip) const
 {
     const auto& elf = m_elfs.findElf(ip);
 
-    if (elf.isValid() && !elf.isFile() && !isSpecialRegion(elf.originalFileName)) {
+    if (!elf.isValid()) {
+        m_unwind->sendError(PerfUnwind::MissingElfFile,
+                            PerfUnwind::tr("Failed to find ELF file for an "
+                                            "instruction pointer address. "
+                                            "This can break stack unwinding "
+                                            "and lead to missing symbols."));
+    } else if (!elf.isFile() && !isSpecialRegion(elf.originalFileName)) {
         m_unwind->sendError(PerfUnwind::MissingElfFile,
                             PerfUnwind::tr("Could not find ELF file for %1. "
                                             "This can break stack unwinding "
