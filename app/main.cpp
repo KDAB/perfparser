@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
     app.setApplicationName(QLatin1String("perfparser"));
-    app.setApplicationVersion(QLatin1String("4.3"));
+    app.setApplicationVersion(QLatin1String("4.5"));
 
     QCommandLineParser parser;
     parser.setApplicationDescription(QLatin1String("Perf data parser and unwinder."));
