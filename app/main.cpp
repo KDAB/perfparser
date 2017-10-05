@@ -35,6 +35,7 @@
 #include <QScopedPointer>
 #include <QAbstractSocket>
 #include <QTcpSocket>
+#include <QTimer>
 #include <limits>
 
 #ifdef Q_OS_WIN
@@ -56,14 +57,18 @@ enum ErrorCodes {
 class PerfTcpSocket : public QTcpSocket {
     Q_OBJECT
 public:
-    PerfTcpSocket(QCoreApplication *app);
+    PerfTcpSocket(QCoreApplication *app, const QString &host, quint16 port);
+    void tryConnect();
 
 public slots:
     void readingFinished();
     void processError(QAbstractSocket::SocketError error);
 
 private:
-    bool reading;
+    QString host;
+    quint16 port = 0;
+    quint16 tries = 0;
+    bool reading = true;
 };
 
 int main(int argc, char *argv[])
@@ -201,7 +206,8 @@ int main(int argc, char *argv[])
 
     QScopedPointer<QIODevice> infile;
     if (parser.isSet(host)) {
-        PerfTcpSocket *socket = new PerfTcpSocket(&app);
+        PerfTcpSocket *socket = new PerfTcpSocket(&app, parser.value(host),
+                                                  parser.value(port).toUShort());
         infile.reset(socket);
     } else {
         if (parser.isSet(input))
@@ -299,8 +305,7 @@ int main(int argc, char *argv[])
         PerfTcpSocket *socket = static_cast<PerfTcpSocket *>(infile.data());
         QObject::connect(socket, &QTcpSocket::disconnected, &data, &PerfData::finishReading);
         QObject::connect(&data, &PerfData::finished, socket, &PerfTcpSocket::readingFinished);
-        socket->connectToHost(parser.value(host), parser.value(port).toUShort(),
-                              QIODevice::ReadOnly);
+        socket->tryConnect();
     } else {
         if (!infile->open(QIODevice::ReadOnly))
             return CannotOpen;
@@ -315,15 +320,25 @@ void PerfTcpSocket::processError(QAbstractSocket::SocketError error)
 {
     if (reading) {
         qWarning() << "socket error" << error << errorString();
-        qApp->exit(TcpSocketError);
+        if (tries > 10)
+            qApp->exit(TcpSocketError);
+        else
+            QTimer::singleShot(1 << tries, this, &PerfTcpSocket::tryConnect);
     } // Otherwise ignore the error. We don't need the socket anymore
 }
 
 
-PerfTcpSocket::PerfTcpSocket(QCoreApplication *app) : QTcpSocket(app), reading(true)
+PerfTcpSocket::PerfTcpSocket(QCoreApplication *app, const QString &host, quint16 port) :
+    QTcpSocket(app), host(host), port(port)
 {
     connect(this, SIGNAL(error(QAbstractSocket::SocketError)),
             this, SLOT(processError(QAbstractSocket::SocketError)));
+}
+
+void PerfTcpSocket::tryConnect()
+{
+    ++tries;
+    connectToHost(host, port, QIODevice::ReadOnly);
 }
 
 void PerfTcpSocket::readingFinished()
