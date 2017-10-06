@@ -3,7 +3,7 @@ import qbs
 QtcAutotest {
     name: "PerfData Autotest"
 
-    cpp.includePaths: ["/usr/include/elfutils"]
+    cpp.includePaths: ["/usr/include/elfutils", "../../../app"]
     cpp.dynamicLibraries: ["dw", "elf"]
 
     files: [
@@ -30,5 +30,4 @@ QtcAutotest {
         "../../../app/perfunwind.cpp",
         "../../../app/perfunwind.h"
     ]
-    cpp.includePaths: base.concat(["../../../app"])
 }
