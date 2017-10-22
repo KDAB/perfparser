@@ -735,16 +735,15 @@ static QByteArray fakeSymbolFromSection(Dwfl_Module *mod, Dwarf_Addr addr)
 int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
                                  bool *isInterworking)
 {
-    auto it = m_addressCache.constFind(ip);
-    if (it != m_addressCache.constEnd()) {
-        *isInterworking = it->isInterworking;
-        return it->locationId;
+    const auto& elf = findElf(ip);
+    auto cached = m_addressCache.find(elf, ip);
+    if (cached.isValid()) {
+        *isInterworking = cached.isInterworking;
+        return cached.locationId;
     }
 
     qint32 binaryId = -1;
     quint64 elfStart = 0;
-
-    const auto& elf = findElf(ip);
     if (elf.isValid()) {
         binaryId = m_unwind->resolveString(elf.originalFileName);
         elfStart = elf.addr;
@@ -864,7 +863,7 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
 
     int locationId = m_unwind->resolveLocation(addressLocation);
     *isInterworking = (symname == "$a" || symname == "$t");
-    m_addressCache.insert(ip, {locationId, *isInterworking});
+    m_addressCache.cache(elf, ip, {locationId, *isInterworking});
     return locationId;
 }
 
@@ -936,7 +935,7 @@ Dwfl *PerfSymbolTable::attachDwfl(void *arg)
 
 void PerfSymbolTable::clearCache()
 {
-    m_addressCache.clear();
+    m_addressCache.clearInvalid();
     m_perfMap.clear();
     if (m_perfMapFile.isOpen())
         m_perfMapFile.reset();

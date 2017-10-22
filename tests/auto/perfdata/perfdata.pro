@@ -12,6 +12,7 @@ TARGET = tst_perfdata
 
 SOURCES += \
     tst_perfdata.cpp \
+    ../../../app/perfaddresscache.cpp \
     ../../../app/perfattributes.cpp \
     ../../../app/perfdata.cpp \
     ../../../app/perfelfmap.cpp \
@@ -25,6 +26,7 @@ SOURCES += \
     ../../../app/perfunwind.cpp
 
 HEADERS += \
+    ../../../app/perfaddresscache.h \
     ../../../app/perfattributes.h \
     ../../../app/perfdata.h \
     ../../../app/perfelfmap.h \

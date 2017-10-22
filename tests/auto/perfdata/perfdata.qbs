@@ -11,6 +11,8 @@ QtcAutotest {
         "tst_perfdata.cpp",
         "../shared/perfparsertestclient.cpp",
         "../shared/perfparsertestclient.h",
+        "../../../app/perfaddresscache.cpp",
+        "../../../app/perfaddresscache.h",
         "../../../app/perfattributes.cpp",
         "../../../app/perfattributes.h",
         "../../../app/perfdata.cpp",

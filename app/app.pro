@@ -18,6 +18,7 @@ INSTALLS += target
 TARGET = perfparser
 
 SOURCES += main.cpp \
+    perfaddresscache.cpp \
     perfattributes.cpp \
     perfheader.cpp \
     perffilesection.cpp \
@@ -32,6 +33,7 @@ SOURCES += main.cpp \
     perftracingdata.cpp
 
 HEADERS += \
+    perfaddresscache.h \
     perfattributes.h \
     perfheader.h \
     perffilesection.h \

@@ -14,6 +14,8 @@ QtcTool {
 
     files: [
         "main.cpp",
+        "perfaddresscache.cpp",
+        "perfaddresscache.h",
         "perfattributes.cpp",
         "perfattributes.h",
         "perfheader.cpp",

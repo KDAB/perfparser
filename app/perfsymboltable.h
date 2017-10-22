@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include "perfaddresscache.h"
 #include "perfdata.h"
 #include "perfelfmap.h"
 #include "perfunwind.h"
@@ -83,11 +84,6 @@ private:
     QFileInfo findFile(const char *path, const QString &fileName,
                        const QByteArray &buildId = QByteArray()) const;
 
-    struct AddressCacheEntry {
-        int locationId;
-        bool isInterworking;
-    };
-
     class ElfAndFile {
     public:
         ElfAndFile() {}
@@ -109,7 +105,6 @@ private:
 
     QFile m_perfMapFile;
     QVector<PerfMapSymbol> m_perfMap;
-    QHash<Dwarf_Addr, AddressCacheEntry> m_addressCache;
     bool m_cacheIsDirty;
 
     PerfUnwind *m_unwind;
@@ -118,6 +113,7 @@ private:
     ElfAndFile m_firstElf;
 
     PerfElfMap m_elfs;
+    PerfAddressCache m_addressCache;
     Dwfl_Callbacks *m_callbacks;
     qint32 m_pid;
 
