@@ -530,6 +530,24 @@ void PerfUnwind::sendError(ErrorCode error, const QString &message)
     sendBuffer(buffer);
 }
 
+void PerfUnwind::sendMissingElfFileError(const QByteArray &elfFile)
+{
+    if (m_missingElfFiles.contains(elfFile))
+        return;
+
+    m_missingElfFiles.insert(elfFile);
+
+    if (elfFile.isEmpty()) {
+        sendError(MissingElfFile,
+                  tr("Failed to find ELF file for an instruction pointer address. "
+                      "This can break stack unwinding and lead to missing symbols."));
+    } else {
+        sendError(MissingElfFile,
+                  tr("Could not find ELF file for %1. This can break stack unwinding "
+                     "and lead to missing symbols.").arg(QString::fromUtf8(elfFile)));
+    }
+}
+
 void PerfUnwind::sendProgress(float percent)
 {
     QByteArray buffer;

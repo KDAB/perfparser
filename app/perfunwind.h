@@ -34,6 +34,7 @@
 #include <QByteArray>
 #include <QString>
 #include <QDir>
+#include <QSet>
 
 #include <limits>
 
@@ -206,6 +207,7 @@ public:
     };
     Q_ENUM(ErrorCode)
     void sendError(ErrorCode error, const QString &message);
+    void sendMissingElfFileError(const QByteArray &elfFile);
     void sendProgress(float percent);
 
     QString systemRoot() const { return m_systemRoot; }
@@ -273,6 +275,7 @@ private:
     QHash<quint64, qint32> m_attributeIds;
     QVector<PerfEventAttributes> m_attributes;
     QHash<QByteArray, QByteArray> m_buildIds;
+    QSet<QByteArray> m_missingElfFiles;
 
     uint m_maxEventBufferSize;
     uint m_eventBufferSize;
