@@ -2,6 +2,7 @@ TEMPLATE = subdirs
 SUBDIRS = \
     elfmap \
     kallsyms \
-    perfdata
+    perfdata \
+    addresscache
 
 OTHER_FILES += auto.qbs

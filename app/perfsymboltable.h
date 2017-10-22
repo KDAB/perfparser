@@ -28,6 +28,7 @@
 #include "perfdata.h"
 #include "perfunwind.h"
 #include "perfelfmap.h"
+#include "perfaddresscache.h"
 
 #include <libdwfl.h>
 #include <QObject>
@@ -82,14 +83,8 @@ private:
     QFileInfo findFile(const char *path, const QString &fileName,
                        const QByteArray &buildId = QByteArray()) const;
 
-    struct AddressCacheEntry {
-        int locationId;
-        bool isInterworking;
-    };
-
     QFile m_perfMapFile;
     QVector<PerfMapSymbol> m_perfMap;
-    QHash<Dwarf_Addr, AddressCacheEntry> m_addressCache;
     bool m_cacheIsDirty;
 
     PerfUnwind *m_unwind;
@@ -99,6 +94,7 @@ private:
     Elf *m_firstElf;
 
     PerfElfMap m_elfs;
+    PerfAddressCache m_addressCache;
     Dwfl_Callbacks *m_callbacks;
     qint32 m_pid;
 
