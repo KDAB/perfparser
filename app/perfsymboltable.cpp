@@ -467,8 +467,7 @@ void PerfSymbolTable::parseDwarf(Dwarf_Die *cudie, Dwarf_Addr bias, qint32 binar
 
 static void reportError(const PerfElfMap::ElfInfo& info, const char *message)
 {
-    qWarning() << "failed to report" << info << "for"
-               << hex << info.addr << dec << ":" << message;
+    qWarning() << "failed to report" << info << dec << ":" << message;
 }
 
 Dwfl_Module *PerfSymbolTable::reportElf(const PerfElfMap::ElfInfo& info)
