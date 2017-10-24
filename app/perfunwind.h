@@ -178,7 +178,6 @@ public:
     void finishedRound();
     void contextSwitch(const PerfRecordContextSwitch &contextSwitch);
 
-    Dwfl_Module *reportElf(quint64 ip, qint32 pid);
     bool ipIsInKernelSpace(quint64 ip) const;
     void sample(const PerfRecordSample &sample);
 

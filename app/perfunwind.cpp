@@ -278,12 +278,6 @@ void PerfUnwind::features(const PerfFeatures &features)
     }
 }
 
-Dwfl_Module *PerfUnwind::reportElf(quint64 ip, qint32 pid)
-{
-    auto symbols = symbolTable(pid);
-    return symbols->reportElf(symbols->findElf(ip));
-}
-
 bool PerfUnwind::ipIsInKernelSpace(quint64 ip) const
 {
     auto symbolTableIt = m_symbolTables.constFind(s_kernelPid);
