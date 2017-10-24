@@ -72,6 +72,12 @@ PerfSymbolTable::PerfSymbolTable(qint32 pid, Dwfl_Callbacks *callbacks, PerfUnwi
     m_pid(pid)
 {
     m_dwfl = dwfl_begin(m_callbacks);
+    QObject::connect(&m_elfs, &PerfElfMap::aboutToInvalidate,
+                     &m_elfs, [this](const PerfElfMap::ElfInfo &elf) {
+                        if (m_dwfl && !m_cacheIsDirty && dwfl_addrmodule(m_dwfl, elf.addr)) {
+                            m_cacheIsDirty = true;
+                        }
+                     });
 }
 
 PerfSymbolTable::~PerfSymbolTable()
@@ -328,13 +334,13 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &
         fullPath.setFile(m_unwind->systemRoot() + filePath);
     }
 
-    bool cacheInvalid = m_elfs.registerElf(mmap.addr(), mmap.len(), mmap.pgoff(), fullPath,
-                                           fileName.toUtf8(), mmap.filename());
+    m_elfs.registerElf(mmap.addr(), mmap.len(), mmap.pgoff(), fullPath,
+                       fileName.toUtf8(), mmap.filename());
 
     // There is no need to clear the symbol or location caches in PerfUnwind. Some locations become
     // stale this way, but we still need to keep their IDs, as the receiver might still use them for
     // past frames.
-    if (cacheInvalid)
+    if (m_cacheIsDirty)
         clearCache();
 }
 

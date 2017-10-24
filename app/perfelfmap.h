@@ -24,8 +24,9 @@
 #include <QFileInfo>
 #include <QVector>
 
-class PerfElfMap
+class PerfElfMap : public QObject
 {
+    Q_OBJECT
 public:
     struct ElfInfo {
         explicit ElfInfo(const QFileInfo &localFile = QFileInfo(), quint64 addr = 0,
@@ -71,7 +72,10 @@ public:
         quint64 pgoff;
     };
 
-    bool registerElf(quint64 addr, quint64 len, quint64 pgoff,
+    explicit PerfElfMap(QObject *parent = nullptr);
+    ~PerfElfMap();
+
+    void registerElf(quint64 addr, quint64 len, quint64 pgoff,
                      const QFileInfo &fullPath,
                      const QByteArray &originalFileName = {},
                      const QByteArray &originalPath = {});
@@ -83,6 +87,9 @@ public:
     }
 
     bool isAddressInRange(quint64 addr) const;
+
+signals:
+    void aboutToInvalidate(const ElfInfo &elf);
 
 private:
     // elf sorted by start address

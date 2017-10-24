@@ -52,13 +52,18 @@ struct SortByAddr
 };
 }
 
-bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgoff,
+PerfElfMap::PerfElfMap(QObject *parent)
+    : QObject(parent)
+{
+}
+
+PerfElfMap::~PerfElfMap() = default;
+
+void PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgoff,
                              const QFileInfo &fullPath, const QByteArray &originalFileName,
                              const QByteArray &originalPath)
 {
-    bool cacheInvalid = false;
     const quint64 addrEnd = addr + len;
-    const bool isFile = fullPath.isFile();
 
     QVarLengthArray<ElfInfo, 8> newElfs;
     QVarLengthArray<int, 8> removedElfs;
@@ -80,13 +85,8 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
                                       i->originalFileName, i->originalPath));
         }
 
+        aboutToInvalidate(*i);
         removedElfs.push_back(static_cast<int>(std::distance(m_elfs.begin(), i)));
-
-        // Overlapping module. Clear the cache, but only when the section is actually backed by a
-        // file. Otherwise, we will see tons of overlapping heap/anon sections which don't actually
-        // invalidate our caches
-        if (isFile || i->isFile())
-            cacheInvalid = true;
     }
 
     // remove the overwritten elfs, iterate from the back to not invalidate the indices
@@ -100,8 +100,6 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
                                    elf.addr, SortByAddr());
         m_elfs.insert(it, elf);
     }
-
-    return cacheInvalid;
 }
 
 PerfElfMap::ElfInfo PerfElfMap::findElf(quint64 ip) const
