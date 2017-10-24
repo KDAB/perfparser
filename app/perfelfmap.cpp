@@ -59,13 +59,18 @@ struct SortByAddr
 };
 }
 
-bool PerfElfMap::registerElf(quint64 addr, quint64 len, quint64 pgoff,
+PerfElfMap::PerfElfMap(QObject *parent)
+    : QObject(parent)
+{
+}
+
+PerfElfMap::~PerfElfMap() = default;
+
+void PerfElfMap::registerElf(quint64 addr, quint64 len, quint64 pgoff,
                              const QFileInfo &fullPath, const QByteArray &originalFileName,
                              const QByteArray &originalPath)
 {
-    bool cacheInvalid = false;
     quint64 addrEnd = addr + len;
-    const bool isFile = fullPath.isFile();
 
     QVarLengthArray<ElfInfo, 8> newElfs;
     QVarLengthArray<int, 8> removedElfs;
@@ -83,10 +88,9 @@ bool PerfElfMap::registerElf(quint64 addr, quint64 len, quint64 pgoff,
             len = addrEnd - addr;
             if (addr == i->addr && len == i->length) {
                 // New mapping is fully contained in old one: Nothing to do.
-                Q_ASSERT(!cacheInvalid);
                 Q_ASSERT(newElfs.isEmpty());
                 Q_ASSERT(removedElfs.isEmpty());
-                return false;
+                return;
             }
         } else if (iEnd == addr) {
             // Directly adjacent sections of the same file can be merged. Ones of different files
@@ -107,13 +111,8 @@ bool PerfElfMap::registerElf(quint64 addr, quint64 len, quint64 pgoff,
                                       i->originalFileName, i->originalPath));
         }
 
+        aboutToInvalidate(*i);
         removedElfs.push_back(static_cast<int>(std::distance(m_elfs.begin(), i)));
-
-        // Overlapping module. Clear the cache, but only when the section is actually backed by a
-        // file. Otherwise, we will see tons of overlapping heap/anon sections which don't actually
-        // invalidate our caches
-        if (isFile || i->isFile())
-            cacheInvalid = true;
     }
 
     // remove the overwritten elfs, iterate from the back to not invalidate the indices
@@ -134,8 +133,6 @@ bool PerfElfMap::registerElf(quint64 addr, quint64 len, quint64 pgoff,
                                    elf.addr, SortByAddr());
         m_elfs.insert(it, elf);
     }
-
-    return cacheInvalid;
 }
 
 PerfElfMap::ElfInfo PerfElfMap::findElf(quint64 ip) const

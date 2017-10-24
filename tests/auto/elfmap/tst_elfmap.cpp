@@ -24,14 +24,6 @@
 #include <QTemporaryFile>
 #include <QTest>
 
-namespace {
-bool registerElf(PerfElfMap *map, const PerfElfMap::ElfInfo &info)
-{
-    return map->registerElf(info.addr, info.length, info.pgoff, info.localFile,
-                            info.originalFileName, info.originalPath);
-}
-}
-
 QT_BEGIN_NAMESPACE
 namespace QTest {
 template<>
@@ -58,7 +50,7 @@ private slots:
 
         const PerfElfMap::ElfInfo first({}, 100, 10, 0);
 
-        QVERIFY(!registerElf(&map, first));
+        QVERIFY(registerElf(&map, first).isEmpty());
         QVERIFY(!map.isEmpty());
 
         QCOMPARE(map.findElf(99), invalid);
@@ -68,7 +60,7 @@ private slots:
         QCOMPARE(map.findElf(110), invalid);
 
         const PerfElfMap::ElfInfo second({}, 0, 10, 0);
-        QVERIFY(!registerElf(&map, second));
+        QVERIFY(registerElf(&map, second).isEmpty());
 
         QCOMPARE(map.findElf(0), second);
         QCOMPARE(map.findElf(5), second);
@@ -103,32 +95,27 @@ private slots:
 
         PerfElfMap map;
 
-        {
-            const PerfElfMap::ElfInfo first(file1, 95, 20, 0);
-            QCOMPARE(registerElf(&map, first), false);
-            QCOMPARE(map.findElf(110), first);
-        }
+        const PerfElfMap::ElfInfo first(file1, 95, 20, 0);
+        QVERIFY(registerElf(&map, first).isEmpty());
+        QCOMPARE(map.findElf(110), first);
 
-        {
-            const PerfElfMap::ElfInfo second(file1, 105, 20, 0);
-            QCOMPARE(registerElf(&map, second), firstIsFile);
-            QCOMPARE(map.findElf(110), second);
+        const PerfElfMap::ElfInfo second(file1, 105, 20, 0);
+        QCOMPARE(registerElf(&map, second), QVector<PerfElfMap::ElfInfo>{first});
+        QCOMPARE(map.findElf(110), second);
 
-            const PerfElfMap::ElfInfo fragment1(file1, 95, 10, 0);
-            QCOMPARE(map.findElf(97), fragment1);
-        }
+        const PerfElfMap::ElfInfo fragment1(file1, 95, 10, 0);
+        QCOMPARE(map.findElf(97), fragment1);
 
-        {
-            const PerfElfMap::ElfInfo third(file2, 100, 20, 0);
-            QCOMPARE(registerElf(&map, third), firstIsFile || secondIsFile);
-            QCOMPARE(map.findElf(110), third);
-            QCOMPARE(map.findElf(110), third);
+        const PerfElfMap::ElfInfo third(file2, 100, 20, 0);
+        QVector<PerfElfMap::ElfInfo> invalidatedByThird = {fragment1, second};
+        QCOMPARE(registerElf(&map, third), invalidatedByThird);
+        QCOMPARE(map.findElf(110), third);
+        QCOMPARE(map.findElf(110), third);
 
-            const PerfElfMap::ElfInfo fragment2(file1, 120, 5, 15);
-            const PerfElfMap::ElfInfo fragment3(file1, 95, 5, 0);
-            QCOMPARE(map.findElf(122), fragment2);
-            QCOMPARE(map.findElf(97), fragment3);
-        }
+        const PerfElfMap::ElfInfo fragment2(file1, 120, 5, 15);
+        const PerfElfMap::ElfInfo fragment3(file1, 95, 5, 0);
+        QCOMPARE(map.findElf(122), fragment2);
+        QCOMPARE(map.findElf(97), fragment3);
     }
 
     void testOverwrite_data()
@@ -148,14 +135,14 @@ private slots:
         QVERIFY(!map.isAddressInRange(10));
 
         const PerfElfMap::ElfInfo first({}, 10, 10, 0);
-        QVERIFY(!registerElf(&map, first));
+        QVERIFY(registerElf(&map, first).isEmpty());
         QVERIFY(!map.isAddressInRange(9));
         QVERIFY(map.isAddressInRange(10));
         QVERIFY(map.isAddressInRange(19));
         QVERIFY(!map.isAddressInRange(20));
 
         const PerfElfMap::ElfInfo second({}, 30, 10, 0);
-        QVERIFY(!registerElf(&map, second));
+        QVERIFY(registerElf(&map, second).isEmpty());
         QVERIFY(!map.isAddressInRange(9));
         QVERIFY(map.isAddressInRange(10));
         QVERIFY(map.isAddressInRange(19));
@@ -349,6 +336,20 @@ private slots:
     void benchFindElfExpanding_data()
     {
         benchRegisterElfDisjunct_data();
+    }
+
+private:
+    QVector<PerfElfMap::ElfInfo> registerElf(PerfElfMap *map, const PerfElfMap::ElfInfo &info)
+    {
+        QVector<PerfElfMap::ElfInfo> invalidated;
+        auto connection = connect(map, &PerfElfMap::aboutToInvalidate,
+                                  this, [&](const PerfElfMap::ElfInfo &other) {
+                                    invalidated.push_back(other);
+                                  });
+        map->registerElf(info.addr, info.length, info.pgoff, info.localFile,
+                         info.originalFileName, info.originalPath);
+        disconnect(connection);
+        return invalidated;
     }
 };
 
