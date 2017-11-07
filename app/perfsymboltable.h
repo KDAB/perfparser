@@ -33,6 +33,8 @@
 #include <libdwfl.h>
 #include <QObject>
 
+class DieRangeMaps;
+
 class PerfSymbolTable
 {
 public:
@@ -95,6 +97,7 @@ private:
 
     PerfElfMap m_elfs;
     PerfAddressCache m_addressCache;
+    QHash<Dwfl_Module*, DieRangeMaps> m_dieRangeMaps;
     Dwfl_Callbacks *m_callbacks;
     qint32 m_pid;
 
