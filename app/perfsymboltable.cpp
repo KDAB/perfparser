@@ -32,6 +32,7 @@
 #include <QDir>
 #include <QStack>
 
+#include <tuple>
 #include <cstring>
 #include <fcntl.h>
 
@@ -598,6 +599,150 @@ PerfElfMap::ElfInfo PerfSymbolTable::findElf(quint64 ip) const
     return m_elfs.findElf(ip);
 }
 
+struct AddrRange
+{
+    Dwarf_Addr low = 0;
+    Dwarf_Addr high = 0;
+
+    void setMinMax(const AddrRange range)
+    {
+        if (range.low && (low == 0 || low > range.low))
+            low = range.low;
+        if (range.high && (high == 0 || high < range.high))
+            high = range.high;
+    }
+
+    bool contains(Dwarf_Addr addr) const
+    {
+        return low <= addr && addr < high;
+    }
+
+    bool operator<(const AddrRange &rhs) const
+    {
+        return std::tie(low, high) < std::tie(rhs.low, high);
+    }
+};
+Q_DECLARE_TYPEINFO(AddrRange, Q_MOVABLE_TYPE);
+
+struct DieRangeMap
+{
+    DieRangeMap(Dwarf_Die *die = nullptr, Dwarf_Addr bias = 0)
+        : die(die)
+        , bias(bias)
+    {
+        if (die)
+            gatherRanges(die, bias);
+    }
+
+    bool contains(Dwarf_Addr addr) const
+    {
+        if (!range.contains(addr))
+            return false;
+        return std::any_of(ranges.begin(), ranges.end(),
+                           [addr](AddrRange range) {
+                                return range.contains(addr);
+                           });
+    }
+
+    bool operator<(const DieRangeMap &rhs) const
+    {
+        return range < rhs.range;
+    }
+
+    Dwarf_Die *die = nullptr;
+    AddrRange range; // may be non-continuous, but allows quick checks and sorting
+    QVector<AddrRange> ranges;
+    Dwarf_Addr bias;
+
+private:
+    void gatherRanges(Dwarf_Die *parent_die, Dwarf_Addr bias)
+    {
+        Dwarf_Die die;
+        if (dwarf_child(parent_die, &die) != 0)
+            return;
+
+        do {
+            switch (dwarf_tag(&die)) {
+            case DW_TAG_subprogram:
+            case DW_TAG_inlined_subroutine:
+                addRanges(&die, bias);
+                break;
+            };
+            bool declaration = false;
+            Dwarf_Attribute attr_mem;
+            dwarf_formflag(dwarf_attr(&die, DW_AT_declaration, &attr_mem), &declaration);
+            if (!declaration) {
+                // let's be curious and look deeper in the tree,
+                // function are not necessarily at the first level, but
+                // might be nested inside a namespace, structure etc.
+                gatherRanges(&die, bias);
+            }
+        } while (dwarf_siblingof(&die, &die) == 0);
+    }
+
+    void addRanges(Dwarf_Die *die, Dwarf_Addr bias)
+    {
+        Dwarf_Addr low = 0, high = 0;
+        Dwarf_Addr base = 0;
+        ptrdiff_t offset = 0;
+        while ((offset = dwarf_ranges(die, offset, &base, &low, &high)) > 0) {
+            addRange(low, high, bias);
+        }
+    }
+
+    void addRange(Dwarf_Addr low, Dwarf_Addr high, Dwarf_Addr bias)
+    {
+        AddrRange ret;
+        ret.low = low + bias;
+        ret.high = high + bias;
+        range.setMinMax(ret);
+        ranges.push_back(ret);
+    }
+};
+Q_DECLARE_TYPEINFO(DieRangeMap, Q_MOVABLE_TYPE);
+
+class DieRangeMaps
+{
+public:
+    DieRangeMaps(Dwfl_Module *mod = nullptr)
+    {
+        if (!mod)
+            return;
+
+        Dwarf_Die *die = nullptr;
+        Dwarf_Addr bias = 0;
+        while ((die = dwfl_module_nextcu(mod, die, &bias))) {
+            DieRangeMap map(die, bias);
+            if (map.range.low == 0 && map.range.high == 0) {
+                // no range entries, skip
+                continue;
+            }
+            range.setMinMax(map.range);
+            maps.push_back(std::move(map));
+        }
+    }
+
+    Dwarf_Die *findDie(Dwarf_Addr addr, Dwarf_Addr *bias) const
+    {
+        if (!range.contains(addr))
+            return nullptr;
+
+        auto it = std::find_if(maps.begin(), maps.end(),
+                               [addr](const DieRangeMap &map) {
+                                    return map.contains(addr);
+                               });
+        if (it == maps.end())
+            return nullptr;
+
+        *bias = it->bias;
+        return it->die;
+    }
+public:
+    AddrRange range; // may be non-continuous, but allows quick checks
+    QVector<DieRangeMap> maps;
+};
+Q_DECLARE_TYPEINFO(DieRangeMaps, Q_MOVABLE_TYPE);
+
 int symbolIndex(const Elf64_Rel &rel)
 {
     return ELF64_R_SYM(rel.r_info);
@@ -771,77 +916,6 @@ static QByteArray fakeSymbolFromSection(Dwfl_Module *mod, Dwarf_Addr addr)
     return sym;
 }
 
-// based on MIT licensed https://github.com/bombela/backward-cpp
-static bool die_has_pc(Dwarf_Die* die, Dwarf_Addr pc)
-{
-    Dwarf_Addr low, high;
-
-    // continuous range
-    if (dwarf_hasattr(die, DW_AT_low_pc) && dwarf_hasattr(die, DW_AT_high_pc)) {
-        if (dwarf_lowpc(die, &low) != 0)
-            return false;
-        if (dwarf_highpc(die, &high) != 0) {
-            Dwarf_Attribute attr_mem;
-            Dwarf_Attribute* attr = dwarf_attr(die, DW_AT_high_pc, &attr_mem);
-            Dwarf_Word value;
-            if (dwarf_formudata(attr, &value) != 0)
-                return false;
-            high = low + value;
-        }
-        return pc >= low && pc < high;
-    }
-
-    // non-continuous range.
-    Dwarf_Addr base;
-    ptrdiff_t offset = 0;
-    while ((offset = dwarf_ranges(die, offset, &base, &low, &high)) > 0) {
-        if (pc >= low && pc < high)
-            return true;
-    }
-    return false;
-}
-
-static bool find_fundie_by_pc(Dwarf_Die* parent_die, Dwarf_Addr pc)
-{
-    Dwarf_Die die;
-    if (dwarf_child(parent_die, &die) != 0)
-        return false;
-
-    do {
-        switch (dwarf_tag(&die)) {
-        case DW_TAG_subprogram:
-        case DW_TAG_inlined_subroutine:
-            if (die_has_pc(&die, pc))
-                return true;
-        };
-        bool declaration = false;
-        Dwarf_Attribute attr_mem;
-        dwarf_formflag(dwarf_attr(&die, DW_AT_declaration, &attr_mem), &declaration);
-        if (!declaration) {
-            // let's be curious and look deeper in the tree,
-            // function are not necessarily at the first level, but
-            // might be nested inside a namespace, structure etc.
-            if (find_fundie_by_pc(&die, pc))
-                return true;
-        }
-    } while (dwarf_siblingof(&die, &die) == 0);
-    return false;
-}
-
-Dwarf_Die *find_die(Dwfl_Module *mod, Dwarf_Addr addr, Dwarf_Addr *bias)
-{
-    auto die = dwfl_module_addrdie(mod, addr, bias);
-    if (die)
-        return die;
-
-    while ((die = dwfl_module_nextcu(mod, die, bias))) {
-        if (find_fundie_by_pc(die, addr - *bias))
-            return die;
-    }
-
-    return nullptr;
-}
-
 int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
                                  bool *isInterworking)
 {
@@ -883,7 +957,18 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
         } else {
             Dwarf_Addr bias = 0;
             functionLocation.address -= off; // in case we don't find anything better
-            Dwarf_Die *die = find_die(mod, addressLocation.address, &bias);
+
+            auto die = dwfl_module_addrdie(mod, addressLocation.address, &bias);
+            if (!die) {
+                // broken DWARF emitter by clang, e.g. no aranges
+                // cf.: https://sourceware.org/ml/elfutils-devel/2017-q2/msg00180.html
+                // build a custom lookup table and query that one
+                if (!m_dieRangeMaps.contains(mod)) {
+                    m_dieRangeMaps[mod] = DieRangeMaps(mod);
+                }
+                const auto& maps = m_dieRangeMaps[mod];
+                die = maps.findDie(addressLocation.address, &bias);
+            }
 
             if (die) {
                 auto srcloc = dwarf_getsrc_die(die, addressLocation.address - bias);
@@ -1036,6 +1121,7 @@ Dwfl *PerfSymbolTable::attachDwfl(void *arg)
 void PerfSymbolTable::clearCache()
 {
     m_addressCache.clearInvalid();
+    m_dieRangeMaps.clear();
     m_perfMap.clear();
     if (m_perfMapFile.isOpen())
         m_perfMapFile.reset();
