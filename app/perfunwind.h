@@ -199,6 +199,7 @@ public:
         MissingElfFile = 2,
         InvalidKallsyms = 3,
     };
+    Q_ENUM(ErrorCode)
     void sendError(ErrorCode error, const QString &message);
     void sendProgress(float percent);
 

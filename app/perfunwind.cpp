@@ -518,10 +518,10 @@ void PerfUnwind::sendSymbol(qint32 id, const PerfUnwind::Symbol &symbol)
 
 void PerfUnwind::sendError(ErrorCode error, const QString &message)
 {
-    qWarning() << error << message;
+    qWarning().noquote().nospace() << error << ": " << message;
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(Error)
-                                               << error << message;
+                                               << static_cast<qint32>(error) << message;
     sendBuffer(buffer);
 }
 
