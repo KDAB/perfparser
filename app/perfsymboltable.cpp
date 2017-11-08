@@ -509,6 +509,14 @@ Dwfl_Module *PerfSymbolTable::module(quint64 addr, const PerfElfMap::ElfInfo &el
 
     Dwfl_Module *mod = dwfl_addrmodule(m_dwfl, addr);
 
+    if (!mod) {
+        // check whether we queried for an address outside the elf range parsed
+        // by dwfl. If that is the case, then we would invalidate the cache and
+        // re-report the library again - essentially recreating the current state
+        // for no gain, except wasting time
+        mod = dwfl_addrmodule(m_dwfl, elf.addr);
+    }
+
     if (mod) {
         // If dwfl has a module and it's not the same as what we want, report the module
         // we want. Many modules overlap ld.so, so if we've reported even one sample from
