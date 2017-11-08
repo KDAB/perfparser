@@ -1,0 +1,161 @@
+/****************************************************************************
+**
+** Copyright (C) 2017 The Qt Company Ltd
+** Contact: http://www.qt.io/licensing/
+**
+** This file is part of the Qt Enterprise Perf Profiler Add-on.
+**
+** GNU General Public License Usage
+** This file may be used under the terms of the GNU General Public License
+** version 3 as published by the Free Software Foundation and appearing in
+** the file LICENSE.GPLv3 included in the packaging of this file. Please
+** review the following information to ensure the GNU General Public License
+** requirements will be met: https://www.gnu.org/licenses/gpl.html.
+**
+** If you have questions regarding the use of this file, please use
+** contact form at http://www.qt.io/contact-us
+**
+****************************************************************************/
+
+#include "perfparsertestclient.h"
+#include "perffeatures.h"
+
+#include <QtEndian>
+#include <QtTest>
+
+PerfParserTestClient::PerfParserTestClient(QObject *parent) : QObject(parent)
+{
+}
+
+void PerfParserTestClient::extractTrace(QIODevice *device)
+{
+    QVERIFY(device->bytesAvailable() > 0);
+    const char streamMagic[] = "QPERFSTREAM";
+    const int magicSize = sizeof(streamMagic);
+
+    QVarLengthArray<char> magic(magicSize);
+    device->read(magic.data(), magicSize);
+    QCOMPARE(QByteArray(magic.data(), magic.size()), QByteArray(streamMagic, magicSize));
+
+    qint32 version;
+    device->read(reinterpret_cast<char *>(&version), sizeof(qint32));
+    version = qFromLittleEndian(version);
+
+    QVERIFY(version == QDataStream::Qt_DefaultCompiledVersion);
+
+    float progress = -1;
+
+    auto checkString = [this](qint32 id) {
+        QVERIFY(id < m_strings.length());
+        QVERIFY(!m_strings[id].isEmpty());
+    };
+
+    auto checkLocation = [this](qint32 id) {
+        QVERIFY(id < m_locations.length());
+        QVERIFY(m_locations[id].pid != 0);
+    };
+
+    auto checkAttribute = [this, &checkString](qint32 id) {
+        QVERIFY(id < m_attributes.length());
+        checkString(m_attributes[id].name);
+    };
+
+    while (device->bytesAvailable() >= static_cast<qint64>(sizeof(quint32))) {
+        qint32 size;
+        device->read(reinterpret_cast<char *>(&size), sizeof(quint32));
+        size = qFromLittleEndian(size);
+
+        QVERIFY(device->bytesAvailable() >= size);
+        QDataStream stream(device->read(size));
+
+        quint8 eventType;
+        stream >> eventType;
+
+        switch (eventType) {
+        case ThreadEnd: {
+            ThreadEndEvent threadEnd;
+            stream >> threadEnd.pid >> threadEnd.tid >> threadEnd.time;
+            m_threadEnds.append(threadEnd);
+            break;
+        }
+        case Command: {
+            CommandEvent command;
+            stream >> command.pid >> command.tid >> command.time >> command.name;
+            checkString(command.name);
+            m_commands.append(command);
+            break;
+        }
+        case LocationDefinition: {
+            qint32 id;
+            LocationEvent location;
+            stream >> id >> location.address >> location.file >> location.pid >> location.line
+                   >> location.column >> location.parentLocationId;
+            if (location.file != -1)
+                checkString(location.file);
+            if (location.parentLocationId != -1)
+                checkLocation(location.parentLocationId);
+            QCOMPARE(id, m_locations.length());
+            m_locations.append(location);
+            break;
+        }
+        case SymbolDefinition: {
+            qint32 id;
+            SymbolEvent symbol;
+            stream >> id >> symbol.name >> symbol.binary >> symbol.isKernel;
+            if (symbol.name != -1)
+                checkString(symbol.name);
+            if (symbol.binary != -1)
+                checkString(symbol.binary);
+            QCOMPARE(id, m_symbols.length());
+            m_symbols.append(symbol);
+            break;
+        }
+        case AttributesDefinition: {
+            qint32 id;
+            AttributeEvent attribute;
+            stream >> id >> attribute.type >> attribute.config >> attribute.name;
+            checkString(attribute.name);
+            QCOMPARE(id, m_attributes.length());
+            m_attributes.append(attribute);
+            break;
+        }
+        case StringDefinition: {
+            qint32 id;
+            QByteArray string;
+            stream >> id >> string;
+            QCOMPARE(id, m_strings.length());
+            m_strings.append(string);
+            break;
+        }
+        case Error: {
+            qint32 errorCode;
+            QString message;
+            stream >> errorCode >> message;
+            // Ignore this: We cannot find the elfs of course.
+            break;
+        }
+        case Sample: {
+            SampleEvent sample;
+            stream >> sample.pid >> sample.tid >> sample.time >> sample.frames
+                   >> sample.numGuessedFrames >> sample.attributeId >> sample.period
+                   >> sample.weight;
+            for (qint32 locationId : qAsConst(sample.frames))
+                checkLocation(locationId);
+            checkAttribute(sample.attributeId);
+            m_samples.append(sample);
+            break;
+        }
+        case Progress: {
+            const float oldProgress = progress;
+            stream >> progress;
+            QVERIFY(progress > oldProgress);
+            break;
+        }
+        default:
+            stream.skipRawData(size);
+            qDebug() << size << device->bytesAvailable() << EventType(eventType);
+            break;
+        }
+        QVERIFY(stream.atEnd());
+    }
+}
