@@ -267,11 +267,9 @@ private:
     quint32 m_reserved2;
 
     friend QDataStream &operator>>(QDataStream &stream, PerfEventAttributes &attrs);
-    friend uint qHash(const PerfEventAttributes &attrs, uint seed);
 };
 
 QDataStream &operator>>(QDataStream &stream, PerfEventAttributes &attrs);
-uint qHash(const PerfEventAttributes &attrs, uint seed = 0);
 
 class PerfAttributes {
 public:

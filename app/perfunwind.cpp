@@ -203,7 +203,9 @@ void PerfUnwind::attr(const PerfRecordAttr &attr)
 void PerfUnwind::addAttributes(const PerfEventAttributes &attributes, const QByteArray &name,
                               const QList<quint64> &ids)
 {
-    const qint32 internalId = resolveAttributes(attributes, name);
+    const qint32 internalId = m_attributes.size();
+    m_attributes.append(attributes);
+    sendAttributes(internalId, attributes, name);
 
     if (ids.isEmpty()) {
         // If we only get one attribute, it doesn't have an ID.
@@ -214,16 +216,6 @@ void PerfUnwind::addAttributes(const PerfEventAttributes &attributes, const QByt
         foreach (quint64 id, ids)
             m_attributeIds[id] = internalId;
     }
-}
-
-qint32 PerfUnwind::resolveAttributes(const PerfEventAttributes &attributes, const QByteArray &name)
-{
-    auto it = m_attributes.find(attributes);
-    if (it == m_attributes.end()) {
-        it = m_attributes.insert(attributes, m_attributes.size());
-        sendAttributes(it.value(), attributes, name);
-    }
-    return it.value();
 }
 
 void PerfUnwind::sendAttributes(qint32 id, const PerfEventAttributes &attributes, const QByteArray &name)

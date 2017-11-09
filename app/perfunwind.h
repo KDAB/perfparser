@@ -185,8 +185,6 @@ public:
 
     void addAttributes(const PerfEventAttributes &attributes, const QByteArray &name,
                        const QList<quint64> &ids);
-    qint32 resolveAttributes(const PerfEventAttributes &attributes,
-                             const QByteArray &name);
 
     int lookupLocation(const Location &location) const;
     int resolveLocation(const Location &location);
@@ -262,7 +260,7 @@ private:
     QHash<Location, qint32> m_locations;
     QHash<qint32, Symbol> m_symbols;
     QHash<quint64, qint32> m_attributeIds;
-    QHash<PerfEventAttributes, qint32> m_attributes;
+    QVector<PerfEventAttributes> m_attributes;
     QHash<QByteArray, QByteArray> m_buildIds;
 
     uint m_maxEventBufferSize;
