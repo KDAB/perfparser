@@ -46,4 +46,6 @@ defineReplace(elfutilsLibraryName) {
     }
 }
 
+OTHER_FILES += perfparser.qbs
+
 QMAKE_EXTRA_TARGETS += deploy docs install_docs

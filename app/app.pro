@@ -42,3 +42,5 @@ HEADERS += \
     perfsymboltable.h \
     perfelfmap.h \
     perfkallsyms.h
+
+OTHER_FILES += app.qbs

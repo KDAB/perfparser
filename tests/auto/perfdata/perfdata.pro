@@ -36,3 +36,5 @@ HEADERS += \
 
 RESOURCES += \
     perfdata.qrc
+
+OTHER_FILES += perfdata.qbs
