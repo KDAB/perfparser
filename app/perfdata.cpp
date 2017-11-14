@@ -425,7 +425,7 @@ PerfRecordSample::PerfRecordSample(const PerfEventHeader *header,
                                    const PerfEventAttributes *attributes)
     : PerfRecord(header, attributes->sampleType(), false), m_readFormat(attributes->readFormat()),
       m_registerMask(attributes->sampleRegsUser()), m_ip(0), m_addr(0), m_period(0),
-      m_timeEnabled(0), m_timeRunning(0), m_registerAbi(0)
+      m_timeEnabled(0), m_timeRunning(0), m_registerAbi(0), m_weight(0)
 {
 }
 
