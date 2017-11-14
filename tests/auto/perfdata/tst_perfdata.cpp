@@ -31,6 +31,7 @@ class TestPerfData : public QObject
     Q_OBJECT
 private slots:
     void testTraceDataHeaderEvent();
+    void testContentSize();
 };
 
 void TestPerfData::testTraceDataHeaderEvent()
@@ -48,6 +49,7 @@ void TestPerfData::testTraceDataHeaderEvent()
 
     QSignalSpy spy(&data, SIGNAL(finished()));
     connect(&header, &PerfHeader::finished, &data, &PerfData::read);
+
     header.read();
     QCOMPARE(spy.count(), 1);
 
@@ -62,6 +64,37 @@ void TestPerfData::testTraceDataHeaderEvent()
     QCOMPARE(stats.numTimeViolatingMmaps, 0u);
     QCOMPARE(stats.maxBufferSize, 15488u);
     QCOMPARE(stats.maxTime, 13780586522722ull);
+}
+
+void TestPerfData::testContentSize()
+{
+    QString file(":/contentsize.data");
+
+    QBuffer output;
+    QFile input(file);
+
+    QVERIFY(input.open(QIODevice::ReadOnly));
+    QVERIFY(output.open(QIODevice::WriteOnly));
+
+    // Don't try to load any system files. They are not the same as the ones we use to report.
+    PerfUnwind unwind(&output, ":/", QString(), QString(), QString(), true);
+    PerfHeader header(&input);
+    PerfAttributes attributes;
+    PerfData data(&input, &unwind, &header, &attributes);
+
+    QSignalSpy spy(&data, SIGNAL(finished()));
+    connect(&header, &PerfHeader::finished, &data, &PerfData::read);
+
+    header.read();
+    QCOMPARE(spy.count(), 1);
+
+    unwind.finalize();
+
+    QObject::connect(&data, &PerfData::error, []() {
+        QFAIL("PerfData reported an error");
+    });
+
+    QCOMPARE(unwind.stats().numSamples, 69u);
 }
 
 QTEST_GUILESS_MAIN(TestPerfData)

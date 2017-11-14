@@ -554,17 +554,18 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordSample &record)
             } while (sectionSize > intMax);
             stream.skipRawData(static_cast<int>(sectionSize));
             sectionSize = 0;
+            stream.skipRawData(sizeof(quint64)); // skip contentSize
         } else if (sectionSize > 0) {
             record.m_userStack.resize(static_cast<int>(sectionSize));
             stream.readRawData(record.m_userStack.data(), record.m_userStack.size());
-        }
 
-        quint64 contentSize;
-        stream >> contentSize;
-        if (contentSize > sectionSize)
-            qWarning() << "Truncated stack snapshot" << contentSize << sectionSize;
-        else
-            record.m_userStack.resize(static_cast<int>(contentSize));
+            quint64 contentSize;
+            stream >> contentSize;
+            if (contentSize > sectionSize)
+                qWarning() << "Truncated stack snapshot" << contentSize << sectionSize;
+            else
+                record.m_userStack.resize(static_cast<int>(contentSize));
+        }
     }
 
     if (sampleType & PerfEventAttributes::SAMPLE_WEIGHT)
