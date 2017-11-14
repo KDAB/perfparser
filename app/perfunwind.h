@@ -209,7 +209,11 @@ public:
     QString debugPath() const { return m_debugPath; }
     Stats stats() const { return m_stats; }
 
-    void flushEventBuffer() { flushEventBuffer(0); }
+    void finalize()
+    {
+        finishedRound();
+        flushEventBuffer(0);
+    }
 
 private:
 

@@ -53,13 +53,13 @@ void TestPerfData::testTraceDataHeaderEvent()
     header.read();
     QCOMPARE(spy.count(), 1);
 
-    unwind.flushEventBuffer();
+    unwind.finalize();
 
     const PerfUnwind::Stats stats = unwind.stats();
     QCOMPARE(stats.numSamples, 1u);
     QCOMPARE(stats.numMmaps, 120u);
-    QCOMPARE(stats.numRounds, 1u);
-    QCOMPARE(stats.numBufferFlushes, 1u);
+    QCOMPARE(stats.numRounds, 2u);
+    QCOMPARE(stats.numBufferFlushes, 2u);
     QCOMPARE(stats.numTimeViolatingSamples, 0u);
     QCOMPARE(stats.numTimeViolatingMmaps, 0u);
     QCOMPARE(stats.maxBufferSize, 15488u);
