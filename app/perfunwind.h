@@ -55,9 +55,10 @@ public:
         LostDefinition,
         FeaturesDefinition,
         Error,
-        Sample,
+        Sample45, // now obsolete
         Progress,
         ContextSwitchDefinition,
+        Sample,
         InvalidType
     };
 
