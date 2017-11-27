@@ -55,12 +55,14 @@ public:
         LostDefinition,
         FeaturesDefinition,
         Error,
-        Sample,
+        Sample49, // now obsolete
         Progress,
         TracePointFormat,
-        TracePointSample,
+        TracePointSample49,
         AttributesDefinition,
         ContextSwitchDefinition,
+        Sample,
+        TracePointSample,
         InvalidType
     };
 

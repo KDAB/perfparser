@@ -628,12 +628,20 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
         sendBuffer(it.value());
     }
 
+    QVector<QPair<qint32, quint64>> values;
+    if (sample.readFormats().isEmpty()) {
+        values.push_back({ attributesId, sample.period() });
+    } else {
+        for (const auto& f : sample.readFormats()) {
+            values.push_back({ m_attributeIds.value(f.id, -1), f.value });
+        }
+    }
+
     QByteArray buffer;
     QDataStream stream(&buffer, QIODevice::WriteOnly);
     stream << static_cast<quint8>(type) << sample.pid()
            << sample.tid() << sample.time() << m_currentUnwind.frames
-           << numGuessedFrames << attributesId
-           << sample.period() << sample.weight();
+           << numGuessedFrames << values;
 
     if (type == TracePointSample) {
         QHash<qint32, QVariant> traceData;

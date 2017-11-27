@@ -399,11 +399,14 @@ public:
     quint64 weight() const { return m_weight; }
     const QByteArray &rawData() const { return m_rawData; }
 
-private:
     struct ReadFormat {
         quint64 value;
         quint64 id;
     };
+
+    QList<ReadFormat> readFormats() const { return m_readFormats; }
+
+private:
 
     struct BranchEntry {
         quint64 from;
