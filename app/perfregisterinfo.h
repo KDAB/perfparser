@@ -39,7 +39,7 @@ public:
 
     static const uint s_numAbis = 2; // maybe more for some archs?
 
-    static const char *s_archNames[ARCH_INVALID];
+    static Architecture archByName(const QByteArray &name);
     static const uint s_numRegisters[ARCH_INVALID][s_numAbis];
     static const uint s_wordWidth[ARCH_INVALID][s_numAbis];
 
@@ -62,7 +62,7 @@ public:
     static const uint s_dummyRegisters[ARCH_INVALID][2];
 
     // default architecture for the system which was used for compilation
-    static const Architecture s_defaultArchitecture;
+    static QByteArray defaultArchitecture();
 };
 
 #endif // PERFREGISTERINFO_H
