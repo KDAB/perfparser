@@ -30,6 +30,13 @@
 
 class PerfEventAttributes {
 public:
+    enum Sizes {
+        SIZE_VER0 =  64, /* sizeof first published struct */
+        SIZE_VER1 =  72, /* add: config2 */
+        SIZE_VER2 =  80, /* add: branch_sample_type */
+        SIZE_VER3 =  96, /* add: sample_regs_user, sample_stack_user */
+    };
+
     PerfEventAttributes();
 
     bool sampleIdAll() const { return m_sampleIdAll; }
@@ -170,8 +177,6 @@ public:
         SOFTWARE_DUMMY            = 9,
         SOFTWARE_MAX,             /* non-ABI */
     };
-
-    static quint64 fixedLength();
 
     bool operator==(const PerfEventAttributes &rhs) const;
 
