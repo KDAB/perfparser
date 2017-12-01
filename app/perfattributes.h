@@ -34,6 +34,8 @@ public:
         SIZE_VER1 =  72, /* add: config2 */
         SIZE_VER2 =  80, /* add: branch_sample_type */
         SIZE_VER3 =  96, /* add: sample_regs_user, sample_stack_user */
+        SIZE_VER4 = 104, /* add: sample_regs_intr */
+        SIZE_VER5 = 112, /* add: aux_watermark */
     };
 
     PerfEventAttributes();
@@ -236,7 +238,10 @@ private:
             m_excludeHost   : 1, /* don't count in host    */
             m_excludeGuest  : 1, /* don't count in guest   */
 
-            m_reserved1     : 43;
+            m_excludeCallchainKernel : 1, /* exclude kernel callchains */
+            m_excludeCallchainUser   : 1, /* exclude user callchains   */
+
+            m_reserved1     : 41;
 
     union {
         quint32 m_wakeupEvents;    /* wakeup every n events */
@@ -267,8 +272,26 @@ private:
      */
     quint32 m_sampleStackUser;
 
+    qint32  m_clockid;
+
+    /*
+     * Defines set of regs to dump for each sample
+     * state captured on:
+     *  - precise = 0: PMU interrupt
+     *  - precise > 0: sampled instruction
+     *
+     * See asm/perf_regs.h for details.
+     */
+    quint64 m_sampleRegsIntr;
+
+    /*
+     * Wakeup watermark for AUX area
+     */
+    quint32 m_auxWatermark;
+    quint16 m_sampleMaxStack;
+
     /* Align to u64. */
-    quint32 m_reserved2;
+    quint16 m_reserved2;
 
     friend QDataStream &operator>>(QDataStream &stream, PerfEventAttributes &attrs);
 };

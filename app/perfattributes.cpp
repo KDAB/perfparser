@@ -48,7 +48,13 @@ QDataStream &operator>>(QDataStream &stream, PerfEventAttributes &attrs)
         stream >> attrs.m_branchSampleType;
 
     if (attrs.m_size > PerfEventAttributes::SIZE_VER2)
-        stream >> attrs.m_sampleRegsUser >> attrs.m_sampleStackUser >> attrs.m_reserved2;
+        stream >> attrs.m_sampleRegsUser >> attrs.m_sampleStackUser >> attrs.m_clockid;
+
+    if (attrs.m_size > PerfEventAttributes::SIZE_VER3)
+        stream >> attrs.m_sampleRegsIntr;
+
+    if (attrs.m_size > PerfEventAttributes::SIZE_VER4)
+        stream >> attrs.m_auxWatermark >> attrs.m_sampleMaxStack >> attrs.m_reserved2;
 
     if (static_cast<QSysInfo::Endian>(stream.byteOrder()) != QSysInfo::ByteOrder) {
         // bit fields are saved in byte order; who came up with that BS?
@@ -62,9 +68,9 @@ QDataStream &operator>>(QDataStream &stream, PerfEventAttributes &attrs)
 
     *(&attrs.m_readFormat + 1) = flags;
 
-    if (attrs.m_size > PerfEventAttributes::SIZE_VER3) {
+    if (attrs.m_size > PerfEventAttributes::SIZE_VER5) {
         static const int intMax = std::numeric_limits<int>::max();
-        quint32 skip = attrs.m_size - PerfEventAttributes::SIZE_VER3;
+        quint32 skip = attrs.m_size - PerfEventAttributes::SIZE_VER5;
         if (skip > intMax) {
             stream.skipRawData(intMax);
             skip -= intMax;
@@ -206,6 +212,10 @@ bool PerfEventAttributes::operator==(const PerfEventAttributes &rhs) const
         && m_branchSampleType == rhs.m_branchSampleType
         && m_sampleRegsUser == rhs.m_sampleRegsUser
         && m_sampleStackUser == rhs.m_sampleStackUser
+        && m_clockid == rhs.m_clockid
+        && m_sampleRegsIntr == rhs.m_sampleRegsIntr
+        && m_auxWatermark == rhs.m_auxWatermark
+        && m_sampleMaxStack == rhs.m_sampleMaxStack
         && m_reserved2 == rhs.m_reserved2;
 }
 
