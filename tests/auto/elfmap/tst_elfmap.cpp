@@ -169,7 +169,7 @@ private slots:
 
     void benchRegisterElfDisjunct()
     {
-        QFETCH(int, numElfMaps);
+        QFETCH(uint, numElfMaps);
         const quint64 ADDR_STEP = 1024;
         const quint64 MAX_ADDR = ADDR_STEP * numElfMaps;
         const quint64 LEN = 1024;
@@ -183,16 +183,16 @@ private slots:
 
     void benchRegisterElfDisjunct_data()
     {
-        QTest::addColumn<int>("numElfMaps");
-        QTest::newRow("10") << 10;
-        QTest::newRow("100") << 100;
-        QTest::newRow("1000") << 1000;
-        QTest::newRow("2000") << 2000;
+        QTest::addColumn<uint>("numElfMaps");
+        QTest::newRow("10") << 10u;
+        QTest::newRow("100") << 100u;
+        QTest::newRow("1000") << 1000u;
+        QTest::newRow("2000") << 2000u;
     }
 
     void benchRegisterElfOverlapping()
     {
-        QFETCH(int, numElfMaps);
+        QFETCH(uint, numElfMaps);
         const quint64 ADDR_STEP = 1024;
         const quint64 MAX_ADDR = ADDR_STEP * numElfMaps;
         quint64 len = MAX_ADDR;
@@ -212,7 +212,7 @@ private slots:
 
     void benchRegisterElfExpanding()
     {
-        QFETCH(int, numElfMaps);
+        QFETCH(uint, numElfMaps);
         const quint64 ADDR = 0;
         const quint64 LEN_STEP = 1024;
         const quint64 MAX_LEN = LEN_STEP * numElfMaps;
@@ -231,7 +231,7 @@ private slots:
 
     void benchFindElfDisjunct()
     {
-        QFETCH(int, numElfMaps);
+        QFETCH(uint, numElfMaps);
 
         PerfElfMap map;
 
@@ -258,7 +258,7 @@ private slots:
 
     void benchFindElfOverlapping()
     {
-        QFETCH(int, numElfMaps);
+        QFETCH(uint, numElfMaps);
 
         PerfElfMap map;
 
@@ -285,7 +285,7 @@ private slots:
 
     void benchFindElfExpanding()
     {
-        QFETCH(int, numElfMaps);
+        QFETCH(uint, numElfMaps);
 
         PerfElfMap map;
 

@@ -24,16 +24,16 @@
 #include <QHash>
 #include <QVector>
 
-enum FormatFlags
+enum FormatFlags: quint32
 {
-    FIELD_IS_ARRAY    = 1,
-    FIELD_IS_POINTER  = 2,
-    FIELD_IS_SIGNED   = 4,
-    FIELD_IS_STRING   = 8,
-    FIELD_IS_DYNAMIC  = 16,
-    FIELD_IS_LONG     = 32,
-    FIELD_IS_FLAG     = 64,
-    FIELD_IS_SYMBOLIC = 128,
+    FIELD_IS_ARRAY    = 1 << 0,
+    FIELD_IS_POINTER  = 1 << 1,
+    FIELD_IS_SIGNED   = 1 << 2,
+    FIELD_IS_STRING   = 1 << 3,
+    FIELD_IS_DYNAMIC  = 1 << 4,
+    FIELD_IS_LONG     = 1 << 5,
+    FIELD_IS_FLAG     = 1 << 6,
+    FIELD_IS_SYMBOLIC = 1 << 7,
 };
 
 struct FormatField
