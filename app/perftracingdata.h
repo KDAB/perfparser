@@ -21,8 +21,8 @@
 #pragma once
 
 #include <QByteArray>
-#include <QVector>
 #include <QHash>
+#include <QVector>
 
 enum FormatFlags
 {

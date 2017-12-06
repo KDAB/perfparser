@@ -19,6 +19,7 @@
 ****************************************************************************/
 
 #include "perfheader.h"
+
 #include <QDebug>
 
 PerfHeader::PerfHeader(QIODevice *source)  :

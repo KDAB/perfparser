@@ -17,12 +17,12 @@
 **
 ****************************************************************************/
 
-#include <QObject>
-#include <QTest>
-#include <QDebug>
-#include <QTemporaryFile>
-
 #include "perfkallsyms.h"
+
+#include <QDebug>
+#include <QObject>
+#include <QTemporaryFile>
+#include <QTest>
 
 class TestKallsyms : public QObject
 {

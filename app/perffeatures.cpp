@@ -19,7 +19,9 @@
 ****************************************************************************/
 
 #include "perffeatures.h"
+
 #include <QDebug>
+
 #include <limits>
 
 // TODO: What to do if feature flags are set but features don't really exist in the file?

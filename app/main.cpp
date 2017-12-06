@@ -18,26 +18,27 @@
 **
 ****************************************************************************/
 
-#include "perfheader.h"
 #include "perfattributes.h"
-#include "perffeatures.h"
 #include "perfdata.h"
-#include "perfunwind.h"
+#include "perffeatures.h"
+#include "perfheader.h"
 #include "perfregisterinfo.h"
 #include "perfstdin.h"
+#include "perfunwind.h"
 
-#include <QFile>
-#include <QDir>
-#include <QDebug>
-#include <QtEndian>
-#include <QCoreApplication>
-#include <QCommandLineParser>
-#include <QScopedPointer>
 #include <QAbstractSocket>
+#include <QCommandLineParser>
+#include <QCoreApplication>
+#include <QDebug>
+#include <QDir>
+#include <QFile>
+#include <QScopedPointer>
 #include <QTcpSocket>
 #include <QTimer>
-#include <limits>
+#include <QtEndian>
+
 #include <cstring>
+#include <limits>
 
 #ifdef Q_OS_WIN
 #include <io.h>

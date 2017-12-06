@@ -19,8 +19,8 @@
 
 #pragma once
 
-#include <QCoreApplication>
 #include <QByteArray>
+#include <QCoreApplication>
 #include <QVector>
 
 struct PerfKallsymEntry

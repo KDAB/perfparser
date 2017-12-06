@@ -22,16 +22,19 @@
 ** be met: https://www.gnu.org/licenses/gpl-3.0.html.
 **
 ****************************************************************************/
+
 #include "perfsymboltable.h"
 #include "perfunwind.h"
+
 #include <dwarf.h>
 
-#include <QDir>
 #include <QDebug>
+#include <QDir>
 #include <QStack>
 
 #include <cstring>
 #include <fcntl.h>
+
 #ifdef Q_OS_WIN
 #include <io.h>
 extern "C" {

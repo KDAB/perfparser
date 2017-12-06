@@ -17,16 +17,16 @@
 **
 ****************************************************************************/
 
-#include <QObject>
-#include <QTest>
-#include <QBuffer>
-#include <QSignalSpy>
-#include <QDebug>
-#include <QtEndian>
-
 #include "perfdata.h"
-#include "perfunwind.h"
 #include "perfparsertestclient.h"
+#include "perfunwind.h"
+
+#include <QBuffer>
+#include <QDebug>
+#include <QObject>
+#include <QSignalSpy>
+#include <QTest>
+#include <QtEndian>
 
 class TestPerfData : public QObject
 {

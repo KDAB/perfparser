@@ -19,7 +19,9 @@
 ****************************************************************************/
 
 #include "perfstdin.h"
+
 #include <QTimer>
+
 #include <cstdio>
 #include <limits>
 

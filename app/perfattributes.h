@@ -23,9 +23,9 @@
 #include "perffilesection.h"
 #include "perfheader.h"
 
-#include <QIODevice>
 #include <QDataStream>
 #include <QHash>
+#include <QIODevice>
 
 class PerfEventAttributes {
 public:

@@ -19,10 +19,11 @@
 ****************************************************************************/
 
 #include "perfdata.h"
-#include "perfunwind.h"
 #include "perftracingdata.h"
+#include "perfunwind.h"
 
 #include <QDebug>
+
 #include <limits>
 
 static const int intMax = std::numeric_limits<int>::max();

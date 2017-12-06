@@ -17,8 +17,8 @@
 **
 ****************************************************************************/
 
-#include "perfparsertestclient.h"
 #include "perffeatures.h"
+#include "perfparsertestclient.h"
 
 #include <QtEndian>
 #include <QtTest>

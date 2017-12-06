@@ -18,11 +18,12 @@
 **
 ****************************************************************************/
 
-#include "perftracingdata.h"
 #include "perfattributes.h"
+#include "perftracingdata.h"
+
+#include <QBuffer>
 #include <QDataStream>
 #include <QDebug>
-#include <QBuffer>
 
 #include <functional>
 

@@ -19,6 +19,7 @@
 ****************************************************************************/
 
 #include "perfregisterinfo.h"
+
 #include <QByteArray>
 #include <QRegularExpression>
 

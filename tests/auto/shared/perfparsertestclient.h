@@ -19,11 +19,11 @@
 
 #pragma once
 
-#include <QObject>
-#include <QIODevice>
-#include <QVector>
 #include <QHash>
+#include <QIODevice>
+#include <QObject>
 #include <QVariant>
+#include <QVector>
 
 class PerfParserTestClient : public QObject
 {

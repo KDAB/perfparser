@@ -21,19 +21,20 @@
 #pragma once
 
 #include "perfdata.h"
-#include "perfregisterinfo.h"
 #include "perfkallsyms.h"
+#include "perfregisterinfo.h"
 #include "perftracingdata.h"
 
 #include <libdwfl.h>
 
-#include <QObject>
-#include <QList>
+#include <QByteArray>
+#include <QDir>
 #include <QHash>
 #include <QIODevice>
-#include <QByteArray>
+#include <QList>
+#include <QObject>
 #include <QString>
-#include <QDir>
+
 
 #include <limits>
 

@@ -17,12 +17,12 @@
 **
 ****************************************************************************/
 
-#include <QObject>
-#include <QTest>
-#include <QDebug>
-#include <QTemporaryFile>
-
 #include "perfelfmap.h"
+
+#include <QDebug>
+#include <QObject>
+#include <QTemporaryFile>
+#include <QTest>
 
 namespace {
 bool registerElf(PerfElfMap *map, const PerfElfMap::ElfInfo &info)

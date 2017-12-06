@@ -18,8 +18,8 @@
 **
 ****************************************************************************/
 
-#include "perfelfmap.h"
 #include "perfdata.h"
+#include "perfelfmap.h"
 
 #include <QDebug>
 

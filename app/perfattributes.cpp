@@ -20,6 +20,7 @@
 
 #include "perfattributes.h"
 #include "perfdata.h"
+
 #include <QDebug>
 
 PerfEventAttributes::PerfEventAttributes()

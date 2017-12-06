@@ -18,14 +18,14 @@
 **
 ****************************************************************************/
 
-#include "perfunwind.h"
 #include "perfregisterinfo.h"
 #include "perfsymboltable.h"
+#include "perfunwind.h"
 
 #include <QDebug>
-#include <QtEndian>
-#include <QVersionNumber>
 #include <QDir>
+#include <QVersionNumber>
+#include <QtEndian>
 
 #include <cstring>
 

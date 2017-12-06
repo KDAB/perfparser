@@ -26,10 +26,11 @@
 #pragma once
 
 #include "perfdata.h"
-#include "perfunwind.h"
 #include "perfelfmap.h"
+#include "perfunwind.h"
 
 #include <libdwfl.h>
+
 #include <QObject>
 
 class PerfSymbolTable

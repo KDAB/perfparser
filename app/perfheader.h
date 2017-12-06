@@ -22,8 +22,8 @@
 
 #include "perffilesection.h"
 
-#include <QIODevice>
 #include <QDataStream>
+#include <QIODevice>
 
 class PerfHeader : public QObject {
     Q_OBJECT

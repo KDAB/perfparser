@@ -20,9 +20,9 @@
 
 #pragma once
 
-#include "perfheader.h"
 #include "perfattributes.h"
 #include "perffeatures.h"
+#include "perfheader.h"
 
 #include <QIODevice>
 
