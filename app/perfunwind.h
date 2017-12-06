@@ -89,7 +89,7 @@ public:
     };
 
     struct UnwindInfo {
-        UnwindInfo() : frames(0), unwind(0), sample(0), maxFrames(64),
+        UnwindInfo() : frames(0), unwind(nullptr), sample(nullptr), maxFrames(64),
             firstGuessedFrame(-1), isInterworking(false) {}
 
         QHash<quint32, QHash<quint64, Dwarf_Word>> stackValues;

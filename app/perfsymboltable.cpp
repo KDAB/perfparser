@@ -87,7 +87,7 @@ PerfSymbolTable::~PerfSymbolTable()
 static pid_t nextThread(Dwfl *dwfl, void *arg, void **threadArg)
 {
     /* Stop after first thread. */
-    if (*threadArg != 0)
+    if (*threadArg != nullptr)
         return 0;
 
     *threadArg = arg;
@@ -130,7 +130,7 @@ static bool accessDsoMem(const PerfUnwind::UnwindInfo *ui, Dwarf_Addr addr,
     Elf_Scn *section = dwfl_module_address_section(mod, &addr, &bias);
 
     if (section) {
-        Elf_Data *data = elf_getdata(section, NULL);
+        Elf_Data *data = elf_getdata(section, nullptr);
         if (data && data->d_buf && data->d_size > addr) {
             doMemcpy(result, static_cast<char *>(data->d_buf) + addr, wordWidth);
             return true;
@@ -218,7 +218,7 @@ static bool setInitialRegisters(Dwfl_Thread *thread, void *arg)
 }
 
 static const Dwfl_Thread_Callbacks threadCallbacks = {
-    nextThread, NULL, memoryRead, setInitialRegisters, NULL, NULL
+    nextThread, nullptr, memoryRead, setInitialRegisters, nullptr, nullptr
 };
 
 static bool findInExtraPath(QFileInfo &path, const QString &fileName)
@@ -405,7 +405,7 @@ int PerfSymbolTable::parseDie(Dwarf_Die *top, qint32 binaryId, Dwarf_Files *file
         Dwarf_Word val = 0;
         const QByteArray file
                 = (dwarf_formudata(dwarf_attr(top, DW_AT_call_file, &attr), &val) == 0)
-                ? dwarf_filesrc (files, val, NULL, NULL) : "";
+                ? dwarf_filesrc (files, val, nullptr, nullptr) : "";
         location.file = m_unwind->resolveString(file);
         location.line
                 = (dwarf_formudata(dwarf_attr(top, DW_AT_call_line, &attr), &val) == 0)
@@ -442,8 +442,8 @@ void PerfSymbolTable::parseDwarf(Dwarf_Die *cudie, Dwarf_Addr bias, qint32 binar
     QStack<DieAndLocation> stack;
     stack.push_back({*cudie, -1});
 
-    Dwarf_Files *files = 0;
-    dwarf_getsrcfiles(cudie, &files, NULL);
+    Dwarf_Files *files = nullptr;
+    dwarf_getsrcfiles(cudie, &files, nullptr);
 
     while (!stack.isEmpty()) {
         Dwarf_Die *top = &(stack.last().die);
@@ -604,11 +604,12 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
 
     if (mod) {
         // For addrinfo we need the raw pointer into symtab, so we need to adjust ourselves.
-        symname = dwfl_module_addrinfo(mod, addressLocation.address, &off, &sym, 0, 0, 0);
+        symname = dwfl_module_addrinfo(mod, addressLocation.address, &off, &sym, nullptr, nullptr,
+                                       nullptr);
         Dwfl_Line *srcLine = dwfl_module_getsrc(mod, addressLocation.address);
         if (srcLine) {
-            const QByteArray file = dwfl_lineinfo(srcLine, NULL, &addressLocation.line,
-                                                 &addressLocation.column, NULL, NULL);
+            const QByteArray file = dwfl_lineinfo(srcLine, nullptr, &addressLocation.line,
+                                                 &addressLocation.column, nullptr, nullptr);
             addressLocation.file = m_unwind->resolveString(file);
         }
 
@@ -620,7 +621,7 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
             functionLocation.address -= off; // in case we don't find anything better
             Dwarf_Die *die = dwfl_module_addrdie(mod, addressLocation.address, &bias);
 
-            Dwarf_Die *scopes = NULL;
+            Dwarf_Die *scopes = nullptr;
             int nscopes = dwarf_getscopes(die, addressLocation.address - bias, &scopes);
 
             for (int i = 0; i < nscopes; ++i) {

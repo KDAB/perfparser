@@ -334,7 +334,7 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
     // do not query for activation directly, as this could potentially advance
     // the unwinder internally - we must first ensure the module for the pc
     // is reported
-    if (!dwfl_frame_pc(state, &pc, NULL)
+    if (!dwfl_frame_pc(state, &pc, nullptr)
             || (ui->maxFrames != -1 && ui->frames.length() > ui->maxFrames)
             || pc == 0) {
         ui->firstGuessedFrame = ui->frames.length();

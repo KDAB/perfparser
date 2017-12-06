@@ -281,7 +281,8 @@ protected:
 class PerfRecordMmap2;
 class PerfRecordMmap : public PerfRecord {
 public:
-    PerfRecordMmap(PerfEventHeader *header = 0, quint64 sampleType = 0, bool sampleIdAll = false);
+    PerfRecordMmap(PerfEventHeader *header = nullptr, quint64 sampleType = 0,
+                   bool sampleIdAll = false);
 
     // The pids and tids in the sampleId are always 0 in this case. Go figure ...
     qint32 pid() const { return m_pid; }
@@ -315,7 +316,8 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordMmap &record);
 class PerfRecordMmap2 : public PerfRecordMmap
 {
 public:
-    PerfRecordMmap2(PerfEventHeader *header = 0, quint64 sampleType = 0, bool sampleIdAll = false);
+    PerfRecordMmap2(PerfEventHeader *header = nullptr, quint64 sampleType = 0,
+                    bool sampleIdAll = false);
 
     quint32 prot() const { return m_prot; }
 
@@ -339,7 +341,8 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordMmap2 &record);
 
 class PerfRecordLost : public PerfRecord {
 public:
-    PerfRecordLost(PerfEventHeader *header = 0, quint64 sampleType = 0, bool sampleIdAll = false);
+    PerfRecordLost(PerfEventHeader *header = nullptr, quint64 sampleType = 0,
+                   bool sampleIdAll = false);
 private:
     quint64 m_id;
     quint64 m_lost;
@@ -351,7 +354,8 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordLost &record);
 
 class PerfRecordComm : public PerfRecord {
 public:
-    PerfRecordComm(PerfEventHeader *header = 0, quint64 sampleType = 0, bool sampleIdAll = false);
+    PerfRecordComm(PerfEventHeader *header = nullptr, quint64 sampleType = 0,
+                   bool sampleIdAll = false);
     const QByteArray &comm() const { return m_comm; }
 private:
     qint32 m_pid;
@@ -367,7 +371,8 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordComm &record);
 
 class PerfRecordSample : public PerfRecord {
 public:
-    PerfRecordSample(const PerfEventHeader *header = 0, const PerfEventAttributes *attributes = 0);
+    PerfRecordSample(const PerfEventHeader *header = nullptr,
+                     const PerfEventAttributes *attributes = nullptr);
     quint64 registerAbi() const { return m_registerAbi; }
     quint64 registerValue(int reg) const;
     quint64 ip() const { return m_ip; }
@@ -417,7 +422,7 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordSample &record);
 class PerfRecordAttr : public PerfRecord
 {
 public:
-    PerfRecordAttr(const PerfEventHeader *header = 0, quint64 sampleType = 0,
+    PerfRecordAttr(const PerfEventHeader *header = nullptr, quint64 sampleType = 0,
                    bool sampleIdAll = false);
 
     PerfRecordAttr(const PerfEventAttributes &attributes, const QList<quint64> &ids);
@@ -437,7 +442,8 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordAttr &record);
 class PerfRecordFork : public PerfRecord
 {
 public:
-    PerfRecordFork(PerfEventHeader *header = 0, quint64 sampleType = 0, bool sampleIdAll = false);
+    PerfRecordFork(PerfEventHeader *header = nullptr, quint64 sampleType = 0,
+                   bool sampleIdAll = false);
     qint32 childTid() const { return m_tid; }
     qint32 childPid() const { return m_pid; }
 private:
