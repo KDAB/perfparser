@@ -18,8 +18,7 @@
 **
 ****************************************************************************/
 
-#ifndef PERFTRACINGDATA_H
-#define PERFTRACINGDATA_H
+#pragma once
 
 #include <QByteArray>
 #include <QVector>
@@ -104,5 +103,3 @@ private:
 };
 
 QDataStream &operator>>(QDataStream &stream, PerfTracingData &record);
-
-#endif // PERFTRACINGDATA_H

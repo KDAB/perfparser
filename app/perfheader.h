@@ -18,8 +18,7 @@
 **
 ****************************************************************************/
 
-#ifndef PERFHEADER_H
-#define PERFHEADER_H
+#pragma once
 
 #include "perffilesection.h"
 
@@ -97,5 +96,3 @@ private:
     static const qint64 s_pipeHeaderSize = 16LL;
     static const qint64 s_perfHeaderSize = 104LL;
 };
-
-#endif // PERFHEADER_H

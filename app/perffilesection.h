@@ -18,8 +18,7 @@
 **
 ****************************************************************************/
 
-#ifndef PERFFILESECTION_H
-#define PERFFILESECTION_H
+#pragma once
 
 #include <QDataStream>
 
@@ -32,5 +31,3 @@ struct PerfFileSection {
 };
 
 QDataStream &operator>>(QDataStream &stream, PerfFileSection &section);
-
-#endif // PERFFILESECTION_H

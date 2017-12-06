@@ -18,8 +18,7 @@
 **
 ****************************************************************************/
 
-#ifndef PERFUNWIND_H
-#define PERFUNWIND_H
+#pragma once
 
 #include "perfdata.h"
 #include "perfregisterinfo.h"
@@ -303,5 +302,3 @@ private:
 
 uint qHash(const PerfUnwind::Location &location, uint seed = 0);
 bool operator==(const PerfUnwind::Location &a, const PerfUnwind::Location &b);
-
-#endif // PERFUNWIND_H

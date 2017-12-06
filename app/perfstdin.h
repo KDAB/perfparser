@@ -18,8 +18,7 @@
 **
 ****************************************************************************/
 
-#ifndef PERFSTDIN_H
-#define PERFSTDIN_H
+#pragma once
 
 #include <QIODevice>
 
@@ -34,5 +33,3 @@ protected:
     qint64 readData(char *data, qint64 maxlen) override;
     qint64 writeData(const char *data, qint64 len) override;
 };
-
-#endif // PERFSTDIN_H

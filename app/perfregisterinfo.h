@@ -18,8 +18,7 @@
 **
 ****************************************************************************/
 
-#ifndef PERFREGISTERINFO_H
-#define PERFREGISTERINFO_H
+#pragma once
 
 #include <QtGlobal>
 
@@ -64,5 +63,3 @@ public:
     // default architecture for the system which was used for compilation
     static QByteArray defaultArchitecture();
 };
-
-#endif // PERFREGISTERINFO_H

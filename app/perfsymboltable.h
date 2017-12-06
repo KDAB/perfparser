@@ -22,8 +22,8 @@
 ** be met: https://www.gnu.org/licenses/gpl-3.0.html.
 **
 ****************************************************************************/
-#ifndef PERFSYMBOLTABLE_H
-#define PERFSYMBOLTABLE_H
+
+#pragma once
 
 #include "perfdata.h"
 #include "perfunwind.h"
@@ -114,5 +114,3 @@ QT_BEGIN_NAMESPACE
 Q_DECLARE_TYPEINFO(PerfSymbolTable::PerfMapSymbol, Q_MOVABLE_TYPE);
 Q_DECLARE_TYPEINFO(PerfSymbolTable::DieAndLocation, Q_MOVABLE_TYPE);
 QT_END_NAMESPACE
-
-#endif // PERFSYMBOLTABLE_H

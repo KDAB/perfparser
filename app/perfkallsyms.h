@@ -17,8 +17,7 @@
 **
 ****************************************************************************/
 
-#ifndef PERFKALLSYMS_H
-#define PERFKALLSYMS_H
+#pragma once
 
 #include <QCoreApplication>
 #include <QByteArray>
@@ -49,6 +48,3 @@ private:
     QVector<PerfKallsymEntry> m_entries;
     QString m_errorString;
 };
-
-#endif // PERFKALLSYMS_H
-

@@ -18,8 +18,7 @@
 **
 ****************************************************************************/
 
-#ifndef PERFDATA_H
-#define PERFDATA_H
+#pragma once
 
 #include "perfheader.h"
 #include "perfattributes.h"
@@ -487,5 +486,3 @@ private:
     ReadStatus processEvents(QDataStream &stream);
     ReadStatus doRead();
 };
-
-#endif // PERFDATA_H

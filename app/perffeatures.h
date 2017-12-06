@@ -18,8 +18,7 @@
 **
 ****************************************************************************/
 
-#ifndef PERFFEATURE_H
-#define PERFFEATURE_H
+#pragma once
 
 #include "perfheader.h"
 #include "perfattributes.h"
@@ -203,5 +202,3 @@ private:
     PerfPmuMappings m_pmuMappings;
     PerfGroupDesc m_groupDesc;
 };
-
-#endif // PERFFEATURE_H

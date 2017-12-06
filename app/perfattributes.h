@@ -18,8 +18,7 @@
 **
 ****************************************************************************/
 
-#ifndef PERFATTRIBUTES_H
-#define PERFATTRIBUTES_H
+#pragma once
 
 #include "perffilesection.h"
 #include "perfheader.h"
@@ -290,5 +289,3 @@ private:
     PerfEventAttributes m_globalAttributes;
     QHash<quint64, PerfEventAttributes> m_attributes;
 };
-
-#endif // PERFATTRIBUTES_H

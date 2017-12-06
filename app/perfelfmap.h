@@ -18,8 +18,7 @@
 **
 ****************************************************************************/
 
-#ifndef PERFELFMAP_H
-#define PERFELFMAP_H
+#pragma once
 
 #include <QFileInfo>
 #include <QVector>
@@ -94,5 +93,3 @@ Q_DECLARE_TYPEINFO(PerfElfMap::ElfInfo, Q_MOVABLE_TYPE);
 QT_END_NAMESPACE
 
 QDebug operator<<(QDebug stream, const PerfElfMap::ElfInfo& info);
-
-#endif
