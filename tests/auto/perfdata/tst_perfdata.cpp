@@ -57,13 +57,7 @@ static void setupUnwind(PerfUnwind *unwind, PerfHeader *header, QIODevice *input
         for (auto it = attrs.begin(), end = attrs.end(); it != end; ++it)
             unwind->attr(PerfRecordAttr(it.value(), {it.key()}));
         const QByteArray &featureArch = features.architecture();
-        for (uint i = 0; i < PerfRegisterInfo::ARCH_INVALID; ++i) {
-            if (featureArch.startsWith(PerfRegisterInfo::s_archNames[i])) {
-                unwind->setArchitecture(static_cast<PerfRegisterInfo::Architecture>(i));
-                break;
-            }
-        }
-
+        unwind->setArchitecture(PerfRegisterInfo::archByName(featureArch));
         input->seek(filePos);
     }
 }

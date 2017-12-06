@@ -19,10 +19,8 @@
 ****************************************************************************/
 
 #include "perfregisterinfo.h"
-
-const char *PerfRegisterInfo::s_archNames[] = {
-    "arm", "aarch64", "powerpc", "s390", "sh", "sparc", "x86"
-};
+#include <QByteArray>
+#include <QRegularExpression>
 
 const int PerfRegisterInfo::s_numRegisters[PerfRegisterInfo::ARCH_INVALID][PerfRegisterInfo::s_numAbis] = {
     {16, 16},
@@ -103,22 +101,51 @@ const int PerfRegisterInfo::s_dummyRegisters[ARCH_INVALID][2] = {
     {0, 0}
 };
 
-const PerfRegisterInfo::Architecture PerfRegisterInfo::s_defaultArchitecture = {
+QByteArray PerfRegisterInfo::defaultArchitecture()
+{
 #if defined(__aarch64__)
-    PerfRegisterInfo::ARCH_AARCH64
+    return "aarch64";
 #elif defined(__arm__)
-    PerfRegisterInfo::ARCH_ARM
+    return "arm";
 #elif defined(__powerpc__)
-    PerfRegisterInfo::ARCH_POWERPC
+    return "powerpc";
 #elif defined(__s390__)
-    PerfRegisterInfo::ARCH_S390
+    return "s390";
 #elif defined(__sh__)
-    PerfRegisterInfo::ARCH_SH
+    return "sh";
 #elif defined(__sparc__)
-    PerfRegisterInfo::ARCH_SPARC
+    return "sparc";
 #elif defined(__i386__) || defined(__x86_64__)
-    PerfRegisterInfo::ARCH_X86
+    return "x86";
 #else
-    PerfRegisterInfo::ARCH_INVALID
+    return "";
 #endif
 };
+
+PerfRegisterInfo::Architecture PerfRegisterInfo::archByName(const QByteArray &name)
+{
+    if (name == "aarch64" || name == "arm64")
+        return ARCH_AARCH64;
+
+    if (name.startsWith("arm"))
+        return ARCH_ARM;
+
+    if (name.startsWith("powerpc"))
+        return ARCH_POWERPC;
+
+    if (name.startsWith("s390"))
+        return ARCH_S390;
+
+    if (name.startsWith("sh"))
+        return ARCH_SH;
+
+    if (name.startsWith("sparc"))
+        return ARCH_SPARC;
+
+    if (name.startsWith("x86")
+            || QRegularExpression("^i[3-7]86$").match(name).hasMatch()
+            || name == "amd64")
+        return ARCH_X86;
+
+    return ARCH_INVALID;
+}
