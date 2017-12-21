@@ -205,21 +205,34 @@ void PerfUnwind::attr(const PerfRecordAttr &attr)
 }
 
 void PerfUnwind::addAttributes(const PerfEventAttributes &attributes, const QByteArray &name,
-                              const QList<quint64> &ids)
+                               const QList<quint64> &ids)
 {
+    auto filteredIds = ids;
+    if (filteredIds.isEmpty()) {
+        // If we only get one attribute, it doesn't have an ID.
+        // The default ID for samples is 0, so we assign that here,
+        // in order to look it up in analyze().
+        filteredIds = {0};
+    }
+
+    {
+        // remove attributes that are known already
+        auto it = std::remove_if(filteredIds.begin(), filteredIds.end(),
+                                 [this] (quint64 id) {
+                                     return m_attributeIds.contains(id);
+                                });
+        filteredIds.erase(it, filteredIds.end());
+    }
+
+    if (filteredIds.isEmpty())
+        return;
+
     const qint32 internalId = m_attributes.size();
     m_attributes.append(attributes);
     sendAttributes(internalId, attributes, name);
 
-    if (ids.isEmpty()) {
-        // If we only get one attribute, it doesn't have an ID.
-        // The default ID for samples is 0, so we assign that here,
-        // in order to look it up in analyze().
-        m_attributeIds[0] = internalId;
-    } else {
-        foreach (quint64 id, ids)
-            m_attributeIds[id] = internalId;
-    }
+    foreach (quint64 id, filteredIds)
+        m_attributeIds[id] = internalId;
 }
 
 void PerfUnwind::sendAttributes(qint32 id, const PerfEventAttributes &attributes, const QByteArray &name)
