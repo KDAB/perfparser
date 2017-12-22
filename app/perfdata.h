@@ -373,8 +373,8 @@ public:
     const QByteArray &comm() const { return m_comm; }
 
     // The pids and tids in the sampleId are always 0 in this case. Go figure ...
-    quint32 pid() const { return m_pid; }
-    quint32 tid() const { return m_tid; }
+    qint32 pid() const { return m_pid; }
+    qint32 tid() const { return m_tid; }
 
 private:
     qint32 m_pid;
