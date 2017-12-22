@@ -63,10 +63,10 @@ void PerfUnwind::Stats::finishedRound()
 
     maxSamplesPerRound = std::max(maxSamplesPerRound, numSamplesInRound);
     maxMmapsPerRound = std::max(maxMmapsPerRound, numMmapsInRound);
-    maxContextSwitchesPerRound = std::max(maxContextSwitchesPerRound, numContextSwitchesInRound);
+    maxTaskEventsPerRound = std::max(maxTaskEventsPerRound, numTaskEventsInRound);
     numSamplesInRound = 0;
     numMmapsInRound = 0;
-    numContextSwitchesInRound = 0;
+    numTaskEventsInRound = 0;
     ++numRounds;
 
     maxTotalEventSizePerRound = std::max(maxTotalEventSizePerRound,
@@ -149,10 +149,10 @@ PerfUnwind::~PerfUnwind()
         out << "mmaps time violations: " << m_stats.numTimeViolatingMmaps << "\n";
         out << "max samples per round: " << m_stats.maxSamplesPerRound << "\n";
         out << "max mmaps per round: " << m_stats.maxMmapsPerRound << "\n";
-        out << "max context switches per round: " << m_stats.maxContextSwitchesPerRound << "\n";
+        out << "max task events per round: " << m_stats.maxTaskEventsPerRound << "\n";
         out << "max samples per flush: " << m_stats.maxSamplesPerFlush << "\n";
         out << "max mmaps per flush: " << m_stats.maxMmapsPerFlush << "\n";
-        out << "max context switches per flush: " << m_stats.maxContextSwitchesPerFlush << "\n";
+        out << "max task events per flush: " << m_stats.maxTaskEventsPerFlush << "\n";
         out << "max buffer size: " << m_stats.maxBufferSize << "\n";
         out << "max total event size per round: " << m_stats.maxTotalEventSizePerRound << "\n";
         out << "max time: " << m_stats.maxTime << "\n";
@@ -192,11 +192,9 @@ void PerfUnwind::sendBuffer(const QByteArray &buffer)
 void PerfUnwind::comm(const PerfRecordComm &comm)
 {
     const qint32 commId = resolveString(comm.comm());
-    QByteArray buffer;
-    QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(Command)
-                                               << comm.pid() << comm.tid()  << comm.time()
-                                               << commId;
-    sendBuffer(buffer);
+
+    bufferEvent(TaskEvent{comm.pid(), comm.tid(), comm.time(), commId, Command},
+                &m_taskEventsBuffer, &m_stats.numTaskEventsInRound);
 }
 
 void PerfUnwind::attr(const PerfRecordAttr &attr)
@@ -249,10 +247,8 @@ void PerfUnwind::sendAttributes(qint32 id, const PerfEventAttributes &attributes
 
 void PerfUnwind::lost(const PerfRecordLost &lost)
 {
-    QByteArray buffer;
-    QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(LostDefinition)
-                                               << lost.pid() << lost.tid() << lost.time();
-    sendBuffer(buffer);
+    bufferEvent(TaskEvent{lost.pid(), lost.tid(), lost.time(), 0, LostDefinition},
+                &m_taskEventsBuffer, &m_stats.numTaskEventsInRound);
 }
 
 void PerfUnwind::features(const PerfFeatures &features)
@@ -497,20 +493,14 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
 
 void PerfUnwind::fork(const PerfRecordFork &sample)
 {
-    QByteArray buffer;
-    QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(ThreadStart)
-                                               << sample.childPid() << sample.childTid()
-                                               << sample.time();
-    sendBuffer(buffer);
+    bufferEvent(TaskEvent{sample.childPid(), sample.childTid(), sample.time(), 0, ThreadStart},
+                &m_taskEventsBuffer, &m_stats.numTaskEventsInRound);
 }
 
 void PerfUnwind::exit(const PerfRecordExit &sample)
 {
-    QByteArray buffer;
-    QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(ThreadEnd)
-                                               << sample.childPid() << sample.childTid()
-                                               << sample.time();
-    sendBuffer(buffer);
+    bufferEvent(TaskEvent{sample.childPid(), sample.childTid(), sample.time(), 0, ThreadEnd},
+                &m_taskEventsBuffer, &m_stats.numTaskEventsInRound);
 }
 
 void PerfUnwind::sendString(qint32 id, const QByteArray& string)
@@ -678,14 +668,17 @@ void PerfUnwind::bufferEvent(const Event &event, QList<Event> *buffer, uint *eve
         flushEventBuffer(m_maxEventBufferSize / 2);
 }
 
+template<typename T>
+bool sortByTime(const T& lhs, const T& rhs)
+{
+    return lhs.time() < rhs.time();
+}
+
 void PerfUnwind::flushEventBuffer(uint desiredBufferSize)
 {
-    auto sortByTime = [](const PerfRecord &lhs, const PerfRecord &rhs) {
-        return lhs.time() < rhs.time();
-    };
-    std::sort(m_mmapBuffer.begin(), m_mmapBuffer.end(), sortByTime);
-    std::sort(m_sampleBuffer.begin(), m_sampleBuffer.end(), sortByTime);
-    std::sort(m_contextSwitchBuffer.begin(), m_contextSwitchBuffer.end(), sortByTime);
+    std::sort(m_mmapBuffer.begin(), m_mmapBuffer.end(), sortByTime<PerfRecord>);
+    std::sort(m_sampleBuffer.begin(), m_sampleBuffer.end(), sortByTime<PerfRecord>);
+    std::sort(m_taskEventsBuffer.begin(), m_taskEventsBuffer.end(), sortByTime<TaskEvent>);
 
     if (m_stats.enabled) {
         for (const auto &sample : m_sampleBuffer) {
@@ -718,8 +711,8 @@ void PerfUnwind::flushEventBuffer(uint desiredBufferSize)
     auto sampleIt = m_sampleBuffer.begin();
     auto sampleEnd = m_sampleBuffer.end();
 
-    auto contextSwitchIt = m_contextSwitchBuffer.begin();
-    auto contextSwitchEnd = m_contextSwitchBuffer.end();
+    auto taskEventIt = m_taskEventsBuffer.begin();
+    auto taskEventEnd = m_taskEventsBuffer.end();
 
     for (; m_eventBufferSize > desiredBufferSize && sampleIt != sampleEnd; ++sampleIt) {
         const auto &sample = *sampleIt;
@@ -744,15 +737,25 @@ void PerfUnwind::flushEventBuffer(uint desiredBufferSize)
             m_eventBufferSize -= mmapIt->size();
         }
 
-        for (; contextSwitchIt != contextSwitchEnd && contextSwitchIt->time() <= sample.time(); ++contextSwitchIt) {
+        for (; taskEventIt != taskEventEnd && taskEventIt->time() <= sample.time(); ++taskEventIt) {
             if (!m_stats.enabled) {
-                sendContextSwitch(*contextSwitchIt);
+                sendTaskEvent(*taskEventIt);
             }
-            m_eventBufferSize -= contextSwitchIt->size();
+            m_eventBufferSize -= taskEventIt->size();
         }
 
         analyze(sample);
         m_eventBufferSize -= sample.size();
+    }
+
+    // also flush task events after samples got depleted
+    // this ensures we send all of them, even for situations where the client
+    // application is not CPU-heavy but rather sleeps most of the time
+    for (; m_eventBufferSize > desiredBufferSize && taskEventIt != taskEventEnd; ++taskEventIt) {
+        if (!m_stats.enabled) {
+            sendTaskEvent(*taskEventIt);
+        }
+        m_eventBufferSize -= taskEventIt->size();
     }
 
     if (m_stats.enabled) {
@@ -765,28 +768,36 @@ void PerfUnwind::flushEventBuffer(uint desiredBufferSize)
         Q_ASSERT(mmaps >= 0 && mmaps < std::numeric_limits<uint>::max());
         m_stats.maxMmapsPerFlush = std::max(static_cast<uint>(mmaps),
                                             m_stats.maxMmapsPerFlush);
-        const auto contextSwitches = std::distance(m_contextSwitchBuffer.begin(), contextSwitchIt);
-        Q_ASSERT(contextSwitches >= 0 && contextSwitches < std::numeric_limits<uint>::max());
-        m_stats.maxContextSwitchesPerFlush = std::max(static_cast<uint>(contextSwitches),
-                                                      m_stats.maxContextSwitchesPerFlush);
+        const auto taskEvents = std::distance(m_taskEventsBuffer.begin(), taskEventIt);
+        Q_ASSERT(taskEvents >= 0 && taskEvents < std::numeric_limits<uint>::max());
+        m_stats.maxTaskEventsPerFlush = std::max(static_cast<uint>(taskEvents),
+                                                      m_stats.maxTaskEventsPerFlush);
     }
 
     m_sampleBuffer.erase(m_sampleBuffer.begin(), sampleIt);
     m_mmapBuffer.erase(m_mmapBuffer.begin(), mmapIt);
-    m_contextSwitchBuffer.erase(m_contextSwitchBuffer.begin(), contextSwitchIt);
+    m_taskEventsBuffer.erase(m_taskEventsBuffer.begin(), taskEventIt);
 }
 
 void PerfUnwind::contextSwitch(const PerfRecordContextSwitch& contextSwitch)
 {
-    bufferEvent(contextSwitch, &m_contextSwitchBuffer, &m_stats.numContextSwitchesInRound);
+    bufferEvent(TaskEvent{contextSwitch.pid(), contextSwitch.tid(), contextSwitch.time(),
+                contextSwitch.misc() & PERF_RECORD_MISC_SWITCH_OUT, ContextSwitchDefinition},
+                &m_taskEventsBuffer, &m_stats.numTaskEventsInRound);
 }
 
-void PerfUnwind::sendContextSwitch(const PerfRecordContextSwitch& contextSwitch)
+void PerfUnwind::sendTaskEvent(const TaskEvent& taskEvent)
 {
     QByteArray buffer;
-    QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(ContextSwitchDefinition)
-                                               << contextSwitch.pid() << contextSwitch.tid()
-                                               << contextSwitch.time()
-                                               << bool(contextSwitch.misc() & PERF_RECORD_MISC_SWITCH_OUT);
+    QDataStream stream(&buffer, QIODevice::WriteOnly);
+    stream << static_cast<quint8>(taskEvent.m_type)
+           << taskEvent.m_pid << taskEvent.m_tid
+           << taskEvent.m_time;
+
+    if (taskEvent.m_type == ContextSwitchDefinition)
+        stream << static_cast<bool>(taskEvent.m_payload);
+    else if (taskEvent.m_type == Command)
+        stream << taskEvent.m_payload;
+
     sendBuffer(buffer);
 }
