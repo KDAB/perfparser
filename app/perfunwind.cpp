@@ -222,7 +222,8 @@ void PerfUnwind::comm(const PerfRecordComm &comm)
 {
     const qint32 commId = resolveString(comm.comm());
 
-    bufferEvent(TaskEvent{comm.pid(), comm.tid(), comm.time(), commId, Command},
+    bufferEvent(TaskEvent{comm.pid(), comm.tid(), comm.time(), comm.cpu(),
+                          commId, Command},
                 &m_taskEventsBuffer, &m_stats.numTaskEventsInRound);
 }
 
@@ -299,7 +300,8 @@ void PerfUnwind::sendEventFormat(qint32 id, const EventFormat &format)
 
 void PerfUnwind::lost(const PerfRecordLost &lost)
 {
-    bufferEvent(TaskEvent{lost.pid(), lost.tid(), lost.time(), 0, LostDefinition},
+    bufferEvent(TaskEvent{lost.pid(), lost.tid(), lost.time(), lost.cpu(),
+                          0, LostDefinition},
                 &m_taskEventsBuffer, &m_stats.numTaskEventsInRound);
 }
 
@@ -643,7 +645,7 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
     QByteArray buffer;
     QDataStream stream(&buffer, QIODevice::WriteOnly);
     stream << static_cast<quint8>(type) << sample.pid()
-           << sample.tid() << sample.time() << m_currentUnwind.frames
+           << sample.tid() << sample.time() << sample.cpu() << m_currentUnwind.frames
            << numGuessedFrames << values;
 
     if (type == TracePointSample) {
@@ -662,13 +664,15 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
 
 void PerfUnwind::fork(const PerfRecordFork &sample)
 {
-    bufferEvent(TaskEvent{sample.childPid(), sample.childTid(), sample.time(), 0, ThreadStart},
+    bufferEvent(TaskEvent{sample.childPid(), sample.childTid(), sample.time(), sample.cpu(),
+                          0, ThreadStart},
                 &m_taskEventsBuffer, &m_stats.numTaskEventsInRound);
 }
 
 void PerfUnwind::exit(const PerfRecordExit &sample)
 {
-    bufferEvent(TaskEvent{sample.childPid(), sample.childTid(), sample.time(), 0, ThreadEnd},
+    bufferEvent(TaskEvent{sample.childPid(), sample.childTid(), sample.time(), sample.cpu(),
+                          0, ThreadEnd},
                 &m_taskEventsBuffer, &m_stats.numTaskEventsInRound);
 }
 
@@ -989,7 +993,8 @@ void PerfUnwind::flushEventBuffer(uint desiredBufferSize)
 
 void PerfUnwind::contextSwitch(const PerfRecordContextSwitch& contextSwitch)
 {
-    bufferEvent(TaskEvent{contextSwitch.pid(), contextSwitch.tid(), contextSwitch.time(),
+    bufferEvent(TaskEvent{contextSwitch.pid(), contextSwitch.tid(),
+                contextSwitch.time(), contextSwitch.cpu(),
                 contextSwitch.misc() & PERF_RECORD_MISC_SWITCH_OUT, ContextSwitchDefinition},
                 &m_taskEventsBuffer, &m_stats.numTaskEventsInRound);
 }
@@ -1000,7 +1005,7 @@ void PerfUnwind::sendTaskEvent(const TaskEvent& taskEvent)
     QDataStream stream(&buffer, QIODevice::WriteOnly);
     stream << static_cast<quint8>(taskEvent.m_type)
            << taskEvent.m_pid << taskEvent.m_tid
-           << taskEvent.m_time;
+           << taskEvent.m_time << taskEvent.m_cpu;
 
     if (taskEvent.m_type == ContextSwitchDefinition)
         stream << static_cast<bool>(taskEvent.m_payload);
