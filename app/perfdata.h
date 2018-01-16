@@ -258,6 +258,7 @@ struct PerfSampleId {
     quint64 id() const { return m_id; }
     quint16 fixedLength() const;
     quint64 sampleType() const { return m_sampleType; }
+    quint32 cpu() const { return m_cpu; }
 
 private:
     qint32 m_pid;
@@ -285,6 +286,7 @@ public:
     qint32 tid() const { return m_sampleId.tid(); }
     quint64 time() const { return m_sampleId.time(); }
     quint64 id() const { return m_sampleId.id(); }
+    quint32 cpu() const { return m_sampleId.cpu(); }
     quint16 size() const { return m_header.size; }
     quint16 misc() const { return m_header.misc; }
 
