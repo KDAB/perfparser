@@ -1129,8 +1129,8 @@ void PerfSymbolTable::clearCache()
         m_perfMapFile.reset();
 
     // Throw out the dwfl state
-    dwfl_end(m_dwfl);
-    m_dwfl = dwfl_begin(m_callbacks);
+    dwfl_report_end(m_dwfl, NULL, NULL);
+    dwfl_report_begin(m_dwfl);
 
     m_cacheIsDirty = false;
 }
