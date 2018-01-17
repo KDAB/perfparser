@@ -565,7 +565,10 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
         const auto &attribute = m_attributes.at(attributesId);
         if (attribute.type() == PerfEventAttributes::TYPE_TRACEPOINT) {
             type = TracePointSample;
-            eventFormatId = attribute.config();
+            if (attribute.config() > std::numeric_limits<qint32>::max())
+                qWarning() << "Excessively large event format ID" << attribute.config();
+            else
+                eventFormatId = static_cast<qint32>(attribute.config());
         }
     }
 

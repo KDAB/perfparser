@@ -92,7 +92,7 @@ public:
         UnwindInfo() : frames(0), unwind(nullptr), sample(nullptr), maxFrames(64),
             firstGuessedFrame(-1), isInterworking(false) {}
 
-        QHash<quint32, QHash<quint64, Dwarf_Word>> stackValues;
+        QHash<qint32, QHash<quint64, Dwarf_Word>> stackValues;
         QVector<qint32> frames;
         PerfUnwind *unwind;
         const PerfRecordSample *sample;
