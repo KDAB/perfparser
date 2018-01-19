@@ -539,6 +539,26 @@ Dwfl_Module *PerfSymbolTable::module(quint64 addr, const PerfElfMap::ElfInfo &el
     return reportElf(elf);
 }
 
+static QFileInfo findDebugInfoFile(const QString &root, const QString &file,
+                                   const QString &debugLinkString)
+{
+    auto dir = QFileInfo(root).dir();
+    QFileInfo debugLinkFile;
+    debugLinkFile.setFile(dir, file + QDir::separator() + debugLinkString);
+    if (debugLinkFile.isFile())
+        return debugLinkFile;
+    // try again in .debug folder
+    debugLinkFile.setFile(dir, file + QDir::separator() + QLatin1String(".debug")
+                                + QDir::separator() + debugLinkString);
+    if (debugLinkFile.isFile())
+        return debugLinkFile;
+    // try again in /usr/lib/debug folder
+    debugLinkFile.setFile(dir, QLatin1String("usr") + QDir::separator() + QLatin1String("lib")
+                                + QDir::separator() + QLatin1String("debug") + QDir::separator() + QFileInfo(file).path()
+                                + QDir::separator() + debugLinkString);
+    return debugLinkFile;
+}
+
 int PerfSymbolTable::findDebugInfo(Dwfl_Module *module, const char *moduleName, Dwarf_Addr base,
                                    const char *file, const char *debugLink,
                                    GElf_Word crc, char **debugInfoFilename)
@@ -555,13 +575,8 @@ int PerfSymbolTable::findDebugInfo(Dwfl_Module *module, const char *moduleName, 
     if (!debugLinkFile.isFile()) {
         // fall-back to original file path with debug link file name
         const auto &elf = m_elfs.findElf(base);
-        const auto &dir = QFileInfo(m_unwind->systemRoot() +
-                            QString::fromUtf8(elf.originalPath)).absoluteDir();
-        debugLinkFile.setFile(dir, debugLinkString);
-        if (!debugLinkFile.isFile()) { // try again in .debug folder
-            debugLinkFile.setFile(dir, QLatin1String(".debug") +
-                                        QDir::separator() + debugLinkString);
-        }
+        const auto &path = QString::fromUtf8(elf.originalPath);
+        debugLinkFile = findDebugInfoFile(m_unwind->systemRoot(), path, debugLinkString);
     }
 
     if (!debugLinkFile.isFile())
