@@ -69,8 +69,6 @@ PerfSymbolTable::PerfSymbolTable(qint32 pid, Dwfl_Callbacks *callbacks, PerfUnwi
                   + QString::fromLatin1("perf-%1.map").arg(pid)),
     m_cacheIsDirty(false),
     m_unwind(parent),
-    m_firstElfFile(-1),
-    m_firstElf(nullptr),
     m_callbacks(callbacks),
     m_pid(pid)
 {
@@ -85,8 +83,6 @@ PerfSymbolTable::PerfSymbolTable(qint32 pid, Dwfl_Callbacks *callbacks, PerfUnwi
 PerfSymbolTable::~PerfSymbolTable()
 {
     dwfl_end(m_dwfl);
-    elf_end(m_firstElf);
-    eu_compat_close(m_firstElfFile);
 }
 
 static pid_t nextThread(Dwfl *dwfl, void *arg, void **threadArg)
@@ -313,28 +309,18 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &
                                 PerfUnwind::tr("Could not find ELF file for %1. "
                                                "This can break stack unwinding "
                                                "and lead to missing symbols.").arg(filePath));
-        } else if (!m_firstElf) {
-            m_firstElfFile = eu_compat_open(fullPath.absoluteFilePath().toLocal8Bit().constData(),
-                                            O_RDONLY | O_BINARY);
-            if (m_firstElfFile == -1) {
-                qWarning() << "Failed to open file:" << fullPath.absoluteFilePath();
-            } else {
-                m_firstElf = elf_begin(m_firstElfFile, ELF_C_READ, nullptr);
-                if (!m_firstElf) {
-                    qWarning() << "Failed to begin elf:" << elf_errmsg(elf_errno());
-                    eu_compat_close(m_firstElfFile);
-                    m_firstElfFile = -1;
-                } else if (elf_kind(m_firstElf) == ELF_K_NONE) {
-                    // not actually an elf object
-                    elf_end(m_firstElf);
-                    m_firstElf = nullptr;
-                    eu_compat_close(m_firstElfFile);
-                    m_firstElfFile = -1;
-                }
-            }
+        } else {
+            ElfAndFile elf(fullPath);
+            if (!elf.elf())
+                fullPath = QFileInfo();
+            else if (!m_firstElf.elf())
+                m_firstElf = std::move(elf);
         }
     } else { // kernel
         fullPath.setFile(m_unwind->systemRoot() + filePath);
+        ElfAndFile elf(fullPath);
+        if (!elf.elf())
+            fullPath = QFileInfo();
     }
 
     bool cacheInvalid = m_elfs.registerElf(mmap.addr(), mmap.len(), mmap.pgoff(), fullPath,
@@ -748,7 +734,7 @@ Dwfl *PerfSymbolTable::attachDwfl(void *arg)
     if (static_cast<pid_t>(m_pid) == dwfl_pid(m_dwfl))
         return m_dwfl; // Already attached, nothing to do
 
-    if (!dwfl_attach_state(m_dwfl, m_firstElf, m_pid, &threadCallbacks, arg)) {
+    if (!dwfl_attach_state(m_dwfl, m_firstElf.elf(), m_pid, &threadCallbacks, arg)) {
         qWarning() << m_pid << "failed to attach state" << dwfl_errmsg(dwfl_errno());
         return nullptr;
     }
@@ -769,4 +755,52 @@ void PerfSymbolTable::clearCache()
     Q_ASSERT(reportEnd == 0);
 
     m_cacheIsDirty = false;
+}
+
+PerfSymbolTable::ElfAndFile &PerfSymbolTable::ElfAndFile::operator=(
+            PerfSymbolTable::ElfAndFile &&other)
+{
+    if (&other != this) {
+        clear();
+        m_elf = other.m_elf;
+        m_file = other.m_file;
+        other.m_elf = nullptr;
+        other.m_file = -1;
+    }
+    return *this;
+}
+
+PerfSymbolTable::ElfAndFile::~ElfAndFile()
+{
+    clear();
+}
+
+void PerfSymbolTable::ElfAndFile::clear()
+{
+    if (m_elf)
+        elf_end(m_elf);
+
+    if (m_file != -1)
+        eu_compat_close(m_file);
+}
+
+PerfSymbolTable::ElfAndFile::ElfAndFile(const QFileInfo &fullPath)
+{
+    m_file = eu_compat_open(fullPath.absoluteFilePath().toLocal8Bit().constData(),
+                            O_RDONLY | O_BINARY);
+    if (m_file == -1)
+        return;
+
+    m_elf = elf_begin(m_file, ELF_C_READ, nullptr);
+    if (m_elf && elf_kind(m_elf) == ELF_K_NONE) {
+        elf_end(m_elf);
+        m_elf = nullptr;
+    }
+}
+
+PerfSymbolTable::ElfAndFile::ElfAndFile(PerfSymbolTable::ElfAndFile &&other)
+    : m_elf(other.m_elf), m_file(other.m_file)
+{
+    other.m_elf = nullptr;
+    other.m_file = -1;
 }

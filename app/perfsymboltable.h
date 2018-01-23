@@ -88,6 +88,25 @@ private:
         bool isInterworking;
     };
 
+    class ElfAndFile {
+    public:
+        ElfAndFile() {}
+        ElfAndFile(const QFileInfo &fullPath);
+        ElfAndFile(ElfAndFile &&other);
+        ElfAndFile &operator=(ElfAndFile &&other);
+        ElfAndFile(const ElfAndFile &other) = delete;
+        ElfAndFile &operator=(const ElfAndFile &other) = delete;
+        ~ElfAndFile();
+
+        Elf *elf() const { return m_elf; }
+
+    private:
+        void clear();
+
+        Elf *m_elf = nullptr;
+        int m_file = -1;
+    };
+
     QFile m_perfMapFile;
     QVector<PerfMapSymbol> m_perfMap;
     QHash<Dwarf_Addr, AddressCacheEntry> m_addressCache;
@@ -96,8 +115,7 @@ private:
     PerfUnwind *m_unwind;
     Dwfl *m_dwfl;
     // elf used to detect architecture
-    int m_firstElfFile;
-    Elf *m_firstElf;
+    ElfAndFile m_firstElf;
 
     PerfElfMap m_elfs;
     Dwfl_Callbacks *m_callbacks;
