@@ -406,7 +406,7 @@ QDataStream &operator>>(QDataStream &stream, PerfSampleId &sampleId)
         if (sampleId.m_sampleType & PerfEventAttributes::SAMPLE_STREAM_ID)
             stream >> sampleId.m_streamId;
         if (sampleId.m_sampleType & PerfEventAttributes::SAMPLE_CPU)
-            stream >> sampleId.m_res >> sampleId.m_cpu;
+            stream >> sampleId.m_cpu >> sampleId.m_res;
         if (sampleId.m_sampleType & PerfEventAttributes::SAMPLE_IDENTIFIER)
             stream.skipRawData(sizeof(sampleId.m_ignoredDuplicateId));
     }
