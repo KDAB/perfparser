@@ -82,13 +82,14 @@ public:
     };
 
     struct Symbol {
-        explicit Symbol(qint32 name = -1, qint32 binary = -1,
+        explicit Symbol(qint32 name = -1, qint32 binary = -1, qint32 path = -1,
                         bool isKernel = false) :
-            name(name), binary(binary), isKernel(isKernel)
+            name(name), binary(binary), path(path), isKernel(isKernel)
         {}
 
         qint32 name;
         qint32 binary;
+        qint32 path;
         bool isKernel;
     };
 

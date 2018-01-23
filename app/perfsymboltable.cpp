@@ -362,7 +362,7 @@ static QByteArray demangle(const QByteArray &mangledName)
     return mangledName;
 }
 
-int PerfSymbolTable::insertSubprogram(Dwarf_Die *top, Dwarf_Addr entry, qint32 binaryId,
+int PerfSymbolTable::insertSubprogram(Dwarf_Die *top, Dwarf_Addr entry, qint32 binaryId, qint32 binaryPathId,
                                       qint32 inlineCallLocationId, bool isKernel)
 {
     int line = 0;
@@ -375,13 +375,13 @@ int PerfSymbolTable::insertSubprogram(Dwarf_Die *top, Dwarf_Addr entry, qint32 b
     int locationId = m_unwind->resolveLocation(PerfUnwind::Location(entry, fileId, m_pid, line,
                                                                     column, inlineCallLocationId));
     qint32 symId = m_unwind->resolveString(demangle(dieName(top)));
-    m_unwind->resolveSymbol(locationId, PerfUnwind::Symbol(symId, binaryId, isKernel));
+    m_unwind->resolveSymbol(locationId, PerfUnwind::Symbol(symId, binaryId, binaryPathId, isKernel));
 
     return locationId;
 }
 
-int PerfSymbolTable::parseDie(Dwarf_Die *top, qint32 binaryId, Dwarf_Files *files,
-                              Dwarf_Addr entry, bool isKernel, const QStack<DieAndLocation> &stack)
+int PerfSymbolTable::parseDie(Dwarf_Die *top, qint32 binaryId, qint32 binaryPathId, bool isKernel,
+                              Dwarf_Files *files, Dwarf_Addr entry, const QStack<DieAndLocation> &stack)
 {
     int tag = dwarf_tag(top);
     switch (tag) {
@@ -409,16 +409,16 @@ int PerfSymbolTable::parseDie(Dwarf_Die *top, qint32 binaryId, Dwarf_Files *file
         }
 
         int callLocationId = m_unwind->resolveLocation(location);
-        return insertSubprogram(top, entry, binaryId, callLocationId, isKernel);
+        return insertSubprogram(top, entry, binaryId, binaryPathId, callLocationId, isKernel);
     }
     case DW_TAG_subprogram:
-        return insertSubprogram(top, entry, binaryId, -1, isKernel);
+        return insertSubprogram(top, entry, binaryId, binaryPathId, -1, isKernel);
     default:
         return -1;
     }
 }
 
-void PerfSymbolTable::parseDwarf(Dwarf_Die *cudie, Dwarf_Addr bias, qint32 binaryId,
+void PerfSymbolTable::parseDwarf(Dwarf_Die *cudie, Dwarf_Addr bias, qint32 binaryId, qint32 binaryPathId,
                                  bool isKernel)
 {
     // Iterate through all dwarf sections and establish parent/child relations for inline
@@ -435,7 +435,8 @@ void PerfSymbolTable::parseDwarf(Dwarf_Die *cudie, Dwarf_Addr bias, qint32 binar
         Dwarf_Die *top = &(stack.last().die);
         Dwarf_Addr entry = 0;
         if (dwarf_entrypc(top, &entry) == 0 && entry != 0)
-            stack.last().locationId = parseDie(top, binaryId, files, entry + bias, isKernel, stack);
+            stack.last().locationId = parseDie(top, binaryId, binaryPathId, isKernel,
+                                               files, entry + bias, stack);
 
         Dwarf_Die child;
         if (dwarf_child(top, &child) == 0) {
@@ -759,9 +760,11 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
     }
 
     qint32 binaryId = -1;
+    qint32 binaryPathId = -1;
     quint64 elfStart = 0;
     if (elf.isValid()) {
         binaryId = m_unwind->resolveString(elf.originalFileName);
+        binaryPathId = m_unwind->resolveString(elf.originalPath);
         elfStart = elf.addr;
     }
 
@@ -841,7 +844,7 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
 
             addressLocation.parentLocationId = m_unwind->lookupLocation(functionLocation);
             if (die && !m_unwind->hasSymbol(addressLocation.parentLocationId))
-                parseDwarf(die, bias, binaryId, isKernel);
+                parseDwarf(die, bias, binaryId, binaryPathId, isKernel);
             if (addressLocation.parentLocationId == -1)
                 addressLocation.parentLocationId = m_unwind->resolveLocation(functionLocation);
         }
@@ -849,7 +852,7 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
             // no sufficient debug information. Use what we already know
             qint32 symId = m_unwind->resolveString(demangle(symname));
             m_unwind->resolveSymbol(addressLocation.parentLocationId,
-                                    PerfUnwind::Symbol(symId, binaryId, isKernel));
+                                    PerfUnwind::Symbol(symId, binaryId, binaryPathId, isKernel));
         }
     } else {
         if (isKernel) {
@@ -870,7 +873,7 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
         if (!m_unwind->hasSymbol(addressLocation.parentLocationId)) {
             qint32 symId = m_unwind->resolveString(symname);
             m_unwind->resolveSymbol(addressLocation.parentLocationId,
-                                    PerfUnwind::Symbol(symId, binaryId, isKernel));
+                                    PerfUnwind::Symbol(symId, binaryId, binaryPathId, isKernel));
         }
     }
 
