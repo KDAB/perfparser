@@ -66,7 +66,8 @@ static void process(PerfUnwind *unwind, QIODevice *input)
 {
     PerfHeader header(input);
     PerfAttributes attributes;
-    PerfData data(input, unwind, &header, &attributes);
+    PerfData data(unwind, &header, &attributes);
+    data.setSource(input);
 
     QSignalSpy spy(&data, SIGNAL(finished()));
     QObject::connect(&header, &PerfHeader::finished, &data, [&](){

@@ -28,10 +28,14 @@
 
 static const int intMax = std::numeric_limits<int>::max();
 
-PerfData::PerfData(QIODevice *source, PerfUnwind *destination, const PerfHeader *header,
-                   PerfAttributes *attributes) :
-    m_source(source), m_destination(destination), m_header(header), m_attributes(attributes)
+PerfData::PerfData(PerfUnwind *destination, const PerfHeader *header, PerfAttributes *attributes) :
+    m_source(nullptr), m_destination(destination), m_header(header), m_attributes(attributes)
 {
+}
+
+void PerfData::setSource(QIODevice *source)
+{
+    m_source = source;
 }
 
 PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)

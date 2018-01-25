@@ -101,6 +101,7 @@ void PerfHeader::read()
     }
 
     disconnect(m_source, &QIODevice::readyRead, this, &PerfHeader::read);
+    m_source = nullptr;
     emit finished();
 }
 

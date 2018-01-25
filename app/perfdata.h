@@ -463,8 +463,8 @@ class PerfData : public QObject
 {
     Q_OBJECT
 public:
-    PerfData(QIODevice *source, PerfUnwind *destination, const PerfHeader *header,
-             PerfAttributes *attributes);
+    PerfData(PerfUnwind *destination, const PerfHeader *header, PerfAttributes *attributes);
+    void setSource(QIODevice *source);
 
 public slots:
     void read();

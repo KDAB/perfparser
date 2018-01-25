@@ -27,6 +27,7 @@
 #include "perfunwind.h"
 
 #include <QAbstractSocket>
+#include <QTemporaryFile>
 #include <QCommandLineParser>
 #include <QCoreApplication>
 #include <QDebug>
@@ -53,7 +54,8 @@ enum ErrorCodes {
     HeaderError,
     DataError,
     MissingData,
-    InvalidOption
+    InvalidOption,
+    BufferingError
 };
 
 class PerfTcpSocket : public QTcpSocket {
@@ -242,35 +244,34 @@ int main(int argc, char *argv[])
     PerfHeader header(infile.data());
     PerfAttributes attributes;
     PerfFeatures features;
-    PerfData data(infile.data(), &unwind, &header, &attributes);
+    PerfData data(&unwind, &header, &attributes);
 
     features.setArchitecture(parser.value(arch).toLatin1());
 
-    QObject::connect(&header, &PerfHeader::finished, [&]() {
-        unwind.setByteOrder(static_cast<QSysInfo::Endian>(header.byteOrder()));
-        if (!header.isPipe()) {
-            const qint64 filePos = infile->pos();
-            if (!attributes.read(infile.data(), &header)) {
-                qWarning() << "Failed to read attributes";
-                qApp->exit(DataError);
-                return;
-            }
-            if (!features.read(infile.data(), &header)) {
-                qWarning() << "Failed to read features";
-                qApp->exit(DataError);
-                return;
-            }
-            infile->seek(filePos);
-
-            // first send features, as it may contain better event descriptions
-            unwind.features(features);
-
-            const auto& attrs = attributes.attributes();
-            for (auto it = attrs.begin(), end = attrs.end(); it != end; ++it) {
-                unwind.attr(PerfRecordAttr(it.value(), {it.key()}));
-            }
+    auto readFileHeader = [&]() {
+        const qint64 filePos = infile->pos();
+        if (!attributes.read(infile.data(), &header)) {
+            qWarning() << "Failed to read attributes";
+            qApp->exit(DataError);
+            return;
         }
+        if (!features.read(infile.data(), &header)) {
+            qWarning() << "Failed to read features";
+            qApp->exit(DataError);
+            return;
+        }
+        infile->seek(filePos);
 
+        // first send features, as it may contain better event descriptions
+        unwind.features(features);
+
+        const auto& attrs = attributes.attributes();
+        for (auto it = attrs.begin(), end = attrs.end(); it != end; ++it) {
+            unwind.attr(PerfRecordAttr(it.value(), {it.key()}));
+        }
+    };
+
+    auto readData = [&]() {
         const QByteArray &featureArch = features.architecture();
         unwind.setArchitecture(PerfRegisterInfo::archByName(featureArch));
 
@@ -280,11 +281,85 @@ int main(int argc, char *argv[])
             return;
         }
 
+        data.setSource(infile.data());
         QObject::connect(infile.data(), &QIODevice::aboutToClose, &data, &PerfData::finishReading);
         QObject::connect(&data, &PerfData::finished, infile.data(), [&](){ infile->disconnect(); });
         QObject::connect(infile.data(), &QIODevice::readyRead, &data, &PerfData::read);
         if (infile->bytesAvailable() > 0)
             data.read();
+    };
+
+    auto writeBytes = [](QIODevice *target, const char *data, qint64 length) {
+        qint64 pos = 0;
+        while (pos < length) {
+            const qint64 written = target->write(data + pos, length - pos);
+            if (written < 0)
+                return false;
+            pos += written;
+        }
+        return true;
+    };
+
+    QScopedPointer<QIODevice> tempfile;
+    auto bufferSequentialData = [&](){
+        QByteArray buffer(1 << 25, Qt::Uninitialized);
+        const qint64 read = infile->read(buffer.data(), buffer.length());
+        if (read < 0) {
+            qWarning() << "Failed to read from input.";
+            qApp->exit(BufferingError);
+            return;
+        }
+
+        if (!writeBytes(tempfile.data(), buffer.data(), read)) {
+            qWarning() << "Failed to write buffer file.";
+            qApp->exit(BufferingError);
+            return;
+        }
+    };
+
+    QObject::connect(&header, &PerfHeader::finished, [&]() {
+        unwind.setByteOrder(static_cast<QSysInfo::Endian>(header.byteOrder()));
+        if (!header.isPipe()) {
+            if (infile->isSequential()) {
+                qWarning() << "Reading a non-pipe perf.data from a stream requires buffering.";
+                tempfile.reset(new QTemporaryFile);
+                if (!tempfile->open(QIODevice::ReadWrite)) {
+                    qWarning() << "Failed to open buffer file.";
+                    qApp->exit(BufferingError);
+                    return;
+                }
+
+                // We've checked this when parsing the header.
+                Q_ASSERT(header.size() <= std::numeric_limits<int>::max());
+                const QByteArray fakeHeader(static_cast<int>(header.size()), 0);
+                if (!writeBytes(tempfile.data(), fakeHeader.data(), fakeHeader.length())) {
+                    qWarning() << "Failed to write fake header to buffer file.";
+                    qApp->exit(BufferingError);
+                    return;
+                }
+
+                QObject::connect(infile.data(), &QIODevice::readyRead, bufferSequentialData);
+                QObject::connect(infile.data(), &QIODevice::aboutToClose, [&]() {
+                    infile->disconnect();
+                    infile.swap(tempfile);
+                    if (!infile->reset()) {
+                        qWarning() << "Cannot reset buffer file.";
+                        qApp->exit(BufferingError);
+                        return;
+                    }
+                    readFileHeader();
+                    readData();
+                });
+
+                if (infile->bytesAvailable() > 0)
+                    bufferSequentialData();
+            } else {
+                readFileHeader();
+                readData();
+            }
+        } else {
+            readData();
+        }
     });
 
     QObject::connect(&header, &PerfHeader::error, []() {
