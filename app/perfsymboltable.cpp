@@ -75,6 +75,11 @@ PerfSymbolTable::PerfSymbolTable(qint32 pid, Dwfl_Callbacks *callbacks, PerfUnwi
     m_pid(pid)
 {
     m_dwfl = dwfl_begin(m_callbacks);
+    dwfl_report_begin(m_dwfl);
+
+    // "DWFL can not be used until this function returns 0"
+    const int reportEnd = dwfl_report_end(m_dwfl, NULL, NULL);
+    Q_ASSERT(reportEnd == 0);
 }
 
 PerfSymbolTable::~PerfSymbolTable()
@@ -484,6 +489,7 @@ Dwfl_Module *PerfSymbolTable::reportElf(const PerfElfMap::ElfInfo& info)
         return nullptr;
     }
 
+    dwfl_report_begin_add(m_dwfl);
     Dwfl_Module *ret = dwfl_report_elf(
                 m_dwfl, info.originalFileName.constData(),
                 info.localFile.absoluteFilePath().toLocal8Bit().constData(), -1, info.addr,
@@ -498,6 +504,8 @@ Dwfl_Module *PerfSymbolTable::reportElf(const PerfElfMap::ElfInfo& info)
                          nullptr, nullptr);
         *userData = this;
     }
+    const int reportEnd = dwfl_report_end(m_dwfl, NULL, NULL);
+    Q_ASSERT(reportEnd == 0);
 
     return ret;
 }
@@ -756,8 +764,9 @@ void PerfSymbolTable::clearCache()
         m_perfMapFile.reset();
 
     // Throw out the dwfl state
-    dwfl_report_end(m_dwfl, NULL, NULL);
     dwfl_report_begin(m_dwfl);
+    const int reportEnd = dwfl_report_end(m_dwfl, NULL, NULL);
+    Q_ASSERT(reportEnd == 0);
 
     m_cacheIsDirty = false;
 }
