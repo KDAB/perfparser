@@ -348,8 +348,9 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
     return DWARF_CB_OK;
 }
 
-void PerfUnwind::unwindStack(Dwfl *dwfl)
+void PerfUnwind::unwindStack()
 {
+    Dwfl *dwfl = symbolTable(m_currentUnwind.sample->pid())->attachDwfl(&m_currentUnwind);
     dwfl_getthread_frames(dwfl, m_currentUnwind.sample->pid(), frameCallback, &m_currentUnwind);
     if (m_currentUnwind.isInterworking) {
         QVector<qint32> savedFrames = m_currentUnwind.frames;
@@ -400,12 +401,14 @@ void PerfUnwind::resolveCallchain()
 
         // sometimes it skips the first user frame.
         if (i == 0 && !isKernel && ip != m_currentUnwind.sample->ip()) {
+            symbols->attachDwfl(&m_currentUnwind);
             m_currentUnwind.frames.append(symbols->lookupFrame(
                                               m_currentUnwind.sample->ip(), false,
                                               &m_currentUnwind.isInterworking));
         }
 
         if (ip <= PERF_CONTEXT_MAX) {
+            symbols->attachDwfl(&m_currentUnwind);
             m_currentUnwind.frames.append(symbols->lookupFrame(
                                               ip, isKernel,
                                               &m_currentUnwind.isInterworking));
@@ -426,8 +429,8 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
     if (m_stats.enabled) // don't do any time intensive work in stats mode
         return;
 
-    const bool isKernel = ipIsInKernelSpace(sample.ip());
-    PerfSymbolTable *symbols = symbolTable(isKernel ? s_kernelPid : sample.pid());
+    PerfSymbolTable *kernelSymbols = symbolTable(s_kernelPid);
+    PerfSymbolTable *userSymbols = symbolTable(sample.pid());
 
     for (int unwindingAttempt = 0; unwindingAttempt < 2; ++unwindingAttempt) {
         m_currentUnwind.isInterworking = false;
@@ -435,32 +438,39 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
         m_currentUnwind.sample = &sample;
         m_currentUnwind.frames.clear();
 
-        symbols->updatePerfMap();
-
-        Dwfl *dwfl = symbols->attachDwfl(&m_currentUnwind);
+        userSymbols->updatePerfMap();
         if (sample.callchain().length() > 0)
             resolveCallchain();
 
+        bool userDirty = userSymbols->cacheIsDirty();
+        bool kernelDirty = kernelSymbols->cacheIsDirty();
+
         // only try to unwind when resolveCallchain did not dirty the cache
-        if (!symbols->cacheIsDirty()) {
-            if (dwfl && sample.registerAbi() != 0 && sample.userStack().length() > 0)
-                unwindStack(dwfl);
-            else
+        if (!userDirty && !kernelDirty) {
+            if (sample.registerAbi() != 0 && sample.userStack().length() > 0) {
+                unwindStack();
+                userDirty = userSymbols->cacheIsDirty();
+            } else {
                 break;
+            }
         }
 
         // when the cache is dirty, we clean it up and try again, otherwise we can
         // stop as unwinding should have succeeded
-        if (symbols->cacheIsDirty())
-            symbols->clearCache(); // fail, try again
-        else
+        if (userDirty)
+            userSymbols->clearCache(); // fail, try again
+        if (kernelDirty)
+            kernelSymbols->clearCache();
+        if (!userDirty && !kernelDirty)
             break; // success
     }
 
     // If nothing was found, at least look up the IP
     if (m_currentUnwind.frames.isEmpty()) {
-        m_currentUnwind.frames.append(symbols->lookupFrame(sample.ip(), isKernel,
-                                                           &m_currentUnwind.isInterworking));
+        const bool isKernel = ipIsInKernelSpace(sample.ip());
+        PerfSymbolTable *ipSymbols = isKernel ? kernelSymbols : userSymbols;
+        m_currentUnwind.frames.append(ipSymbols->lookupFrame(sample.ip(), isKernel,
+                                                             &m_currentUnwind.isInterworking));
     }
 
 
