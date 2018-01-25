@@ -34,7 +34,7 @@ QDataStream &operator>>(QDataStream &stream, PerfEventAttributes &attrs)
     stream >> attrs.m_type >> attrs.m_size;
 
     if (attrs.m_size < PerfEventAttributes::SIZE_VER0) {
-        qWarning() << "unsupported file format";
+        qWarning() << "unsupported file format. event attr size too small:" << attrs.m_size;
         return stream;
     }
 
@@ -222,7 +222,7 @@ bool PerfEventAttributes::operator==(const PerfEventAttributes &rhs) const
 bool PerfAttributes::read(QIODevice *device, PerfHeader *header)
 {
     if (header->attrSize() < PerfEventAttributes::SIZE_VER0 + PerfFileSection::fixedLength()) {
-        qWarning() << "unsupported file format";
+        qWarning() << "unsupported file format: header attrSize too small:" << header->attrSize();
         return false;
     }
 
