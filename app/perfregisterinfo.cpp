@@ -102,7 +102,7 @@ const int PerfRegisterInfo::s_dummyRegisters[ARCH_INVALID][2] = {
     {0, 0}
 };
 
-QByteArray PerfRegisterInfo::defaultArchitecture()
+const char *PerfRegisterInfo::defaultArchitecture()
 {
 #if defined(__aarch64__)
     return "aarch64";
