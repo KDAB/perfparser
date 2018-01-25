@@ -90,10 +90,10 @@ void TestPerfData::testTracingData_data()
     QTest::addColumn<uint>("flushes");
     QTest::addColumn<quint64>("maxTime");
     QTest::addColumn<bool>("stats");
-    QTest::addRow("stream stats") << ":/probe.data.stream" << 2u << 13780586522722ull << true;
-    QTest::addRow("file stats") << ":/probe.data.file" << 3u << 13732862219876ull << true;
-    QTest::addRow("stream data") << ":/probe.data.stream" << 2u << 13780586522722ull << false;
-    QTest::addRow("file data") << ":/probe.data.file" << 3u << 13732862219876ull << false;
+    QTest::newRow("stream stats") << ":/probe.data.stream" << 2u << 13780586522722ull << true;
+    QTest::newRow("file stats") << ":/probe.data.file" << 3u << 13732862219876ull << true;
+    QTest::newRow("stream data") << ":/probe.data.stream" << 2u << 13780586522722ull << false;
+    QTest::newRow("file data") << ":/probe.data.file" << 3u << 13732862219876ull << false;
 }
 
 void TestPerfData::testTracingData()
