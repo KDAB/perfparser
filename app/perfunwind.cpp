@@ -427,8 +427,7 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
         return;
 
     const bool isKernel = ipIsInKernelSpace(sample.ip());
-
-    PerfSymbolTable *userSymbols = symbolTable(sample.pid());
+    PerfSymbolTable *symbols = symbolTable(isKernel ? s_kernelPid : sample.pid());
 
     for (int unwindingAttempt = 0; unwindingAttempt < 2; ++unwindingAttempt) {
         m_currentUnwind.isInterworking = false;
@@ -436,31 +435,30 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
         m_currentUnwind.sample = &sample;
         m_currentUnwind.frames.clear();
 
-        userSymbols->updatePerfMap();
+        symbols->updatePerfMap();
 
-        Dwfl *userDwfl = userSymbols->attachDwfl(&m_currentUnwind);
+        Dwfl *dwfl = symbols->attachDwfl(&m_currentUnwind);
         if (sample.callchain().length() > 0)
             resolveCallchain();
 
         // only try to unwind when resolveCallchain did not dirty the cache
-        if (!userSymbols->cacheIsDirty()) {
-            if (userDwfl && sample.registerAbi() != 0 && sample.userStack().length() > 0)
-                unwindStack(userDwfl);
+        if (!symbols->cacheIsDirty()) {
+            if (dwfl && sample.registerAbi() != 0 && sample.userStack().length() > 0)
+                unwindStack(dwfl);
             else
                 break;
         }
 
         // when the cache is dirty, we clean it up and try again, otherwise we can
         // stop as unwinding should have succeeded
-        if (userSymbols->cacheIsDirty())
-            userSymbols->clearCache(); // fail, try again
+        if (symbols->cacheIsDirty())
+            symbols->clearCache(); // fail, try again
         else
             break; // success
     }
 
     // If nothing was found, at least look up the IP
     if (m_currentUnwind.frames.isEmpty()) {
-        PerfSymbolTable *symbols = isKernel ? symbolTable(s_kernelPid) : userSymbols;
         m_currentUnwind.frames.append(symbols->lookupFrame(sample.ip(), isKernel,
                                                            &m_currentUnwind.isInterworking));
     }
