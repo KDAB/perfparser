@@ -21,15 +21,35 @@
 #pragma once
 
 #include <QIODevice>
+#include <QTimer>
 
 class PerfStdin : public QIODevice
 {
 public:
+    PerfStdin(QObject *parent = nullptr);
+    ~PerfStdin();
+
     bool open(OpenMode mode) override;
+    void close() override;
     bool isSequential() const override;
     qint64 bytesAvailable() const override;
 
 protected:
     qint64 readData(char *data, qint64 maxlen) override;
     qint64 writeData(const char *data, qint64 len) override;
+
+private:
+    static const int s_minBufferSize = 1 << 10;
+    static const int s_maxBufferSize = 1 << 30;
+
+    void receiveData();
+    void resizeBuffer(int newSize);
+    qint64 fillBuffer(qint64 targetSize = -1);
+    qint64 bufferedAvailable() const { return m_bufferUsed - m_bufferPos; }
+    bool stdinAtEnd() const;
+
+    QTimer m_timer;
+    QByteArray m_buffer;
+    int m_bufferPos = 0;
+    int m_bufferUsed = 0;
 };

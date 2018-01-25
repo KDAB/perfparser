@@ -22,30 +22,59 @@
 
 #include <QTimer>
 
+#include <cstring>
 #include <cstdio>
 #include <limits>
+
+PerfStdin::PerfStdin(QObject *parent) : QIODevice(parent)
+{
+    connect(&m_timer, &QTimer::timeout, this, &PerfStdin::receiveData);
+}
+
+PerfStdin::~PerfStdin()
+{
+    if (isOpen())
+        close();
+}
 
 bool PerfStdin::open(QIODevice::OpenMode mode)
 {
     if (!(mode & QIODevice::ReadOnly) || (mode & QIODevice::WriteOnly))
         return false;
 
-    return QIODevice::open(mode);
+    if (QIODevice::open(mode)) {
+        m_buffer.resize(s_minBufferSize);
+        m_timer.start();
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void PerfStdin::close()
+{
+    m_timer.stop();
+    QIODevice::close();
 }
 
 qint64 PerfStdin::readData(char *data, qint64 maxlen)
 {
     if (maxlen <= 0)
         return 0;
-    size_t read = fread(data, 1, static_cast<size_t>(maxlen), stdin);
-    if (feof(stdin) || ferror(stdin))
-        QTimer::singleShot(0, this, &QIODevice::close);
-    if (read == 0) {
-        return -1;
-    } else {
-        Q_ASSERT(read <= static_cast<size_t>(maxlen));
-        return static_cast<qint64>(read);
-    }
+
+    qint64 read = 0;
+    do {
+        Q_ASSERT(m_buffer.length() >= m_bufferPos);
+        Q_ASSERT(m_buffer.length() >= m_bufferUsed);
+        Q_ASSERT(m_bufferPos <= m_bufferUsed);
+        const size_t buffered = static_cast<size_t>(qMin(bufferedAvailable(), maxlen - read));
+        memcpy(data + read, m_buffer.constData() + m_bufferPos, buffered);
+        m_bufferPos += buffered;
+        read += buffered;
+    } while (read < maxlen && fillBuffer(maxlen) > 0);
+
+    Q_ASSERT(read > 0 || bufferedAvailable() == 0);
+    return (read == 0 && stdinAtEnd()) ? -1 : read;
 }
 
 qint64 PerfStdin::writeData(const char *data, qint64 len)
@@ -55,6 +84,55 @@ qint64 PerfStdin::writeData(const char *data, qint64 len)
     return -1;
 }
 
+void PerfStdin::receiveData()
+{
+    if (fillBuffer() > 0)
+        emit readyRead();
+    else if (stdinAtEnd())
+        close();
+}
+
+void PerfStdin::resizeBuffer(int newSize)
+{
+    QByteArray newBuffer(newSize, Qt::Uninitialized);
+    std::memcpy(newBuffer.data(), m_buffer.data() + m_bufferPos,
+                static_cast<size_t>(m_bufferUsed - m_bufferPos));
+    qSwap(m_buffer, newBuffer);
+    m_bufferUsed -= m_bufferPos;
+    Q_ASSERT(m_buffer.length() >= m_bufferUsed);
+    m_bufferPos = 0;
+}
+
+qint64 PerfStdin::fillBuffer(qint64 targetBufferSize)
+{
+    if (m_bufferUsed == m_bufferPos)
+        m_bufferPos = m_bufferUsed = 0;
+
+    targetBufferSize = qMin(targetBufferSize, static_cast<qint64>(s_maxBufferSize));
+    if (targetBufferSize > m_buffer.length())
+        resizeBuffer(static_cast<int>(targetBufferSize));
+
+    if (m_bufferUsed == m_buffer.length()) {
+        if (m_bufferPos == 0) {
+            resizeBuffer(m_bufferUsed <= s_maxBufferSize / 2 ? m_bufferUsed * 2
+                                                             : s_maxBufferSize);
+        } else {
+            resizeBuffer(m_bufferUsed);
+        }
+    }
+
+    const size_t read = fread(m_buffer.data() + m_bufferUsed, 1,
+                              static_cast<size_t>(m_buffer.length() - m_bufferUsed), stdin);
+    m_bufferUsed += read;
+    Q_ASSERT(m_buffer.length() >= m_bufferUsed);
+    return static_cast<qint64>(read);
+}
+
+bool PerfStdin::stdinAtEnd() const
+{
+    return feof(stdin) || ferror(stdin);
+}
+
 bool PerfStdin::isSequential() const
 {
     return true;
@@ -62,5 +140,5 @@ bool PerfStdin::isSequential() const
 
 qint64 PerfStdin::bytesAvailable() const
 {
-    return isOpen() ? std::numeric_limits<qint64>::max() : 0;
+    return bufferedAvailable() + QIODevice::bytesAvailable();
 }

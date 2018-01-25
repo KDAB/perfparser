@@ -282,6 +282,7 @@ int main(int argc, char *argv[])
             return;
         }
 
+        QObject::connect(infile.data(), &QIODevice::aboutToClose, &data, &PerfData::finishReading);
         QObject::connect(infile.data(), &QIODevice::readyRead, &data, &PerfData::read);
         if (infile->bytesAvailable() > 0)
             data.read();
@@ -307,7 +308,8 @@ int main(int argc, char *argv[])
     } else {
         if (!infile->open(QIODevice::ReadOnly))
             return CannotOpen;
-        QMetaObject::invokeMethod(&header, "read", Qt::QueuedConnection);
+        if (qobject_cast<QFile *>(infile.data())) // We don't get readyRead then ...
+            QTimer::singleShot(0, &header, &PerfHeader::read);
     }
 
     return app.exec();
