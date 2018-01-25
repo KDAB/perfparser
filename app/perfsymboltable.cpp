@@ -149,7 +149,7 @@ static bool memoryRead(Dwfl *, Dwarf_Addr addr, Dwarf_Word *result, void *arg)
 
     /* Check overflow. */
     if (addr + sizeof(Dwarf_Word) < addr) {
-        qDebug() << "Invalid memory read requested by dwfl" << addr;
+        qDebug() << "Invalid memory read requested by dwfl" << hex << addr;
         ui->firstGuessedFrame = ui->frames.length();
         return false;
     }
