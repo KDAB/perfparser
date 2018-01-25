@@ -63,14 +63,12 @@ public:
     void tryConnect();
 
 public slots:
-    void readingFinished();
     void processError(QAbstractSocket::SocketError error);
 
 private:
     QString host;
     quint16 port = 0;
     quint16 tries = 0;
-    bool reading = true;
 };
 
 int main(int argc, char *argv[])
@@ -283,6 +281,7 @@ int main(int argc, char *argv[])
         }
 
         QObject::connect(infile.data(), &QIODevice::aboutToClose, &data, &PerfData::finishReading);
+        QObject::connect(&data, &PerfData::finished, infile.data(), [&](){ infile->disconnect(); });
         QObject::connect(infile.data(), &QIODevice::readyRead, &data, &PerfData::read);
         if (infile->bytesAvailable() > 0)
             data.read();
@@ -302,8 +301,6 @@ int main(int argc, char *argv[])
 
     if (parser.isSet(host)) {
         PerfTcpSocket *socket = static_cast<PerfTcpSocket *>(infile.data());
-        QObject::connect(socket, &QTcpSocket::disconnected, &data, &PerfData::finishReading);
-        QObject::connect(&data, &PerfData::finished, socket, &PerfTcpSocket::readingFinished);
         socket->tryConnect();
     } else {
         if (!infile->open(QIODevice::ReadOnly))
@@ -318,13 +315,11 @@ int main(int argc, char *argv[])
 
 void PerfTcpSocket::processError(QAbstractSocket::SocketError error)
 {
-    if (reading) {
-        qWarning() << "socket error" << error << errorString();
-        if (tries > 10)
-            qApp->exit(TcpSocketError);
-        else
-            QTimer::singleShot(1 << tries, this, &PerfTcpSocket::tryConnect);
-    } // Otherwise ignore the error. We don't need the socket anymore
+    qWarning() << "socket error" << error << errorString();
+    if (tries > 10)
+        qApp->exit(TcpSocketError);
+    else
+        QTimer::singleShot(1 << tries, this, &PerfTcpSocket::tryConnect);
 }
 
 
@@ -339,11 +334,6 @@ void PerfTcpSocket::tryConnect()
 {
     ++tries;
     connectToHost(host, port, QIODevice::ReadOnly);
-}
-
-void PerfTcpSocket::readingFinished()
-{
-    reading = false;
 }
 
 #include "main.moc"
