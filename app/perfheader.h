@@ -69,7 +69,9 @@ public:
     qint64 featureOffset() const { return m_data.offset + m_data.size; }
     qint64 dataOffset() const { return m_data.offset; }
     qint64 dataSize() const { return m_data.size; }
-    bool isPipe() const { return m_size == s_pipeHeaderSize; }
+    bool isPipe() const { return m_size == pipeHeaderFixedLength(); }
+
+    qint64 size() const { return m_size; }
 
 public slots:
     void read();
@@ -79,6 +81,9 @@ signals:
     void error();
 
 private:
+    static quint16 fileHeaderFixedLength();
+    static quint16 pipeHeaderFixedLength();
+
     QIODevice *m_source;
 
     qint64 m_magic;
@@ -93,6 +98,4 @@ private:
 
     static const qint64 s_magicSame = 0x32454c4946524550LL;
     static const qint64 s_magicSwitched = 0x50455246494c4532LL;
-    static const qint64 s_pipeHeaderSize = 16LL;
-    static const qint64 s_perfHeaderSize = 104LL;
 };

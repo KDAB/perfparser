@@ -36,14 +36,13 @@ void PerfHeader::read()
 
     QDataStream stream(m_source);
     if (m_size == 0) {
-        const auto expectedSize = static_cast<qint64>(sizeof(m_magic) + sizeof(m_size));
-        if (!m_source->isSequential() && m_source->size() < expectedSize) {
+        if (!m_source->isSequential() && m_source->size() < pipeHeaderFixedLength()) {
             qWarning() << "File is too small for perf header.";
             emit error();
             return;
         }
 
-        if (m_source->bytesAvailable() < expectedSize)
+        if (m_source->bytesAvailable() < pipeHeaderFixedLength())
             return;
 
         stream >> m_magic;
@@ -59,15 +58,21 @@ void PerfHeader::read()
         stream >> m_size;
     }
 
-    if (m_size == s_perfHeaderSize) {
-        if (!m_source->isSequential() && m_source->size() < static_cast<qint64>(m_size)) {
+    if (m_size < pipeHeaderFixedLength()) {
+        qWarning() << "Header claims to be smaller than magic + size:" << m_size;
+        emit error();
+        return;
+    } else if (m_size > pipeHeaderFixedLength()) {
+        // read extended header information only available in perf.data files,
+        // not in piped perf streams
+
+        if (!m_source->isSequential() && m_source->size() < fileHeaderFixedLength()) {
             qWarning() << "File is too small for perf header.";
             emit error();
             return;
         }
 
-        if (m_source->bytesAvailable()
-                < m_size - static_cast<qint64>(sizeof(m_magic) + sizeof(m_size)))
+        if (m_source->bytesAvailable() < fileHeaderFixedLength() - pipeHeaderFixedLength())
             return;
 
         // file header
@@ -96,6 +101,16 @@ void PerfHeader::read()
             emit error();
             return;
         }
+
+        if (m_size > fileHeaderFixedLength()) {
+            if (m_size > std::numeric_limits<int>::max()) {
+                qWarning() << "Excessively large perf file header:" << m_size;
+                emit error();
+                return;
+            }
+            qWarning() << "Header not completely read.";
+            stream.skipRawData(static_cast<int>(m_size) - fileHeaderFixedLength());
+        }
     } else {
         // pipe header, anything to do here?
     }
@@ -103,6 +118,19 @@ void PerfHeader::read()
     disconnect(m_source, &QIODevice::readyRead, this, &PerfHeader::read);
     m_source = nullptr;
     emit finished();
+}
+
+quint16 PerfHeader::pipeHeaderFixedLength()
+{
+    return sizeof(m_magic) + sizeof(m_size);
+}
+
+quint16 PerfHeader::fileHeaderFixedLength()
+{
+    return pipeHeaderFixedLength()
+            + sizeof(m_attrSize)
+            + 3 * PerfFileSection::fixedLength() // m_attrs, m_data, m_eventTypes
+            + sizeof(m_features);
 }
 
 QDataStream::ByteOrder PerfHeader::byteOrder() const
