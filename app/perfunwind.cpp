@@ -368,6 +368,9 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
 void PerfUnwind::unwindStack()
 {
     Dwfl *dwfl = symbolTable(m_currentUnwind.sample->pid())->attachDwfl(&m_currentUnwind);
+    if (!dwfl)
+        return;
+
     dwfl_getthread_frames(dwfl, m_currentUnwind.sample->pid(), frameCallback, &m_currentUnwind);
     if (m_currentUnwind.isInterworking) {
         QVector<qint32> savedFrames = m_currentUnwind.frames;
