@@ -53,7 +53,7 @@ bool PerfKallsyms::parseMapping(const QString &path)
 
         bool ok = false;
         entry.address = address.toULongLong(&ok, 16);
-        if (!ok) {
+        if (!ok && address != "(null)") {
             m_errorString = tr("Invalid address: %1").arg(QString::fromUtf8(address));
             valid = false;
             break;
