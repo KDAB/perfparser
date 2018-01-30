@@ -67,7 +67,15 @@ private slots:
             const auto kallsyms = QByteArrayLiteral("0000000000000000 A irq_stack_union");
             QTest::newRow("zeros-only") << kallsyms << 0x0ull
                 << 0x0ull << QByteArrayLiteral("irq_stack_union") << QByteArray();
-            QTest::newRow("zeros-only") << kallsyms << std::numeric_limits<quint64>::max()
+            QTest::newRow("zeros-only2") << kallsyms << std::numeric_limits<quint64>::max()
+                << 0x0ull
+                << QByteArrayLiteral("irq_stack_union") << QByteArray();
+        }
+        {
+            const auto kallsyms = QByteArrayLiteral("          (null) A irq_stack_union");
+            QTest::newRow("null-only") << kallsyms << 0x0ull
+                << 0x0ull << QByteArrayLiteral("irq_stack_union") << QByteArray();
+            QTest::newRow("null-only2") << kallsyms << std::numeric_limits<quint64>::max()
                 << 0x0ull
                 << QByteArrayLiteral("irq_stack_union") << QByteArray();
         }
