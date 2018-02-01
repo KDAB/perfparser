@@ -284,7 +284,7 @@ private:
 
     Stats m_stats;
 
-    void unwindStack(Dwfl *dwfl);
+    void unwindStack();
     void resolveCallchain();
     void analyze(const PerfRecordSample &sample);
     void sendBuffer(const QByteArray &buffer);
