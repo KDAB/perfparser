@@ -62,7 +62,8 @@ bool PerfKallsyms::parseMapping(const QString &path)
         if (eol == '\t')
             stream >> entry.module;
 
-        m_entries.push_back(entry);
+        if (entry.address != 0)
+            m_entries.push_back(entry);
     }
 
     if (valid && m_entries.isEmpty()) {
