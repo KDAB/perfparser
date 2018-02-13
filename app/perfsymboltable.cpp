@@ -29,6 +29,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QStack>
+#include <QRegularExpression>
 
 #include <tuple>
 #include <cstring>
@@ -300,11 +301,10 @@ QFileInfo PerfSymbolTable::findFile(const char *path, const QString &fileName,
     return fullPath;
 }
 
-// returns true for special regions, such as [heap], [vdso], [stack], ... as well as //anon
+// returns true for special regions, such as [heap], [vdso], [stack], [kernel.kallsyms]_text ... as well as //anon
 static bool isSpecialRegion(const QByteArray& filePath)
 {
-    return (filePath.startsWith('[') && filePath.endsWith(']'))
-        || filePath == "//anon"
+    return filePath.startsWith('[') || filePath == "//anon"
         || filePath == "/SYSV00000000 (deleted)";
 }
 
