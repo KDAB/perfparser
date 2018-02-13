@@ -286,8 +286,8 @@ QFileInfo PerfSymbolTable::findFile(const char *path, const QString &fileName,
 void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &buildId)
 {
     QString filePath(mmap.filename());
-    // special regions, such as [heap], [vdso], [stack], ... as well as //anon
-    const bool isSpecialRegion = (filePath.startsWith('[') && filePath.endsWith(']'))
+    // special regions, such as [heap], [vdso], [stack], [kernel.kallsyms]_text ... as well as //anon
+    const bool isSpecialRegion = (filePath.startsWith('[') && filePath.contains(']'))
                               || filePath.startsWith(QLatin1String("/dev/"))
                               || filePath.startsWith(QLatin1String("/memfd:"))
                               || filePath.startsWith(QLatin1String("/SYSV"))
