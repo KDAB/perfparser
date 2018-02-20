@@ -35,6 +35,7 @@ private slots:
         QTest::addColumn<quint64>("expectedAddress");
         QTest::addColumn<QByteArray>("expectedSymbol");
         QTest::addColumn<QByteArray>("expectedModule");
+        QTest::addColumn<bool>("expectedFailsParse");
 
         {
             const QByteArray kallsyms =
@@ -49,35 +50,36 @@ private slots:
                 "ffffffffa0000de0 T serio_unregister_driver\t[serio]\n";
 
             QTest::newRow("__per_cpu_start:0") << kallsyms << 0x0ull
-                 << 0x0ull << QByteArrayLiteral("__per_cpu_start") << QByteArray();
+                 << 0x0ull << QByteArray() << QByteArray() << false;
             QTest::newRow("_stext:0") << kallsyms << 0xffffffff810002b8ull
-                << 0xffffffff810002b8ull << QByteArrayLiteral("_stext") << QByteArray();
+                << 0xffffffff810002b8ull << QByteArrayLiteral("_stext") << QByteArray() << false;
             QTest::newRow("_stext:2") << kallsyms << (0xffffffff810002b8ll + 0x2ull)
-                << 0xffffffff810002b8ll << QByteArrayLiteral("_stext") << QByteArray();
+                << 0xffffffff810002b8ll << QByteArrayLiteral("_stext") << QByteArray() << false;
             QTest::newRow("xen_hypercall_set_gdt:0") << kallsyms << 0xffffffff81001040ull
-                << 0xffffffff81001040ull << QByteArrayLiteral("xen_hypercall_set_gdt") << QByteArray();
+                << 0xffffffff81001040ull << QByteArrayLiteral("xen_hypercall_set_gdt") << QByteArray() << false;
             QTest::newRow("xen_hypercall_set_gdt:256") << kallsyms << (0xffffffff81001040ull + 0x100ull)
-                << 0xffffffff81001040ull << QByteArrayLiteral("xen_hypercall_set_gdt") << QByteArray();
+                << 0xffffffff81001040ull << QByteArrayLiteral("xen_hypercall_set_gdt") << QByteArray() << false;
             QTest::newRow("xen_hypercall_set_gdt:256") << kallsyms << (0xffffffff81001040ull + 0x100ull)
-                << 0xffffffff81001040ull << QByteArrayLiteral("xen_hypercall_set_gdt") << QByteArray();
+                << 0xffffffff81001040ull << QByteArrayLiteral("xen_hypercall_set_gdt") << QByteArray() << false;
             QTest::newRow("serio_interrupt:0") << kallsyms << 0xffffffffa0000e80ull
-                << 0xffffffffa0000e80ull << QByteArrayLiteral("serio_interrupt") << QByteArrayLiteral("[serio]");
-        }
+                << 0xffffffffa0000e80ull << QByteArrayLiteral("serio_interrupt") << QByteArrayLiteral("[serio]") << false;
         {
             const auto kallsyms = QByteArrayLiteral("0000000000000000 A irq_stack_union");
             QTest::newRow("zeros-only") << kallsyms << 0x0ull
-                << 0x0ull << QByteArrayLiteral("irq_stack_union") << QByteArray();
+                << 0x0ull << QByteArray() << QByteArray() << true;
             QTest::newRow("zeros-only2") << kallsyms << std::numeric_limits<quint64>::max()
                 << 0x0ull
-                << QByteArrayLiteral("irq_stack_union") << QByteArray();
+                << QByteArray() << QByteArray() << true;
         }
         {
             const auto kallsyms = QByteArrayLiteral("          (null) A irq_stack_union");
             QTest::newRow("null-only") << kallsyms << 0x0ull
-                << 0x0ull << QByteArrayLiteral("irq_stack_union") << QByteArray();
+                << 0x0ull << QByteArray() << QByteArray() << true;
             QTest::newRow("null-only2") << kallsyms << std::numeric_limits<quint64>::max()
                 << 0x0ull
-                << QByteArrayLiteral("irq_stack_union") << QByteArray();
+                << QByteArrayLiteral("irq_stack_union") << QByteArray() << true;
+
+        }
         }
     }
 
@@ -88,6 +90,7 @@ private slots:
         QFETCH(quint64, expectedAddress);
         QFETCH(QByteArray, expectedSymbol);
         QFETCH(QByteArray, expectedModule);
+        QFETCH(bool, expectedFailsParse);
 
         QTemporaryFile file;
         QVERIFY(file.open());
@@ -95,13 +98,15 @@ private slots:
         file.flush();
 
         PerfKallsyms kallsyms;
-        QVERIFY(kallsyms.parseMapping(file.fileName()));
-        QVERIFY(kallsyms.errorString().isEmpty());
+        QCOMPARE(kallsyms.parseMapping(file.fileName()), !expectedFailsParse);
+        QVERIFY(kallsyms.errorString().isEmpty() == !expectedFailsParse);
 
-        const auto entry = kallsyms.findEntry(address);
-        QCOMPARE(entry.address, expectedAddress);
-        QCOMPARE(entry.symbol, expectedSymbol);
-        QCOMPARE(entry.module, expectedModule);
+        if (!expectedFailsParse) {
+            const auto entry = kallsyms.findEntry(address);
+            QCOMPARE(entry.address, expectedAddress);
+            QCOMPARE(entry.symbol, expectedSymbol);
+            QCOMPARE(entry.module, expectedModule);
+        }
     }
 
     void testProc()

@@ -36,7 +36,9 @@
 #include <QAbstractSocket>
 #include <QTcpSocket>
 #include <QTimer>
+
 #include <limits>
+#include <signal.h>
 
 #ifdef Q_OS_WIN
 #include <io.h>
@@ -76,6 +78,12 @@ int main(int argc, char *argv[])
     QCoreApplication app(argc, argv);
     app.setApplicationName(QLatin1String("perfparser"));
     app.setApplicationVersion(QLatin1String("4.5"));
+
+    if (qEnvironmentVariableIsSet("PERFPARSER_DEBUG_WAIT")) {
+        qWarning("PERFPARSER_DEBUG_WAIT is set, halting perfparser.");
+        qWarning("Continue with \"kill -SIGCONT %lld\" or by attaching a debugger.", app.applicationPid());
+        kill(app.applicationPid(), SIGSTOP);
+    }
 
     QCommandLineParser parser;
     parser.setApplicationDescription(QLatin1String("Perf data parser and unwinder."));
