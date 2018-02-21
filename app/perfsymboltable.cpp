@@ -571,6 +571,12 @@ int PerfSymbolTable::findDebugInfo(Dwfl_Module *module, const char *moduleName, 
         debugLinkFile = findDebugInfoFile(m_unwind->systemRoot(), path, debugLinkString);
     }
 
+    /// FIXME: find a proper solution to this
+    if (!debugLinkFile.isFile() && QByteArray(file).endsWith("/elf")) {
+        // fall-back to original file if it's in a build-id path
+        debugLinkFile.setFile(file);
+    }
+
     if (!debugLinkFile.isFile())
         return ret;
 
