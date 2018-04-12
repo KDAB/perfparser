@@ -553,19 +553,38 @@ static QFileInfo findDebugInfoFile(const QString &root, const QString &file,
                                    const QString &debugLinkString)
 {
     auto dir = QFileInfo(root).dir();
+    const auto folder = QFileInfo(file).path();
+
     QFileInfo debugLinkFile;
+
+    if (!folder.isEmpty()) {
+        debugLinkFile.setFile(dir, folder + QDir::separator() + debugLinkString);
+        if (debugLinkFile.isFile())
+            return debugLinkFile;
+    }
+
     debugLinkFile.setFile(dir, file + QDir::separator() + debugLinkString);
     if (debugLinkFile.isFile())
         return debugLinkFile;
+
     // try again in .debug folder
+    if (!folder.isEmpty()) {
+        debugLinkFile.setFile(dir, folder + QDir::separator() + QLatin1String(".debug")
+                                    + QDir::separator() + debugLinkString);
+        if (debugLinkFile.isFile())
+            return debugLinkFile;
+    }
+
     debugLinkFile.setFile(dir, file + QDir::separator() + QLatin1String(".debug")
                                 + QDir::separator() + debugLinkString);
     if (debugLinkFile.isFile())
         return debugLinkFile;
+
     // try again in /usr/lib/debug folder
     debugLinkFile.setFile(dir, QLatin1String("usr") + QDir::separator() + QLatin1String("lib")
-                                + QDir::separator() + QLatin1String("debug") + QDir::separator() + QFileInfo(file).path()
+                                + QDir::separator() + QLatin1String("debug") + QDir::separator() + folder
                                 + QDir::separator() + debugLinkString);
+
     return debugLinkFile;
 }
 
