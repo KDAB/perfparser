@@ -26,6 +26,7 @@ PerfHeader::PerfHeader(QIODevice *source)  :
     m_source(source), m_magic(0), m_size(0), m_attrSize(0)
 {
     connect(source, &QIODevice::readyRead, this, &PerfHeader::read);
+    connect(source, &QIODevice::aboutToClose, this, &PerfHeader::error);
     for (uint i = 0; i < sizeof(m_features) / sizeof(quint64); ++i)
         m_features[i] = 0;
 }
@@ -116,6 +117,7 @@ void PerfHeader::read()
     }
 
     disconnect(m_source, &QIODevice::readyRead, this, &PerfHeader::read);
+    disconnect(m_source, &QIODevice::aboutToClose, this, &PerfHeader::error);
     m_source = nullptr;
     emit finished();
 }
