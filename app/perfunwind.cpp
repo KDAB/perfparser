@@ -395,6 +395,7 @@ void PerfUnwind::unwindStack()
 void PerfUnwind::resolveCallchain()
 {
     bool isKernel = false;
+    bool addedUserFrames = false;
     PerfSymbolTable *symbols = symbolTable(m_currentUnwind.sample->pid());
     for (int i = 0; i < m_currentUnwind.sample->callchain().length(); ++i) {
         quint64 ip = m_currentUnwind.sample->callchain()[i];
@@ -417,21 +418,21 @@ void PerfUnwind::resolveCallchain()
                 qWarning() << "invalid callchain context" << ip;
                 return;
             }
-        }
+        } else {
+            if (!addedUserFrames && !isKernel && ip != m_currentUnwind.sample->ip()) {
+                // sometimes it skips the first user frame.
+                symbols->attachDwfl(&m_currentUnwind);
+                m_currentUnwind.frames.append(symbols->lookupFrame(
+                                                  m_currentUnwind.sample->ip(), false,
+                                                  &m_currentUnwind.isInterworking));
+            }
 
-        // sometimes it skips the first user frame.
-        if (i == 0 && !isKernel && ip != m_currentUnwind.sample->ip()) {
-            symbols->attachDwfl(&m_currentUnwind);
-            m_currentUnwind.frames.append(symbols->lookupFrame(
-                                              m_currentUnwind.sample->ip(), false,
-                                              &m_currentUnwind.isInterworking));
-        }
-
-        if (ip <= PERF_CONTEXT_MAX) {
             symbols->attachDwfl(&m_currentUnwind);
             m_currentUnwind.frames.append(symbols->lookupFrame(
                                               ip, isKernel,
                                               &m_currentUnwind.isInterworking));
+            if (!isKernel)
+                addedUserFrames = true;
         }
 
         if (symbols->cacheIsDirty())
