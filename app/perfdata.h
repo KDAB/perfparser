@@ -488,6 +488,7 @@ private:
     const PerfHeader *m_header;
     PerfAttributes *m_attributes;
     PerfEventHeader m_eventHeader;
+    PerfTracingData m_tracingData;
 
     ReadStatus processEvents(QDataStream &stream);
     ReadStatus doRead();

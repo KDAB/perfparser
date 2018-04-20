@@ -242,8 +242,10 @@ bool PerfTracingData::readEventFormats(QDataStream &stream, const QByteArray &sy
             }
         }
 
-        if (!seenId)
+        if (!seenId) {
+            qWarning() << "No ID seen in event format";
             return false;
+        }
 
         m_eventFormats[id] = event;
     }

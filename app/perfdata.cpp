@@ -147,15 +147,20 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
         if (contentSize == 4) {
             // The content is actually another 4 byte integer,
             // describing the size of the real content that follows.
-            PerfTracingData tracing;
-            quint32 size;
-            stream >> size;
-            tracing.setSize(size);
-            stream >> tracing;
-            m_destination->tracing(tracing);
+            if (m_tracingData.size() == 0) {
+                quint32 size;
+                stream >> size;
+                m_tracingData.setSize(size);
+            }
+            if (stream.device()->bytesAvailable() >= m_tracingData.size()) {
+                stream >> m_tracingData;
+                m_destination->tracing(m_tracingData);
+                m_tracingData = PerfTracingData();
+            } else {
+                return Rerun;
+            }
         } else {
-            // Maybe someone with a brain will fix this eventually ...
-            // then we'll hit this branch.
+            // contentSize is only 16bit. The tracing data frequently exceeds 2^16 bytes.
             qWarning() << "HEADER_TRACING_DATA with unexpected contentSize" << contentSize;
             stream.skipRawData(contentSize);
         }
