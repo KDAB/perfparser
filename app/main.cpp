@@ -390,19 +390,22 @@ int main(int argc, char *argv[])
 
 void PerfTcpSocket::processError(QAbstractSocket::SocketError error)
 {
+    if (error == QAbstractSocket::RemoteHostClosedError)
+        return;
+
     qWarning() << "socket error" << error << errorString();
-    if (tries > 10)
+    if (state() == QAbstractSocket::ConnectedState || tries > 10)
         qApp->exit(TcpSocketError);
     else
         QTimer::singleShot(1 << tries, this, &PerfTcpSocket::tryConnect);
 }
 
-
 PerfTcpSocket::PerfTcpSocket(QCoreApplication *app, const QString &host, quint16 port) :
     QTcpSocket(app), host(host), port(port)
 {
-    connect(this, SIGNAL(error(QAbstractSocket::SocketError)),
-            this, SLOT(processError(QAbstractSocket::SocketError)));
+    connect(this, QOverload<QAbstractSocket::SocketError>::of(&QTcpSocket::error),
+            this, &PerfTcpSocket::processError);
+    connect(this, &QAbstractSocket::disconnected, this, &QIODevice::close);
 }
 
 void PerfTcpSocket::tryConnect()
