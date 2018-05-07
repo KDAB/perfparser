@@ -23,6 +23,7 @@
 
 #include "perfheader.h"
 #include "perfattributes.h"
+#include "perftracingdata.h"
 
 #include <QHash>
 #include <QVector>
@@ -163,6 +164,7 @@ public:
     const QByteArray &architecture() const { return m_arch.value; }
     void setArchitecture(const QByteArray &arch) { m_arch.value = arch; }
 
+    PerfTracingData tracingData() const { return m_tracingData; }
     PerfBuildId buildId() const { return m_buildId; }
     QByteArray hostName() const { return m_hostName.value; }
     QByteArray osRelease() const { return m_osRelease.value; }
@@ -183,6 +185,7 @@ private:
     void createFeature(QIODevice *device, QDataStream::ByteOrder byteOrder,
                        const PerfFileSection &section, PerfHeader::Feature featureId);
 
+    PerfTracingData m_tracingData;
     PerfBuildId m_buildId;
     PerfStringFeature m_hostName;
     PerfStringFeature m_osRelease;

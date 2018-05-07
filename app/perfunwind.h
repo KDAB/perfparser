@@ -24,6 +24,7 @@
 #include "perfdata.h"
 #include "perfregisterinfo.h"
 #include "perfkallsyms.h"
+#include "perftracingdata.h"
 
 #include <libdwfl.h>
 
@@ -57,6 +58,8 @@ public:
         Error,
         Sample45, // now obsolete
         Progress,
+        TracePointFormat,
+        TracePointSample,
         ContextSwitchDefinition,
         Sample,
         InvalidType
@@ -172,11 +175,15 @@ public:
         m_architecture = architecture;
     }
 
+    void setByteOrder(QSysInfo::Endian byteOrder) { m_byteOrder = byteOrder; }
+    QSysInfo::Endian byteOrder() const { return m_byteOrder; }
+
     void registerElf(const PerfRecordMmap &mmap);
     void comm(const PerfRecordComm &comm);
     void attr(const PerfRecordAttr &attr);
     void lost(const PerfRecordLost &lost);
     void features(const PerfFeatures &features);
+    void tracing(const PerfTracingData &tracingData);
     void finishedRound();
     void contextSwitch(const PerfRecordContextSwitch &contextSwitch);
 
@@ -189,6 +196,7 @@ public:
     Dwfl *dwfl(qint32 pid);
 
     qint32 resolveString(const QByteArray &string);
+    qint32 lookupString(const QByteArray &string);
 
     void addAttributes(const PerfEventAttributes &attributes, const QByteArray &name,
                        const QList<quint64> &ids);
@@ -281,6 +289,7 @@ private:
     QList<TaskEvent> m_taskEventsBuffer;
     QHash<qint32, PerfSymbolTable *> m_symbolTables;
     PerfKallsyms m_kallsyms;
+    PerfTracingData m_tracingData;
 
     QHash<QByteArray, qint32> m_strings;
     QHash<Location, qint32> m_locations;
@@ -293,6 +302,7 @@ private:
     uint m_maxEventBufferSize;
     uint m_eventBufferSize;
     quint64 m_lastFlushMaxTime;
+    QSysInfo::Endian m_byteOrder = QSysInfo::LittleEndian;
 
     Stats m_stats;
 
@@ -305,10 +315,13 @@ private:
     void sendSymbol(qint32 id, const Symbol &symbol);
     void sendAttributes(qint32 id, const PerfEventAttributes &attributes, const QByteArray &name);
     void sendTaskEvent(const TaskEvent &taskEvent);
+    void sendEventFormat(qint32 id, const EventFormat &format);
 
     template<typename Event>
     void bufferEvent(const Event &event, QList<Event> *buffer, uint *eventCounter);
     void flushEventBuffer(uint desiredBufferSize);
+
+    QVariant readTraceData(const QByteArray &data, const FormatField &field, bool byteSwap);
 };
 
 uint qHash(const PerfUnwind::Location &location, uint seed = 0);

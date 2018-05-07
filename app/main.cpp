@@ -38,7 +38,8 @@
 #include <QTimer>
 
 #include <limits>
-#include <signal.h>
+#include <cstring>
+#include <csignal>
 
 #ifdef Q_OS_WIN
 #include <io.h>
@@ -147,11 +148,7 @@ int main(int argc, char *argv[])
                                QLatin1String("path"));
     parser.addOption(appPath);
 
-    const auto defaultArch =
-            PerfRegisterInfo::s_defaultArchitecture != PerfRegisterInfo::ARCH_INVALID
-            ? QLatin1String(PerfRegisterInfo::s_archNames[PerfRegisterInfo::s_defaultArchitecture])
-            : QString();
-
+    const auto defaultArch = QLatin1String(PerfRegisterInfo::defaultArchitecture());
     QCommandLineOption arch(QLatin1String("arch"),
                             QCoreApplication::translate(
                                 "main",
@@ -259,6 +256,7 @@ int main(int argc, char *argv[])
     features.setArchitecture(parser.value(arch).toLatin1());
 
     QObject::connect(&header, &PerfHeader::finished, [&]() {
+        unwind.setByteOrder(static_cast<QSysInfo::Endian>(header.byteOrder()));
         if (!header.isPipe()) {
             const qint64 filePos = infile->pos();
             if (!attributes.read(infile.data(), &header)) {
@@ -283,12 +281,7 @@ int main(int argc, char *argv[])
         }
 
         const QByteArray &featureArch = features.architecture();
-        for (uint i = 0; i < PerfRegisterInfo::ARCH_INVALID; ++i) {
-            if (featureArch.startsWith(PerfRegisterInfo::s_archNames[i])) {
-                unwind.setArchitecture(static_cast<PerfRegisterInfo::Architecture>(i));
-                break;
-            }
-        }
+        unwind.setArchitecture(PerfRegisterInfo::archByName(featureArch));
 
         if (unwind.architecture() == PerfRegisterInfo::ARCH_INVALID) {
             qWarning() << "No information about CPU architecture found. Cannot unwind.";

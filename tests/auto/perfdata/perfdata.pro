@@ -1,4 +1,5 @@
 include(../../../elfutils.pri)
+include(../shared/shared.pri)
 
 QT += testlib
 QT -= gui
@@ -21,6 +22,7 @@ SOURCES += \
     ../../../app/perfkallsyms.cpp \
     ../../../app/perfregisterinfo.cpp \
     ../../../app/perfsymboltable.cpp \
+    ../../../app/perftracingdata.cpp \
     ../../../app/perfunwind.cpp
 
 HEADERS += \
@@ -33,6 +35,7 @@ HEADERS += \
     ../../../app/perfkallsyms.h \
     ../../../app/perfregisterinfo.h \
     ../../../app/perfsymboltable.h \
+    ../../../app/perftracingdata.h \
     ../../../app/perfunwind.h
 
 RESOURCES += \

@@ -32,15 +32,22 @@ QDataStream &operator>>(QDataStream &stream, PerfEventAttributes &attrs)
     quint64 flags;
     stream >> attrs.m_type >> attrs.m_size;
 
-    if (attrs.m_size < PerfEventAttributes::fixedLength()) {
+    if (attrs.m_size < PerfEventAttributes::SIZE_VER0) {
         qWarning() << "unsupported file format";
         return stream;
     }
 
     stream >> attrs.m_config >> attrs.m_samplePeriod >> attrs.m_sampleType >> attrs.m_readFormat
-           >> flags >> attrs.m_wakeupEvents >> attrs.m_bpType >> attrs.m_bpAddr >> attrs.m_bpLen
-           >> attrs.m_branchSampleType >> attrs.m_sampleRegsUser >> attrs.m_sampleStackUser
-           >> attrs.m_reserved2;
+           >> flags >> attrs.m_wakeupEvents >> attrs.m_bpType >> attrs.m_bpAddr;
+
+    if (attrs.m_size > PerfEventAttributes::SIZE_VER0)
+        stream >> attrs.m_bpLen;
+
+    if (attrs.m_size > PerfEventAttributes::SIZE_VER1)
+        stream >> attrs.m_branchSampleType;
+
+    if (attrs.m_size > PerfEventAttributes::SIZE_VER2)
+        stream >> attrs.m_sampleRegsUser >> attrs.m_sampleStackUser >> attrs.m_reserved2;
 
     if (static_cast<QSysInfo::Endian>(stream.byteOrder()) != QSysInfo::ByteOrder) {
         // bit fields are saved in byte order; who came up with that BS?
@@ -54,13 +61,15 @@ QDataStream &operator>>(QDataStream &stream, PerfEventAttributes &attrs)
 
     *(&attrs.m_readFormat + 1) = flags;
 
-    static const int intMax = std::numeric_limits<int>::max();
-    quint32 skip = attrs.m_size - PerfEventAttributes::fixedLength();
-    if (skip > intMax) {
-        stream.skipRawData(intMax);
-        skip -= intMax;
+    if (attrs.m_size > PerfEventAttributes::SIZE_VER3) {
+        static const int intMax = std::numeric_limits<int>::max();
+        quint32 skip = attrs.m_size - PerfEventAttributes::SIZE_VER3;
+        if (skip > intMax) {
+            stream.skipRawData(intMax);
+            skip -= intMax;
+        }
+        stream.skipRawData(static_cast<int>(skip));
     }
-    stream.skipRawData(static_cast<int>(skip));
 
     return stream;
 }
@@ -160,15 +169,6 @@ QByteArray PerfEventAttributes::name() const
     }
 }
 
-quint16 PerfEventAttributes::fixedLength()
-{
-    return sizeof(m_type) + sizeof(m_type) + sizeof(m_config) + sizeof(m_sampleFreq)
-            + sizeof(m_sampleType) + sizeof(m_readFormat) + sizeof(quint64) // flags
-            + sizeof(m_wakeupEvents) + sizeof(m_bpType) + sizeof(m_bpAddr) + sizeof(m_bpLen)
-            + sizeof(m_branchSampleType) + sizeof(m_sampleRegsUser) + sizeof(m_sampleStackUser)
-            + sizeof(m_reserved2);
-}
-
 bool PerfEventAttributes::operator==(const PerfEventAttributes &rhs) const
 {
     return m_type == rhs.m_type
@@ -210,7 +210,7 @@ bool PerfEventAttributes::operator==(const PerfEventAttributes &rhs) const
 
 bool PerfAttributes::read(QIODevice *device, PerfHeader *header)
 {
-    if (header->attrSize() < PerfEventAttributes::fixedLength() + PerfFileSection::fixedLength()) {
+    if (header->attrSize() < PerfEventAttributes::SIZE_VER0 + PerfFileSection::fixedLength()) {
         qWarning() << "unsupported file format";
         return false;
     }
@@ -230,7 +230,7 @@ bool PerfAttributes::read(QIODevice *device, PerfHeader *header)
         stream.setByteOrder(header->byteOrder());
         stream >> attrs;
 
-        if (attrs.size() < PerfEventAttributes::fixedLength())
+        if (attrs.size() < PerfEventAttributes::SIZE_VER0)
             return false;
 
         if (i == 0)
