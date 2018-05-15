@@ -323,7 +323,6 @@ void PerfUnwind::features(const PerfFeatures &features)
                                                << features.buildIds()
                                                << features.cpuTopology()
                                                << features.numaTopology()
-                                               << features.branchStack()
                                                << features.pmuMappings()
                                                << features.groupDescs();
     sendBuffer(buffer);

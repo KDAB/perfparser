@@ -94,7 +94,7 @@ void PerfFeatures::createFeature(QIODevice *device, QDataStream::ByteOrder byteO
         stream >> m_numaToplogy;
         break;
     case PerfHeader::BRANCH_STACK:
-        stream >> m_branchStack;
+        // Doesn't really exist
         break;
     case PerfHeader::PMU_MAPPINGS:
         stream >> m_pmuMappings;
@@ -296,20 +296,6 @@ QDataStream &operator>>(QDataStream &stream, PerfNumaTopology &numaTopology)
 QDataStream &operator<<(QDataStream &stream, const PerfNumaTopology::NumaNode &node)
 {
     return stream << node.nodeId << node.memTotal << node.memFree << node.topology;
-}
-
-QDataStream &operator>>(QDataStream &stream, PerfBranchStack &branchStack)
-{
-    // Doesn't really exist.
-    Q_UNUSED(stream);
-    Q_UNUSED(branchStack);
-    return stream;
-}
-
-QDataStream &operator<<(QDataStream &stream, const PerfBranchStack &branchStack)
-{
-    Q_UNUSED(branchStack);
-    return stream;
 }
 
 QDataStream &operator>>(QDataStream &stream, PerfPmuMappings &pmuMappings)

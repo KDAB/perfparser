@@ -121,12 +121,6 @@ struct PerfNumaTopology {
 QDataStream &operator>>(QDataStream &stream, PerfNumaTopology &numaTopology);
 QDataStream &operator<<(QDataStream &stream, const PerfNumaTopology::NumaNode &numaNode);
 
-struct PerfBranchStack {
-};
-
-QDataStream &operator>>(QDataStream &stream, PerfBranchStack &branchStack);
-QDataStream &operator<<(QDataStream &stream, const PerfBranchStack &branchStack);
-
 struct PerfPmuMappings {
 
     struct Pmu {
@@ -176,7 +170,6 @@ public:
     PerfEventDesc eventDesc() const { return m_eventDesc; }
     PerfCpuTopology cpuTopology() const { return m_cpuTopology; }
     QList<PerfNumaTopology::NumaNode> numaTopology() const { return m_numaToplogy.nodes; }
-    PerfBranchStack branchStack() const { return m_branchStack; }
     QList<PerfPmuMappings::Pmu> pmuMappings() const { return m_pmuMappings.pmus; }
     QList<PerfGroupDesc::GroupDesc> groupDescs() const { return m_groupDesc.groupDescs; }
 
@@ -198,7 +191,6 @@ private:
     PerfEventDesc m_eventDesc;
     PerfCpuTopology m_cpuTopology;
     PerfNumaTopology m_numaToplogy;
-    PerfBranchStack m_branchStack;
     PerfPmuMappings m_pmuMappings;
     PerfGroupDesc m_groupDesc;
 };
