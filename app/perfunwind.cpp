@@ -320,15 +320,15 @@ void PerfUnwind::features(const PerfFeatures &features)
                                                << features.cpuId()
                                                << features.totalMem()
                                                << features.cmdline()
-                                               << features.buildId()
+                                               << features.buildIds()
                                                << features.cpuTopology()
                                                << features.numaTopology()
                                                << features.branchStack()
                                                << features.pmuMappings()
-                                               << features.groupDesc();
+                                               << features.groupDescs();
     sendBuffer(buffer);
 
-    const auto &buildIds = features.buildId().buildIds;
+    const auto buildIds = features.buildIds();
     m_buildIds.reserve(buildIds.size());
     for (const auto &buildId : buildIds) {
         m_buildIds[buildId.fileName] = buildId.id;

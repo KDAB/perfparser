@@ -56,7 +56,7 @@ struct PerfBuildId {
 };
 
 QDataStream &operator>>(QDataStream &stream, PerfBuildId &buildId);
-QDataStream &operator<<(QDataStream &stream, const PerfBuildId &buildId);
+QDataStream &operator<<(QDataStream &stream, const PerfBuildId::BuildId &buildId);
 
 struct PerfStringFeature {
     QByteArray value;
@@ -119,7 +119,7 @@ struct PerfNumaTopology {
 };
 
 QDataStream &operator>>(QDataStream &stream, PerfNumaTopology &numaTopology);
-QDataStream &operator<<(QDataStream &stream, const PerfNumaTopology &numaTopology);
+QDataStream &operator<<(QDataStream &stream, const PerfNumaTopology::NumaNode &numaNode);
 
 struct PerfBranchStack {
 };
@@ -137,7 +137,7 @@ struct PerfPmuMappings {
 };
 
 QDataStream &operator>>(QDataStream &stream, PerfPmuMappings &pmuMappings);
-QDataStream &operator<<(QDataStream &stream, const PerfPmuMappings &pmuMappings);
+QDataStream &operator<<(QDataStream &stream, const PerfPmuMappings::Pmu &pmu);
 
 struct PerfGroupDesc {
 
@@ -151,7 +151,7 @@ struct PerfGroupDesc {
 };
 
 QDataStream &operator>>(QDataStream &stream, PerfGroupDesc &groupDesc);
-QDataStream &operator<<(QDataStream &stream, const PerfGroupDesc &groupDesc);
+QDataStream &operator<<(QDataStream &stream, const PerfGroupDesc::GroupDesc &groupDesc);
 
 class PerfFeatures
 {
@@ -164,7 +164,7 @@ public:
     void setArchitecture(const QByteArray &arch) { m_arch.value = arch; }
 
     PerfTracingData tracingData() const { return m_tracingData; }
-    PerfBuildId buildId() const { return m_buildId; }
+    QList<PerfBuildId::BuildId> buildIds() const { return m_buildId.buildIds; }
     QByteArray hostName() const { return m_hostName.value; }
     QByteArray osRelease() const { return m_osRelease.value; }
     QByteArray version() const { return m_version.value; }
@@ -175,10 +175,10 @@ public:
     QList<QByteArray> cmdline() const { return m_cmdline.cmdline; }
     PerfEventDesc eventDesc() const { return m_eventDesc; }
     PerfCpuTopology cpuTopology() const { return m_cpuTopology; }
-    PerfNumaTopology numaTopology() const { return m_numaToplogy; }
+    QList<PerfNumaTopology::NumaNode> numaTopology() const { return m_numaToplogy.nodes; }
     PerfBranchStack branchStack() const { return m_branchStack; }
-    PerfPmuMappings pmuMappings() const { return m_pmuMappings; }
-    PerfGroupDesc groupDesc() const { return m_groupDesc; }
+    QList<PerfPmuMappings::Pmu> pmuMappings() const { return m_pmuMappings.pmus; }
+    QList<PerfGroupDesc::GroupDesc> groupDescs() const { return m_groupDesc.groupDescs; }
 
 private:
     void createFeature(QIODevice *device, QDataStream::ByteOrder byteOrder,

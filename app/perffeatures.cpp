@@ -179,11 +179,6 @@ QDataStream &operator<<(QDataStream &stream, const PerfBuildId::BuildId &buildId
     return stream << buildId.pid << buildId.id << buildId.fileName;
 }
 
-QDataStream &operator<<(QDataStream &stream, const PerfBuildId &buildId)
-{
-    return stream << buildId.buildIds;
-}
-
 QDataStream &operator>>(QDataStream &stream, PerfEventHeader &header)
 {
     return stream >> header.type >> header.misc >> header.size;
@@ -303,11 +298,6 @@ QDataStream &operator<<(QDataStream &stream, const PerfNumaTopology::NumaNode &n
     return stream << node.nodeId << node.memTotal << node.memFree << node.topology;
 }
 
-QDataStream &operator<<(QDataStream &stream, const PerfNumaTopology &numaTopology)
-{
-    return stream << numaTopology.nodes;
-}
-
 QDataStream &operator>>(QDataStream &stream, PerfBranchStack &branchStack)
 {
     // Doesn't really exist.
@@ -342,11 +332,6 @@ QDataStream &operator<<(QDataStream &stream, const PerfPmuMappings::Pmu &pmu)
     return stream << pmu.type << pmu.name;
 }
 
-QDataStream &operator<<(QDataStream &stream, const PerfPmuMappings &pmuMappings)
-{
-    return stream << pmuMappings.pmus;
-}
-
 QDataStream &operator>>(QDataStream &stream, PerfGroupDesc &groupDesc)
 {
     quint32 numGroups;
@@ -366,9 +351,4 @@ QDataStream &operator>>(QDataStream &stream, PerfGroupDesc &groupDesc)
 QDataStream &operator<<(QDataStream &stream, const PerfGroupDesc::GroupDesc &groupDesc)
 {
     return stream << groupDesc.name << groupDesc.leaderIndex << groupDesc.numMembers;
-}
-
-QDataStream &operator<<(QDataStream &stream, const PerfGroupDesc &groupDesc)
-{
-    return stream << groupDesc.groupDescs;
 }
