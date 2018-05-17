@@ -486,9 +486,12 @@ Dwfl_Module *PerfSymbolTable::reportElf(const PerfElfMap::ElfInfo& info)
     } else {
         // set symbol table as user data, cf. find_debuginfo callback in perfunwind.cpp
         void** userData;
-        dwfl_module_info(ret, &userData, nullptr, nullptr, nullptr, nullptr,
-                         nullptr, nullptr);
+        Dwarf_Addr start = 0;
+        Dwarf_Addr end = 0;
+
+        dwfl_module_info(ret, &userData, &start, &end, nullptr, nullptr, nullptr, nullptr);
         *userData = this;
+        m_elfs.updateElf(info.addr, start, end);
     }
     const int reportEnd = dwfl_report_end(m_dwfl, NULL, NULL);
     Q_ASSERT(reportEnd == 0);

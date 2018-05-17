@@ -68,6 +68,9 @@ public:
         quint64 addr;
         quint64 length;
         quint64 pgoff;
+
+        quint64 dwflStart = 0;
+        quint64 dwflEnd = 0;
     };
 
     bool registerElf(quint64 addr, quint64 len, quint64 pgoff,
@@ -75,6 +78,7 @@ public:
                      const QByteArray &originalFileName = {},
                      const QByteArray &originalPath = {});
     ElfInfo findElf(quint64 ip) const;
+    void updateElf(quint64 addr, quint64 dwflStart, quint64 dwflEnd);
 
     bool isEmpty() const
     {

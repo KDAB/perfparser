@@ -114,7 +114,20 @@ PerfElfMap::ElfInfo PerfElfMap::findElf(quint64 ip) const
             return ElfInfo();
     }
 
-    return (i->addr + i->length > ip) ? *i : ElfInfo();
+    if (i->dwflStart < i->dwflEnd)
+        return (i->dwflStart <= ip && i->dwflEnd > ip) ? *i : ElfInfo();
+    else
+        return (i->addr + i->length > ip) ? *i : ElfInfo();
+}
+
+void PerfElfMap::updateElf(quint64 addr, quint64 dwflStart, quint64 dwflEnd)
+{
+    auto i = std::upper_bound(m_elfs.begin(), m_elfs.end(), addr, SortByAddr());
+    Q_ASSERT(i != m_elfs.begin());
+    --i;
+    Q_ASSERT(i->addr == addr);
+    i->dwflStart = dwflStart;
+    i->dwflEnd = dwflEnd;
 }
 
 bool PerfElfMap::isAddressInRange(quint64 addr) const
