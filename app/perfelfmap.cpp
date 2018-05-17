@@ -107,12 +107,11 @@ bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgof
 PerfElfMap::ElfInfo PerfElfMap::findElf(quint64 ip) const
 {
     auto i = std::upper_bound(m_elfs.begin(), m_elfs.end(), ip, SortByAddr());
-    if (i == m_elfs.constEnd() || i->addr != ip) {
-        if (i != m_elfs.constBegin())
-            --i;
-        else
-            return ElfInfo();
-    }
+    Q_ASSERT (i == m_elfs.constEnd() || i->addr != ip);
+    if (i != m_elfs.constBegin())
+        --i;
+    else
+        return ElfInfo();
 
     if (i->dwflStart < i->dwflEnd)
         return (i->dwflStart <= ip && i->dwflEnd > ip) ? *i : ElfInfo();
