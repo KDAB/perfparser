@@ -34,7 +34,7 @@
 #include <QList>
 #include <QObject>
 #include <QString>
-
+#include <QMap>
 
 #include <limits>
 
@@ -267,6 +267,7 @@ private:
     QString m_kallsymsPath;
     bool m_ignoreKallsymsBuildId;
 
+    QMultiMap<quint64, QByteArray> m_auxBuffer;
     QList<PerfRecordSample> m_sampleBuffer;
     QList<PerfRecordMmap> m_mmapBuffer;
     QHash<qint32, PerfSymbolTable *> m_symbolTables;

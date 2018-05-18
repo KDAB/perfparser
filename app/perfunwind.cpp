@@ -134,6 +134,8 @@ PerfUnwind::~PerfUnwind()
 {
     finishedRound();
     flushEventBuffer(0);
+    for (const QByteArray &aux : qAsConst(m_auxBuffer))
+        sendBuffer(aux);
 
     delete[] m_debugInfoPath;
     qDeleteAll(m_symbolTables);
@@ -207,7 +209,7 @@ void PerfUnwind::comm(const PerfRecordComm &comm)
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(Command)
                                                << comm.pid() << comm.tid()  << comm.time()
                                                << commId;
-    sendBuffer(buffer);
+    m_auxBuffer.insert(comm.time(), buffer);
 }
 
 void PerfUnwind::attr(const PerfRecordAttr &attr)
@@ -266,7 +268,7 @@ void PerfUnwind::lost(const PerfRecordLost &lost)
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(LostDefinition)
                                                << lost.pid() << lost.tid() << lost.time();
-    sendBuffer(buffer);
+    m_auxBuffer.insert(lost.time(), buffer);
 }
 
 void PerfUnwind::features(const PerfFeatures &features)
@@ -601,6 +603,12 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
         }
     }
 
+    for (auto it = m_auxBuffer.begin();
+         it != m_auxBuffer.end() && it.key() < sample.time();
+         it = m_auxBuffer.erase(it)) {
+        sendBuffer(it.value());
+    }
+
     QByteArray buffer;
     QDataStream stream(&buffer, QIODevice::WriteOnly);
     stream << static_cast<quint8>(type) << sample.pid()
@@ -628,7 +636,7 @@ void PerfUnwind::fork(const PerfRecordFork &sample)
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(ThreadStart)
                                                << sample.childPid() << sample.childTid()
                                                << sample.time();
-    sendBuffer(buffer);
+    m_auxBuffer.insert(sample.time(), buffer);
 }
 
 void PerfUnwind::exit(const PerfRecordExit &sample)
@@ -637,7 +645,7 @@ void PerfUnwind::exit(const PerfRecordExit &sample)
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(ThreadEnd)
                                                << sample.childPid() << sample.childTid()
                                                << sample.time();
-    sendBuffer(buffer);
+    m_auxBuffer.insert(sample.time(), buffer);
 }
 
 void PerfUnwind::sendString(qint32 id, const QByteArray& string)
