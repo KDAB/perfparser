@@ -103,7 +103,8 @@ PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QStri
     m_output(output), m_architecture(PerfRegisterInfo::ARCH_INVALID), m_systemRoot(systemRoot),
     m_extraLibsPath(extraLibsPath), m_appPath(appPath), m_debugPath(debugPath),
     m_kallsymsPath(QDir::rootPath() + defaultKallsymsPath()), m_ignoreKallsymsBuildId(false),
-    m_maxEventBufferSize(10 * (1 << 20)), m_eventBufferSize(0), m_lastFlushMaxTime(0)
+    m_lastEventBufferSize(1 << 20), m_maxEventBufferSize(1 << 30), m_targetEventBufferSize(1 << 25),
+    m_eventBufferSize(0), m_timeOrderViolations(0), m_lastFlushMaxTime(0)
 {
     m_stats.enabled = printStats;
     m_currentUnwind.unwind = this;
@@ -155,6 +156,20 @@ PerfUnwind::~PerfUnwind()
         out << "max time between rounds: " << m_stats.maxTimeBetweenRounds << "\n";
         out << "max reorder time: " << m_stats.maxReorderTime << "\n";
     }
+}
+
+void PerfUnwind::setMaxEventBufferSize(uint size)
+{
+    m_maxEventBufferSize = size;
+    if (size < m_targetEventBufferSize)
+        setTargetEventBufferSize(size);
+}
+
+void PerfUnwind::setTargetEventBufferSize(uint size)
+{
+    m_targetEventBufferSize = size;
+    if (size > m_maxEventBufferSize)
+        setMaxEventBufferSize(size);
 }
 
 PerfSymbolTable *PerfUnwind::symbolTable(qint32 pid)
@@ -263,8 +278,10 @@ void PerfUnwind::features(const PerfFeatures &features)
         addAttributes(desc.attrs, desc.name, desc.ids);
 
     const auto perfVersion = QVersionNumber::fromString(QString::fromLatin1(features.version()));
-    if (perfVersion >= QVersionNumber(3, 17))
-        m_maxEventBufferSize = 0;
+    if (perfVersion >= QVersionNumber(3, 17) && m_timeOrderViolations == 0) {
+        m_lastEventBufferSize = m_targetEventBufferSize;
+        m_targetEventBufferSize = 0;
+    }
 
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(FeaturesDefinition)
@@ -747,13 +764,14 @@ void PerfUnwind::finishedRound()
     // FINISHED_ROUND events. now we know, and thus we set the m_maxEventBufferSize
     // to 0 to disable the heuristic there. Instead, we will now rely on the finished
     // round events to tell us when to flush the event buffer
-    if (!m_maxEventBufferSize) {
+    if (!m_targetEventBufferSize) {
         // we only flush half of the events we got in this round
         // this work-arounds bugs in upstream perf which leads to time order violations
         // across FINISHED_ROUND events which should in theory never happen
         flushEventBuffer(m_eventBufferSize / 2);
-    } else {
-        m_maxEventBufferSize = 0;
+    } else if (m_timeOrderViolations == 0) {
+        m_lastEventBufferSize = m_targetEventBufferSize;
+        m_targetEventBufferSize = 0;
     }
 }
 
@@ -771,8 +789,21 @@ void PerfUnwind::bufferEvent(const Event &event, QList<Event> *buffer, uint *eve
         // don't return early, stats should include our buffer behavior
     }
 
-    if (m_maxEventBufferSize && m_eventBufferSize > m_maxEventBufferSize)
-        flushEventBuffer(m_maxEventBufferSize / 2);
+    if (m_targetEventBufferSize && m_eventBufferSize > m_targetEventBufferSize)
+        flushEventBuffer(m_targetEventBufferSize / 2);
+}
+
+void PerfUnwind::forwardMmapBuffer(QList<PerfRecordMmap>::Iterator &mmapIt,
+                                   const QList<PerfRecordMmap>::Iterator &mmapEnd,
+                                   quint64 timestamp)
+{
+    for (; mmapIt != mmapEnd && mmapIt->time() <= timestamp; ++mmapIt) {
+        if (!m_stats.enabled) {
+            const auto &buildId = m_buildIds.value(mmapIt->filename());
+            symbolTable(mmapIt->pid())->registerElf(*mmapIt, buildId);
+        }
+        m_eventBufferSize -= mmapIt->size();
+    }
 }
 
 void PerfUnwind::flushEventBuffer(uint desiredBufferSize)
@@ -798,6 +829,7 @@ void PerfUnwind::flushEventBuffer(uint desiredBufferSize)
         }
     }
 
+    bool violatesTimeOrder = false;
     if (!m_mmapBuffer.isEmpty() && m_mmapBuffer.first().time() < m_lastFlushMaxTime) {
         // when an mmap event is not following our desired time order, it can
         // severly break our analysis. as such we report a real error in these cases
@@ -806,6 +838,7 @@ void PerfUnwind::flushEventBuffer(uint desiredBufferSize)
                      "Event time is %1, max time during last buffer flush was %2. "
                      "This potentially breaks the data analysis.")
                     .arg(m_mmapBuffer.first().time()).arg(m_lastFlushMaxTime));
+        violatesTimeOrder = true;
     }
 
     auto mmapIt = m_mmapBuffer.begin();
@@ -814,31 +847,39 @@ void PerfUnwind::flushEventBuffer(uint desiredBufferSize)
     auto sampleIt = m_sampleBuffer.begin();
     auto sampleEnd = m_sampleBuffer.end();
 
+    const uint origBufferSize = m_eventBufferSize;
     for (; m_eventBufferSize > desiredBufferSize && sampleIt != sampleEnd; ++sampleIt) {
-        const auto &sample = *sampleIt;
+        const quint64 timestamp = sampleIt->time();
 
-        if (sample.time() < m_lastFlushMaxTime) {
-            qWarning() << "Time order violation across buffer flush detected:"
-                       << "Event time =" << sample.time() << ","
-                       << "max time during last buffer flush = " << m_lastFlushMaxTime;
-            // we don't send an error for samples with broken times, since these
-            // are usually harmless and actually occur relatively often
-            // if desired, one can detect these issues on the client side anyways,
-            // based on the sample times
-        } else {
-            m_lastFlushMaxTime = sample.time();
-        }
-
-        for (; mmapIt != mmapEnd && mmapIt->time() <= sample.time(); ++mmapIt) {
-            if (!m_stats.enabled) {
-                const auto &buildId = m_buildIds.value(mmapIt->filename());
-                symbolTable(mmapIt->pid())->registerElf(*mmapIt, buildId);
+        if (timestamp < m_lastFlushMaxTime) {
+            if (!violatesTimeOrder) {
+                qWarning() << "Time order violation across buffer flush detected:"
+                           << "Event time =" << timestamp << ","
+                           << "max time during last buffer flush = " << m_lastFlushMaxTime;
+                // we don't send an error for samples with broken times, since these
+                // are usually harmless and actually occur relatively often
+                // if desired, one can detect these issues on the client side anyways,
+                // based on the sample times
+                violatesTimeOrder = true;
             }
-            m_eventBufferSize -= mmapIt->size();
+        } else {
+            // We've forwarded past the violating events as we couldn't do anything about those
+            // anymore. Now break and wait for the larger buffer to fill up, so that we avoid
+            // further violations in the yet to be processed events.
+            if (violatesTimeOrder) {
+                // Process any remaining mmap events violating the previous buffer flush.
+                // Otherwise we would catch the same ones again in the next round.
+                forwardMmapBuffer(mmapIt, mmapEnd, m_lastFlushMaxTime);
+                break;
+            }
+
+            m_lastFlushMaxTime = timestamp;
         }
 
-        analyze(sample);
-        m_eventBufferSize -= sample.size();
+        forwardMmapBuffer(mmapIt, mmapEnd, timestamp);
+
+        analyze(*sampleIt);
+        m_eventBufferSize -= sampleIt->size();
     }
 
     if (m_stats.enabled) {
@@ -855,4 +896,27 @@ void PerfUnwind::flushEventBuffer(uint desiredBufferSize)
 
     m_sampleBuffer.erase(m_sampleBuffer.begin(), sampleIt);
     m_mmapBuffer.erase(m_mmapBuffer.begin(), mmapIt);
+
+    if (!violatesTimeOrder)
+        return;
+
+    // Increase buffer size to reduce future time order violations
+    ++m_timeOrderViolations;
+
+    // First consider the original event buffer size. Obviously that is insufficient.
+    m_targetEventBufferSize = origBufferSize;
+
+    // If we had a larger event buffer before, increase.
+    if (m_targetEventBufferSize < m_lastEventBufferSize)
+        m_targetEventBufferSize = m_lastEventBufferSize;
+
+    // Double the size, clamping by UINT_MAX.
+    if (m_targetEventBufferSize > std::numeric_limits<uint>::max() / 2)
+        m_targetEventBufferSize = std::numeric_limits<uint>::max();
+    else
+        m_targetEventBufferSize *= 2;
+
+    // Clamp by max buffer size.
+    if (m_targetEventBufferSize > m_maxEventBufferSize)
+        m_targetEventBufferSize = m_maxEventBufferSize;
 }
