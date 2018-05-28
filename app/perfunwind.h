@@ -34,7 +34,7 @@
 #include <QList>
 #include <QObject>
 #include <QString>
-
+#include <QMap>
 
 #include <limits>
 
@@ -157,7 +157,10 @@ public:
     void setIgnoreKallsymsBuildId(bool ignore) { m_ignoreKallsymsBuildId = ignore; }
 
     uint maxEventBufferSize() const { return m_maxEventBufferSize; }
-    void setMaxEventBufferSize(uint size) { m_maxEventBufferSize = size; }
+    void setMaxEventBufferSize(uint size);
+
+    uint targetEventBufferSize() const { return m_targetEventBufferSize; }
+    void setTargetEventBufferSize(uint size);
 
     int maxUnwindFrames() const { return m_currentUnwind.maxFrames; }
     void setMaxUnwindFrames(int maxUnwindFrames) { m_currentUnwind.maxFrames = maxUnwindFrames; }
@@ -264,6 +267,7 @@ private:
     QString m_kallsymsPath;
     bool m_ignoreKallsymsBuildId;
 
+    QMultiMap<quint64, QByteArray> m_auxBuffer;
     QList<PerfRecordSample> m_sampleBuffer;
     QList<PerfRecordMmap> m_mmapBuffer;
     QHash<qint32, PerfSymbolTable *> m_symbolTables;
@@ -277,8 +281,13 @@ private:
     QVector<PerfEventAttributes> m_attributes;
     QHash<QByteArray, QByteArray> m_buildIds;
 
+    uint m_lastEventBufferSize;
     uint m_maxEventBufferSize;
+    uint m_targetEventBufferSize;
     uint m_eventBufferSize;
+
+    uint m_timeOrderViolations;
+
     quint64 m_lastFlushMaxTime;
     QSysInfo::Endian m_byteOrder = QSysInfo::LittleEndian;
 
@@ -299,6 +308,9 @@ private:
     void flushEventBuffer(uint desiredBufferSize);
 
     QVariant readTraceData(const QByteArray &data, const FormatField &field, bool byteSwap);
+    void forwardMmapBuffer(QList<PerfRecordMmap>::Iterator &it,
+                           const QList<PerfRecordMmap>::Iterator &mmapEnd,
+                           quint64 timestamp);
 };
 
 uint qHash(const PerfUnwind::Location &location, uint seed = 0);

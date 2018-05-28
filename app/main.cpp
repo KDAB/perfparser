@@ -167,14 +167,30 @@ int main(int argc, char *argv[])
 
     QCommandLineOption bufferSize(QLatin1String("buffer-size"),
                                   QCoreApplication::translate(
-                                   "main", "Size of event buffer in kilobytes. This influences how"
-                                   " many events get buffered before they get sorted by time and "
-                                   " then analyzed. Increase this value when your perf.data file"
-                                   " was recorded with a large buffer value (perf record -m)."
-                                   " Pass 0 to buffer events until a FINISHED_ROUND event is "
-                                   " encountered. Default value is 10MB"),
-                                   QLatin1String("buffer-size"), QLatin1String("10240"));
+                                   "main", "Initial size of event buffer in kilobytes. This"
+                                   " influences how many events get buffered before they get"
+                                   " sorted by time and then analyzed. Increase this value when"
+                                   " your perf.data file was recorded with a large buffer value"
+                                   " (perf record -m). Pass 0 to buffer events until a"
+                                   " FINISHED_ROUND event is encountered. perfparser will switch to"
+                                   " automatic buffering by FINISHED_ROUND events if either the"
+                                   " data indicates that the tace was recorded with a version of"
+                                   " perf >= 3.17, or a FINISHED_ROUND event is encountered and no"
+                                   " time order violations have occurred before. When encountering"
+                                   " a time order violation, perfparser will switch back to dynamic"
+                                   " buffering using buffer-size and max-buffer-size."
+                                   " The default value is 32MB."),
+                                   QLatin1String("buffer-size"), QString::number(1 << 15));
     parser.addOption(bufferSize);
+
+    QCommandLineOption maxBufferSize(QLatin1String("max-buffer-size"),
+                                  QCoreApplication::translate(
+                                   "main", "Maximum size of event buffer in kilobytes. perfparser"
+                                   " increases the size of the event buffer when time order"
+                                   " violations are detected. It will never increase it beyond this"
+                                   " value, though. The default value is 1GB"),
+                                   QLatin1String("max-buffer-size"), QString::number(1 << 20));
+    parser.addOption(maxBufferSize);
 
     QCommandLineOption maxFrames(QLatin1String("max-frames"),
                                   QCoreApplication::translate(
@@ -214,10 +230,17 @@ int main(int argc, char *argv[])
     }
 
     bool ok = false;
-    uint maxEventBufferSize = parser.value(bufferSize).toUInt(&ok) * 1024;
+    uint targetEventBufferSize = parser.value(bufferSize).toUInt(&ok) * 1024;
     if (!ok) {
         qWarning() << "Failed to parse buffer-size argument. Expected unsigned integer, got:"
                    << parser.value(bufferSize);
+        return InvalidOption;
+    }
+
+    uint maxEventBufferSize = parser.value(maxBufferSize).toUInt(&ok) * 1024;
+    if (!ok) {
+        qWarning() << "Failed to parse buffer-size argument. Expected unsigned integer, got:"
+                   << parser.value(maxBufferSize);
         return InvalidOption;
     }
 
@@ -238,6 +261,7 @@ int main(int argc, char *argv[])
 
     unwind.setIgnoreKallsymsBuildId(parser.isSet(kallsymsPath));
 
+    unwind.setTargetEventBufferSize(targetEventBufferSize);
     unwind.setMaxEventBufferSize(maxEventBufferSize);
     unwind.setMaxUnwindFrames(maxFramesValue);
 

@@ -294,7 +294,8 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &
 {
     QLatin1String filePath(mmap.filename());
     // special regions, such as [heap], [vdso], [stack], ... as well as //anon
-    const bool isSpecialRegion = (mmap.filename().startsWith('[') && mmap.filename().endsWith(']'))
+    const bool isSpecialRegion = (filePath.startsWith('[') && filePath.endsWith(']'))
+                              || filePath.startsWith(QLatin1String("/dev/"))
                               || filePath == QLatin1String("//anon")
                               || filePath == QLatin1String("/SYSV00000000 (deleted)");
     const auto fileName = QFileInfo(filePath).fileName();
