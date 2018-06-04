@@ -169,9 +169,24 @@ void PerfUnwind::setMaxEventBufferSize(uint size)
 
 void PerfUnwind::setTargetEventBufferSize(uint size)
 {
+    m_lastEventBufferSize = m_targetEventBufferSize;
     m_targetEventBufferSize = size;
     if (size > m_maxEventBufferSize)
         setMaxEventBufferSize(size);
+}
+
+void PerfUnwind::revertTargetEventBufferSize()
+{
+    setTargetEventBufferSize(m_lastEventBufferSize);
+}
+
+bool PerfUnwind::hasTracePointAttributes() const
+{
+    for (auto &attributes : m_attributes) {
+        if (attributes.type() == PerfEventAttributes::TYPE_TRACEPOINT)
+            return true;
+    }
+    return false;
 }
 
 PerfSymbolTable *PerfUnwind::symbolTable(qint32 pid)
@@ -233,6 +248,12 @@ void PerfUnwind::addAttributes(const PerfEventAttributes &attributes, const QByt
         foreach (quint64 id, ids)
             m_attributeIds[id] = internalId;
     }
+
+    // Switch to dynamic buffering if it's a trace point
+    if (attributes.type() == PerfEventAttributes::TYPE_TRACEPOINT && m_targetEventBufferSize == 0) {
+        qDebug() << "Trace point attributes detected. Switching to dynamic buffering";
+        revertTargetEventBufferSize();
+    }
 }
 
 void PerfUnwind::sendAttributes(qint32 id, const PerfEventAttributes &attributes, const QByteArray &name)
@@ -281,8 +302,11 @@ void PerfUnwind::features(const PerfFeatures &features)
 
     const auto perfVersion = QVersionNumber::fromString(QString::fromLatin1(features.version()));
     if (perfVersion >= QVersionNumber(3, 17) && m_timeOrderViolations == 0) {
-        m_lastEventBufferSize = m_targetEventBufferSize;
-        m_targetEventBufferSize = 0;
+        if (!hasTracePointAttributes()) {
+            qDebug() << "Linux version" << features.version()
+                     << "detected. Switching to automatic buffering.";
+            setTargetEventBufferSize(0);
+        }
     }
 
     QByteArray buffer;
@@ -777,9 +801,9 @@ void PerfUnwind::finishedRound()
         // this work-arounds bugs in upstream perf which leads to time order violations
         // across FINISHED_ROUND events which should in theory never happen
         flushEventBuffer(m_eventBufferSize / 2);
-    } else if (m_timeOrderViolations == 0) {
-        m_lastEventBufferSize = m_targetEventBufferSize;
-        m_targetEventBufferSize = 0;
+    } else if (m_timeOrderViolations == 0 && !hasTracePointAttributes()) {
+        qDebug() << "FINISHED_ROUND detected. Switching to automatic buffering";
+        setTargetEventBufferSize(0);
     }
 }
 
@@ -855,7 +879,7 @@ void PerfUnwind::flushEventBuffer(uint desiredBufferSize)
     auto sampleIt = m_sampleBuffer.begin();
     auto sampleEnd = m_sampleBuffer.end();
 
-    const uint origBufferSize = m_eventBufferSize;
+    uint bufferSize = m_eventBufferSize;
     for (; m_eventBufferSize > desiredBufferSize && sampleIt != sampleEnd; ++sampleIt) {
         const quint64 timestamp = sampleIt->time();
 
@@ -911,20 +935,20 @@ void PerfUnwind::flushEventBuffer(uint desiredBufferSize)
     // Increase buffer size to reduce future time order violations
     ++m_timeOrderViolations;
 
-    // First consider the original event buffer size. Obviously that is insufficient.
-    m_targetEventBufferSize = origBufferSize;
-
     // If we had a larger event buffer before, increase.
-    if (m_targetEventBufferSize < m_lastEventBufferSize)
-        m_targetEventBufferSize = m_lastEventBufferSize;
+    if (bufferSize < m_lastEventBufferSize)
+        bufferSize = m_lastEventBufferSize;
 
     // Double the size, clamping by UINT_MAX.
-    if (m_targetEventBufferSize > std::numeric_limits<uint>::max() / 2)
-        m_targetEventBufferSize = std::numeric_limits<uint>::max();
+    if (bufferSize > std::numeric_limits<uint>::max() / 2)
+        bufferSize = std::numeric_limits<uint>::max();
     else
-        m_targetEventBufferSize *= 2;
+        bufferSize *= 2;
 
     // Clamp by max buffer size.
-    if (m_targetEventBufferSize > m_maxEventBufferSize)
-        m_targetEventBufferSize = m_maxEventBufferSize;
+    if (bufferSize > m_maxEventBufferSize)
+        bufferSize = m_maxEventBufferSize;
+
+    qDebug() << "Increasing buffer size to" << bufferSize;
+    setTargetEventBufferSize(bufferSize);
 }
