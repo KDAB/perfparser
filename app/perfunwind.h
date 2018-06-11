@@ -311,6 +311,8 @@ private:
     void forwardMmapBuffer(QList<PerfRecordMmap>::Iterator &it,
                            const QList<PerfRecordMmap>::Iterator &mmapEnd,
                            quint64 timestamp);
+    void revertTargetEventBufferSize();
+    bool hasTracePointAttributes() const;
 };
 
 uint qHash(const PerfUnwind::Location &location, uint seed = 0);
