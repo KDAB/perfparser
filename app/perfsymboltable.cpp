@@ -608,6 +608,32 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
             const QByteArray file = dwfl_lineinfo(srcLine, nullptr, &addressLocation.line,
                                                  &addressLocation.column, nullptr, nullptr);
             addressLocation.file = m_unwind->resolveString(file);
+        } else {
+            Dwarf_Addr bias = 0;
+            if (Dwarf *dwarf = dwfl_module_getdwarf(mod, &bias)) {
+                const quint64 adjusted = addressLocation.address - bias;
+                size_t headerSize = 0;
+                Dwarf_Off nextOffset = 0;
+                for (Dwarf_Off offset = 0;
+                     dwarf_nextcu(dwarf, offset, &nextOffset, &headerSize,
+                                  nullptr, nullptr, nullptr) == 0;
+                     offset = nextOffset) {
+                    Dwarf_Die cudieMemory;
+                    Dwarf_Die *cudie = dwarf_offdie(dwarf, offset + headerSize, &cudieMemory);
+
+                    if (!cudie || !dwarf_haspc(cudie, adjusted))
+                        continue;
+
+                    if (Dwarf_Line *line = dwarf_getsrc_die(cudie, adjusted)) {
+                        const QByteArray file = dwarf_linesrc(line, nullptr, nullptr);
+                        addressLocation.file = m_unwind->resolveString(file);
+                        dwarf_lineno(line, &addressLocation.line);
+                        dwarf_linecol(line, &addressLocation.column);
+                    }
+
+                    break;
+                }
+            }
         }
 
         if (off == addressLocation.address) {// no symbol found
