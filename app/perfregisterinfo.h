@@ -34,6 +34,7 @@ public:
         ARCH_SH,
         ARCH_SPARC,
         ARCH_X86,
+        ARCH_MIPS,
         ARCH_INVALID
     };
 
