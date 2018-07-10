@@ -52,6 +52,9 @@ static int aarch64[] = { 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 
 static int x86[] = {0, 2, 3, 1, 7, 6, 4, 5, 8};
 static int x86_64[] = {0, 3, 2, 1, 4, 5, 6, 7, 16, 17, 18, 19, 20, 21, 22, 23, 8};
 
+static int mips[] = { 32,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
+                        18, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31};
+
 static int none[] = {0};
 
 const int *PerfRegisterInfo::s_perfToDwarf[PerfRegisterInfo::ARCH_INVALID][PerfRegisterInfo::s_numAbis] = {
@@ -61,7 +64,8 @@ const int *PerfRegisterInfo::s_perfToDwarf[PerfRegisterInfo::ARCH_INVALID][PerfR
     {none,    none   },
     {none,    none   },
     {none,    none   },
-    {x86,     x86_64 }
+    {x86,     x86_64 },
+    {mips,    mips   },
 };
 
 const int PerfRegisterInfo::s_perfIp[ARCH_INVALID] = {
@@ -147,6 +151,9 @@ PerfRegisterInfo::Architecture PerfRegisterInfo::archByName(const QByteArray &na
             || QRegularExpression("^i[3-7]86$").match(name).hasMatch()
             || name == "amd64")
         return ARCH_X86;
+
+    if (name.startsWith("mips"))
+        return ARCH_MIPS;
 
     return ARCH_INVALID;
 }
