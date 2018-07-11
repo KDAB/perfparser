@@ -299,7 +299,7 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &
                               || filePath.startsWith(QLatin1String("/memfd:"))
                               || filePath == QLatin1String("//anon")
                               || filePath == QLatin1String("/SYSV00000000 (deleted)");
-    const auto fileName = QFileInfo(filePath).fileName();
+    const auto fileName = isSpecialRegion ? QString() : QFileInfo(filePath).fileName();
     QFileInfo fullPath;
     if (isSpecialRegion) {
         // don not set fullPath, these regions don't represent a real file
