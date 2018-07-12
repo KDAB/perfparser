@@ -297,8 +297,8 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &
     const bool isSpecialRegion = (filePath.startsWith('[') && filePath.endsWith(']'))
                               || filePath.startsWith(QLatin1String("/dev/"))
                               || filePath.startsWith(QLatin1String("/memfd:"))
-                              || filePath == QLatin1String("//anon")
-                              || filePath == QLatin1String("/SYSV00000000 (deleted)");
+                              || filePath.startsWith(QLatin1String("/SYSV"))
+                              || filePath == QLatin1String("//anon");
     const auto fileName = isSpecialRegion ? QString() : QFileInfo(filePath).fileName();
     QFileInfo fullPath;
     if (isSpecialRegion) {
