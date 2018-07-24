@@ -36,22 +36,7 @@
 #include <fcntl.h>
 
 #ifdef Q_OS_WIN
-#include <io.h>
-extern "C" {
-    extern char *eu_compat_demangle(const char *mangled_name, char *output_buffer,
-                                    size_t *length, int *status);
-    extern int eu_compat_open(const char *, int);
-    extern int eu_compat_close(int);
-    extern void *eu_compat_malloc(size_t);
-    extern void eu_compat_free(void *);
-    static char* eu_compat_strdup(const char* string)
-    {
-        const size_t length = strlen(string) + 1; // include null char
-        char* ret = reinterpret_cast<char*>(eu_compat_malloc(length));
-        std::memcpy(ret, string, length);
-        return ret;
-    }
-}
+#include <libeu_compat.h>
 #else
 #include <cxxabi.h>
 #include <unistd.h>
