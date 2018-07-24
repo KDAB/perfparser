@@ -175,7 +175,6 @@ void PerfParserTestClient::extractTrace(QIODevice *device)
         }
         default:
             stream.skipRawData(size);
-            qDebug() << size << device->bytesAvailable() << EventType(eventType);
             break;
         }
         QVERIFY(stream.atEnd());
