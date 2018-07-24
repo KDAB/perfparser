@@ -53,7 +53,7 @@ private slots:
             QTest::newRow("_stext:0") << kallsyms << 0xffffffff810002b8ull
                 << 0xffffffff810002b8ull << QByteArrayLiteral("_stext") << QByteArray();
             QTest::newRow("_stext:2") << kallsyms << (0xffffffff810002b8ll + 0x2ull)
-                << 0xffffffff810002b8ll << QByteArrayLiteral("_stext") << QByteArray();
+                << 0xffffffff810002b8ull << QByteArrayLiteral("_stext") << QByteArray();
             QTest::newRow("xen_hypercall_set_gdt:0") << kallsyms << 0xffffffff81001040ull
                 << 0xffffffff81001040ull << QByteArrayLiteral("xen_hypercall_set_gdt") << QByteArray();
             QTest::newRow("xen_hypercall_set_gdt:256") << kallsyms << (0xffffffff81001040ull + 0x100ull)
