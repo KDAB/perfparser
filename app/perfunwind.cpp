@@ -132,10 +132,7 @@ PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QStri
 
 PerfUnwind::~PerfUnwind()
 {
-    finishedRound();
-    flushEventBuffer(0);
-    for (const QByteArray &aux : qAsConst(m_auxBuffer))
-        sendBuffer(aux);
+    finalize();
 
     delete[] m_debugInfoPath;
     qDeleteAll(m_symbolTables);

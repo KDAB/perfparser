@@ -223,6 +223,9 @@ public:
     {
         finishedRound();
         flushEventBuffer(0);
+        for (const QByteArray &aux : qAsConst(m_auxBuffer))
+            sendBuffer(aux);
+        m_auxBuffer.clear();
     }
 
 private:
