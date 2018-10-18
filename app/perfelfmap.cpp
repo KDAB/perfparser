@@ -30,17 +30,17 @@ QDebug operator<<(QDebug stream, const PerfElfMap::ElfInfo& info)
                      << "isFile=" << info.isFile() << ", "
                      << "originalFileName=" << info.originalFileName << ", "
                      << "originalPath=" << info.originalPath << ", "
-                     << "addr=" << hex << info.addr<< ", "
-                     << "len=" << info.length << ", "
-                     << "pgoff=" << info.pgoff << ", "
+                     << "addr=" << hex << info.addr << ", "
+                     << "len=" << hex << info.length << ", "
+                     << "pgoff=" << hex << info.pgoff << ", "
                      << "baseAddr=";
 
     if (info.hasBaseAddr())
-        stream << info.baseAddr;
+        stream << hex << info.baseAddr;
     else
         stream << "n/a";
 
-    stream << "}" << dec;
+    stream << "}";
     return stream.space();
 }
 
