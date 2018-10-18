@@ -833,8 +833,11 @@ void PerfUnwind::flushEventBuffer(uint desiredBufferSize)
     auto sortByTime = [](const PerfRecord &lhs, const PerfRecord &rhs) {
         return lhs.time() < rhs.time();
     };
-    std::sort(m_mmapBuffer.begin(), m_mmapBuffer.end(), sortByTime);
-    std::sort(m_sampleBuffer.begin(), m_sampleBuffer.end(), sortByTime);
+    // stable sort here to keep order of events with the same time
+    // esp. when we runtime-attach, we will get lots of mmap events with time 0
+    // which we must not shuffle
+    std::stable_sort(m_mmapBuffer.begin(), m_mmapBuffer.end(), sortByTime);
+    std::stable_sort(m_sampleBuffer.begin(), m_sampleBuffer.end(), sortByTime);
 
     if (m_stats.enabled) {
         for (const auto &sample : m_sampleBuffer) {
