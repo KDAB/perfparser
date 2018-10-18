@@ -1,5 +1,11 @@
 TEMPLATE = subdirs
-SUBDIRS = app
+
+win32:isEmpty(ELFUTILS_INSTALL_DIR) {
+    warning("PerfParser is disabled. Set ELFUTILS_INSTALL_DIR to enable it.");
+} else {
+    SUBDIRS = app
+    !isEmpty(BUILD_TESTS): SUBDIRS += tests
+}
 
 include (paths.pri)
 
@@ -10,8 +16,6 @@ defineReplace(elfutilsLibraryName) {
     win32: RET = $${RET}.dll
     return($$RET)
 }
-
-!isEmpty(BUILD_TESTS): SUBDIRS += tests
 
 !isEmpty(PERFPARSER_ELFUTILS_INSTALLDIR) {
     unix:isEmpty(ELFUTILS_INSTALL_DIR): ELFUTILS_INSTALL_DIR = /usr
