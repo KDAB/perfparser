@@ -480,9 +480,9 @@ void PerfSymbolTable::parseDwarf(Dwarf_Die *cudie, Dwarf_Addr bias, qint32 binar
     }
 }
 
-static void reportError(const PerfElfMap::ElfInfo& info, const char *message)
+static void reportError(qint32 pid, const PerfElfMap::ElfInfo& info, const char *message)
 {
-    qWarning() << "failed to report" << info << dec << ":" << message;
+    qWarning() << "failed to report elf for pid =" << pid << ':' << info << ":" << message;
 }
 
 Dwfl_Module *PerfSymbolTable::reportElf(const PerfElfMap::ElfInfo& info)
@@ -491,7 +491,7 @@ Dwfl_Module *PerfSymbolTable::reportElf(const PerfElfMap::ElfInfo& info)
         return nullptr;
 
     if (info.pgoff > 0) {
-        reportError(info, "Cannot report file fragments");
+        reportError(m_pid, info, "Cannot report file fragments");
         return nullptr;
     }
 
@@ -501,7 +501,7 @@ Dwfl_Module *PerfSymbolTable::reportElf(const PerfElfMap::ElfInfo& info)
                 info.localFile.absoluteFilePath().toLocal8Bit().constData(), -1, info.addr,
                 false);
     if (!ret) {
-        reportError(info, dwfl_errmsg(dwfl_errno()));
+        reportError(m_pid, info, dwfl_errmsg(dwfl_errno()));
         m_cacheIsDirty = true;
     } else {
         // set symbol table as user data, cf. find_debuginfo callback in perfunwind.cpp
