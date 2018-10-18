@@ -167,6 +167,41 @@ private slots:
         QVERIFY(map.isAddressInRange(29));
     }
 
+    void testExtendMapping()
+    {
+        PerfElfMap map;
+        const PerfElfMap::ElfInfo first({}, 0, 5000, 0, "lalala.so", "/tmp/lalala.so");
+        registerElf(&map, first);
+        QCOMPARE(map.findElf(100), first);
+
+        // fully contained in the first mapping
+        const PerfElfMap::ElfInfo second({}, 20, 500, 20, "lalala.so", "/tmp/lalala.so");
+        registerElf(&map, second);
+        QCOMPARE(map.findElf(100), first);
+
+        // extend the first mapping
+        const PerfElfMap::ElfInfo third({}, 2000, 8000, 2000, "lalala.so", "/tmp/lalala.so");
+        registerElf(&map, third);
+        const PerfElfMap::ElfInfo extended({}, 0, 10000, 0, "lalala.so", "/tmp/lalala.so");
+        QCOMPARE(map.findElf(100), extended);
+        QCOMPARE(map.findElf(2200), extended);
+
+        // this has a gap, so don't extend directly
+        const PerfElfMap::ElfInfo fourth({}, 12000, 100, 100, "lalala.so", "/tmp/lalala.so");
+        registerElf(&map, fourth);
+        QCOMPARE(map.findElf(12000), fourth);
+
+        const PerfElfMap::ElfInfo fifth({}, 2000, 500, 3000, "lalala.so", "/tmp/lalala.so");
+        registerElf(&map, fifth);
+        QCOMPARE(map.findElf(2200), fifth);
+
+        const PerfElfMap::ElfInfo remainder1({}, 0, 2000, 0, "lalala.so", "/tmp/lalala.so");
+        QCOMPARE(map.findElf(100), remainder1);
+
+        const PerfElfMap::ElfInfo remainder2({}, 2500, 7500, 2500, "lalala.so", "/tmp/lalala.so");
+        QCOMPARE(map.findElf(3000), remainder2);
+    }
+
     void benchRegisterElfDisjunct()
     {
         QFETCH(uint, numElfMaps);

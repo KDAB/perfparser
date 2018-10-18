@@ -52,20 +52,40 @@ struct SortByAddr
 };
 }
 
-bool PerfElfMap::registerElf(const quint64 addr, const quint64 len, quint64 pgoff,
+bool PerfElfMap::registerElf(quint64 addr, quint64 len, quint64 pgoff,
                              const QFileInfo &fullPath, const QByteArray &originalFileName,
                              const QByteArray &originalPath)
 {
     bool cacheInvalid = false;
-    const quint64 addrEnd = addr + len;
+    quint64 addrEnd = addr + len;
     const bool isFile = fullPath.isFile();
 
     QVarLengthArray<ElfInfo, 8> newElfs;
     QVarLengthArray<int, 8> removedElfs;
     for (auto i = m_elfs.begin(), end = m_elfs.end(); i != end && i->addr < addrEnd; ++i) {
         const quint64 iEnd = i->addr + i->length;
-        if (iEnd <= addr)
+        if (iEnd < addr)
             continue;
+
+        if (addr - pgoff == i->addr - i->pgoff && originalPath == i->originalPath) {
+            // Remapping parts of the same file in the same place: Extend to maximum continuous
+            // address range and check if we already have that.
+            addr = qMin(addr, i->addr);
+            pgoff = qMin(pgoff, i->pgoff);
+            addrEnd = qMax(addrEnd, iEnd);
+            len = addrEnd - addr;
+            if (addr == i->addr && len == i->length) {
+                // New mapping is fully contained in old one: Nothing to do.
+                Q_ASSERT(!cacheInvalid);
+                Q_ASSERT(newElfs.isEmpty());
+                Q_ASSERT(removedElfs.isEmpty());
+                return false;
+            }
+        } else if (iEnd == addr) {
+            // Directly adjacent sections of the same file can be merged. Ones of different files
+            // don't bother each other.
+            continue;
+        }
 
         // Newly added elf overwrites existing one. Mark the existing one as overwritten and
         // reinsert any fragments of it that remain.
