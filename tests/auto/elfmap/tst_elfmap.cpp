@@ -187,12 +187,17 @@ private slots:
         QCOMPARE(map.findElf(2200), extended);
 
         // this has a gap, so don't extend directly
-        const PerfElfMap::ElfInfo fourth({}, 12000, 100, 100, "lalala.so", "/tmp/lalala.so");
+        PerfElfMap::ElfInfo fourth({}, 12000, 100, 100, "lalala.so", "/tmp/lalala.so");
         registerElf(&map, fourth);
+        QVERIFY(!fourth.hasBaseAddr());
+        fourth.baseAddr = 0;
+        QVERIFY(fourth.hasBaseAddr());
         QCOMPARE(map.findElf(12000), fourth);
 
-        const PerfElfMap::ElfInfo fifth({}, 2000, 500, 3000, "lalala.so", "/tmp/lalala.so");
+        PerfElfMap::ElfInfo fifth({}, 2000, 500, 3000, "lalala.so", "/tmp/lalala.so");
+        QVERIFY(!fifth.hasBaseAddr()); // base addr will be set on registering based on first mmap.
         registerElf(&map, fifth);
+        fifth.baseAddr = 0;
         QCOMPARE(map.findElf(2200), fifth);
 
         const PerfElfMap::ElfInfo remainder1({}, 0, 2000, 0, "lalala.so", "/tmp/lalala.so");

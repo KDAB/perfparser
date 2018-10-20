@@ -22,11 +22,15 @@
 
 #include <QFileInfo>
 #include <QVector>
+#include <limits>
 
 class PerfElfMap
 {
 public:
     struct ElfInfo {
+        enum {
+            INVALID_BASE_ADDR = std::numeric_limits<quint64>::max()
+        };
         explicit ElfInfo(const QFileInfo &localFile = QFileInfo(), quint64 addr = 0,
                          quint64 length = 0, quint64 pgoff = 0,
                          const QByteArray &originalFileName = {},
@@ -51,6 +55,11 @@ public:
             return localFile.isFile();
         }
 
+        bool hasBaseAddr() const
+        {
+            return baseAddr != INVALID_BASE_ADDR;
+        }
+
         bool operator==(const ElfInfo& rhs) const
         {
             return isFile() == rhs.isFile()
@@ -59,7 +68,8 @@ public:
                 && originalPath == rhs.originalPath
                 && addr == rhs.addr
                 && length == rhs.length
-                && pgoff == rhs.pgoff;
+                && pgoff == rhs.pgoff
+                && baseAddr == rhs.baseAddr;
         }
 
         QFileInfo localFile;
@@ -68,7 +78,7 @@ public:
         quint64 addr;
         quint64 length;
         quint64 pgoff;
-
+        quint64 baseAddr = INVALID_BASE_ADDR;
         quint64 dwflStart = 0;
         quint64 dwflEnd = 0;
     };
@@ -90,6 +100,8 @@ public:
 private:
     // elf sorted by start address
     QVector<ElfInfo> m_elfs;
+    // last registered elf with zero pgoff
+    ElfInfo m_lastBase;
 };
 
 QT_BEGIN_NAMESPACE

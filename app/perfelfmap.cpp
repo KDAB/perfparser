@@ -31,9 +31,16 @@ QDebug operator<<(QDebug stream, const PerfElfMap::ElfInfo& info)
                      << "originalFileName=" << info.originalFileName << ", "
                      << "originalPath=" << info.originalPath << ", "
                      << "addr=" << hex << info.addr<< ", "
-                     << "len=" << hex << info.length << ", "
-                     << "pgoff=" << hex << info.pgoff
-                     << "}";
+                     << "len=" << info.length << ", "
+                     << "pgoff=" << info.pgoff << ", "
+                     << "baseAddr=";
+
+    if (info.hasBaseAddr())
+        stream << info.baseAddr;
+    else
+        stream << "n/a";
+
+    stream << "}" << dec;
     return stream.space();
 }
 
@@ -113,7 +120,14 @@ bool PerfElfMap::registerElf(quint64 addr, quint64 len, quint64 pgoff,
     for (auto it = removedElfs.rbegin(), end = removedElfs.rend(); it != end; ++it)
         m_elfs.remove(*it);
 
-    newElfs.push_back(ElfInfo(fullPath, addr, len, pgoff, originalFileName, originalPath));
+    ElfInfo elf(fullPath, addr, len, pgoff, originalFileName, originalPath);
+
+    if (!pgoff)
+        m_lastBase = elf;
+    else if (m_lastBase.originalPath == originalPath)
+        elf.baseAddr = m_lastBase.addr;
+
+    newElfs.push_back(elf);
 
     for (const auto &elf : newElfs) {
         auto it = std::lower_bound(m_elfs.begin(), m_elfs.end(),

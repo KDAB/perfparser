@@ -58,9 +58,6 @@ public:
 
     PerfElfMap::ElfInfo findElf(quint64 ip) const;
 
-    // Report an mmap to dwfl and parse it for symbols and inlines, or simply return it if dwfl has
-    // it already
-    Dwfl_Module *reportElf(const PerfElfMap::ElfInfo& elf);
     // Find the module for the given address and report it if needed
     Dwfl_Module *module(quint64 addr);
     Dwfl_Module *module(quint64 addr, const PerfElfMap::ElfInfo &elf);
@@ -80,6 +77,9 @@ public:
     bool cacheIsDirty() const { return m_cacheIsDirty; }
 
 private:
+    // Report an mmap to dwfl and parse it for symbols and inlines, or simply return it if dwfl has
+    // it already
+    Dwfl_Module *reportElf(const PerfElfMap::ElfInfo& elf);
     QFileInfo findFile(const char *path, const QString &fileName,
                        const QByteArray &buildId = QByteArray()) const;
 
