@@ -172,8 +172,11 @@ private slots:
         QCOMPARE(map.findElf(100), extended);
         QCOMPARE(map.findElf(2200), extended);
 
-        const PerfElfMap::ElfInfo fourth({}, 11000, 100, 0, "lalala.so", "/tmp/lalala.so");
+        PerfElfMap::ElfInfo fourth({}, 11000, 100, 500, "lalala.so", "/tmp/lalala.so");
         registerElf(&map, fourth);
+        QVERIFY(!fourth.hasBaseAddr());
+        fourth.baseAddr = 0;
+        QVERIFY(fourth.hasBaseAddr());
         QCOMPARE(map.findElf(11000), fourth);
     }
 

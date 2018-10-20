@@ -526,6 +526,9 @@ Dwfl_Module *PerfSymbolTable::module(quint64 addr, const PerfElfMap::ElfInfo &el
     if (!m_dwfl)
         return nullptr;
 
+    if (elf.pgoff && elf.hasBaseAddr())
+        return module(addr, m_elfs.findElf(elf.baseAddr));
+
     Dwfl_Module *mod = dwfl_addrmodule(m_dwfl, addr);
 
     if (!mod) {
