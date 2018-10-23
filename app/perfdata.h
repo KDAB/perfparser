@@ -410,9 +410,20 @@ public:
 
 private:
 
+    struct BranchFlags {
+        quint64 mispred: 1;
+        quint64 predicted: 1;
+        quint64 in_tx: 1;
+        quint64 abort: 1;
+        quint64 cycles: 16;
+        quint64 type: 4;
+        quint64 reserved: 40;
+    };
+
     struct BranchEntry {
         quint64 from;
         quint64 to;
+        BranchFlags flags;
     };
 
     quint64 m_readFormat;
