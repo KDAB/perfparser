@@ -490,15 +490,10 @@ Dwfl_Module *PerfSymbolTable::reportElf(const PerfElfMap::ElfInfo& info)
     if (!info.isValid() || !info.isFile())
         return nullptr;
 
-    if (info.pgoff > 0) {
-        reportError(m_pid, info, "Cannot report file fragments");
-        return nullptr;
-    }
-
     dwfl_report_begin_add(m_dwfl);
     Dwfl_Module *ret = dwfl_report_elf(
                 m_dwfl, info.originalFileName.constData(),
-                info.localFile.absoluteFilePath().toLocal8Bit().constData(), -1, info.addr,
+                info.localFile.absoluteFilePath().toLocal8Bit().constData(), -1, info.addr - info.pgoff,
                 false);
     if (!ret) {
         reportError(m_pid, info, dwfl_errmsg(dwfl_errno()));
@@ -536,7 +531,7 @@ Dwfl_Module *PerfSymbolTable::module(quint64 addr, const PerfElfMap::ElfInfo &el
         // by dwfl. If that is the case, then we would invalidate the cache and
         // re-report the library again - essentially recreating the current state
         // for no gain, except wasting time
-        mod = dwfl_addrmodule(m_dwfl, elf.addr);
+        mod = dwfl_addrmodule(m_dwfl, elf.addr - elf.pgoff);
     }
 
     if (mod) {
@@ -546,7 +541,7 @@ Dwfl_Module *PerfSymbolTable::module(quint64 addr, const PerfElfMap::ElfInfo &el
         Dwarf_Addr mod_start = 0;
         dwfl_module_info(mod, nullptr, &mod_start, nullptr, nullptr, nullptr, nullptr,
                          nullptr);
-        if (elf.addr == mod_start)
+        if (elf.addr - elf.pgoff == mod_start)
             return mod;
     }
     return reportElf(elf);
