@@ -544,6 +544,7 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordSample &record)
         PerfRecordSample::BranchEntry entry;
         while (numBranches-- > 0) {
             stream >> entry.from >> entry.to;
+            stream.readRawData(reinterpret_cast<char*>(&entry.flags), sizeof(entry.flags));
             record.m_branchStack << entry;
         }
     }
