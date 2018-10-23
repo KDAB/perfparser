@@ -62,6 +62,8 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
     bool sampleIdAll = attrs.sampleIdAll();
     quint64 sampleType = attrs.sampleType();
 
+    const auto oldPos = stream.device()->pos();
+
     switch (m_eventHeader.type) {
     case PERF_RECORD_MMAP: {
         PerfRecordMmap mmap(&m_eventHeader, sampleType, sampleIdAll);
@@ -176,6 +178,12 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
         qWarning() << "unhandled event type" << m_eventHeader.type;
         stream.skipRawData(contentSize);
         break;
+    }
+
+    const auto parsedContentSize = stream.device()->pos() - oldPos;
+    if (parsedContentSize != contentSize) {
+        qWarning() << "Event not fully parsed" << m_eventHeader.type << contentSize << parsedContentSize;
+        stream.skipRawData(contentSize - parsedContentSize);
     }
 
     m_eventHeader.size = 0;
