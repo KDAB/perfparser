@@ -446,8 +446,21 @@ void PerfUnwind::resolveCallchain()
     bool isKernel = false;
     bool addedUserFrames = false;
     PerfSymbolTable *symbols = symbolTable(m_currentUnwind.sample->pid());
-    for (int i = 0; i < m_currentUnwind.sample->callchain().length(); ++i) {
+
+    auto reportIp = [&](quint64 ip) -> bool {
+        symbols->attachDwfl(&m_currentUnwind);
+        m_currentUnwind.frames.append(symbols->lookupFrame(ip, isKernel,
+                                            &m_currentUnwind.isInterworking));
+        return !symbols->cacheIsDirty();
+    };
+
+    // when we have a non-empty branch stack, we need to skip any non-kernel IPs
+    // in the normal callchain. The branch stack contains the non-kernel IPs then.
+    const bool hasBranchStack = !m_currentUnwind.sample->branchStack().isEmpty();
+
+    for (int i = 0, c = m_currentUnwind.sample->callchain().size(); i < c; ++i) {
         quint64 ip = m_currentUnwind.sample->callchain()[i];
+
         if (ip > PERF_CONTEXT_MAX) {
             switch (ip) {
             case PERF_CONTEXT_HV: // hypervisor
@@ -464,28 +477,41 @@ void PerfUnwind::resolveCallchain()
                 }
                 break;
             default:
-                qWarning() << "invalid callchain context" << ip;
+                qWarning() << "invalid callchain context" << hex << ip;
                 return;
             }
         } else {
+            // prefer user frames from branch stack if available
+            if (hasBranchStack && !isKernel)
+                break;
+
+            // sometimes it skips the first user frame.
             if (!addedUserFrames && !isKernel && ip != m_currentUnwind.sample->ip()) {
-                // sometimes it skips the first user frame.
-                symbols->attachDwfl(&m_currentUnwind);
-                m_currentUnwind.frames.append(symbols->lookupFrame(
-                                                  m_currentUnwind.sample->ip(), false,
-                                                  &m_currentUnwind.isInterworking));
+                if (!reportIp(m_currentUnwind.sample->ip()))
+                    return;
             }
 
-            symbols->attachDwfl(&m_currentUnwind);
-            m_currentUnwind.frames.append(symbols->lookupFrame(
-                                              ip, isKernel,
-                                              &m_currentUnwind.isInterworking));
+            if (!reportIp(ip))
+                return;
+
             if (!isKernel)
                 addedUserFrames = true;
         }
+    }
 
-        if (symbols->cacheIsDirty())
-            break;
+    // when we are still in the kernel, we cannot have a meaningful branch stack
+    if (isKernel)
+        return;
+
+    // if available, also resolve the callchain stored in the branch stack:
+    // caller is stored in "from", callee is stored in "to"
+    // so the branch is made up of the first callee and all callers
+    for (int i = 0, c = m_currentUnwind.sample->branchStack().size(); i < c; ++i) {
+        const auto& entry = m_currentUnwind.sample->branchStack()[i];
+        if (i == 0 && !reportIp(entry.to))
+            return;
+        if (!reportIp(entry.from))
+            return;
     }
 }
 
@@ -574,7 +600,7 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
         m_currentUnwind.frames.clear();
 
         userSymbols->updatePerfMap();
-        if (sample.callchain().length() > 0)
+        if (!sample.callchain().isEmpty() || !sample.branchStack().isEmpty())
             resolveCallchain();
 
         bool userDirty = userSymbols->cacheIsDirty();
