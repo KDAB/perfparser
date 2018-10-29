@@ -409,8 +409,6 @@ public:
 
     QList<ReadFormat> readFormats() const { return m_readFormats; }
 
-private:
-
     struct BranchFlags {
         quint64 mispred: 1;
         quint64 predicted: 1;
@@ -426,6 +424,9 @@ private:
         quint64 to;
         BranchFlags flags;
     };
+    const QList<BranchEntry> &branchStack() const { return m_branchStack; }
+
+private:
 
     quint64 m_readFormat;
     quint64 m_registerMask;
