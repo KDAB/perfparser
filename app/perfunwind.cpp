@@ -236,12 +236,10 @@ void PerfUnwind::addAttributes(const PerfEventAttributes &attributes, const QByt
                               const QList<quint64> &ids)
 {
     auto filteredIds = ids;
-    if (filteredIds.isEmpty()) {
-        // If we only get one attribute, it doesn't have an ID.
-        // The default ID for samples is 0, so we assign that here,
-        // in order to look it up in analyze().
-        filteredIds = {0};
-    }
+    // If we only get one attribute, it doesn't have an ID.
+    // The default ID for samples is 0, so we assign that here,
+    // in order to look it up in analyze().
+    filteredIds << 0;
 
     {
         // remove attributes that are known already
