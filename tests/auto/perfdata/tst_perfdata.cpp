@@ -91,8 +91,8 @@ void TestPerfData::testTracingData_data()
     QTest::addColumn<uint>("flushes");
     QTest::addColumn<quint64>("maxTime");
     QTest::addColumn<bool>("stats");
-    QTest::newRow("stream stats") << ":/probe.data.stream" << 2u << 13780586522722ull << true;
-    QTest::newRow("file stats") << ":/probe.data.file" << 3u << 13732862219876ull << true;
+    QTest::newRow("stream stats") << ":/probe.data.stream" << 1u << 13780586522722ull << true;
+    QTest::newRow("file stats") << ":/probe.data.file" << 1u << 13732862219876ull << true;
     QTest::newRow("stream data") << ":/probe.data.stream" << 2u << 13780586522722ull << false;
     QTest::newRow("file data") << ":/probe.data.file" << 3u << 13732862219876ull << false;
 }
@@ -114,27 +114,27 @@ void TestPerfData::testTracingData()
     PerfUnwind unwind(&output, ":/", QString(), QString(), QString(), stats);
     if (!stats) {
         QTest::ignoreMessage(QtWarningMsg,
-                             "PerfUnwind::ErrorCode(MissingElfFile): Could not find ELF file for "
+                             "PerfUnwind::MissingElfFile: Could not find ELF file for "
                              "/home/ulf/dev/untitled1-Qt_5_9_1_gcc_64-Profile/untitled1. "
                              "This can break stack unwinding and lead to missing symbols.");
         QTest::ignoreMessage(QtWarningMsg,
-                             "PerfUnwind::ErrorCode(MissingElfFile): Could not find ELF file for "
+                             "PerfUnwind::MissingElfFile: Could not find ELF file for "
                              "/lib/x86_64-linux-gnu/ld-2.24.so. "
                              "This can break stack unwinding and lead to missing symbols.");
         QTest::ignoreMessage(QtWarningMsg,
-                             "PerfUnwind::ErrorCode(MissingElfFile): Could not find ELF file for "
+                             "PerfUnwind::MissingElfFile: Could not find ELF file for "
                              "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.22. "
                              "This can break stack unwinding and lead to missing symbols.");
         QTest::ignoreMessage(QtWarningMsg,
-                             "PerfUnwind::ErrorCode(MissingElfFile): Could not find ELF file for "
+                             "PerfUnwind::MissingElfFile: Could not find ELF file for "
                              "/lib/x86_64-linux-gnu/libm-2.24.so. "
                              "This can break stack unwinding and lead to missing symbols.");
         QTest::ignoreMessage(QtWarningMsg,
-                             "PerfUnwind::ErrorCode(MissingElfFile): Could not find ELF file for "
+                             "PerfUnwind::MissingElfFile: Could not find ELF file for "
                              "/lib/x86_64-linux-gnu/libgcc_s.so.1. "
                              "This can break stack unwinding and lead to missing symbols.");
         QTest::ignoreMessage(QtWarningMsg,
-                             "PerfUnwind::ErrorCode(MissingElfFile): Could not find ELF file for "
+                             "PerfUnwind::MissingElfFile: Could not find ELF file for "
                              "/lib/x86_64-linux-gnu/libc-2.24.so. "
                              "This can break stack unwinding and lead to missing symbols.");
     }
