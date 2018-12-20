@@ -11,7 +11,7 @@ win32 {
     LIBS += -leu_compat
 }
 
-linux-g++*:!isEmpty(PERFPARSER_ELFUTILS_INSTALLDIR) {
+linux:!isEmpty(PERFPARSER_ELFUTILS_INSTALLDIR) {
     RPATH = $$relative_path($$PERFPARSER_ELFUTILS_INSTALLDIR, $$PERFPARSER_APP_INSTALLDIR)
     QMAKE_LFLAGS += -Wl,-z,origin \'-Wl,-rpath,\$\$ORIGIN/$$RPATH\'
 }
