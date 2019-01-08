@@ -768,7 +768,7 @@ static QByteArray fakeSymbolFromSection(Dwfl_Module *mod, Dwarf_Addr addr)
     if (!str || str == QLatin1String(".text"))
         return {};
 
-    if (str == QLatin1String(".plt")) {
+    if (str == QLatin1String(".plt") && entsize > 0) {
         const auto *pltSymbol = findPltSymbol(elf, addr / entsize);
         if (pltSymbol)
             return demangle(pltSymbol) + "@plt";
