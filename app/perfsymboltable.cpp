@@ -521,8 +521,12 @@ Dwfl_Module *PerfSymbolTable::module(quint64 addr, const PerfElfMap::ElfInfo &el
     if (!m_dwfl)
         return nullptr;
 
-    if (elf.pgoff && elf.hasBaseAddr())
-        return module(addr, m_elfs.findElf(elf.baseAddr));
+    if (elf.pgoff && elf.hasBaseAddr()) {
+        const auto base = m_elfs.findElf(elf.baseAddr);
+        if (base.addr == elf.baseAddr && !base.pgoff && elf.originalPath == base.originalPath)
+            return module(addr, base);
+        qWarning() << "stale base mapping referenced:" << elf << base << dec << m_pid << hex << addr;
+    }
 
     Dwfl_Module *mod = dwfl_addrmodule(m_dwfl, addr);
 
