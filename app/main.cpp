@@ -223,10 +223,14 @@ int main(int argc, char *argv[])
                                                   parser.value(port).toUShort());
         infile.reset(socket);
     } else {
-        if (parser.isSet(input))
+        if (parser.isSet(input)) {
             infile.reset(new QFile(parser.value(input)));
-        else
+        } else {
+#ifdef Q_OS_WIN
+            _setmode(fileno(stdin), O_BINARY);
+#endif
             infile.reset(new PerfStdin);
+        }
     }
 
     bool ok = false;
