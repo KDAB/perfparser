@@ -43,7 +43,7 @@ exists($$ELFUTILS_INCLUDE_DIR/libdwfl.h)|exists($$ELFUTILS_INCLUDE_DIR/elfutils/
 
         INSTALLS += inst_backends inst_elfutils
 
-        deploy.depends = install_inst_elfutils install_inst_backends
+        deployqt.depends = install_inst_elfutils install_inst_backends
 
         linux {
             RPATH = $$relative_path($$PERFPARSER_ELFUTILS_BACKENDS_INSTALLDIR, \
@@ -51,7 +51,7 @@ exists($$ELFUTILS_INCLUDE_DIR/libdwfl.h)|exists($$ELFUTILS_INCLUDE_DIR/elfutils/
             fix_dw_rpath.commands = chrpath -r \'\$\$ORIGIN/$$RPATH\' \
                 $$PERFPARSER_ELFUTILS_INSTALLDIR/$$elfutilsLibraryName(dw, 1)
             fix_dw_rpath.depends = install_inst_elfutils
-            deploy.depends += fix_dw_rpath
+            deployqt.depends += fix_dw_rpath
             QMAKE_EXTRA_TARGETS += fix_dw_rpath install_inst_elfutils
         }
     }
@@ -61,4 +61,4 @@ exists($$ELFUTILS_INCLUDE_DIR/libdwfl.h)|exists($$ELFUTILS_INCLUDE_DIR/elfutils/
 
 OTHER_FILES += perfparser.qbs
 
-QMAKE_EXTRA_TARGETS += deploy docs install_docs
+QMAKE_EXTRA_TARGETS += deployqt docs install_docs
