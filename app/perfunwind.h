@@ -44,21 +44,17 @@ class PerfUnwind : public QObject
     Q_OBJECT
 public:
     enum EventType {
-        Sample43, // now obsolete
         ThreadStart,
         ThreadEnd,
         Command,
         LocationDefinition,
         SymbolDefinition,
-        AttributesDefinition49,
         StringDefinition,
         LostDefinition,
         FeaturesDefinition,
         Error,
-        Sample49, // now obsolete
         Progress,
         TracePointFormat,
-        TracePointSample49,
         AttributesDefinition,
         ContextSwitchDefinition,
         Sample,

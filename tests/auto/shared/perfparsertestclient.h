@@ -81,20 +81,20 @@ public:
 
     // Repeated here, as we want to check against accidental changes in enum values.
     enum EventType {
-        Sample43,
         ThreadStart,
         ThreadEnd,
         Command,
         LocationDefinition,
         SymbolDefinition,
-        AttributesDefinition,
         StringDefinition,
         LostDefinition,
         FeaturesDefinition,
         Error,
-        Sample,
         Progress,
         TracePointFormat,
+        AttributesDefinition,
+        ContextSwitchDefinition,
+        Sample,
         TracePointSample,
         InvalidType
     };
