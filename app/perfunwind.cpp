@@ -550,9 +550,9 @@ QVariant readTraceItem(const QByteArray &data, quint32 offset, quint32 size, boo
 QVariant PerfUnwind::readTraceData(const QByteArray &data, const FormatField &field, bool byteSwap)
 {
     // TODO: validate that it actually works like this.
-    if (field.offset > std::numeric_limits<int>::max()
-            || field.size > std::numeric_limits<int>::max()
-            || field.offset + field.size > std::numeric_limits<int>::max()
+    if (field.offset > quint32(std::numeric_limits<int>::max())
+            || field.size > quint32(std::numeric_limits<int>::max())
+            || field.offset + field.size > quint32(std::numeric_limits<int>::max())
             || static_cast<int>(field.offset + field.size) > data.length()) {
         return QVariant::Invalid;
     }
@@ -650,7 +650,7 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
         const auto &attribute = m_attributes.at(attributesId);
         if (attribute.type() == PerfEventAttributes::TYPE_TRACEPOINT) {
             type = TracePointSample;
-            if (attribute.config() > std::numeric_limits<qint32>::max())
+            if (attribute.config() > quint64(std::numeric_limits<qint32>::max()))
                 qWarning() << "Excessively large event format ID" << attribute.config();
             else
                 eventFormatId = static_cast<qint32>(attribute.config());

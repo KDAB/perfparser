@@ -54,7 +54,7 @@ static bool checkMagic(QDataStream &stream, const QByteArray &magic)
 template<typename Number>
 static bool checkSize(Number size)
 {
-    if (size > std::numeric_limits<int>::max()) {
+    if (sizeof(Number) >= sizeof(int) && size > Number(std::numeric_limits<int>::max())) {
         qWarning() << "Excessively large section in tracing data" << size;
         return false;
     }

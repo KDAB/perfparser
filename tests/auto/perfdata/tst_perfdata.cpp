@@ -165,7 +165,7 @@ void TestPerfData::testTracingData()
         const PerfParserTestClient::AttributeEvent attribute
                 = client.attribute(sample.attributeId);
         QCOMPARE(attribute.type, 2u);
-        QVERIFY(attribute.config <= std::numeric_limits<qint32>::max());
+        QVERIFY(attribute.config <= quint64(std::numeric_limits<qint32>::max()));
         const PerfParserTestClient::TracePointFormatEvent format
                 = client.tracePointFormat(static_cast<qint32>(attribute.config));
         QCOMPARE(client.string(format.system), QByteArray("probe_untitled1"));
