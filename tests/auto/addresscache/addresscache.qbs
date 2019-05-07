@@ -5,7 +5,7 @@ QtcAutotest {
     files: [
         "tst_addresscache.cpp",
         "../../../app/perfelfmap.cpp",
-        "../../../app/perfelfmap.h"
+        "../../../app/perfelfmap.h",
         "../../../app/perfaddresscache.cpp",
         "../../../app/perfaddresscache.h"
     ]
