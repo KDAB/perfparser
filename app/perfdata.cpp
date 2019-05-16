@@ -67,7 +67,7 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
     bool sampleIdAll = attrs.sampleIdAll();
     quint64 sampleType = attrs.sampleType();
 
-    const auto oldPos = stream.device()->pos();
+    const auto oldPos = stream.device()->isSequential() ? 0 : stream.device()->pos();
 
     switch (m_eventHeader.type) {
     case PERF_RECORD_MMAP: {
@@ -190,10 +190,13 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
         break;
     }
 
-    const auto parsedContentSize = stream.device()->pos() - oldPos;
-    if (parsedContentSize != contentSize) {
-        qWarning() << "Event not fully parsed" << m_eventHeader.type << contentSize << parsedContentSize;
-        stream.skipRawData(contentSize - parsedContentSize);
+    if (!stream.device()->isSequential()) {
+        const auto parsedContentSize = stream.device()->pos() - oldPos;
+        if (parsedContentSize != contentSize) {
+            qWarning() << "Event not fully parsed" << m_eventHeader.type << contentSize
+                       << parsedContentSize;
+            stream.skipRawData(contentSize - parsedContentSize);
+        }
     }
 
     m_eventHeader.size = 0;
