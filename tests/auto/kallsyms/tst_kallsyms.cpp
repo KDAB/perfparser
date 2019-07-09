@@ -115,7 +115,7 @@ private slots:
         if (!QFile::exists(path))
             QSKIP("/proc/kallsysms not available");
 
-        auto checkSysCtl = [](const QString &knob, int expectedValue) -> bool {
+        auto checkSysCtl = [](const QString &knob, int maxValue) -> bool {
             QFile file(QLatin1String("/proc/sys/kernel/") + knob);
             if (!file.open(QIODevice::ReadOnly)) {
                 qWarning() << "failed to open sysctl file for" << knob;
@@ -126,12 +126,12 @@ private slots:
             const auto value = contents.toInt(&ok);
             if (!ok)
                 qWarning() << "Failed to parse sysctl file contents for" << knob << contents;
-            return ok && value == expectedValue;
+            return ok && value <= maxValue;
         };
         if (!checkSysCtl(QStringLiteral("kptr_restrict"), 0)) {
-            QEXPECT_FAIL("", "sysctl kernel.kptr_restrict != 0, cannot parse /proc/kallsyms", Abort);
-        } else if (!checkSysCtl(QStringLiteral("perf_event_paranoid"), -1)) {
-            QEXPECT_FAIL("", "sysctl kernel.perf_event_paranoid != -1, cannot parse /proc/kallsyms", Abort);
+            QEXPECT_FAIL("", "sysctl kernel.kptr_restrict > 0, cannot parse /proc/kallsyms", Abort);
+        } else if (!checkSysCtl(QStringLiteral("perf_event_paranoid"), 1)) {
+            QEXPECT_FAIL("", "sysctl kernel.perf_event_paranoid > 1, cannot parse /proc/kallsyms", Abort);
         }
 
         PerfKallsyms kallsyms;
