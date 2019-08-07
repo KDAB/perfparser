@@ -381,7 +381,7 @@ int PerfSymbolTable::insertSubprogram(Dwarf_Die *top, Dwarf_Addr entry, qint32 b
 }
 
 int PerfSymbolTable::parseDie(Dwarf_Die *top, qint32 binaryId, qint32 binaryPathId, bool isKernel,
-                              Dwarf_Files *files, Dwarf_Addr entry, const QStack<DieAndLocation> &stack)
+                              Dwarf_Files *files, Dwarf_Addr entry, qint32 parentLocationId)
 {
     int tag = dwarf_tag(top);
     switch (tag) {
@@ -401,13 +401,7 @@ int PerfSymbolTable::parseDie(Dwarf_Die *top, qint32 binaryId, qint32 binaryPath
                 ? static_cast<qint32>(val) : -1;
         location.pid = m_pid;
 
-        auto it = stack.end();
-        --it;
-        while (it != stack.begin()) {
-            location.parentLocationId = (--it)->locationId;
-            if (location.parentLocationId != -1)
-                break;
-        }
+        location.parentLocationId = parentLocationId;
 
         int callLocationId = m_unwind->resolveLocation(location);
         return insertSubprogram(top, entry, binaryId, binaryPathId, callLocationId, isKernel);
@@ -419,42 +413,30 @@ int PerfSymbolTable::parseDie(Dwarf_Die *top, qint32 binaryId, qint32 binaryPath
     }
 }
 
-void PerfSymbolTable::parseDwarf(Dwarf_Die *cudie, Dwarf_Addr bias, qint32 binaryId, qint32 binaryPathId,
-                                 bool isKernel)
+qint32 PerfSymbolTable::parseDwarf(Dwarf_Die *cudie, Dwarf_Die *subroutine, Dwarf_Addr bias, qint32 binaryId,
+                                   qint32 binaryPathId, bool isKernel)
 {
-    // Iterate through all dwarf sections and establish parent/child relations for inline
-    // subroutines. Add all symbols to m_symbols and special frames for start points of inline
-    // instances to m_addresses.
-
-    QStack<DieAndLocation> stack;
-    stack.push_back({*cudie, -1});
+    Dwarf_Die *scopes = nullptr;
+    const auto nscopes = dwarf_getscopes_die(subroutine, &scopes);
 
     Dwarf_Files *files = nullptr;
     dwarf_getsrcfiles(cudie, &files, nullptr);
 
-    while (!stack.isEmpty()) {
-        Dwarf_Die *top = &(stack.last().die);
+    qint32 parentLocationId = -1;
+    for (int i = nscopes - 1; i >= 0; --i) {
+        const auto scope = &scopes[i];
+        Dwarf_Addr scopeAddr = bias;
         Dwarf_Addr entry = 0;
-        if (dwarf_entrypc(top, &entry) == 0 && entry != 0)
-            stack.last().locationId = parseDie(top, binaryId, binaryPathId, isKernel,
-                                               files, entry + bias, stack);
+        if (dwarf_entrypc(scope, &entry) == 0 && entry != 0)
+            scopeAddr += entry;
 
-        Dwarf_Die child;
-        if (dwarf_child(top, &child) == 0) {
-            stack.push_back({child, -1});
-        } else {
-            do {
-                Dwarf_Die sibling;
-                // Mind that stack.last() can change during this loop. So don't use "top" below.
-                const bool hasSibling = (dwarf_siblingof(&(stack.last().die), &sibling) == 0);
-                stack.pop_back();
-                if (hasSibling) {
-                    stack.push_back({sibling, -1});
-                    break;
-                }
-            } while (!stack.isEmpty());
-        }
+        auto locationId = parseDie(scope, binaryId, binaryPathId, isKernel, files, scopeAddr, parentLocationId);
+        if (locationId != -1)
+            parentLocationId = locationId;
     }
+
+    eu_compat_free(scopes);
+    return parentLocationId;
 }
 
 static void reportError(qint32 pid, const PerfElfMap::ElfInfo& info, const char *message)
@@ -864,29 +846,36 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
             functionLocation.address -= off; // in case we don't find anything better
             Dwarf_Die *die = dwfl_module_addrdie(mod, addressLocation.address, &bias);
 
+            Dwarf_Die *subroutine = nullptr;
             Dwarf_Die *scopes = nullptr;
             int nscopes = dwarf_getscopes(die, addressLocation.address - bias, &scopes);
-
             for (int i = 0; i < nscopes; ++i) {
                 Dwarf_Die *scope = &scopes[i];
                 const int tag = dwarf_tag(scope);
                 if (tag == DW_TAG_subprogram || tag == DW_TAG_inlined_subroutine) {
                     Dwarf_Addr entry = 0;
                     dwarf_entrypc(scope, &entry);
+                    symname = dieName(scope); // use name of inlined function as symbol
                     functionLocation.address = entry + bias;
                     functionLocation.file = m_unwind->resolveString(dwarf_decl_file(scope));
                     dwarf_decl_line(scope, &functionLocation.line);
                     dwarf_decl_column(scope, &functionLocation.column);
+
+                    subroutine = scope;
                     break;
                 }
             }
-            eu_compat_free(scopes);
 
+            // check if the inline chain was cached already
             addressLocation.parentLocationId = m_unwind->lookupLocation(functionLocation);
-            if (die && !m_unwind->hasSymbol(addressLocation.parentLocationId))
-                parseDwarf(die, bias, binaryId, binaryPathId, isKernel);
+            // otherwise resolve the inline chain if possible
+            if (subroutine && !m_unwind->hasSymbol(addressLocation.parentLocationId))
+                functionLocation.parentLocationId = parseDwarf(die, subroutine, bias, binaryId, binaryPathId, isKernel);
+            // then resolve and cache the inline chain
             if (addressLocation.parentLocationId == -1)
                 addressLocation.parentLocationId = m_unwind->resolveLocation(functionLocation);
+
+            eu_compat_free(scopes);
         }
         if (!m_unwind->hasSymbol(addressLocation.parentLocationId)) {
             // no sufficient debug information. Use what we already know
