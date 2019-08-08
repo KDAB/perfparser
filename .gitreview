@@ -1,0 +1,5 @@
+[gerrit]
+host=codereview.qt-project.org
+port=29418
+project=qt-creator/perfparser
+
