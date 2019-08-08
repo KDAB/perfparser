@@ -21,7 +21,13 @@
 #include "perfparsertestclient.h"
 
 #include <QtEndian>
+
+#ifdef MANUAL_TEST
+#define QVERIFY Q_ASSERT
+#define QCOMPARE(x, y) Q_ASSERT(x == y)
+#else
 #include <QtTest>
+#endif
 
 PerfParserTestClient::PerfParserTestClient(QObject *parent) : QObject(parent)
 {
@@ -82,7 +88,7 @@ void PerfParserTestClient::extractTrace(QIODevice *device)
             CommandEvent command;
             stream >> command.pid >> command.tid >> command.time >> command.cpu >> command.name;
             checkString(command.name);
-            m_commands.append(command);
+            m_commands.insert(command.tid, command);
             break;
         }
         case LocationDefinition: {

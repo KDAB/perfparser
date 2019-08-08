@@ -107,18 +107,21 @@ public:
     void extractTrace(QIODevice *output);
 
     QByteArray string(qint32 id) const { return m_strings.value(id); }
+    CommandEvent command(qint32 tid) const { return m_commands[tid]; }
     AttributeEvent attribute(qint32 id) const { return m_attributes.value(id); }
     QVector<SampleEvent> samples() const { return m_samples; }
+    LocationEvent location(qint32 id) const { return m_locations.value(id); }
+    SymbolEvent symbol(qint32 id) const { return m_symbols.value(id); }
 
     TracePointFormatEvent tracePointFormat(qint32 id) { return m_tracePointFormats.value(id); }
 
 private:
     QVector<QByteArray> m_strings;
     QVector<AttributeEvent> m_attributes;
-    QVector<CommandEvent> m_commands;
+    QHash<qint32, CommandEvent> m_commands;
     QVector<ThreadEndEvent> m_threadEnds;
     QVector<LocationEvent> m_locations;
-    QVector<SymbolEvent> m_symbols;
+    QHash<qint32, SymbolEvent> m_symbols;
     QVector<SampleEvent> m_samples;
     QHash<qint32, TracePointFormatEvent> m_tracePointFormats;
 };

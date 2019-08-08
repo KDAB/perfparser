@@ -2,5 +2,5 @@ import qbs
 
 Project {
     name: "Tests"
-    references: ["auto"]
+    references: ["auto", "manual"]
 }
