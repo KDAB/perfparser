@@ -399,6 +399,7 @@ int PerfSymbolTable::parseDie(Dwarf_Die *top, qint32 binaryId, qint32 binaryPath
         location.column
                 = (dwarf_formudata(dwarf_attr(top, DW_AT_call_column, &attr), &val) == 0)
                 ? static_cast<qint32>(val) : -1;
+        location.pid = m_pid;
 
         auto it = stack.end();
         --it;

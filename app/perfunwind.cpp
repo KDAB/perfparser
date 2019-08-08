@@ -711,6 +711,7 @@ void PerfUnwind::sendString(qint32 id, const QByteArray& string)
 void PerfUnwind::sendLocation(qint32 id, const PerfUnwind::Location &location)
 {
     QByteArray buffer;
+    Q_ASSERT(location.pid);
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(LocationDefinition)
                                                << id << location;
     sendBuffer(buffer);
