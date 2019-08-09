@@ -91,8 +91,8 @@ void TestPerfData::testTracingData_data()
     QTest::addColumn<uint>("flushes");
     QTest::addColumn<quint64>("maxTime");
     QTest::addColumn<bool>("stats");
-    QTest::newRow("stream stats") << ":/probe.data.stream" << 1u << 13780586522722ull << true;
-    QTest::newRow("file stats") << ":/probe.data.file" << 1u << 13732862219876ull << true;
+    QTest::newRow("stream stats") << ":/probe.data.stream" << 1u << 13780586573357ull << true;
+    QTest::newRow("file stats") << ":/probe.data.file" << 1u << 13732862274100ull << true;
     QTest::newRow("stream data") << ":/probe.data.stream" << 2u << 13780586522722ull << false;
     QTest::newRow("file data") << ":/probe.data.file" << 3u << 13732862219876ull << false;
 }
@@ -148,7 +148,7 @@ void TestPerfData::testTracingData()
         QCOMPARE(stats.numBufferFlushes, flushes);
         QCOMPARE(stats.numTimeViolatingSamples, 0u);
         QCOMPARE(stats.numTimeViolatingMmaps, 0u);
-        QCOMPARE(stats.maxBufferSize, 15488u);
+        QCOMPARE(stats.maxBufferSize, 15584u);
         QCOMPARE(stats.maxTime, maxTime);
         return;
     }
@@ -162,8 +162,9 @@ void TestPerfData::testTracingData()
     const QVector<PerfParserTestClient::SampleEvent> samples = client.samples();
     QVERIFY(samples.length() > 0);
     for (const PerfParserTestClient::SampleEvent &sample : samples) {
+        QCOMPARE(sample.values.size(), 1);
         const PerfParserTestClient::AttributeEvent attribute
-                = client.attribute(sample.attributeId);
+                = client.attribute(sample.values[0].first);
         QCOMPARE(attribute.type, 2u);
         QVERIFY(attribute.config <= quint64(std::numeric_limits<qint32>::max()));
         const PerfParserTestClient::TracePointFormatEvent format

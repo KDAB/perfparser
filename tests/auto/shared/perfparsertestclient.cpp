@@ -74,13 +74,13 @@ void PerfParserTestClient::extractTrace(QIODevice *device)
         switch (eventType) {
         case ThreadEnd: {
             ThreadEndEvent threadEnd;
-            stream >> threadEnd.pid >> threadEnd.tid >> threadEnd.time;
+            stream >> threadEnd.pid >> threadEnd.tid >> threadEnd.time >> threadEnd.cpu;
             m_threadEnds.append(threadEnd);
             break;
         }
         case Command: {
             CommandEvent command;
-            stream >> command.pid >> command.tid >> command.time >> command.name;
+            stream >> command.pid >> command.tid >> command.time >> command.cpu >> command.name;
             checkString(command.name);
             m_commands.append(command);
             break;
@@ -101,19 +101,20 @@ void PerfParserTestClient::extractTrace(QIODevice *device)
         case SymbolDefinition: {
             qint32 id;
             SymbolEvent symbol;
-            stream >> id >> symbol.name >> symbol.binary >> symbol.isKernel;
+            stream >> id >> symbol.name >> symbol.binary >> symbol.path >> symbol.isKernel;
             if (symbol.name != -1)
                 checkString(symbol.name);
             if (symbol.binary != -1)
                 checkString(symbol.binary);
-            QCOMPARE(id, m_symbols.length());
-            m_symbols.append(symbol);
+            QVERIFY(id < m_locations.size());
+            m_symbols.insert(id, symbol);
             break;
         }
         case AttributesDefinition: {
             qint32 id;
             AttributeEvent attribute;
-            stream >> id >> attribute.type >> attribute.config >> attribute.name;
+            stream >> id >> attribute.type >> attribute.config >> attribute.name
+                   >> attribute.usesFrequency >> attribute.frequencyOrPeriod;
             checkString(attribute.name);
             QCOMPARE(id, m_attributes.length());
             m_attributes.append(attribute);
@@ -137,12 +138,12 @@ void PerfParserTestClient::extractTrace(QIODevice *device)
         case Sample:
         case TracePointSample: {
             SampleEvent sample;
-            stream >> sample.pid >> sample.tid >> sample.time >> sample.frames
-                   >> sample.numGuessedFrames >> sample.attributeId >> sample.period
-                   >> sample.weight;
+            stream >> sample.pid >> sample.tid >> sample.time >> sample.cpu >> sample.frames
+                   >> sample.numGuessedFrames >> sample.values;
             for (qint32 locationId : qAsConst(sample.frames))
                 checkLocation(locationId);
-            checkAttribute(sample.attributeId);
+            for (const auto &value : qAsConst(sample.values))
+                checkAttribute(value.first);
 
             if (eventType == TracePointSample) {
                 stream >> sample.tracePointData;

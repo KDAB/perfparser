@@ -30,15 +30,18 @@ class PerfParserTestClient : public QObject
     Q_OBJECT
 public:
     struct AttributeEvent {
-        quint32 type;
-        qint32 name;
-        quint64 config;
+        quint32 type = 0;
+        qint32 name = -1;
+        quint64 config = 0;
+        bool usesFrequency = false;
+        quint64 frequencyOrPeriod = 0;
     };
 
     struct ThreadEvent {
-        qint32 pid;
-        qint32 tid;
-        quint64 time;
+        qint32 pid = -1;
+        qint32 tid = -1;
+        quint64 time = 0;
+        quint32 cpu = 0;
     };
 
     struct ThreadEndEvent : public ThreadEvent
@@ -46,37 +49,36 @@ public:
     };
 
     struct CommandEvent : public ThreadEvent {
-        qint32 name;
+        qint32 name = -1;
     };
 
     struct LocationEvent {
-        quint64 address;
-        qint32 file;
-        quint32 pid;
-        qint32 line;
-        qint32 column;
-        qint32 parentLocationId;
+        quint64 address = 0;
+        qint32 file = -1;
+        quint32 pid = 0;
+        qint32 line = -1;
+        qint32 column = -1;
+        qint32 parentLocationId = -1;
     };
 
     struct SymbolEvent {
-        qint32 name;
-        qint32 binary;
-        bool isKernel;
+        qint32 name = -1;
+        qint32 binary = -1;
+        qint32 path = -1;
+        bool isKernel = false;
     };
 
     struct SampleEvent : public ThreadEvent {
         QVector<qint32> frames;
+        QVector<QPair<qint32, quint64>> values;
         QHash<qint32, QVariant> tracePointData;
-        quint64 period;
-        quint64 weight;
-        qint32 attributeId;
-        quint8 numGuessedFrames;
+        quint8 numGuessedFrames = 0;
     };
 
     struct TracePointFormatEvent {
-        qint32 system;
-        qint32 name;
-        quint32 flags;
+        qint32 system = -1;
+        qint32 name = -1;
+        quint32 flags = 0;
     };
 
     // Repeated here, as we want to check against accidental changes in enum values.
