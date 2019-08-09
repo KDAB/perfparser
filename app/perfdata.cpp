@@ -59,6 +59,7 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
     }
 
     const quint16 contentSize = m_eventHeader.size - headerSize;
+    qint64 expectedParsedContentSize = contentSize;
     if (stream.device()->bytesAvailable() < contentSize)
         return Rerun;
 
@@ -153,6 +154,7 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
                 quint32 size;
                 stream >> size;
                 m_tracingData.setSize(size);
+                expectedParsedContentSize += size;
             }
             if (stream.device()->bytesAvailable() >= m_tracingData.size()) {
                 stream >> m_tracingData;
@@ -192,8 +194,8 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
 
     if (!stream.device()->isSequential()) {
         const auto parsedContentSize = stream.device()->pos() - oldPos;
-        if (parsedContentSize != contentSize) {
-            qWarning() << "Event not fully parsed" << m_eventHeader.type << contentSize
+        if (parsedContentSize != expectedParsedContentSize) {
+            qWarning() << "Event not fully parsed" << m_eventHeader.type << expectedParsedContentSize
                        << parsedContentSize;
             stream.skipRawData(contentSize - parsedContentSize);
         }
