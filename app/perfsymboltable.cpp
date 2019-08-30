@@ -619,7 +619,7 @@ struct AddrRange
 
     bool operator<(const AddrRange &rhs) const
     {
-        return std::tie(low, high) < std::tie(rhs.low, high);
+        return std::tie(low, high) < std::tie(rhs.low, rhs.high);
     }
 };
 Q_DECLARE_TYPEINFO(AddrRange, Q_MOVABLE_TYPE);
