@@ -10,7 +10,7 @@ QtcTool {
 
     files: [
         "perf2text.cpp",
-        "../shared/perfparsertestclient.cpp",
-        "../shared/perfparsertestclient.h",
+        "../../auto/shared/perfparsertestclient.cpp",
+        "../../auto/shared/perfparsertestclient.h",
     ]
 }
