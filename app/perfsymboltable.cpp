@@ -622,7 +622,9 @@ struct AddrRange
         return std::tie(low, high) < std::tie(rhs.low, rhs.high);
     }
 };
+QT_BEGIN_NAMESPACE
 Q_DECLARE_TYPEINFO(AddrRange, Q_MOVABLE_TYPE);
+QT_END_NAMESPACE
 
 struct DieRangeMap
 {
@@ -699,7 +701,9 @@ private:
         ranges.push_back(ret);
     }
 };
+QT_BEGIN_NAMESPACE
 Q_DECLARE_TYPEINFO(DieRangeMap, Q_MOVABLE_TYPE);
+QT_END_NAMESPACE
 
 class DieRangeMaps
 {
@@ -741,7 +745,9 @@ public:
     AddrRange range; // may be non-continuous, but allows quick checks
     QVector<DieRangeMap> maps;
 };
+QT_BEGIN_NAMESPACE
 Q_DECLARE_TYPEINFO(DieRangeMaps, Q_MOVABLE_TYPE);
+QT_END_NAMESPACE
 
 int symbolIndex(const Elf64_Rel &rel)
 {
