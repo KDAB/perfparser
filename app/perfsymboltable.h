@@ -34,7 +34,7 @@
 
 #include <QObject>
 
-class DieRangeMaps;
+class CuDieRanges;
 
 class PerfSymbolTable
 {
@@ -111,7 +111,7 @@ private:
 
     PerfElfMap m_elfs;
     PerfAddressCache m_addressCache;
-    QHash<Dwfl_Module*, DieRangeMaps> m_dieRangeMaps;
+    QHash<Dwfl_Module*, CuDieRanges> m_cuDieRanges;
     Dwfl_Callbacks *m_callbacks;
     qint32 m_pid;
 
