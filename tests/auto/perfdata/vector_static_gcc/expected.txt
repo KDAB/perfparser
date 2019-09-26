@@ -1,0 +1,898 @@
+vector_static_g	349054	349054	65149.467765093
+	cycles: 1
+
+	ffffffffb8a6c896
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8a0d6fe
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8beb2ea
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8cb2019
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8d1a98d
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8cb0fc1
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8cb1765
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8cb1df1
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8cb1e27
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8a0454f
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb940008c
+	0	  [kernel.kallsyms]_text [kernel]
+
+vector_static_g	349054	349054	65149.470378242
+	cycles: 52285
+
+	418cc1
+	418790	__cos_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401572	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.470424700
+	cycles: 46376
+
+	ffffffffb8b105df
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c37f3e
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8a75356
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8a75661
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb94012ee
+	0	  [kernel.kallsyms]_text [kernel]
+	45a1d3
+	45a180	__memmove_avx_unaligned_erms vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d4b	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:911:19
+	401d08	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:906:5	std::enable_if<std::__is_bitwise_relocatable<double, void>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:946:28
+	401d08	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:940:5	double* std::__relocate_a<double*, double*, std::allocator<double> >(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:453:26
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:450:7	std::vector<double, std::allocator<double> >::_S_do_relocate(double*, double*, double*, std::allocator<double>&, std::integral_constant<bool, true>) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:466:23
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:462:7	std::vector<double, std::allocator<double> >::_S_relocate(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/vector.tcc:461:34
+	401c70	/usr/include/c++/9.1.0/bits/vector.tcc:426:7	void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	4015a4	/usr/include/c++/9.1.0/bits/vector.tcc:121:4
+	401590	/usr/include/c++/9.1.0/bits/vector.tcc:109:7	void std::vector<double, std::allocator<double> >::emplace_back<double>(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_vector.h:1201:9
+	401590	/usr/include/c++/9.1.0/bits/stl_vector.h:1200:7	std::vector<double, std::allocator<double> >::push_back(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_iterator.h:522:2
+	401590	/usr/include/c++/9.1.0/bits/stl_iterator.h:520:7	std::back_insert_iterator<std::vector<double, std::allocator<double> > >::operator=(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_algo.h:4450:11
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.470468999
+	cycles: 71365
+
+	ffffffffb94012b0
+	0	  [kernel.kallsyms]_text [kernel]
+	45a1d3
+	45a180	__memmove_avx_unaligned_erms vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d4b	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:911:19
+	401d08	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:906:5	std::enable_if<std::__is_bitwise_relocatable<double, void>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:946:28
+	401d08	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:940:5	double* std::__relocate_a<double*, double*, std::allocator<double> >(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:453:26
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:450:7	std::vector<double, std::allocator<double> >::_S_do_relocate(double*, double*, double*, std::allocator<double>&, std::integral_constant<bool, true>) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:466:23
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:462:7	std::vector<double, std::allocator<double> >::_S_relocate(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/vector.tcc:461:34
+	401c70	/usr/include/c++/9.1.0/bits/vector.tcc:426:7	void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	4015a4	/usr/include/c++/9.1.0/bits/vector.tcc:121:4
+	401590	/usr/include/c++/9.1.0/bits/vector.tcc:109:7	void std::vector<double, std::allocator<double> >::emplace_back<double>(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_vector.h:1201:9
+	401590	/usr/include/c++/9.1.0/bits/stl_vector.h:1200:7	std::vector<double, std::allocator<double> >::push_back(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_iterator.h:522:2
+	401590	/usr/include/c++/9.1.0/bits/stl_iterator.h:520:7	std::back_insert_iterator<std::vector<double, std::allocator<double> > >::operator=(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_algo.h:4450:11
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.470529875
+	cycles: 112753
+
+	ffffffffb92ee4b7
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c4c81a
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c4c976
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c501c3
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c50d24
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c69938
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c37749
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c37f8e
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8a75356
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8a75661
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb94012ee
+	0	  [kernel.kallsyms]_text [kernel]
+	45a1d3
+	45a180	__memmove_avx_unaligned_erms vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d4b	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:911:19
+	401d08	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:906:5	std::enable_if<std::__is_bitwise_relocatable<double, void>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:946:28
+	401d08	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:940:5	double* std::__relocate_a<double*, double*, std::allocator<double> >(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:453:26
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:450:7	std::vector<double, std::allocator<double> >::_S_do_relocate(double*, double*, double*, std::allocator<double>&, std::integral_constant<bool, true>) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:466:23
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:462:7	std::vector<double, std::allocator<double> >::_S_relocate(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/vector.tcc:461:34
+	401c70	/usr/include/c++/9.1.0/bits/vector.tcc:426:7	void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	4015a4	/usr/include/c++/9.1.0/bits/vector.tcc:121:4
+	401590	/usr/include/c++/9.1.0/bits/vector.tcc:109:7	void std::vector<double, std::allocator<double> >::emplace_back<double>(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_vector.h:1201:9
+	401590	/usr/include/c++/9.1.0/bits/stl_vector.h:1200:7	std::vector<double, std::allocator<double> >::push_back(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_iterator.h:522:2
+	401590	/usr/include/c++/9.1.0/bits/stl_iterator.h:520:7	std::back_insert_iterator<std::vector<double, std::allocator<double> > >::operator=(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_algo.h:4450:11
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.470625184
+	cycles: 156543
+
+	ffffffffb8c8e627
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c9455c
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c946fd
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c3776c
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c37f8e
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8a75356
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8a75661
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb94012ee
+	0	  [kernel.kallsyms]_text [kernel]
+	45a1d3
+	45a180	__memmove_avx_unaligned_erms vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d4b	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:911:19
+	401d08	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:906:5	std::enable_if<std::__is_bitwise_relocatable<double, void>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:946:28
+	401d08	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:940:5	double* std::__relocate_a<double*, double*, std::allocator<double> >(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:453:26
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:450:7	std::vector<double, std::allocator<double> >::_S_do_relocate(double*, double*, double*, std::allocator<double>&, std::integral_constant<bool, true>) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:466:23
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:462:7	std::vector<double, std::allocator<double> >::_S_relocate(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/vector.tcc:461:34
+	401c70	/usr/include/c++/9.1.0/bits/vector.tcc:426:7	void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	4015a4	/usr/include/c++/9.1.0/bits/vector.tcc:121:4
+	401590	/usr/include/c++/9.1.0/bits/vector.tcc:109:7	void std::vector<double, std::allocator<double> >::emplace_back<double>(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_vector.h:1201:9
+	401590	/usr/include/c++/9.1.0/bits/stl_vector.h:1200:7	std::vector<double, std::allocator<double> >::push_back(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_iterator.h:522:2
+	401590	/usr/include/c++/9.1.0/bits/stl_iterator.h:520:7	std::back_insert_iterator<std::vector<double, std::allocator<double> > >::operator=(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_algo.h:4450:11
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.470754165
+	cycles: 188343
+
+	41822c
+	417f60	__sin_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40155c	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.470904966
+	cycles: 210532
+
+	418b3d
+	418790	__cos_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401572	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.471072630
+	cycles: 227747
+
+	41b3c5
+	41b3b0	__hypot_finite vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a57
+	417a40	__hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401585	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.471253534
+	cycles: 241727
+
+	41b503
+	41b3b0	__hypot_finite vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a57
+	417a40	__hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401585	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.471445639
+	cycles: 253269
+
+	4184de
+	417f60	__sin_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40155c	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.471645788
+	cycles: 262810
+
+	ffffffffb8a04391
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb9400a34
+	0	  [kernel.kallsyms]_text [kernel]
+	401530	/usr/include/c++/9.1.0/new:174:3
+	401530	/usr/include/c++/9.1.0/ext/new_allocator.h:144:2	void __gnu_cxx::new_allocator<double>::construct<double, double>(double*, double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401530	/usr/include/c++/9.1.0/bits/alloc_traits.h:484:4
+	401530	/usr/include/c++/9.1.0/bits/alloc_traits.h:482:2	void std::allocator_traits<std::allocator<double> >::construct<double, double>(std::allocator<double>&, double*, double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401530	/usr/include/c++/9.1.0/bits/vector.tcc:115:30
+	401590	/usr/include/c++/9.1.0/bits/vector.tcc:109:7	void std::vector<double, std::allocator<double> >::emplace_back<double>(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_vector.h:1201:9
+	401590	/usr/include/c++/9.1.0/bits/stl_vector.h:1200:7	std::vector<double, std::allocator<double> >::push_back(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_iterator.h:522:2
+	401590	/usr/include/c++/9.1.0/bits/stl_iterator.h:520:7	std::back_insert_iterator<std::vector<double, std::allocator<double> > >::operator=(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_algo.h:4450:11
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.471854374
+	cycles: 270991
+
+	418cbd
+	418790	__cos_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401572	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.472067997
+	cycles: 277717
+
+	4181b4
+	417f60	__sin_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40155c	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.472287001
+	cycles: 283630
+
+	418b65
+	418790	__cos_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401572	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.472510764
+	cycles: 288646
+
+	418cbd
+	418790	__cos_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401572	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.472738182
+	cycles: 292880
+
+	418b86
+	418790	__cos_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401572	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.472968985
+	cycles: 296517
+
+	41b3b0	__hypot_finite vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a57
+	417a40	__hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401585	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.473202768
+	cycles: 299600
+
+	41817a
+	417f60	__sin_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40155c	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.473438513
+	cycles: 302198
+
+	417f60	__sin_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40155c	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.473679725
+	cycles: 305376
+
+	418c78
+	418790	__cos_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401572	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.473920710
+	cycles: 306791
+
+	418e76
+	418790	__cos_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401572	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.474162490
+	cycles: 308205
+
+	418a00
+	418790	__cos_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401572	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.474405210
+	cycles: 309514
+
+	417f8b
+	417f60	__sin_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40155c	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.474649565
+	cycles: 310677
+
+	45a1d3
+	45a180	__memmove_avx_unaligned_erms vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d4b	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:911:19
+	401d08	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:906:5	std::enable_if<std::__is_bitwise_relocatable<double, void>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:946:28
+	401d08	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:940:5	double* std::__relocate_a<double*, double*, std::allocator<double> >(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:453:26
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:450:7	std::vector<double, std::allocator<double> >::_S_do_relocate(double*, double*, double*, std::allocator<double>&, std::integral_constant<bool, true>) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:466:23
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:462:7	std::vector<double, std::allocator<double> >::_S_relocate(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/vector.tcc:461:34
+	401c70	/usr/include/c++/9.1.0/bits/vector.tcc:426:7	void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	4015a4	/usr/include/c++/9.1.0/bits/vector.tcc:121:4
+	401590	/usr/include/c++/9.1.0/bits/vector.tcc:109:7	void std::vector<double, std::allocator<double> >::emplace_back<double>(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_vector.h:1201:9
+	401590	/usr/include/c++/9.1.0/bits/stl_vector.h:1200:7	std::vector<double, std::allocator<double> >::push_back(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_iterator.h:522:2
+	401590	/usr/include/c++/9.1.0/bits/stl_iterator.h:520:7	std::back_insert_iterator<std::vector<double, std::allocator<double> > >::operator=(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_algo.h:4450:11
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.474894923
+	cycles: 311581
+
+	ffffffffb92ee4b7
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c4c81a
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c4c976
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c501c3
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c50d24
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c69938
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c37749
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c37f8e
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8a75356
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8a75661
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb94012ee
+	0	  [kernel.kallsyms]_text [kernel]
+	45a1d3
+	45a180	__memmove_avx_unaligned_erms vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d4b	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:911:19
+	401d08	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:906:5	std::enable_if<std::__is_bitwise_relocatable<double, void>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:946:28
+	401d08	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:940:5	double* std::__relocate_a<double*, double*, std::allocator<double> >(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:453:26
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:450:7	std::vector<double, std::allocator<double> >::_S_do_relocate(double*, double*, double*, std::allocator<double>&, std::integral_constant<bool, true>) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:466:23
+	401d08	/usr/include/c++/9.1.0/bits/stl_vector.h:462:7	std::vector<double, std::allocator<double> >::_S_relocate(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08	/usr/include/c++/9.1.0/bits/vector.tcc:461:34
+	401c70	/usr/include/c++/9.1.0/bits/vector.tcc:426:7	void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	4015a4	/usr/include/c++/9.1.0/bits/vector.tcc:121:4
+	401590	/usr/include/c++/9.1.0/bits/vector.tcc:109:7	void std::vector<double, std::allocator<double> >::emplace_back<double>(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_vector.h:1201:9
+	401590	/usr/include/c++/9.1.0/bits/stl_vector.h:1200:7	std::vector<double, std::allocator<double> >::push_back(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_iterator.h:522:2
+	401590	/usr/include/c++/9.1.0/bits/stl_iterator.h:520:7	std::back_insert_iterator<std::vector<double, std::allocator<double> > >::operator=(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_algo.h:4450:11
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.475144209
+	cycles: 312331
+
+	ffffffffb8c05a25
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c3fb5c
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c3fccd
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c3b1e4
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c3d0a7
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c3d357
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c3d3c8
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8a0454f
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb940008c
+	0	  [kernel.kallsyms]_text [kernel]
+	45d3eb
+	45d3e0	munmap vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d61	/usr/include/c++/9.1.0/ext/new_allocator.h:128:19
+	401d5a	/usr/include/c++/9.1.0/ext/new_allocator.h:119:7	__gnu_cxx::new_allocator<double>::deallocate(double*, unsigned long) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d5a	/usr/include/c++/9.1.0/bits/alloc_traits.h:470:9
+	401d5a	/usr/include/c++/9.1.0/bits/alloc_traits.h:469:7	std::allocator_traits<std::allocator<double> >::deallocate(std::allocator<double>&, double*, unsigned long) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d5a	/usr/include/c++/9.1.0/bits/stl_vector.h:351:19
+	401d12	/usr/include/c++/9.1.0/bits/stl_vector.h:347:7	std::_Vector_base<double, std::allocator<double> >::_M_deallocate(double*, unsigned long) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d12	/usr/include/c++/9.1.0/bits/vector.tcc:500:20
+	401c70	/usr/include/c++/9.1.0/bits/vector.tcc:426:7	void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	4015a4	/usr/include/c++/9.1.0/bits/vector.tcc:121:4
+	401590	/usr/include/c++/9.1.0/bits/vector.tcc:109:7	void std::vector<double, std::allocator<double> >::emplace_back<double>(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_vector.h:1201:9
+	401590	/usr/include/c++/9.1.0/bits/stl_vector.h:1200:7	std::vector<double, std::allocator<double> >::push_back(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_iterator.h:522:2
+	401590	/usr/include/c++/9.1.0/bits/stl_iterator.h:520:7	std::back_insert_iterator<std::vector<double, std::allocator<double> > >::operator=(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_algo.h:4450:11
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.475393860
+	cycles: 312492
+
+	41b4b6
+	41b3b0	__hypot_finite vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a57
+	417a40	__hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401585	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.475639449
+	cycles: 312490
+
+	417f9c
+	417f60	__sin_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40155c	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.475885232
+	cycles: 313182
+
+	401539	/usr/include/c++/9.1.0/bits/vector.tcc:117:6
+	401590	/usr/include/c++/9.1.0/bits/vector.tcc:109:7	void std::vector<double, std::allocator<double> >::emplace_back<double>(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_vector.h:1201:9
+	401590	/usr/include/c++/9.1.0/bits/stl_vector.h:1200:7	std::vector<double, std::allocator<double> >::push_back(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_iterator.h:522:2
+	401590	/usr/include/c++/9.1.0/bits/stl_iterator.h:520:7	std::back_insert_iterator<std::vector<double, std::allocator<double> > >::operator=(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_algo.h:4450:11
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.476131412
+	cycles: 313856
+
+	418c81
+	418790	__cos_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401572	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.476379240
+	cycles: 314463
+
+	418642
+	417f60	__sin_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40155c	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.476626760
+	cycles: 314815
+
+	418b5f
+	418790	__cos_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401572	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.476874692
+	cycles: 315202
+
+	418e76
+	418790	__cos_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401572	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.477126147
+	cycles: 315591
+
+	400480	<.plt+400480> vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40155c	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.477374712
+	cycles: 315405
+
+	418cbd
+	418790	__cos_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401572	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.477622675
+	cycles: 315590
+
+	ffffffffb8c3772d
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c37f8e
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8a75356
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8a75661
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb94012ee
+	0	  [kernel.kallsyms]_text [kernel]
+	401530	/usr/include/c++/9.1.0/new:174:3
+	401530	/usr/include/c++/9.1.0/ext/new_allocator.h:144:2	void __gnu_cxx::new_allocator<double>::construct<double, double>(double*, double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401530	/usr/include/c++/9.1.0/bits/alloc_traits.h:484:4
+	401530	/usr/include/c++/9.1.0/bits/alloc_traits.h:482:2	void std::allocator_traits<std::allocator<double> >::construct<double, double>(std::allocator<double>&, double*, double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401530	/usr/include/c++/9.1.0/bits/vector.tcc:115:30
+	401590	/usr/include/c++/9.1.0/bits/vector.tcc:109:7	void std::vector<double, std::allocator<double> >::emplace_back<double>(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_vector.h:1201:9
+	401590	/usr/include/c++/9.1.0/bits/stl_vector.h:1200:7	std::vector<double, std::allocator<double> >::push_back(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_iterator.h:522:2
+	401590	/usr/include/c++/9.1.0/bits/stl_iterator.h:520:7	std::back_insert_iterator<std::vector<double, std::allocator<double> > >::operator=(double&&) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590	/usr/include/c++/9.1.0/bits/stl_algo.h:4450:11
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.477872418
+	cycles: 315915
+
+	41b3b0	__hypot_finite vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a57
+	417a40	__hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401585	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.478120977
+	cycles: 315957
+
+	41b541
+	41b3b0	__hypot_finite vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a57
+	417a40	__hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401585	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.478369323
+	cycles: 316184
+
+	4187cb
+	418790	__cos_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401572	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.478618406
+	cycles: 316449
+
+	4184c7
+	417f60	__sin_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40155c	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.478867137
+	cycles: 316595
+
+	4187cb
+	418790	__cos_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401572	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.479116217
+	cycles: 316799
+
+	418a8b
+	418790	__cos_fma vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401572	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
+	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b	../../../manual/clients/vector.cpp:16:6
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.479365929
+	cycles: 316944
+
+	4015d4	/usr/include/c++/9.1.0/bits/stl_numeric.h:135:2
+	4015bd	/usr/include/c++/9.1.0/bits/stl_numeric.h:128:5	double std::accumulate<__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, __gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double) vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	4015bd	../../../manual/clients/vector.cpp:17:31
+	0	../../../manual/clients/vector.cpp:9:5	main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089f
+	420410	__libc_start_main vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b6d
+	401b40	_start vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	349054	349054	65149.479616196
+	cycles: 317023
+
+	ffffffffb8c05851
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c05c6d
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c07597
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c56767
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c3fb5c
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c3fccd
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8c3d4fe
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8a89b79
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8a920dd
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8a929c3
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8a92a44
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb8a0454f
+	0	  [kernel.kallsyms]_text [kernel]
+	ffffffffb940008c
+	0	  [kernel.kallsyms]_text [kernel]
+

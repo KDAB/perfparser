@@ -329,20 +329,6 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &
         clearCache();
 }
 
-static QByteArray dieName(Dwarf_Die *die)
-{
-    Dwarf_Attribute attr;
-    Dwarf_Attribute *result = dwarf_attr_integrate(die, DW_AT_MIPS_linkage_name, &attr);
-    if (!result)
-        result = dwarf_attr_integrate(die, DW_AT_linkage_name, &attr);
-
-    const char *name = dwarf_formstring(result);
-    if (!name)
-        name = dwarf_diename(die);
-
-    return name ? name : "";
-}
-
 static QByteArray demangle(const QByteArray &mangledName)
 {
     if (mangledName.length() < 3) {
@@ -361,6 +347,85 @@ static QByteArray demangle(const QByteArray &mangledName)
         }
     }
     return mangledName;
+}
+
+/// @return the fully qualified linkage name
+static const char *linkageName(Dwarf_Die *die)
+{
+    Dwarf_Attribute attr;
+    Dwarf_Attribute *result = dwarf_attr_integrate(die, DW_AT_MIPS_linkage_name, &attr);
+    if (!result)
+        result = dwarf_attr_integrate(die, DW_AT_linkage_name, &attr);
+
+    return result ? dwarf_formstring(result) : nullptr;
+}
+
+/// @return the referenced DW_AT_specification DIE
+/// inlined subroutines of e.g. std:: algorithms aren't namespaced, but their DW_AT_specification DIE is
+static Dwarf_Die *specificationDie(Dwarf_Die *die, Dwarf_Die *dieMem)
+{
+    Dwarf_Attribute attr;
+    if (dwarf_attr_integrate(die, DW_AT_specification, &attr))
+        return dwarf_formref_die(&attr, dieMem);
+    return nullptr;
+}
+
+/// prepend the names of all scopes that reference the @p die to @p name
+static void prependScopeNames(QByteArray &name, Dwarf_Die *die)
+{
+    Dwarf_Die dieMem;
+    Dwarf_Die *scopes = nullptr;
+    auto nscopes = dwarf_getscopes_die(die, &scopes);
+
+    // skip scope for the die itself at the start and the compile unit DIE at end
+    for (int i = 1; i < nscopes - 1; ++i) {
+        auto scope = scopes + i;
+
+        if (auto scopeLinkageName = linkageName(scope)) {
+            // prepend the fully qualified linkage name
+            name.prepend("::");
+            // we have to demangle the scope linkage name, otherwise we get a
+            // mish-mash of mangled and non-mangled names
+            name.prepend(demangle(scopeLinkageName));
+            // we can stop now, the scope is fully qualified
+            break;
+        }
+
+        if (auto scopeName = dwarf_diename(scope)) {
+            // prepend this scope's name, e.g. the class or namespace name
+            name.prepend("::");
+            name.prepend(scopeName);
+        }
+
+        if (auto specification = specificationDie(scope, &dieMem)) {
+            eu_compat_free(scopes);
+            scopes = nullptr;
+            // follow the scope's specification DIE instead
+            prependScopeNames(name, specification);
+            break;
+        }
+    }
+
+    eu_compat_free(scopes);
+}
+
+static QByteArray dieName(Dwarf_Die *die)
+{
+    // linkage names are fully qualified, meaning we can stop early then
+    if (auto name = linkageName(die))
+        return name;
+
+    // otherwise do a more complex lookup that includes namespaces and other context information
+    // this is important for inlined subroutines such as lambdas or std:: algorithms
+    QByteArray name = dwarf_diename(die);
+
+    // use the specification DIE which is within the DW_TAG_namespace
+    Dwarf_Die dieMem;
+    if (auto specification = specificationDie(die, &dieMem))
+        die = specification;
+
+    prependScopeNames(name, die);
+    return name;
 }
 
 int PerfSymbolTable::insertSubprogram(Dwarf_Die *top, Dwarf_Addr entry, qint32 binaryId, qint32 binaryPathId,

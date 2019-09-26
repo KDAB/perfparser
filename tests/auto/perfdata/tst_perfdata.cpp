@@ -27,6 +27,8 @@
 #include <QSignalSpy>
 #include <QTest>
 #include <QtEndian>
+#include <QProcess>
+#include <QRegularExpression>
 
 class TestPerfData : public QObject
 {
@@ -35,6 +37,8 @@ private slots:
     void testTracingData_data();
     void testTracingData();
     void testContentSize();
+    void testFiles_data();
+    void testFiles();
 };
 
 static void setupUnwind(PerfUnwind *unwind, PerfHeader *header, QIODevice *input,
@@ -49,8 +53,8 @@ static void setupUnwind(PerfUnwind *unwind, PerfHeader *header, QIODevice *input
         features.read(input, header);
 
         PerfTracingData tracingData = features.tracingData();
-        QVERIFY(tracingData.size() > 0);
-        QCOMPARE(tracingData.version(), QByteArray("0.5"));
+        if (tracingData.size() > 0)
+            QCOMPARE(tracingData.version(), QByteArray("0.5"));
 
         unwind->features(features);
         const auto& attrs = attributes->attributes();
@@ -195,6 +199,64 @@ void TestPerfData::testContentSize()
     process(&unwind, &input);
 
     QCOMPARE(unwind.stats().numSamples, 69u);
+}
+
+void TestPerfData::testFiles_data()
+{
+    QTest::addColumn<QString>("dirName");
+
+    for (auto dir : {"vector_static_clang", "vector_static_gcc"})
+        QTest::addRow("%s", dir) << dir;
+}
+
+void TestPerfData::testFiles()
+{
+    QFETCH(QString, dirName);
+
+    const auto dir = QFINDTESTDATA(dirName);
+    QVERIFY(!dir.isEmpty() && QFile::exists(dir));
+    const auto perfDataFile = dir + "/perf.data";
+    const auto expectedOutputFile = dir + "/expected.txt";
+    const auto actualOutputFile = dir + "/actual.txt";
+
+    QBuffer output;
+    QVERIFY(output.open(QIODevice::WriteOnly));
+
+    // Don't try to load any system files. They are not the same as the ones we use to report.
+    PerfUnwind unwind(&output, ":/", QString(), QString(), dir);
+    {
+        QFile input(perfDataFile);
+        QVERIFY(input.open(QIODevice::ReadOnly));
+        // don't try to parse kallsyms here, it's not the main point and it wouldn't be portable without the mapping file
+        // from where we recorded the data. these files are usually large, and we don't want to bloat the repo too much
+        QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Failed to parse kernel symbol mapping file \".+\": Mapping is empty"));
+        unwind.setKallsymsPath(QProcess::nullDevice());
+        process(&unwind, &input);
+    }
+
+    output.close();
+    output.open(QIODevice::ReadOnly);
+
+    QString actualText;
+    {
+        QTextStream stream(&actualText);
+        PerfParserTestClient client;
+        client.extractTrace(&output);
+        client.convertToText(stream);
+
+        QFile actual(actualOutputFile);
+        QVERIFY(actual.open(QIODevice::WriteOnly | QIODevice::Text));
+        actual.write(actualText.toUtf8());
+    }
+
+    QString expectedText;
+    {
+        QFile expected(expectedOutputFile);
+        QVERIFY(expected.open(QIODevice::ReadOnly | QIODevice::Text));
+        expectedText = QString::fromUtf8(expected.readAll());
+    }
+
+    QCOMPARE(actualText, expectedText);
 }
 
 QTEST_GUILESS_MAIN(TestPerfData)
