@@ -601,6 +601,7 @@ PerfElfMap::ElfInfo PerfSymbolTable::findElf(quint64 ip) const
 
 class CuDieRanges
 {
+public:
     struct CuDieRange
     {
         Dwarf_Die *cuDie;
@@ -613,7 +614,7 @@ class CuDieRanges
             return low <= addr && addr < high;
         }
     };
-public:
+
     CuDieRanges(Dwfl_Module *mod = nullptr)
     {
         if (!mod)
@@ -649,6 +650,7 @@ public:
 };
 QT_BEGIN_NAMESPACE
 Q_DECLARE_TYPEINFO(CuDieRanges, Q_MOVABLE_TYPE);
+Q_DECLARE_TYPEINFO(CuDieRanges::CuDieRange, Q_MOVABLE_TYPE);
 QT_END_NAMESPACE
 
 int symbolIndex(const Elf64_Rel &rel)
