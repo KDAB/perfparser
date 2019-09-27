@@ -20,6 +20,7 @@
 #include "perffeatures.h"
 #include "perfparsertestclient.h"
 
+#include <QTextStream>
 #include <QtEndian>
 
 #ifdef MANUAL_TEST
@@ -185,5 +186,47 @@ void PerfParserTestClient::extractTrace(QIODevice *device)
             break;
         }
         QVERIFY(stream.atEnd());
+    }
+}
+
+void PerfParserTestClient::convertToText(QTextStream &out) const
+{
+    for (const auto &sample : samples()) {
+        out << string(command(sample.pid).name) << '\t'
+            << sample.pid << '\t' << sample.tid << '\t'
+            << sample.time / 1000000000 << '.' << qSetFieldWidth(9) << qSetPadChar(QLatin1Char('0'))
+            << sample.time % 1000000000 << qSetFieldWidth(0) << qSetPadChar(QLatin1Char(' ')) << '\n';
+        for (const auto &value : sample.values) {
+            const auto attribute = this->attribute(value.first);
+            const auto cost = attribute.usesFrequency ? value.second : attribute.frequencyOrPeriod;
+            out << '\t' << string(attribute.name) << ": ";
+            if (attribute.type == 2) {
+                const auto format = tracePointFormat(static_cast<qint32>(attribute.config));
+                out << string(format.system) << ' ' << string(format.name) << ' ' << hex << format.flags << dec << '\n';
+                for (auto it = sample.tracePointData.begin(); it != sample.tracePointData.end(); ++it) {
+                    out << "\t\t" << string(it.key()) << '=' << it.value().toString() << '\n';
+                }
+            } else {
+                out << cost << '\n';
+            }
+        }
+        out << '\n';
+        auto printFrame = [&out, this](qint32 locationId) -> qint32 {
+            const auto location = this->location(locationId);
+            out << '\t' << hex << location.address << dec;
+            const auto symbol = this->symbol(locationId);
+            if (location.file != -1)
+                out << '\t' << string(location.file) << ':' << location.line << ':' << location.column;
+            if (symbol.path != -1)
+                out << '\t' << string(symbol.name) << ' ' << string(symbol.binary) << ' ' << string(symbol.path) << ' ' << (symbol.isKernel ? "[kernel]" : "");
+            out << '\n';
+            return location.parentLocationId;
+        };
+        for (const auto &frame : sample.frames) {
+            auto locationId = printFrame(frame);
+            while (locationId != -1)
+                locationId = printFrame(locationId);
+        }
+        out << '\n';
     }
 }

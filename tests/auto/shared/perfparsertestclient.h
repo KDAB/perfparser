@@ -25,6 +25,8 @@
 #include <QVariant>
 #include <QVector>
 
+class QTextStream;
+
 class PerfParserTestClient : public QObject
 {
     Q_OBJECT
@@ -113,7 +115,9 @@ public:
     LocationEvent location(qint32 id) const { return m_locations.value(id); }
     SymbolEvent symbol(qint32 id) const { return m_symbols.value(id); }
 
-    TracePointFormatEvent tracePointFormat(qint32 id) { return m_tracePointFormats.value(id); }
+    TracePointFormatEvent tracePointFormat(qint32 id) const { return m_tracePointFormats.value(id); }
+
+    void convertToText(QTextStream &output) const;
 
 private:
     QVector<QByteArray> m_strings;
