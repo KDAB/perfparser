@@ -25,7 +25,9 @@
 #include <QVariant>
 #include <QVector>
 
+QT_BEGIN_NAMESPACE
 class QTextStream;
+QT_END_NAMESPACE
 
 class PerfParserTestClient : public QObject
 {
