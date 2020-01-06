@@ -558,7 +558,7 @@ Dwfl_Module *PerfSymbolTable::module(quint64 addr, const PerfElfMap::ElfInfo &el
 
     Dwfl_Module *mod = dwfl_addrmodule(m_dwfl, addr);
 
-    if (!mod) {
+    if (!mod && elf.isValid()) {
         // check whether we queried for an address outside the elf range parsed
         // by dwfl. If that is the case, then we would invalidate the cache and
         // re-report the library again - essentially recreating the current state
