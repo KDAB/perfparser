@@ -37,24 +37,29 @@ private slots:
         info_b.addr = 0x200;
 
         PerfAddressCache cache;
+        PerfAddressCache::OffsetAddressCache invalidAddressCache;
         PerfAddressCache::AddressCacheEntry entry{42, true};
-        cache.cache(info_a, 0x110, entry);
-        QCOMPARE(cache.find(info_a, 0x110).locationId, entry.locationId);
-        QCOMPARE(cache.find(info_b, 0x210).locationId, entry.locationId);
+        cache.cache(info_a, 0x110, entry, &invalidAddressCache);
+        QCOMPARE(cache.find(info_a, 0x110, &invalidAddressCache).locationId, entry.locationId);
+        QCOMPARE(cache.find(info_b, 0x210, &invalidAddressCache).locationId, entry.locationId);
     }
 
     void testInvalid()
     {
         PerfAddressCache cache;
+        PerfAddressCache::OffsetAddressCache invalidAddressCache_a;
+        PerfAddressCache::OffsetAddressCache invalidAddressCache_b;
         PerfAddressCache::AddressCacheEntry entry{42, true};
-        cache.cache(PerfElfMap::ElfInfo{}, 0x110, entry);
-        QCOMPARE(cache.find(PerfElfMap::ElfInfo{}, 0x110).locationId, entry.locationId);
+        cache.cache(PerfElfMap::ElfInfo{}, 0x110, entry, &invalidAddressCache_a);
+        QCOMPARE(cache.find(PerfElfMap::ElfInfo{}, 0x110, &invalidAddressCache_a).locationId, entry.locationId);
+        QCOMPARE(cache.find(PerfElfMap::ElfInfo{}, 0x110, &invalidAddressCache_b).locationId, -1);
     }
 
     void testEmpty()
     {
         PerfAddressCache cache;
-        QCOMPARE(cache.find(PerfElfMap::ElfInfo{}, 0x123).locationId, -1);
+        PerfAddressCache::OffsetAddressCache invalidAddressCache;
+        QCOMPARE(cache.find(PerfElfMap::ElfInfo{}, 0x123, &invalidAddressCache).locationId, -1);
     }
 };
 

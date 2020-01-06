@@ -22,28 +22,28 @@
 namespace {
 quint64 relativeAddress(const PerfElfMap::ElfInfo& elf, quint64 addr)
 {
-    if (!elf.isValid())
-        return addr;
-
+    Q_ASSERT(elf.isValid());
     Q_ASSERT(elf.addr <= addr);
     Q_ASSERT((elf.addr + elf.length) > addr);
     return addr - elf.addr;
 }
 }
 
-PerfAddressCache::AddressCacheEntry PerfAddressCache::find(const PerfElfMap::ElfInfo& elf,
-                                                           quint64 addr) const
+PerfAddressCache::AddressCacheEntry PerfAddressCache::find(const PerfElfMap::ElfInfo& elf, quint64 addr,
+                                                           OffsetAddressCache *invalidAddressCache) const
 {
-    return m_cache.value(elf.originalPath).value(relativeAddress(elf, addr));
+    if (elf.isValid())
+        return m_cache.value(elf.originalPath).value(relativeAddress(elf, addr));
+    else
+        return invalidAddressCache->value(addr);
 }
 
 void PerfAddressCache::cache(const PerfElfMap::ElfInfo& elf, quint64 addr,
-                             const PerfAddressCache::AddressCacheEntry& entry)
+                             const PerfAddressCache::AddressCacheEntry& entry,
+                             OffsetAddressCache *invalidAddressCache)
 {
-    m_cache[elf.originalPath][relativeAddress(elf, addr)] = entry;
-}
-
-void PerfAddressCache::clearInvalid()
-{
-    m_cache[{}].clear();
+    if (elf.isValid())
+        m_cache[elf.originalPath][relativeAddress(elf, addr)] = entry;
+    else
+        (*invalidAddressCache)[addr] = entry;
 }
