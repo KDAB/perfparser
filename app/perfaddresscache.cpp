@@ -47,3 +47,38 @@ void PerfAddressCache::cache(const PerfElfMap::ElfInfo& elf, quint64 addr,
     else
         (*invalidAddressCache)[addr] = entry;
 }
+
+static bool operator<(const PerfAddressCache::SymbolCacheEntry &lhs, quint64 addr)
+{
+    return lhs.offset < addr;
+}
+
+PerfAddressCache::SymbolCacheEntry PerfAddressCache::findSymbol(const PerfElfMap::ElfInfo& elf,
+                                                                quint64 addr) const
+{
+    Q_ASSERT(elf.isValid());
+    const auto &symbols = m_symbolCache.value(elf.originalPath);
+    const auto relAddr = relativeAddress(elf, addr);
+    auto it = std::lower_bound(symbols.begin(), symbols.end(), relAddr);
+
+    if (it != symbols.end() && it->offset == relAddr)
+        return *it;
+    if (it == symbols.begin())
+        return {};
+
+    --it;
+
+    if (it->offset <= relAddr && it->offset + it->size > relAddr)
+        return *it;
+    return {};
+}
+
+void PerfAddressCache::cacheSymbol(const PerfElfMap::ElfInfo& elf, quint64 startAddr, quint64 size,
+                                   const QByteArray& symname)
+{
+    Q_ASSERT(elf.isValid());
+    auto &symbols = m_symbolCache[elf.originalPath];
+    const auto offset = relativeAddress(elf, startAddr);
+    auto it = std::lower_bound(symbols.begin(), symbols.end(), offset);
+    symbols.insert(it, {offset, size, symname});
+}
