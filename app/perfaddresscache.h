@@ -36,13 +36,14 @@ public:
         int locationId;
         bool isInterworking;
     };
+    using OffsetAddressCache = QHash<quint64, AddressCacheEntry>;
 
-    AddressCacheEntry find(const PerfElfMap::ElfInfo& elf, quint64 addr) const;
+    AddressCacheEntry find(const PerfElfMap::ElfInfo& elf, quint64 addr,
+                           OffsetAddressCache *invalidAddressCache) const;
     void cache(const PerfElfMap::ElfInfo& elf, quint64 addr,
-               const AddressCacheEntry& entry);
-    void clearInvalid();
+               const AddressCacheEntry& entry, OffsetAddressCache *invalidAddressCache);
 private:
-    QHash<QByteArray, QHash<quint64, AddressCacheEntry>> m_cache;
+    QHash<QByteArray, OffsetAddressCache> m_cache;
 };
 
 #endif

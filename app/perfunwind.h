@@ -24,6 +24,7 @@
 #include "perfkallsyms.h"
 #include "perfregisterinfo.h"
 #include "perftracingdata.h"
+#include "perfaddresscache.h"
 
 #include <libdwfl.h>
 
@@ -208,6 +209,7 @@ public:
     void resolveSymbol(int locationId, const Symbol &symbol);
 
     PerfKallsymEntry findKallsymEntry(quint64 address);
+    PerfAddressCache *addressCache() { return &m_addressCache; }
 
     enum ErrorCode {
         TimeOrderViolation = 1,
@@ -288,6 +290,7 @@ private:
     QList<TaskEvent> m_taskEventsBuffer;
     QHash<qint32, PerfSymbolTable *> m_symbolTables;
     PerfKallsyms m_kallsyms;
+    PerfAddressCache m_addressCache;
     PerfTracingData m_tracingData;
 
     QHash<QByteArray, qint32> m_strings;

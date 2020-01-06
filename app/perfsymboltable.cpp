@@ -895,7 +895,7 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
                                  bool *isInterworking)
 {
     const auto& elf = findElf(ip);
-    auto cached = m_addressCache.find(elf, ip);
+    auto cached = m_unwind->addressCache()->find(elf, ip, &m_invalidAddressCache);
     if (cached.isValid()) {
         *isInterworking = cached.isInterworking;
         return cached.locationId;
@@ -1023,7 +1023,7 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
 
     int locationId = m_unwind->resolveLocation(addressLocation);
     *isInterworking = (symname == "$a" || symname == "$t");
-    m_addressCache.cache(elf, ip, {locationId, *isInterworking});
+    m_unwind->addressCache()->cache(elf, ip, {locationId, *isInterworking}, &m_invalidAddressCache);
     return locationId;
 }
 
@@ -1095,7 +1095,7 @@ Dwfl *PerfSymbolTable::attachDwfl(void *arg)
 
 void PerfSymbolTable::clearCache()
 {
-    m_addressCache.clearInvalid();
+    m_invalidAddressCache.clear();
     m_cuDieRanges.clear();
     m_perfMap.clear();
     if (m_perfMapFile.isOpen())

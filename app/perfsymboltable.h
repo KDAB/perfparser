@@ -110,7 +110,7 @@ private:
     ElfAndFile m_firstElf;
 
     PerfElfMap m_elfs;
-    PerfAddressCache m_addressCache;
+    PerfAddressCache::OffsetAddressCache m_invalidAddressCache;
     QHash<Dwfl_Module*, CuDieRanges> m_cuDieRanges;
     Dwfl_Callbacks *m_callbacks;
     qint32 m_pid;
