@@ -61,6 +61,33 @@ private slots:
         PerfAddressCache::OffsetAddressCache invalidAddressCache;
         QCOMPARE(cache.find(PerfElfMap::ElfInfo{}, 0x123, &invalidAddressCache).locationId, -1);
     }
+
+    void testSymbolCache()
+    {
+        PerfElfMap::ElfInfo info_a{{}, 0x100, 100, 0,
+                                   QByteArrayLiteral("libfoo_a.so"),
+                                   QByteArrayLiteral("/usr/lib/libfoo_a.so")};
+        PerfElfMap::ElfInfo info_b{{}, 0x200, 100, 0,
+                                   QByteArrayLiteral("libfoo_b.so"),
+                                   QByteArrayLiteral("/usr/lib/libfoo_b.so")};
+
+        PerfAddressCache cache;
+
+        QVERIFY(!cache.findSymbol(info_a, 0x100).isValid());
+        QVERIFY(!cache.findSymbol(info_b, 0x100).isValid());
+
+        cache.cacheSymbol(info_a, 0x100, 10, "Foo");
+        for (auto addr : {0x100, 0x100 + 9}) {
+            const auto cached = cache.findSymbol(info_a, addr);
+            QVERIFY(cached.isValid());
+            QCOMPARE(cached.offset, 0);
+            QCOMPARE(cached.size, 10);
+            QCOMPARE(cached.symname, "Foo");
+        }
+        QVERIFY(!cache.findSymbol(info_a, 0x100 + 10).isValid());
+        QVERIFY(!cache.findSymbol(info_b, 0x100).isValid());
+        QVERIFY(!cache.findSymbol(info_b, 0x100 + 9).isValid());
+    }
 };
 
 QTEST_GUILESS_MAIN(TestAddressCache)

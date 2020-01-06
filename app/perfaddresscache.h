@@ -21,6 +21,8 @@
 #define PERFADDRESSCACHE_H
 
 #include <QHash>
+#include <QVector>
+
 #include "perfelfmap.h"
 
 class PerfAddressCache
@@ -38,12 +40,34 @@ public:
     };
     using OffsetAddressCache = QHash<quint64, AddressCacheEntry>;
 
+    struct SymbolCacheEntry
+    {
+        SymbolCacheEntry(quint64 offset = 0, quint64 size = 0, const QByteArray &symname = {})
+            : offset(offset)
+            , size(size)
+            , symname(symname)
+        {}
+
+        bool isValid() const { return size != 0; }
+
+        quint64 offset;
+        quint64 size;
+        QByteArray symname;
+    };
+    using SymbolCache = QVector<SymbolCacheEntry>;
+
     AddressCacheEntry find(const PerfElfMap::ElfInfo& elf, quint64 addr,
                            OffsetAddressCache *invalidAddressCache) const;
     void cache(const PerfElfMap::ElfInfo& elf, quint64 addr,
                const AddressCacheEntry& entry, OffsetAddressCache *invalidAddressCache);
+
+    SymbolCacheEntry findSymbol(const PerfElfMap::ElfInfo &elf, quint64 addr) const;
+    void cacheSymbol(const PerfElfMap::ElfInfo &elf, quint64 startAddr, quint64 size,
+                     const QByteArray &symname);
 private:
     QHash<QByteArray, OffsetAddressCache> m_cache;
+    QHash<QByteArray, SymbolCache> m_symbolCache;
 };
+Q_DECLARE_TYPEINFO(PerfAddressCache::SymbolCacheEntry, Q_MOVABLE_TYPE);
 
 #endif

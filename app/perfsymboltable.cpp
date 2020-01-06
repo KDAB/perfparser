@@ -894,8 +894,10 @@ static QByteArray fakeSymbolFromSection(Dwfl_Module *mod, Dwarf_Addr addr)
 int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
                                  bool *isInterworking)
 {
+    auto addressCache = m_unwind->addressCache();
+
     const auto& elf = findElf(ip);
-    auto cached = m_unwind->addressCache()->find(elf, ip, &m_invalidAddressCache);
+    auto cached = addressCache->find(elf, ip, &m_invalidAddressCache);
     if (cached.isValid()) {
         *isInterworking = cached.isInterworking;
         return cached.locationId;
@@ -918,13 +920,21 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
     PerfUnwind::Location functionLocation(addressLocation);
 
     QByteArray symname;
-    GElf_Sym sym;
     GElf_Off off = 0;
 
     if (mod) {
-        // For addrinfo we need the raw pointer into symtab, so we need to adjust ourselves.
-        symname = dwfl_module_addrinfo(mod, addressLocation.address, &off, &sym, nullptr, nullptr,
-                                       nullptr);
+        auto cachedAddrInfo = addressCache->findSymbol(elf, addressLocation.address);
+        if (cachedAddrInfo.isValid()) {
+            off = addressLocation.address - elf.addr - cachedAddrInfo.offset;
+            symname = cachedAddrInfo.symname;
+        } else {
+            GElf_Sym sym;
+            // For addrinfo we need the raw pointer into symtab, so we need to adjust ourselves.
+            symname = dwfl_module_addrinfo(mod, addressLocation.address, &off, &sym, nullptr, nullptr,
+                                           nullptr);
+            if (off != addressLocation.address)
+                addressCache->cacheSymbol(elf, addressLocation.address - off, sym.st_size, symname);
+        }
 
         if (off == addressLocation.address) {// no symbol found
             symname = fakeSymbolFromSection(mod, addressLocation.address);
@@ -1023,7 +1033,7 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
 
     int locationId = m_unwind->resolveLocation(addressLocation);
     *isInterworking = (symname == "$a" || symname == "$t");
-    m_unwind->addressCache()->cache(elf, ip, {locationId, *isInterworking}, &m_invalidAddressCache);
+    addressCache->cache(elf, ip, {locationId, *isInterworking}, &m_invalidAddressCache);
     return locationId;
 }
 
