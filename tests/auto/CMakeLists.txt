@@ -1,0 +1,5 @@
+add_subdirectory(addresscache)
+add_subdirectory(elfmap)
+add_subdirectory(kallsyms)
+add_subdirectory(perfdata)
+add_subdirectory(perfstdin)
