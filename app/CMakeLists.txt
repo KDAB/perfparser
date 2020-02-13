@@ -1,7 +1,10 @@
 add_qtc_library(perfparser_lib STATIC
   ALLOW_ASCII_CASTS
-  DEPENDS Qt5::Network
-  PUBLIC_DEPENDS elfutils::dw elfutils::elf
+  PUBLIC_DEPENDS
+    Qt5::Core
+    Qt5::Network
+    elfutils::dw
+    elfutils::elf
   PUBLIC_INCLUDES ./
   SOURCES
     perfaddresscache.cpp
