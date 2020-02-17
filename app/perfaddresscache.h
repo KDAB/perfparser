@@ -68,6 +68,8 @@ private:
     QHash<QByteArray, OffsetAddressCache> m_cache;
     QHash<QByteArray, SymbolCache> m_symbolCache;
 };
-Q_DECLARE_TYPEINFO(PerfAddressCache::SymbolCacheEntry, Q_MOVABLE_TYPE);
 
+QT_BEGIN_NAMESPACE
+Q_DECLARE_TYPEINFO(PerfAddressCache::SymbolCacheEntry, Q_MOVABLE_TYPE);
+QT_END_NAMESPACE
 #endif
