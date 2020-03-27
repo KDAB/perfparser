@@ -38,6 +38,47 @@ void PerfData::setSource(QIODevice *source)
     m_source = source;
 }
 
+const char * perfEventToString(qint32 type)
+{
+    switch(type)
+    {
+    case PERF_RECORD_MMAP:                return "PERF_RECORD_MMAP";
+    case PERF_RECORD_LOST:                return "PERF_RECORD_LOST";
+    case PERF_RECORD_COMM:                return "PERF_RECORD_COMM";
+    case PERF_RECORD_EXIT:                return "PERF_RECORD_EXIT";
+    case PERF_RECORD_THROTTLE:            return "PERF_RECORD_THROTTLE";
+    case PERF_RECORD_UNTHROTTLE:          return "PERF_RECORD_UNTHROTTLE";
+    case PERF_RECORD_FORK:                return "PERF_RECORD_FORK";
+    case PERF_RECORD_READ:                return "PERF_RECORD_READ";
+    case PERF_RECORD_SAMPLE:              return "PERF_RECORD_SAMPLE";
+    case PERF_RECORD_MMAP2:               return "PERF_RECORD_MMAP2";
+    case PERF_RECORD_SWITCH:              return "PERF_RECORD_SWITCH";
+    case PERF_RECORD_SWITCH_CPU_WIDE:     return "PERF_RECORD_SWITCH_CPU_WIDE";
+    case PERF_RECORD_NAMESPACES:          return "PERF_RECORD_NAMESPACES";
+    case PERF_RECORD_KSYMBOL:             return "PERF_RECORD_KSYMBOL";
+    case PERF_RECORD_BPF_EVENT:           return "PERF_RECORD_BPF_EVENT";
+    case PERF_RECORD_HEADER_ATTR:         return "PERF_RECORD_HEADER_ATTR";
+    case PERF_RECORD_HEADER_EVENT_TYPE:   return "PERF_RECORD_HEADER_EVENT_TYPE";
+    case PERF_RECORD_HEADER_TRACING_DATA: return "PERF_RECORD_HEADER_TRACING_DATA";
+    case PERF_RECORD_HEADER_BUILD_ID:     return "PERF_RECORD_HEADER_BUILD_ID";
+    case PERF_RECORD_FINISHED_ROUND:      return "PERF_RECORD_FINISHED_ROUND";
+    case PERF_RECORD_ID_INDEX:            return "PERF_RECORD_ID_INDEX";
+    case PERF_RECORD_AUXTRACE_INFO:       return "PERF_RECORD_AUXTRACE_INFO";
+    case PERF_RECORD_AUXTRACE:            return "PERF_RECORD_AUXTRACE";
+    case PERF_RECORD_AUXTRACE_ERROR:      return "PERF_RECORD_AUXTRACE_ERROR";
+    case PERF_RECORD_THREAD_MAP:          return "PERF_RECORD_THREAD_MAP";
+    case PERF_RECORD_CPU_MAP:             return "PERF_RECORD_CPU_MAP";
+    case PERF_RECORD_STAT_CONFIG:         return "PERF_RECORD_STAT_CONFIG";
+    case PERF_RECORD_STAT:                return "PERF_RECORD_STAT";
+    case PERF_RECORD_STAT_ROUND:          return "PERF_RECORD_STAT_ROUND";
+    case PERF_RECORD_EVENT_UPDATE:        return "PERF_RECORD_EVENT_UPDATE";
+    case PERF_RECORD_TIME_CONV:           return "PERF_RECORD_TIME_CONV";
+    case PERF_RECORD_HEADER_FEATURE:      return "PERF_RECORD_HEADER_FEATURE";
+    case PERF_RECORD_COMPRESSED:          return "PERF_RECORD_COMPRESSED";
+    }
+    return "uknown type";
+}
+
 PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
 {
     const quint16 headerSize = PerfEventHeader::fixedLength();
@@ -187,7 +228,7 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
     }
 
     default:
-        qWarning() << "unhandled event type" << m_eventHeader.type;
+        qWarning() << "unhandled event type" << m_eventHeader.type << " " << perfEventToString(m_eventHeader.type);
         stream.skipRawData(contentSize);
         break;
     }
