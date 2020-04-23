@@ -240,8 +240,8 @@ private:
             m_excludeHost   : 1, /* don't count in host    */
             m_excludeGuest  : 1, /* don't count in guest   */
 
-            m_excludeCallchainKernel : 1, /* exclude kernel callchains */
-            m_excludeCallchainUser   : 1, /* exclude user callchains   */
+            /* m_excludeCallchainKernel */ : 1, /* exclude kernel callchains */
+            /* m_excludeCallchainUser */ : 1, /* exclude user callchains   */
 
             m_reserved1     : 41;
 
