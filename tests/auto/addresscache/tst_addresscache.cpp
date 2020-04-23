@@ -80,8 +80,8 @@ private slots:
         for (auto addr : {0x100, 0x100 + 9}) {
             const auto cached = cache.findSymbol(info_a, addr);
             QVERIFY(cached.isValid());
-            QCOMPARE(cached.offset, 0);
-            QCOMPARE(cached.size, 10);
+            QCOMPARE(int(cached.offset), 0);
+            QCOMPARE(int(cached.size), 10);
             QCOMPARE(cached.symname, "Foo");
         }
         QVERIFY(!cache.findSymbol(info_a, 0x100 + 10).isValid());
