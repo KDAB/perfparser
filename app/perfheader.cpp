@@ -81,13 +81,13 @@ void PerfHeader::read()
         for (uint i = 0; i < featureParts; ++i)
             stream >> m_features[i];
 
-        if (m_magic == s_magicSwitched && !hasFeature(HOSTNAME)) {
+        if (m_magic == s_magicSwitched && !hasFeature(HOSTNAME) && !hasFeature(CMDLINE)) {
 
             quint32 *features32 = reinterpret_cast<quint32 *>(&m_features[0]);
             for (uint i = 0; i < featureParts; ++i)
                 qSwap(features32[i * 2], features32[i * 2 + 1]);
 
-            if (!hasFeature(HOSTNAME)) {
+            if (!hasFeature(HOSTNAME) && !hasFeature(CMDLINE)) {
                 // It borked: blank it all
                 qWarning() << "bad feature data:" << m_features;
                 for (uint i = 0; i < featureParts; ++i)
