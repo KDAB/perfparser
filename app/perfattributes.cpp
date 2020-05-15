@@ -25,7 +25,7 @@
 
 PerfEventAttributes::PerfEventAttributes()
 {
-    *this = PerfEventAttributes{};
+    memset(this, 0, sizeof(PerfEventAttributes));
 }
 
 QDataStream &operator>>(QDataStream &stream, PerfEventAttributes &attrs)
