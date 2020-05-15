@@ -50,6 +50,10 @@
 #define O_BINARY 0
 #endif
 
+#ifdef HAVE_RUSTC_DEMANGLE
+#include <rustc_demangle.h>
+#endif
+
 PerfSymbolTable::PerfSymbolTable(qint32 pid, Dwfl_Callbacks *callbacks, PerfUnwind *parent) :
     m_perfMapFile(QDir::tempPath() + QDir::separator()
                   + QString::fromLatin1("perf-%1.map").arg(pid)),
@@ -334,13 +338,18 @@ static QByteArray demangle(const QByteArray &mangledName)
     if (mangledName.length() < 3) {
         return mangledName;
     } else {
-        static size_t demangleBufferLength = 0;
-        static char *demangleBuffer = nullptr;
+        static size_t demangleBufferLength = 1024;
+        static char *demangleBuffer = reinterpret_cast<char *>(eu_compat_malloc(demangleBufferLength));
+
+#ifdef HAVE_RUSTC_DEMANGLE
+        if (rustc_demangle(mangledName.constData(), demangleBuffer, demangleBufferLength))
+            return demangleBuffer;
+#endif
 
         // Require GNU v3 ABI by the "_Z" prefix.
         if (mangledName[0] == '_' && mangledName[1] == 'Z') {
             int status = -1;
-            char *dsymname = eu_compat_demangle(mangledName, demangleBuffer, &demangleBufferLength,
+            char *dsymname = eu_compat_demangle(mangledName.constData(), demangleBuffer, &demangleBufferLength,
                                             &status);
             if (status == 0)
                 return demangleBuffer = dsymname;
