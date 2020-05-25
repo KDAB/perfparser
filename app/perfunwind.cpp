@@ -30,6 +30,9 @@
 #include <cstring>
 
 const qint32 PerfUnwind::s_kernelPid = -1;
+// We use the std vector saveParentSymTable to store
+// the reference to the Symbol Table of the parent process.
+std::vector<PerfForkStart> saveParentSymTable;
 
 uint qHash(const PerfUnwind::Location &location, uint seed)
 {
@@ -196,6 +199,18 @@ PerfSymbolTable *PerfUnwind::symbolTable(qint32 pid)
     if (!symbolTable)
         symbolTable = new PerfSymbolTable(pid, &m_offlineCallbacks, this);
     return symbolTable;
+}
+
+// If the vector contains an element for the current process,
+// we can use the Elf information of the parent process.
+bool findParentsSymTable(qint32 pid, PerfSymbolTable **parentSym) {
+    for (auto i = saveParentSymTable.begin(), end = saveParentSymTable.end(); i != end; ++i) {
+        if (i->threadPid() == pid) {
+            *parentSym = i->symbol();
+            return true;
+        }
+    }
+    return false;
 }
 
 Dwfl *PerfUnwind::dwfl(qint32 pid)
@@ -691,6 +706,21 @@ void PerfUnwind::fork(const PerfRecordFork &sample)
     bufferEvent(TaskEvent{sample.childPid(), sample.childTid(), sample.time(), sample.cpu(),
                           0, ThreadStart},
                 &m_taskEventsBuffer, &m_stats.numTaskEventsInRound);
+    // fork() creates a new process by duplicating the calling process.
+    // The new process, referred to as the child, is an exact duplicate
+    // of the calling process, referred to as the parent
+
+    // Perf.data contains PERF_RECORD_MMAP2 events for the parent process, and therefore
+    // the Symbol Table of the parent process contains Elf information.
+    // For the child process, we do not have PERF_RECORD_MMAP2 events, and for this reason
+    // the Symbol Table for the child process does not contain any Elf information.
+    // And as a fact, we cannot unwind the stack for functions of child processes.
+    // Therefore, we should be able to use the Elf information of the parent process.
+    // To do this, write a link to the Symbol Table of the parent process in the std vector
+    // SaveParentSymTable.
+
+    PerfSymbolTable *userSymbols = symbolTable(sample.parentPid());
+    saveParentSymTable.emplace_back(sample.childPid(), userSymbols);
 }
 
 void PerfUnwind::exit(const PerfRecordExit &sample)

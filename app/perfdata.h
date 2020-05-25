@@ -558,6 +558,7 @@ public:
                    bool sampleIdAll = false);
     qint32 childTid() const { return m_tid; }
     qint32 childPid() const { return m_pid; }
+    qint32 parentPid() const { return m_ppid; }
 private:
     qint32 m_pid, m_ppid;
     qint32 m_tid, m_ptid;

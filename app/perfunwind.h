@@ -334,6 +334,24 @@ private:
     void revertTargetEventBufferSize();
     bool hasTracePointAttributes() const;
 };
+// fork() creates a new process by duplicating the calling process.
+// Added new class to save reference to Symbol Table of parent process
+class PerfForkStart {
+public:
+    PerfForkStart(qint32 m_pid = 0, PerfSymbolTable *parentSym = nullptr) {
+        this->m_pid = m_pid;
+        this->parentSym = parentSym;
+    }
+
+    qint32 threadPid() const { return m_pid; }
+
+    PerfSymbolTable *symbol() const { return parentSym; }
+
+private:
+    qint32 m_pid;
+    PerfSymbolTable *parentSym;
+};
 
 uint qHash(const PerfUnwind::Location &location, uint seed = 0);
 bool operator==(const PerfUnwind::Location &a, const PerfUnwind::Location &b);
+bool findParentsSymTable(qint32 pid, PerfSymbolTable * * parent);

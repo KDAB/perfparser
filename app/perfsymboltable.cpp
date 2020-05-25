@@ -540,7 +540,18 @@ Dwfl_Module *PerfSymbolTable::reportElf(const PerfElfMap::ElfInfo& info)
 
         dwfl_module_info(ret, &userData, &start, &end, nullptr, nullptr, nullptr, nullptr);
         *userData = this;
-        m_elfs.updateElf(info.addr, start, end);
+        // If there is no Elf information in the symbol table, we will try to find
+        // in the vector saveParentSymTable the element with the Pid of the current process.
+        // And if we find, we will use Elf information of the parent process.
+        PerfSymbolTable *parentSymbols = nullptr;
+        bool empty_parent_Elf = true;
+        if (!m_firstElf.elf() && findParentsSymTable(m_pid, &parentSymbols)) {
+            empty_parent_Elf = !parentSymbols->m_firstElf.elf();
+        }
+        if (empty_parent_Elf)
+            m_elfs.updateElf(info.addr, start, end);
+        else
+            parentSymbols->m_elfs.updateElf(info.addr, start, end);
     }
     const int reportEnd = dwfl_report_end(m_dwfl, NULL, NULL);
     Q_ASSERT(reportEnd == 0);
@@ -670,7 +681,18 @@ int PerfSymbolTable::findDebugInfo(Dwfl_Module *module, const char *moduleName, 
 
 PerfElfMap::ElfInfo PerfSymbolTable::findElf(quint64 ip) const
 {
-    return m_elfs.findElf(ip);
+    PerfSymbolTable *parentSymbols = nullptr;
+    bool empty_parent_Elf = true;
+    // check that the symbol table of the current process does not contain
+    // Elf information, and if in this case the link to the symbol table
+    // of the parent process is saved in the SaveParentSymTable vector,
+    // use Elf information of the parent process
+
+    if (!m_firstElf.elf() && findParentsSymTable(m_pid, &parentSymbols)) {
+        empty_parent_Elf = !parentSymbols->m_firstElf.elf();
+    }
+    return empty_parent_Elf ? m_elfs.findElf(ip) : parentSymbols->m_elfs.findElf(ip);
+
 }
 
 class CuDieRanges
@@ -1104,7 +1126,18 @@ Dwfl *PerfSymbolTable::attachDwfl(void *arg)
     if (static_cast<pid_t>(m_pid) == dwfl_pid(m_dwfl))
         return m_dwfl; // Already attached, nothing to do
 
-    if (!dwfl_attach_state(m_dwfl, m_firstElf.elf(), m_pid, &threadCallbacks, arg)) {
+    // check that the symbol table of the current process does not contain
+    // Elf information, and if in this case the link to the symbol table
+    // of the parent process is saved in the saveParentSymTable vector,
+    // use Elf information of the parent process
+    PerfSymbolTable *parentSymbols = nullptr;
+    bool empty_parent_Elf = true;
+    if (!m_firstElf.elf() && findParentsSymTable(m_pid, &parentSymbols)) {
+        empty_parent_Elf = !parentSymbols->m_firstElf.elf();
+    }
+
+    if (!dwfl_attach_state(m_dwfl, empty_parent_Elf ? m_firstElf.elf() : parentSymbols->m_firstElf.elf(), m_pid,
+                           &threadCallbacks, arg)) {
         qWarning() << m_pid << "failed to attach state" << dwfl_errmsg(dwfl_errno());
         return nullptr;
     }
