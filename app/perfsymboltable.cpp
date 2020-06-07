@@ -549,9 +549,9 @@ Dwfl_Module *PerfSymbolTable::module(quint64 addr, const PerfElfMap::ElfInfo &el
     if (!m_dwfl)
         return nullptr;
 
-    if (elf.pgoff && elf.hasBaseAddr()) {
+    if (elf.hasBaseAddr() && elf.baseAddr != elf.addr) {
         const auto base = m_elfs.findElf(elf.baseAddr);
-        if (base.addr == elf.baseAddr && !base.pgoff && elf.originalPath == base.originalPath)
+        if (base.addr == elf.baseAddr && !base.pgoff && elf.originalPath == base.originalPath && elf.addr != base.addr)
             return module(addr, base);
         qWarning() << "stale base mapping referenced:" << elf << base << dec << m_pid << hex << addr;
     }
@@ -909,7 +909,7 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
     if (elf.isValid()) {
         binaryId = m_unwind->resolveString(elf.originalFileName);
         binaryPathId = m_unwind->resolveString(elf.originalPath);
-        elfStart = elf.addr;
+        elfStart = elf.hasBaseAddr() ? elf.baseAddr : elf.addr;
     }
 
     Dwfl_Module *mod = module(ip, elf);
