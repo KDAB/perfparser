@@ -121,10 +121,14 @@ void PerfElfMap::registerElf(quint64 addr, quint64 len, quint64 pgoff,
 
     ElfInfo elf(fullPath, addr, len, pgoff, originalFileName, originalPath);
 
-    if (!pgoff)
-        m_lastBase = elf;
-    else if (m_lastBase.originalPath == originalPath)
-        elf.baseAddr = m_lastBase.addr;
+    if (elf.isFile()) {
+        if (m_lastBase.originalPath == originalPath && elf.addr > m_lastBase.addr)
+            elf.baseAddr = m_lastBase.addr;
+        else if (!pgoff)
+            m_lastBase = elf;
+        else
+            m_lastBase = ElfInfo();
+    }
 
     newElfs.push_back(elf);
 
