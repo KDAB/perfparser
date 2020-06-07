@@ -73,6 +73,11 @@ public:
                 && baseAddr == rhs.baseAddr;
         }
 
+        bool operator!=(const ElfInfo& rhs) const
+        {
+            return !operator==(rhs);
+        }
+
         QFileInfo localFile;
         QByteArray originalFileName;
         QByteArray originalPath;

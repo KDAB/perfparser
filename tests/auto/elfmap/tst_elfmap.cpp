@@ -48,7 +48,7 @@ private slots:
         PerfElfMap map;
         QVERIFY(map.isEmpty());
 
-        const PerfElfMap::ElfInfo first({}, 100, 10, 0);
+        const PerfElfMap::ElfInfo first({}, 100, 10, 0, "foo", "/foo");
 
         QVERIFY(registerElf(&map, first).isEmpty());
         QVERIFY(!map.isEmpty());
@@ -59,7 +59,7 @@ private slots:
         QCOMPARE(map.findElf(109), first);
         QCOMPARE(map.findElf(110), invalid);
 
-        const PerfElfMap::ElfInfo second({}, 0, 10, 0);
+        const PerfElfMap::ElfInfo second({}, 0, 10, 0, "bar", "/bar");
         QVERIFY(registerElf(&map, second).isEmpty());
 
         QCOMPARE(map.findElf(0), second);
@@ -99,8 +99,10 @@ private slots:
         QVERIFY(registerElf(&map, first).isEmpty());
         QCOMPARE(map.findElf(110), first);
 
-        const PerfElfMap::ElfInfo second(file1, 105, 20, 0);
+        PerfElfMap::ElfInfo second(file1, 105, 20, 0);
         QCOMPARE(registerElf(&map, second), QVector<PerfElfMap::ElfInfo>{first});
+        if (firstIsFile)
+            second.baseAddr = first.addr;
         QCOMPARE(map.findElf(110), second);
 
         const PerfElfMap::ElfInfo fragment1(file1, 95, 10, 0);
@@ -156,41 +158,45 @@ private slots:
 
     void testExtendMapping()
     {
+        QTemporaryFile file;
+        QVERIFY(file.open());
+        const auto fileInfo = QFileInfo(file.fileName());
+
         PerfElfMap map;
-        const PerfElfMap::ElfInfo first({}, 0, 5000, 0, "lalala.so", "/tmp/lalala.so");
+        const PerfElfMap::ElfInfo first(fileInfo, 0, 5000, 0);
         registerElf(&map, first);
         QCOMPARE(map.findElf(100), first);
 
         // fully contained in the first mapping
-        const PerfElfMap::ElfInfo second({}, 20, 500, 20, "lalala.so", "/tmp/lalala.so");
+        const PerfElfMap::ElfInfo second(fileInfo, 20, 500, 20);
         registerElf(&map, second);
         QCOMPARE(map.findElf(100), first);
 
         // extend the first mapping
-        const PerfElfMap::ElfInfo third({}, 2000, 8000, 2000, "lalala.so", "/tmp/lalala.so");
+        const PerfElfMap::ElfInfo third(fileInfo, 2000, 8000, 2000);
         registerElf(&map, third);
-        const PerfElfMap::ElfInfo extended({}, 0, 10000, 0, "lalala.so", "/tmp/lalala.so");
+        const PerfElfMap::ElfInfo extended(fileInfo, 0, 10000, 0);
         QCOMPARE(map.findElf(100), extended);
         QCOMPARE(map.findElf(2200), extended);
 
         // this has a gap, so don't extend directly
-        PerfElfMap::ElfInfo fourth({}, 12000, 100, 100, "lalala.so", "/tmp/lalala.so");
+        PerfElfMap::ElfInfo fourth(fileInfo, 12000, 100, 100);
         registerElf(&map, fourth);
         QVERIFY(!fourth.hasBaseAddr());
         fourth.baseAddr = 0;
         QVERIFY(fourth.hasBaseAddr());
         QCOMPARE(map.findElf(12000), fourth);
 
-        PerfElfMap::ElfInfo fifth({}, 2000, 500, 3000, "lalala.so", "/tmp/lalala.so");
+        PerfElfMap::ElfInfo fifth(fileInfo, 2000, 500, 3000);
         QVERIFY(!fifth.hasBaseAddr()); // base addr will be set on registering based on first mmap.
         registerElf(&map, fifth);
         fifth.baseAddr = 0;
         QCOMPARE(map.findElf(2200), fifth);
 
-        const PerfElfMap::ElfInfo remainder1({}, 0, 2000, 0, "lalala.so", "/tmp/lalala.so");
+        const PerfElfMap::ElfInfo remainder1(fileInfo, 0, 2000, 0);
         QCOMPARE(map.findElf(100), remainder1);
 
-        const PerfElfMap::ElfInfo remainder2({}, 2500, 7500, 2500, "lalala.so", "/tmp/lalala.so");
+        const PerfElfMap::ElfInfo remainder2(fileInfo, 2500, 7500, 2500);
         QCOMPARE(map.findElf(3000), remainder2);
     }
 
