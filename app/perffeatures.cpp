@@ -102,6 +102,9 @@ void PerfFeatures::createFeature(QIODevice *device, QDataStream::ByteOrder byteO
     case PerfHeader::GROUP_DESC:
         stream >> m_groupDesc;
         break;
+    case PerfHeader::COMPRESSED:
+        stream >> m_compressed;
+        break;
     default:
         break;
     }
@@ -337,4 +340,15 @@ QDataStream &operator>>(QDataStream &stream, PerfGroupDesc &groupDesc)
 QDataStream &operator<<(QDataStream &stream, const PerfGroupDesc::GroupDesc &groupDesc)
 {
     return stream << groupDesc.name << groupDesc.leaderIndex << groupDesc.numMembers;
+}
+
+
+QDataStream &operator>>(QDataStream &stream, PerfCompressed &compressed)
+{
+    stream >> compressed.version;
+    stream >> compressed.type;
+    stream >> compressed.level;
+    stream >> compressed.ratio;
+    stream >> compressed.mmap_len;
+    return stream;
 }

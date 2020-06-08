@@ -42,7 +42,7 @@ private slots:
 };
 
 static void setupUnwind(PerfUnwind *unwind, PerfHeader *header, QIODevice *input,
-                        PerfAttributes *attributes)
+                        PerfAttributes *attributes, PerfData *data)
 {
     if (!header->isPipe()) {
         const qint64 filePos = input->pos();
@@ -51,6 +51,9 @@ static void setupUnwind(PerfUnwind *unwind, PerfHeader *header, QIODevice *input
 
         PerfFeatures features;
         features.read(input, header);
+
+        if (header->hasFeature(PerfHeader::COMPRESSED))
+            data->setCompressed(features.compressed());
 
         PerfTracingData tracingData = features.tracingData();
         if (tracingData.size() > 0)
@@ -75,7 +78,7 @@ static void process(PerfUnwind *unwind, QIODevice *input)
 
     QSignalSpy spy(&data, SIGNAL(finished()));
     QObject::connect(&header, &PerfHeader::finished, &data, [&](){
-        setupUnwind(unwind, &header, input, &attributes);
+        setupUnwind(unwind, &header, input, &attributes, &data);
         data.read();
     });
 
@@ -208,6 +211,7 @@ void TestPerfData::testFiles_data()
     const auto files = {
         "vector_static_clang/perf.data",
         "vector_static_gcc/perf.data",
+        "vector_static_gcc/perf.data.zstd",
     };
     for (auto file : files)
         QTest::addRow("%s", file) << file;
@@ -216,6 +220,10 @@ void TestPerfData::testFiles_data()
 void TestPerfData::testFiles()
 {
     QFETCH(QString, dataFile);
+#ifndef HAVE_ZSTD
+    if (dataFile.contains("zstd"))
+        QSKIP("zstd support disabled, skipping test");
+#endif
 
     const auto perfDataFile = QFINDTESTDATA(dataFile);
     QVERIFY(!perfDataFile.isEmpty() && QFile::exists(perfDataFile));

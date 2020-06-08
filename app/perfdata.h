@@ -26,6 +26,14 @@
 
 #include <QIODevice>
 
+#ifdef HAVE_ZSTD
+#include <zstd.h>
+
+constexpr bool CAN_DECOMPRESS_ZSTD = true;
+#else
+constexpr bool CAN_DECOMPRESS_ZSTD = false;
+#endif
+
 enum PerfEventType {
 
     /*
@@ -598,7 +606,10 @@ class PerfData : public QObject
     Q_OBJECT
 public:
     PerfData(PerfUnwind *destination, const PerfHeader *header, PerfAttributes *attributes);
+    ~PerfData();
     void setSource(QIODevice *source);
+
+    bool setCompressed(const PerfCompressed &compressed);
 
 public slots:
     void read();
@@ -623,6 +634,13 @@ private:
     PerfAttributes *m_attributes;
     PerfEventHeader m_eventHeader;
     PerfTracingData m_tracingData;
+    PerfCompressed m_compressed;
+    QByteArray m_decompressBuffer;
+    QByteArray m_compressedBuffer;
+    int m_remaininingDecompressedDataSize = 0;
+#if HAVE_ZSTD
+    ZSTD_DStream *m_zstdDstream = nullptr;
+#endif
 
     ReadStatus processEvents(QDataStream &stream);
     ReadStatus doRead();
