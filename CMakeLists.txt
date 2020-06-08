@@ -5,5 +5,7 @@ if (NOT elfutils_FOUND)
   return()
 endif()
 
+find_package(Zstd)
+
 add_subdirectory(app)
 add_subdirectory(tests)
