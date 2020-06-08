@@ -147,6 +147,24 @@ struct PerfGroupDesc {
 QDataStream &operator>>(QDataStream &stream, PerfGroupDesc &groupDesc);
 QDataStream &operator<<(QDataStream &stream, const PerfGroupDesc::GroupDesc &groupDesc);
 
+struct PerfCompressed {
+    quint32 version = 0;
+    quint32 type = 0;
+    quint32 level = 0;
+    quint32 ratio = 0;
+    quint32 mmap_len = 0;
+
+    enum Type {
+        PERF_COMP_NONE = 0,
+        PERF_COMP_ZSTD,
+        PERF_COMP_MAX
+    };
+    Q_ENUM(Type)
+    Q_GADGET
+};
+
+QDataStream &operator>>(QDataStream &stream, PerfCompressed &compressed);
+
 class PerfFeatures
 {
 public:
@@ -172,6 +190,7 @@ public:
     QList<PerfNumaTopology::NumaNode> numaTopology() const { return m_numaToplogy.nodes; }
     QList<PerfPmuMappings::Pmu> pmuMappings() const { return m_pmuMappings.pmus; }
     QList<PerfGroupDesc::GroupDesc> groupDescs() const { return m_groupDesc.groupDescs; }
+    PerfCompressed compressed() const { return m_compressed; }
 
 private:
     void createFeature(QIODevice *device, QDataStream::ByteOrder byteOrder,
@@ -193,4 +212,5 @@ private:
     PerfNumaTopology m_numaToplogy;
     PerfPmuMappings m_pmuMappings;
     PerfGroupDesc m_groupDesc;
+    PerfCompressed m_compressed;
 };

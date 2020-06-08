@@ -33,9 +33,36 @@ PerfData::PerfData(PerfUnwind *destination, const PerfHeader *header, PerfAttrib
 {
 }
 
+PerfData::~PerfData()
+{
+#ifdef HAVE_ZSTD
+    if (m_zstdDstream)
+        ZSTD_freeDStream(m_zstdDstream);
+#endif
+}
+
 void PerfData::setSource(QIODevice *source)
 {
     m_source = source;
+}
+
+bool PerfData::setCompressed(const PerfCompressed &compressed)
+{
+    if (compressed.version != 0) {
+        qWarning() << "unsupported compression version" << compressed.version;
+        return false;
+    } else if (compressed.type != PerfCompressed::PERF_COMP_ZSTD) {
+        qWarning() << "unsupported compression type" << compressed.type;
+        return false;
+    } else if (!CAN_DECOMPRESS_ZSTD) {
+        qWarning() << "zstd decompression support not available";
+        return false;
+    } else if (!compressed.mmap_len) {
+        qWarning() << "invalid compression information" << compressed.mmap_len;
+        return false;
+    }
+    m_compressed = compressed;
+    return true;
 }
 
 const char * perfEventToString(qint32 type)
@@ -227,6 +254,81 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
         m_destination->contextSwitch(switchEvent);
         break;
     }
+
+#ifdef HAVE_ZSTD
+    case PERF_RECORD_COMPRESSED: {
+        if (!m_zstdDstream) {
+            if (!m_header->hasFeature(PerfHeader::COMPRESSED)) {
+                qWarning() << "encountered PERF_RECORD_COMPRESSED without HEADER_COMPRESSED information";
+                return SignalError;
+            }
+
+            m_zstdDstream = ZSTD_createDStream();
+            ZSTD_initDStream(m_zstdDstream);
+
+            // preallocate a buffer to hold the compressed data
+            m_compressedBuffer.resize(std::numeric_limits<quint16>::max());
+        }
+
+        // load compressed data into contiguous array
+        stream.readRawData(m_compressedBuffer.data(), contentSize);
+        ZSTD_inBuffer in = {m_compressedBuffer.constData(), static_cast<size_t>(contentSize), 0};
+
+        // setup decompression buffer which may contain data from a previous compressed record
+        // i.e. one where we had to Rerun. the decompression can add at most mmap_len data on top
+        m_decompressBuffer.resize(m_compressed.mmap_len + m_remaininingDecompressedDataSize);
+        auto outBuffer = m_decompressBuffer.data() + m_remaininingDecompressedDataSize;
+        auto outBufferSize = static_cast<size_t>(m_decompressBuffer.size() - m_remaininingDecompressedDataSize);
+        ZSTD_outBuffer out = {outBuffer, outBufferSize, 0};
+
+        // now actually decompress the record data
+        while (in.pos < in.size) {
+            const auto err = ZSTD_decompressStream(m_zstdDstream, &out, &in);
+            if (ZSTD_isError(err)) {
+                qWarning() << "ZSTD decompression failed:" << ZSTD_getErrorName(err);
+                return SignalError;
+            }
+            out.dst = outBuffer + out.pos;
+            out.size = outBufferSize - out.pos;
+        }
+
+        // then resize the buffer to final size, which may be less than mmap_len
+        m_decompressBuffer.resize(out.pos + m_remaininingDecompressedDataSize);
+        // reset this now that we start to parse from the start of the buffer again
+        m_remaininingDecompressedDataSize = 0;
+
+        QDataStream uncompressedStream(m_decompressBuffer);
+        uncompressedStream.setByteOrder(m_header->byteOrder());
+        // we have to set the size to zero here otherwise processEvents gets confused
+        m_eventHeader.size = 0;
+        auto status = SignalFinished;
+        while (status == SignalFinished) {
+            // position in the decompressed buffer that corresponds to a start of the next record
+            // when we encounter a Rerun scenario, we have to start again at this position the next time
+            const auto oldPos = uncompressedStream.device()->pos();
+            status = processEvents(uncompressedStream);
+            switch (status) {
+            case SignalFinished:
+                break;
+            case SignalError:
+                return SignalError;
+            case Rerun:
+                // unset the device to prevent the m_decompressBuffer from being shared
+                // we don't want to copy the data when we call .begin() below
+                uncompressedStream.setDevice(nullptr);
+                // remaining decompressed data that needs to be parsed the next time
+                // we handle an uncompressed record
+                m_remaininingDecompressedDataSize = m_decompressBuffer.size() - oldPos;
+                // move that data up front in the buffer and continue appending data
+                std::move(m_decompressBuffer.begin() + oldPos, m_decompressBuffer.end(),
+                          m_decompressBuffer.begin());
+                break;
+            }
+        };
+
+        break;
+    }
+#endif
 
     default:
         qWarning() << "unhandled event type" << m_eventHeader.type << " " << perfEventToString(m_eventHeader.type);

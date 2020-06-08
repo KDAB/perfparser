@@ -22,6 +22,12 @@ add_qtc_library(perfparser_lib STATIC
     perftracingdata.cpp perftracingdata.h
 )
 
+if (ZSTD_FOUND)
+    target_include_directories(perfparser_lib PRIVATE ${ZSTD_INCLUDE_DIR})
+    target_link_libraries(perfparser_lib PRIVATE ${ZSTD_LIBRARY})
+    target_compile_definitions(perfparser_lib PRIVATE HAVE_ZSTD=1)
+endif()
+
 add_qtc_executable(perfparser
   DEPENDS
     perfparser_lib

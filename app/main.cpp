@@ -304,6 +304,10 @@ int main(int argc, char *argv[])
         infile->seek(filePos);
 
         // first send features, as it may contain better event descriptions
+        if (header.hasFeature(PerfHeader::COMPRESSED) && !data.setCompressed(features.compressed())) {
+            qApp->exit(DataError);
+            return;
+        }
         unwind.features(features);
 
         const auto& attrs = attributes.attributes();
