@@ -1,1 +1,1 @@
-tests/auto/**/actual.txt
+tests/auto/**/*.actual.txt
