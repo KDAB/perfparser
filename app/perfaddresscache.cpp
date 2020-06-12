@@ -23,9 +23,10 @@ namespace {
 quint64 relativeAddress(const PerfElfMap::ElfInfo& elf, quint64 addr)
 {
     Q_ASSERT(elf.isValid());
-    Q_ASSERT(elf.addr <= addr);
+    const auto elfAddr = elf.hasBaseAddr() ? elf.baseAddr : elf.addr;
+    Q_ASSERT(elfAddr <= addr);
     Q_ASSERT((elf.addr + elf.length) > addr);
-    return addr - elf.addr;
+    return addr - elfAddr;
 }
 }
 
