@@ -212,8 +212,6 @@ void TestPerfData::testFiles_data()
 void TestPerfData::testFiles()
 {
     QFETCH(QString, dirName);
-    if (dirName == "vector_static_clang")
-        QSKIP("vector_static_clang is broken");
 
     const auto dir = QFINDTESTDATA(dirName);
     QVERIFY(!dir.isEmpty() && QFile::exists(dir));
@@ -245,6 +243,11 @@ void TestPerfData::testFiles()
         PerfParserTestClient client;
         client.extractTrace(&output);
         client.convertToText(stream);
+        stream.flush();
+
+        // some older platforms produce strange type names for complex doubles...
+        // use the new form as the canonical form
+        actualText.replace("doublecomplex ", "double _Complex");
 
         QFile actual(actualOutputFile);
         QVERIFY(actual.open(QIODevice::WriteOnly | QIODevice::Text));
