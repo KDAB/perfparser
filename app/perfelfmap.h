@@ -106,6 +106,12 @@ public:
 
     bool isAddressInRange(quint64 addr) const;
 
+    void copyDataFrom(const PerfElfMap *parent)
+    {
+        m_elfs = parent->m_elfs;
+        m_lastBase = parent->m_lastBase;
+    }
+
 signals:
     void aboutToInvalidate(const ElfInfo &elf);
 
