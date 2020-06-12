@@ -67,7 +67,7 @@ private slots:
         PerfElfMap::ElfInfo info_a{{}, 0x100, 100, 0,
                                    QByteArrayLiteral("libfoo_a.so"),
                                    QByteArrayLiteral("/usr/lib/libfoo_a.so")};
-        PerfElfMap::ElfInfo info_b{{}, 0x200, 100, 0,
+        PerfElfMap::ElfInfo info_b{{}, 0x100, 100, 0,
                                    QByteArrayLiteral("libfoo_b.so"),
                                    QByteArrayLiteral("/usr/lib/libfoo_b.so")};
 
