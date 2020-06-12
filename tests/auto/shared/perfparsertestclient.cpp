@@ -79,6 +79,13 @@ void PerfParserTestClient::extractTrace(QIODevice *device)
         stream >> eventType;
 
         switch (eventType) {
+        case ThreadStart: {
+            ThreadStartEvent threadStart;
+            stream >> threadStart.pid >> threadStart.tid >> threadStart.time >> threadStart.cpu >> threadStart.ppid;
+            m_threadStarts.append(threadStart);
+            m_commands.insert(threadStart.pid, m_commands.value(threadStart.ppid));
+            break;
+        }
         case ThreadEnd: {
             ThreadEndEvent threadEnd;
             stream >> threadEnd.pid >> threadEnd.tid >> threadEnd.time >> threadEnd.cpu;
@@ -90,6 +97,8 @@ void PerfParserTestClient::extractTrace(QIODevice *device)
             stream >> command.pid >> command.tid >> command.time >> command.cpu >> command.name;
             checkString(command.name);
             m_commands.insert(command.tid, command);
+            if (command.pid != command.tid && !m_commands.contains(command.pid))
+                m_commands.insert(command.pid, command);
             break;
         }
         case LocationDefinition: {

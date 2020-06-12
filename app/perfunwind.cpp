@@ -689,7 +689,7 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
 void PerfUnwind::fork(const PerfRecordFork &sample)
 {
     bufferEvent(TaskEvent{sample.childPid(), sample.childTid(), sample.time(), sample.cpu(),
-                          0, ThreadStart},
+                          sample.parentPid(), ThreadStart},
                 &m_taskEventsBuffer, &m_stats.numTaskEventsInRound);
 }
 
@@ -948,15 +948,23 @@ void PerfUnwind::flushEventBuffer(uint desiredBufferSize)
             m_lastFlushMaxTime = timestamp;
         }
 
-        forwardMmapBuffer(mmapIt, mmapEnd, timestamp);
-
         for (; taskEventIt != taskEventEnd && taskEventIt->time() <= sampleIt->time();
              ++taskEventIt) {
             if (!m_stats.enabled) {
+                // flush the mmap buffer on fork events to allow initialization with the correct state
+                if (taskEventIt->m_type == ThreadStart && taskEventIt->m_pid != taskEventIt->m_payload) {
+                    forwardMmapBuffer(mmapIt, mmapEnd, taskEventIt->time());
+                    const auto childPid = taskEventIt->m_pid;
+                    const auto parentPid = taskEventIt->m_payload;
+                    symbolTable(childPid)->initAfterFork(symbolTable(parentPid));
+                }
+
                 sendTaskEvent(*taskEventIt);
             }
             m_eventBufferSize -= taskEventIt->size();
         }
+
+        forwardMmapBuffer(mmapIt, mmapEnd, timestamp);
 
         analyze(*sampleIt);
         m_eventBufferSize -= sampleIt->size();
@@ -1034,7 +1042,7 @@ void PerfUnwind::sendTaskEvent(const TaskEvent& taskEvent)
 
     if (taskEvent.m_type == ContextSwitchDefinition)
         stream << static_cast<bool>(taskEvent.m_payload);
-    else if (taskEvent.m_type == Command)
+    else if (taskEvent.m_type == Command || taskEvent.m_type == ThreadStart)
         stream << taskEvent.m_payload;
 
     sendBuffer(buffer);
