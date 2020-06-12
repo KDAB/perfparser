@@ -212,6 +212,7 @@ void TestPerfData::testFiles_data()
         "vector_static_clang/perf.data",
         "vector_static_gcc/perf.data",
         "vector_static_gcc/perf.data.zstd",
+        "fork_static_gcc/perf.data.zstd",
     };
     for (auto file : files)
         QTest::addRow("%s", file) << file;
@@ -240,7 +241,8 @@ void TestPerfData::testFiles()
         QVERIFY(input.open(QIODevice::ReadOnly));
         // don't try to parse kallsyms here, it's not the main point and it wouldn't be portable without the mapping file
         // from where we recorded the data. these files are usually large, and we don't want to bloat the repo too much
-        QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Failed to parse kernel symbol mapping file \".+\": Mapping is empty"));
+        if (QTest::currentDataTag() != QLatin1String("fork_static_gcc/perf.data.zstd"))
+            QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Failed to parse kernel symbol mapping file \".+\": Mapping is empty"));
         unwind.setKallsymsPath(QProcess::nullDevice());
         process(&unwind, &input);
     }

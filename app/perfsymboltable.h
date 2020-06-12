@@ -74,6 +74,8 @@ public:
     void clearCache();
     bool cacheIsDirty() const { return m_cacheIsDirty; }
 
+    void initAfterFork(const PerfSymbolTable *parent);
+
 private:
     // Report an mmap to dwfl and parse it for symbols and inlines, or simply return it if dwfl has
     // it already
@@ -84,7 +86,7 @@ private:
     class ElfAndFile {
     public:
         ElfAndFile() {}
-        ElfAndFile(const QFileInfo &fullPath);
+        explicit ElfAndFile(const QFileInfo &fullPath);
         ElfAndFile(ElfAndFile &&other);
         ElfAndFile &operator=(ElfAndFile &&other);
         ElfAndFile(const ElfAndFile &other) = delete;
@@ -92,12 +94,14 @@ private:
         ~ElfAndFile();
 
         Elf *elf() const { return m_elf; }
+        QFileInfo fullPath() const { return m_fullPath; }
 
     private:
         void clear();
 
         Elf *m_elf = nullptr;
         int m_file = -1;
+        QFileInfo m_fullPath;
     };
 
     QFile m_perfMapFile;

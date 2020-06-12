@@ -1134,6 +1134,7 @@ PerfSymbolTable::ElfAndFile &PerfSymbolTable::ElfAndFile::operator=(
         clear();
         m_elf = other.m_elf;
         m_file = other.m_file;
+        m_fullPath = std::move(other.m_fullPath);
         other.m_elf = nullptr;
         other.m_file = -1;
     }
@@ -1155,6 +1156,7 @@ void PerfSymbolTable::ElfAndFile::clear()
 }
 
 PerfSymbolTable::ElfAndFile::ElfAndFile(const QFileInfo &fullPath)
+    : m_fullPath(fullPath)
 {
     m_file = eu_compat_open(fullPath.absoluteFilePath().toLocal8Bit().constData(),
                             O_RDONLY | O_BINARY);
@@ -1169,8 +1171,14 @@ PerfSymbolTable::ElfAndFile::ElfAndFile(const QFileInfo &fullPath)
 }
 
 PerfSymbolTable::ElfAndFile::ElfAndFile(PerfSymbolTable::ElfAndFile &&other)
-    : m_elf(other.m_elf), m_file(other.m_file)
+    : m_elf(other.m_elf), m_file(other.m_file), m_fullPath(std::move(other.m_fullPath))
 {
     other.m_elf = nullptr;
     other.m_file = -1;
+}
+
+void PerfSymbolTable::initAfterFork(const PerfSymbolTable* parent)
+{
+    m_elfs.copyDataFrom(&parent->m_elfs);
+    m_firstElf = ElfAndFile(parent->m_firstElf.fullPath());
 }

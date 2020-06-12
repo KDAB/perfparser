@@ -52,6 +52,11 @@ public:
     {
     };
 
+    struct ThreadStartEvent : public ThreadEvent
+    {
+        qint32 ppid = -1;
+    };
+
     struct CommandEvent : public ThreadEvent {
         qint32 name = -1;
     };
@@ -125,6 +130,7 @@ private:
     QVector<QByteArray> m_strings;
     QVector<AttributeEvent> m_attributes;
     QHash<qint32, CommandEvent> m_commands;
+    QVector<ThreadStartEvent> m_threadStarts;
     QVector<ThreadEndEvent> m_threadEnds;
     QVector<LocationEvent> m_locations;
     QHash<qint32, SymbolEvent> m_symbols;
