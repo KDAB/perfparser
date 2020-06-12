@@ -203,27 +203,30 @@ void TestPerfData::testContentSize()
 
 void TestPerfData::testFiles_data()
 {
-    QTest::addColumn<QString>("dirName");
+    QTest::addColumn<QString>("dataFile");
 
-    for (auto dir : {"vector_static_clang", "vector_static_gcc"})
-        QTest::addRow("%s", dir) << dir;
+    const auto files = {
+        "vector_static_clang/perf.data",
+        "vector_static_gcc/perf.data",
+    };
+    for (auto file : files)
+        QTest::addRow("%s", file) << file;
 }
 
 void TestPerfData::testFiles()
 {
-    QFETCH(QString, dirName);
+    QFETCH(QString, dataFile);
 
-    const auto dir = QFINDTESTDATA(dirName);
-    QVERIFY(!dir.isEmpty() && QFile::exists(dir));
-    const auto perfDataFile = dir + "/perf.data";
-    const auto expectedOutputFile = dir + "/expected.txt";
-    const auto actualOutputFile = dir + "/actual.txt";
+    const auto perfDataFile = QFINDTESTDATA(dataFile);
+    QVERIFY(!perfDataFile.isEmpty() && QFile::exists(perfDataFile));
+    const auto expectedOutputFile = perfDataFile + ".expected.txt";
+    const auto actualOutputFile = perfDataFile + ".actual.txt";
 
     QBuffer output;
     QVERIFY(output.open(QIODevice::WriteOnly));
 
     // Don't try to load any system files. They are not the same as the ones we use to report.
-    PerfUnwind unwind(&output, ":/", QString(), QString(), dir);
+    PerfUnwind unwind(&output, ":/", QString(), QString(), QFileInfo(perfDataFile).absolutePath());
     {
         QFile input(perfDataFile);
         QVERIFY(input.open(QIODevice::ReadOnly));
