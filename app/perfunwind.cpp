@@ -957,6 +957,8 @@ void PerfUnwind::flushEventBuffer(uint desiredBufferSize)
                     const auto childPid = taskEventIt->m_pid;
                     const auto parentPid = taskEventIt->m_payload;
                     symbolTable(childPid)->initAfterFork(symbolTable(parentPid));
+                } else if (taskEventIt->m_type == ThreadEnd && taskEventIt->m_pid == taskEventIt->m_tid) {
+                    delete m_symbolTables.take(taskEventIt->m_pid);
                 }
 
                 sendTaskEvent(*taskEventIt);
