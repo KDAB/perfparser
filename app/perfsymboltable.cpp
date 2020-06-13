@@ -1070,6 +1070,9 @@ QByteArray PerfSymbolTable::symbolFromPerfMap(quint64 ip, GElf_Off *offset) cons
 
 void PerfSymbolTable::updatePerfMap()
 {
+    if (!m_perfMapFile.exists())
+        return;
+
     if (!m_perfMapFile.isOpen())
         m_perfMapFile.open(QIODevice::ReadOnly);
 
