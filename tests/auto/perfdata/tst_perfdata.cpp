@@ -29,6 +29,7 @@
 #include <QtEndian>
 #include <QProcess>
 #include <QRegularExpression>
+#include <QStandardPaths>
 
 class TestPerfData : public QObject
 {
@@ -274,6 +275,12 @@ void TestPerfData::testFiles()
         expectedText = QString::fromUtf8(expected.readAll());
     }
 
+    if (actualText != expectedText) {
+        const auto diff = QStandardPaths::findExecutable("diff");
+        if (!diff.isEmpty()) {
+            QProcess::execute(diff, {"-u", expectedOutputFile, actualOutputFile});
+        }
+    }
     QCOMPARE(actualText, expectedText);
 }
 
