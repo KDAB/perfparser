@@ -25,8 +25,8 @@
 
 #include "perfsymboltable.h"
 #include "perfunwind.h"
-
-#include <dwarf.h>
+#include "perfdwarfdiecache.h"
+#include "perfeucompat.h"
 
 #include <QDebug>
 #include <QDir>
@@ -34,25 +34,8 @@
 
 #include <tuple>
 #include <cstring>
-#include <fcntl.h>
 
-#ifdef Q_OS_WIN
-#include <libeu_compat.h>
-#else
-#include <cxxabi.h>
-#include <unistd.h>
-#define eu_compat_open open
-#define eu_compat_close close
-#define eu_compat_malloc malloc
-#define eu_compat_free free
-#define eu_compat_demangle abi::__cxa_demangle
-#define eu_compat_strdup strdup
-#define O_BINARY 0
-#endif
-
-#ifdef HAVE_RUSTC_DEMANGLE
-#include <rustc_demangle.h>
-#endif
+#include <dwarf.h>
 
 PerfSymbolTable::PerfSymbolTable(qint32 pid, Dwfl_Callbacks *callbacks, PerfUnwind *parent) :
     m_perfMapFile(QDir::tempPath() + QDir::separator()
@@ -333,111 +316,8 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &
         clearCache();
 }
 
-static QByteArray demangle(const QByteArray &mangledName)
-{
-    if (mangledName.length() < 3) {
-        return mangledName;
-    } else {
-        static size_t demangleBufferLength = 1024;
-        static char *demangleBuffer = reinterpret_cast<char *>(eu_compat_malloc(demangleBufferLength));
-
-#ifdef HAVE_RUSTC_DEMANGLE
-        if (rustc_demangle(mangledName.constData(), demangleBuffer, demangleBufferLength))
-            return demangleBuffer;
-#endif
-
-        // Require GNU v3 ABI by the "_Z" prefix.
-        if (mangledName[0] == '_' && mangledName[1] == 'Z') {
-            int status = -1;
-            char *dsymname = eu_compat_demangle(mangledName.constData(), demangleBuffer, &demangleBufferLength,
-                                            &status);
-            if (status == 0)
-                return demangleBuffer = dsymname;
-        }
-    }
-    return mangledName;
-}
-
-/// @return the fully qualified linkage name
-static const char *linkageName(Dwarf_Die *die)
-{
-    Dwarf_Attribute attr;
-    Dwarf_Attribute *result = dwarf_attr_integrate(die, DW_AT_MIPS_linkage_name, &attr);
-    if (!result)
-        result = dwarf_attr_integrate(die, DW_AT_linkage_name, &attr);
-
-    return result ? dwarf_formstring(result) : nullptr;
-}
-
-/// @return the referenced DW_AT_specification DIE
-/// inlined subroutines of e.g. std:: algorithms aren't namespaced, but their DW_AT_specification DIE is
-static Dwarf_Die *specificationDie(Dwarf_Die *die, Dwarf_Die *dieMem)
-{
-    Dwarf_Attribute attr;
-    if (dwarf_attr_integrate(die, DW_AT_specification, &attr))
-        return dwarf_formref_die(&attr, dieMem);
-    return nullptr;
-}
-
-/// prepend the names of all scopes that reference the @p die to @p name
-static void prependScopeNames(QByteArray &name, Dwarf_Die *die)
-{
-    Dwarf_Die dieMem;
-    Dwarf_Die *scopes = nullptr;
-    auto nscopes = dwarf_getscopes_die(die, &scopes);
-
-    // skip scope for the die itself at the start and the compile unit DIE at end
-    for (int i = 1; i < nscopes - 1; ++i) {
-        auto scope = scopes + i;
-
-        if (auto scopeLinkageName = linkageName(scope)) {
-            // prepend the fully qualified linkage name
-            name.prepend("::");
-            // we have to demangle the scope linkage name, otherwise we get a
-            // mish-mash of mangled and non-mangled names
-            name.prepend(demangle(scopeLinkageName));
-            // we can stop now, the scope is fully qualified
-            break;
-        }
-
-        if (auto scopeName = dwarf_diename(scope)) {
-            // prepend this scope's name, e.g. the class or namespace name
-            name.prepend("::");
-            name.prepend(scopeName);
-        }
-
-        if (auto specification = specificationDie(scope, &dieMem)) {
-            eu_compat_free(scopes);
-            scopes = nullptr;
-            // follow the scope's specification DIE instead
-            prependScopeNames(name, specification);
-            break;
-        }
-    }
-
-    eu_compat_free(scopes);
-}
-
-static QByteArray dieName(Dwarf_Die *die)
-{
-    // linkage names are fully qualified, meaning we can stop early then
-    if (auto name = linkageName(die))
-        return name;
-
-    // otherwise do a more complex lookup that includes namespaces and other context information
-    // this is important for inlined subroutines such as lambdas or std:: algorithms
-    QByteArray name = dwarf_diename(die);
-
-    // use the specification DIE which is within the DW_TAG_namespace
-    Dwarf_Die dieMem;
-    if (auto specification = specificationDie(die, &dieMem))
-        die = specification;
-
-    prependScopeNames(name, die);
-    return name;
-}
-
-int PerfSymbolTable::insertSubprogram(Dwarf_Die *top, Dwarf_Addr entry, qint32 binaryId, qint32 binaryPathId,
+int PerfSymbolTable::insertSubprogram(CuDieRangeMapping *cudie, Dwarf_Die *top, Dwarf_Addr entry,
+                                      qint32 binaryId, qint32 binaryPathId,
                                       qint32 inlineCallLocationId, bool isKernel)
 {
     int line = 0;
@@ -449,14 +329,14 @@ int PerfSymbolTable::insertSubprogram(Dwarf_Die *top, Dwarf_Addr entry, qint32 b
     qint32 fileId = m_unwind->resolveString(file);
     int locationId = m_unwind->resolveLocation(PerfUnwind::Location(entry, fileId, m_pid, line,
                                                                     column, inlineCallLocationId));
-    qint32 symId = m_unwind->resolveString(demangle(dieName(top)));
+    qint32 symId = m_unwind->resolveString(cudie->dieName(top));
     m_unwind->resolveSymbol(locationId, PerfUnwind::Symbol(symId, binaryId, binaryPathId, isKernel));
 
     return locationId;
 }
 
-int PerfSymbolTable::parseDie(Dwarf_Die *top, qint32 binaryId, qint32 binaryPathId, bool isKernel,
-                              Dwarf_Files *files, Dwarf_Addr entry, qint32 parentLocationId)
+int PerfSymbolTable::parseDie(CuDieRangeMapping *cudie, Dwarf_Die *top, qint32 binaryId, qint32 binaryPathId,
+                              bool isKernel, Dwarf_Files *files, Dwarf_Addr entry, qint32 parentLocationId)
 {
     int tag = dwarf_tag(top);
     switch (tag) {
@@ -479,38 +359,35 @@ int PerfSymbolTable::parseDie(Dwarf_Die *top, qint32 binaryId, qint32 binaryPath
         location.parentLocationId = parentLocationId;
 
         int callLocationId = m_unwind->resolveLocation(location);
-        return insertSubprogram(top, entry, binaryId, binaryPathId, callLocationId, isKernel);
+        return insertSubprogram(cudie, top, entry, binaryId, binaryPathId, callLocationId, isKernel);
     }
     case DW_TAG_subprogram:
-        return insertSubprogram(top, entry, binaryId, binaryPathId, -1, isKernel);
+        return insertSubprogram(cudie, top, entry, binaryId, binaryPathId, -1, isKernel);
     default:
         return -1;
     }
 }
 
-qint32 PerfSymbolTable::parseDwarf(Dwarf_Die *cudie, Dwarf_Die *subroutine, Dwarf_Addr bias, qint32 binaryId,
-                                   qint32 binaryPathId, bool isKernel)
+qint32 PerfSymbolTable::parseDwarf(CuDieRangeMapping *cudie, SubProgramDie *subprogram, const QVector<Dwarf_Die> &inlined,
+                                   Dwarf_Addr bias, qint32 binaryId, qint32 binaryPathId, bool isKernel)
 {
-    Dwarf_Die *scopes = nullptr;
-    const auto nscopes = dwarf_getscopes_die(subroutine, &scopes);
-
     Dwarf_Files *files = nullptr;
-    dwarf_getsrcfiles(cudie, &files, nullptr);
+    dwarf_getsrcfiles(cudie->cudie(), &files, nullptr);
 
     qint32 parentLocationId = -1;
-    for (int i = nscopes - 1; i >= 0; --i) {
-        const auto scope = &scopes[i];
+    auto handleDie = [&](Dwarf_Die scope) {
         Dwarf_Addr scopeAddr = bias;
         Dwarf_Addr entry = 0;
-        if (dwarf_entrypc(scope, &entry) == 0 && entry != 0)
+        if (dwarf_entrypc(&scope, &entry) == 0 && entry != 0)
             scopeAddr += entry;
 
-        auto locationId = parseDie(scope, binaryId, binaryPathId, isKernel, files, scopeAddr, parentLocationId);
+        auto locationId = parseDie(cudie, &scope, binaryId, binaryPathId, isKernel, files, scopeAddr, parentLocationId);
         if (locationId != -1)
             parentLocationId = locationId;
-    }
+    };
 
-    eu_compat_free(scopes);
+    handleDie(*subprogram->die());
+    std::for_each(inlined.begin(), inlined.end(), handleDie);
     return parentLocationId;
 }
 
@@ -671,60 +548,6 @@ PerfElfMap::ElfInfo PerfSymbolTable::findElf(quint64 ip) const
 {
     return m_elfs.findElf(ip);
 }
-
-class CuDieRanges
-{
-public:
-    struct CuDieRange
-    {
-        Dwarf_Die *cuDie;
-        Dwarf_Addr bias;
-        Dwarf_Addr low;
-        Dwarf_Addr high;
-
-        bool contains(Dwarf_Addr addr) const
-        {
-            return low <= addr && addr < high;
-        }
-    };
-
-    CuDieRanges(Dwfl_Module *mod = nullptr)
-    {
-        if (!mod)
-            return;
-
-        Dwarf_Die *die = nullptr;
-        Dwarf_Addr bias = 0;
-        while ((die = dwfl_module_nextcu(mod, die, &bias))) {
-            Dwarf_Addr low = 0;
-            Dwarf_Addr high = 0;
-            Dwarf_Addr base = 0;
-            ptrdiff_t offset = 0;
-            while ((offset = dwarf_ranges(die, offset, &base, &low, &high)) > 0) {
-                ranges.push_back(CuDieRange{die, bias, low + bias, high + bias});
-            }
-        }
-    }
-
-    Dwarf_Die *findDie(Dwarf_Addr addr, Dwarf_Addr *bias) const
-    {
-        auto it = std::find_if(ranges.begin(), ranges.end(),
-                               [addr](const CuDieRange &range) {
-                                    return range.contains(addr);
-                               });
-        if (it == ranges.end())
-            return nullptr;
-
-        *bias = it->bias;
-        return it->cuDie;
-    }
-public:
-    QVector<CuDieRange> ranges;
-};
-QT_BEGIN_NAMESPACE
-Q_DECLARE_TYPEINFO(CuDieRanges, Q_MOVABLE_TYPE);
-Q_DECLARE_TYPEINFO(CuDieRanges::CuDieRange, Q_MOVABLE_TYPE);
-QT_END_NAMESPACE
 
 int symbolIndex(const Elf64_Rel &rel)
 {
@@ -938,8 +761,8 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
         } else {
             GElf_Sym sym;
             // For addrinfo we need the raw pointer into symtab, so we need to adjust ourselves.
-            symname = dwfl_module_addrinfo(mod, addressLocation.address, &off, &sym, nullptr, nullptr,
-                                           nullptr);
+            symname = demangle(dwfl_module_addrinfo(mod, addressLocation.address, &off, &sym,
+                                                    nullptr, nullptr, nullptr));
             if (off != addressLocation.address)
                 addressCache->cacheSymbol(elf, addressLocation.address - off, sym.st_size, symname);
         }
@@ -951,20 +774,14 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
             Dwarf_Addr bias = 0;
             functionLocation.address -= off; // in case we don't find anything better
 
-            auto die = dwfl_module_addrdie(mod, addressLocation.address, &bias);
-            if (!die) {
-                // broken DWARF emitter by clang, e.g. no aranges
-                // cf.: https://sourceware.org/ml/elfutils-devel/2017-q2/msg00180.html
-                // build a custom lookup table and query that one
-                if (!m_cuDieRanges.contains(mod)) {
-                    m_cuDieRanges[mod] = CuDieRanges(mod);
-                }
-                const auto& maps = m_cuDieRanges[mod];
-                die = maps.findDie(addressLocation.address, &bias);
-            }
+            if (!m_cuDieRanges.contains(mod))
+                m_cuDieRanges[mod] = PerfDwarfDieCache(mod);
 
-            if (die) {
-                auto srcloc = dwarf_getsrc_die(die, addressLocation.address - bias);
+            auto *cudie = m_cuDieRanges[mod].findCuDie(addressLocation.address);
+            if (cudie) {
+                bias = cudie->bias();
+                const auto offset = addressLocation.address - bias;
+                auto srcloc = dwarf_getsrc_die(cudie->cudie(), offset);
                 if (srcloc) {
                     const char* srcfile = dwarf_linesrc(srcloc, nullptr, nullptr);
                     if (srcfile) {
@@ -974,42 +791,39 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
                         dwarf_linecol(srcloc, &addressLocation.column);
                     }
                 }
-            }
 
-            Dwarf_Die *subroutine = nullptr;
-            Dwarf_Die *scopes = nullptr;
-            int nscopes = dwarf_getscopes(die, addressLocation.address - bias, &scopes);
-            for (int i = 0; i < nscopes; ++i) {
-                Dwarf_Die *scope = &scopes[i];
-                const int tag = dwarf_tag(scope);
-                if (tag == DW_TAG_subprogram || tag == DW_TAG_inlined_subroutine) {
-                    Dwarf_Addr entry = 0;
-                    dwarf_entrypc(scope, &entry);
-                    symname = dieName(scope); // use name of inlined function as symbol
-                    functionLocation.address = entry + bias;
-                    functionLocation.file = m_unwind->resolveString(dwarf_decl_file(scope));
-                    dwarf_decl_line(scope, &functionLocation.line);
-                    dwarf_decl_column(scope, &functionLocation.column);
+                auto *subprogram = cudie->findSubprogramDie(offset);
+                if (subprogram) {
+                    const auto scopes = findInlineScopes(subprogram->die(), offset);
 
-                    subroutine = scope;
-                    break;
+                    // setup function location, i.e. entry point of the (inlined) frame
+                    [&](Dwarf_Die die) {
+                        Dwarf_Addr entry = 0;
+                        dwarf_entrypc(&die, &entry);
+                        symname = cudie->dieName(&die); // use name of inlined function as symbol
+                        functionLocation.address = entry + bias;
+                        functionLocation.file = m_unwind->resolveString(dwarf_decl_file(&die));
+                        dwarf_decl_line(&die, &functionLocation.line);
+                        dwarf_decl_column(&die, &functionLocation.column);
+                    }(scopes.isEmpty() ? *subprogram->die() : scopes.last());
+
+                    // check if the inline chain was cached already
+                    addressLocation.parentLocationId = m_unwind->lookupLocation(functionLocation);
+                    // otherwise resolve the inline chain if possible
+                    if (!scopes.isEmpty() && !m_unwind->hasSymbol(addressLocation.parentLocationId)) {
+                        functionLocation.parentLocationId = parseDwarf(cudie, subprogram, scopes, bias,
+                                                                       binaryId, binaryPathId, isKernel);
+                    }
                 }
             }
 
-            // check if the inline chain was cached already
-            addressLocation.parentLocationId = m_unwind->lookupLocation(functionLocation);
-            // otherwise resolve the inline chain if possible
-            if (subroutine && !m_unwind->hasSymbol(addressLocation.parentLocationId))
-                functionLocation.parentLocationId = parseDwarf(die, subroutine, bias, binaryId, binaryPathId, isKernel);
-            // then resolve and cache the inline chain
+            // resolve and cache the inline chain
             if (addressLocation.parentLocationId == -1)
                 addressLocation.parentLocationId = m_unwind->resolveLocation(functionLocation);
-
-            eu_compat_free(scopes);
         }
         if (!m_unwind->hasSymbol(addressLocation.parentLocationId)) {
             // no sufficient debug information. Use what we already know
-            qint32 symId = m_unwind->resolveString(demangle(symname));
+            qint32 symId = m_unwind->resolveString(symname);
             m_unwind->resolveSymbol(addressLocation.parentLocationId,
                                     PerfUnwind::Symbol(symId, binaryId, binaryPathId, isKernel));
         }

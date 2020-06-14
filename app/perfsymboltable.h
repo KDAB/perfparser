@@ -34,7 +34,9 @@
 
 #include <QObject>
 
-class CuDieRanges;
+class PerfDwarfDieCache;
+class SubProgramDie;
+class CuDieRangeMapping;
 
 class PerfSymbolTable
 {
@@ -115,17 +117,17 @@ private:
 
     PerfElfMap m_elfs;
     PerfAddressCache::OffsetAddressCache m_invalidAddressCache;
-    QHash<Dwfl_Module*, CuDieRanges> m_cuDieRanges;
+    QHash<Dwfl_Module*, PerfDwarfDieCache> m_cuDieRanges;
     Dwfl_Callbacks *m_callbacks;
     qint32 m_pid;
 
     QByteArray symbolFromPerfMap(quint64 ip, GElf_Off *offset) const;
-    int parseDie(Dwarf_Die *top, qint32 binaryId, qint32 binaryPathId, bool isKernel,
+    int parseDie(CuDieRangeMapping *cudie, Dwarf_Die *top, qint32 binaryId, qint32 binaryPathId, bool isKernel,
                  Dwarf_Files *files, Dwarf_Addr entry, qint32 parentLocationId);
-    int insertSubprogram(Dwarf_Die *top, Dwarf_Addr entry, qint32 binaryId, qint32 binaryPathId,
+    int insertSubprogram(CuDieRangeMapping *cudie, Dwarf_Die *top, Dwarf_Addr entry, qint32 binaryId, qint32 binaryPathId,
                          qint32 inlineParent, bool isKernel);
-    qint32 parseDwarf(Dwarf_Die *cudie, Dwarf_Die *subroutine, Dwarf_Addr bias, qint32 binaryId,
-                      qint32 binaryPathId, bool isKernel);
+    qint32 parseDwarf(CuDieRangeMapping *cudie, SubProgramDie *subprogram, const QVector<Dwarf_Die> &inlined,
+                      Dwarf_Addr bias, qint32 binaryId, qint32 binaryPathId, bool isKernel);
 };
 
 QT_BEGIN_NAMESPACE

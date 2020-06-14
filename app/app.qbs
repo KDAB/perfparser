@@ -40,5 +40,8 @@ QtcTool {
         "perfkallsyms.h",
         "perftracingdata.cpp",
         "perftracingdata.h",
+        "perfdwarfdiecache.cpp",
+        "perfdwarfdiecache.h",
+        "perfeucompat.h"
     ]
 }

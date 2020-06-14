@@ -20,6 +20,8 @@ add_qtc_library(perfparser_lib STATIC
     perfelfmap.cpp perfelfmap.h
     perfkallsyms.cpp perfkallsyms.h
     perftracingdata.cpp perftracingdata.h
+    perfdwarfdiecache.cpp perfdwarfdiecache.h
+    perfeucompat.h
 )
 
 if (Zstd_FOUND)
