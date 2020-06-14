@@ -124,8 +124,8 @@ private:
                  Dwarf_Files *files, Dwarf_Addr entry, qint32 parentLocationId);
     int insertSubprogram(Dwarf_Die *top, Dwarf_Addr entry, qint32 binaryId, qint32 binaryPathId,
                          qint32 inlineParent, bool isKernel);
-    qint32 parseDwarf(Dwarf_Die *cudie, Dwarf_Die *subroutine, Dwarf_Addr bias, qint32 binaryId,
-                      qint32 binaryPathId, bool isKernel);
+    qint32 parseDwarf(Dwarf_Die *cudie, Dwarf_Die *subprogram, const QVector<Dwarf_Die> &inlined,
+                      Dwarf_Addr bias, qint32 binaryId, qint32 binaryPathId, bool isKernel);
 };
 
 QT_BEGIN_NAMESPACE
