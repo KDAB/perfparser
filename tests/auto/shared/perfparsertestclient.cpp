@@ -202,7 +202,7 @@ void PerfParserTestClient::convertToText(QTextStream &out) const
             out << '\t' << string(attribute.name) << ": ";
             if (attribute.type == 2) {
                 const auto format = tracePointFormat(static_cast<qint32>(attribute.config));
-                out << string(format.system) << ' ' << string(format.name) << ' ' << hex << format.flags << dec << '\n';
+                out << string(format.system) << ' ' << string(format.name) << ' ' << Qt::hex << format.flags << Qt::dec << '\n';
                 for (auto it = sample.tracePointData.begin(); it != sample.tracePointData.end(); ++it) {
                     out << "\t\t" << string(it.key()) << '=' << it.value().toString() << '\n';
                 }
@@ -213,7 +213,7 @@ void PerfParserTestClient::convertToText(QTextStream &out) const
         out << '\n';
         auto printFrame = [&out, this](qint32 locationId) -> qint32 {
             const auto location = this->location(locationId);
-            out << '\t' << hex << location.address << dec;
+            out << '\t' << Qt::hex << location.address << Qt::dec;
             const auto symbol = this->symbol(locationId);
             if (location.file != -1)
                 out << '\t' << string(location.file) << ':' << location.line << ':' << location.column;
