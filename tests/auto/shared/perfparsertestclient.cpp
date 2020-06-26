@@ -191,6 +191,8 @@ void PerfParserTestClient::extractTrace(QIODevice *device)
 
 void PerfParserTestClient::convertToText(QTextStream &out) const
 {
+    using Qt::dec;
+    using Qt::hex;
     for (const auto &sample : samples()) {
         out << string(command(sample.pid).name) << '\t'
             << sample.pid << '\t' << sample.tid << '\t'
