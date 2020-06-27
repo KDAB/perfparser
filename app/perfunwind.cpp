@@ -127,7 +127,7 @@ PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QStri
         // Write minimal header, consisting of magic and data stream version we're going to use.
         const char magic[] = "QPERFSTREAM";
         output->write(magic, sizeof(magic));
-        qint32 dataStreamVersion = qToLittleEndian(QDataStream::Qt_DefaultCompiledVersion);
+        qint32 dataStreamVersion = qToLittleEndian(qint32(QDataStream::Qt_DefaultCompiledVersion));
         output->write(reinterpret_cast<const char *>(&dataStreamVersion), sizeof(qint32));
     }
 }
