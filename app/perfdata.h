@@ -307,7 +307,7 @@ enum PerfEventType {
 
     PERF_RECORD_USER_TYPE_START     = 64,
     PERF_RECORD_HEADER_ATTR         = 64,
-    PERF_RECORD_HEADER_EVENT_TYPE   = 65, /* depreceated */
+    PERF_RECORD_HEADER_EVENT_TYPE   = 65, /* deprecated */
     PERF_RECORD_HEADER_TRACING_DATA = 66,
     PERF_RECORD_HEADER_BUILD_ID     = 67,
     PERF_RECORD_FINISHED_ROUND      = 68,
@@ -379,6 +379,7 @@ public:
     quint32 cpu() const { return m_sampleId.cpu(); }
     quint16 size() const { return m_header.size; }
     quint16 misc() const { return m_header.misc; }
+    quint64 type() const { return m_sampleId.sampleType(); }
 
 protected:
     PerfRecord(const PerfEventHeader *header, quint64 sampleType, bool sampleIdAll);
