@@ -307,7 +307,7 @@ enum PerfEventType {
 
     PERF_RECORD_USER_TYPE_START     = 64,
     PERF_RECORD_HEADER_ATTR         = 64,
-    PERF_RECORD_HEADER_EVENT_TYPE   = 65, /* depreceated */
+    PERF_RECORD_HEADER_EVENT_TYPE   = 65, /* deprecated */
     PERF_RECORD_HEADER_TRACING_DATA = 66,
     PERF_RECORD_HEADER_BUILD_ID     = 67,
     PERF_RECORD_FINISHED_ROUND      = 68,
@@ -326,6 +326,16 @@ enum PerfEventType {
     PERF_RECORD_COMPRESSED          = 81,
     PERF_RECORD_HEADER_MAX
 };
+
+/*
+ * Bits that can be set in attr.sample_type to request information
+ * in the overflow packets.
+ */
+enum perf_event_sample_format {
+    PERF_SAMPLE_REGS_USER			= 1U << 12,
+    PERF_SAMPLE_STACK_USER			= 1U << 13,
+};
+
 
 enum PERF_RECORD_MISC {
     PERF_RECORD_MISC_SWITCH_OUT = (1 << 13),
@@ -379,6 +389,7 @@ public:
     quint32 cpu() const { return m_sampleId.cpu(); }
     quint16 size() const { return m_header.size; }
     quint16 misc() const { return m_header.misc; }
+    quint64 type() const { return m_sampleId.sampleType(); }
 
 protected:
     PerfRecord(const PerfEventHeader *header, quint64 sampleType, bool sampleIdAll);

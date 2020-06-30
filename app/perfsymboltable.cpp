@@ -920,6 +920,15 @@ Dwfl *PerfSymbolTable::attachDwfl(void *arg)
     if (static_cast<pid_t>(m_pid) == dwfl_pid(m_dwfl))
         return m_dwfl; // Already attached, nothing to do
 
+    //  Fix for issue: dwfl_attach_state should be called only for user-level CPU register state
+    //  and user-level stack, allowing stack unwinding.
+    PerfUnwind::UnwindInfo *unwindInfo = static_cast<PerfUnwind::UnwindInfo *>(arg);
+    if (!((unwindInfo->sample->type() & PERF_SAMPLE_REGS_USER) &&
+          // Records the current user-level CPU register state
+          (unwindInfo->sample->type() & PERF_SAMPLE_STACK_USER)))
+        // Records the user-level stack, allowing stack unwinding.
+        return nullptr;
+
     if (!dwfl_attach_state(m_dwfl, m_firstElf.elf(), m_pid, &threadCallbacks, arg)) {
         qWarning() << m_pid << "failed to attach state" << dwfl_errmsg(dwfl_errno());
         return nullptr;
