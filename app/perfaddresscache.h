@@ -53,6 +53,7 @@ public:
         quint64 offset;
         quint64 size;
         QByteArray symname;
+        bool demangled = false;
     };
     using SymbolCache = QVector<SymbolCacheEntry>;
 
@@ -61,9 +62,13 @@ public:
     void cache(const PerfElfMap::ElfInfo& elf, quint64 addr,
                const AddressCacheEntry& entry, OffsetAddressCache *invalidAddressCache);
 
-    SymbolCacheEntry findSymbol(const PerfElfMap::ElfInfo &elf, quint64 addr) const;
-    void cacheSymbol(const PerfElfMap::ElfInfo &elf, quint64 startAddr, quint64 size,
-                     const QByteArray &symname);
+    /// check if @c setSymbolCache was called for @p filePath already
+    bool hasSymbolCache(const QByteArray &filePath) const;
+    /// take @p cache, sort it and use it for symbol lookups in @p filePath
+    void setSymbolCache(const QByteArray &filePath, SymbolCache cache);
+    /// find the symbol that encompasses @p relAddr in @p filePath
+    /// if the found symbol wasn't yet demangled, it will be demangled now
+    SymbolCacheEntry findSymbol(const QByteArray &filePath, quint64 relAddr);
 private:
     QHash<QByteArray, OffsetAddressCache> m_cache;
     QHash<QByteArray, SymbolCache> m_symbolCache;

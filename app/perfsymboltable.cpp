@@ -722,6 +722,21 @@ static QByteArray fakeSymbolFromSection(Dwfl_Module *mod, Dwarf_Addr addr)
     return sym;
 }
 
+static PerfAddressCache::SymbolCache cacheSymbols(Dwfl_Module *module, quint64 elfStart)
+{
+    PerfAddressCache::SymbolCache cache;
+
+    const auto numSymbols = dwfl_module_getsymtab(module);
+    for (int i = 0; i < numSymbols; ++i) {
+        GElf_Sym sym;
+        GElf_Addr symAddr;
+        const auto symbol = dwfl_module_getsym_info(module, i, &sym, &symAddr, nullptr, nullptr, nullptr);
+        if (symbol)
+            cache.append({symAddr - elfStart, sym.st_size, symbol});
+    }
+    return cache;
+}
+
 int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
                                  bool *isInterworking)
 {
@@ -754,23 +769,18 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
     GElf_Off off = 0;
 
     if (mod) {
-        auto cachedAddrInfo = addressCache->findSymbol(elf, addressLocation.address);
-        if (cachedAddrInfo.isValid()) {
-            off = addressLocation.address - elf.addr - cachedAddrInfo.offset;
-            symname = cachedAddrInfo.symname;
-        } else {
-            GElf_Sym sym;
-            // For addrinfo we need the raw pointer into symtab, so we need to adjust ourselves.
-            symname = demangle(dwfl_module_addrinfo(mod, addressLocation.address, &off, &sym,
-                                                    nullptr, nullptr, nullptr));
-            if (off != addressLocation.address)
-                addressCache->cacheSymbol(elf, addressLocation.address - off, sym.st_size, symname);
+        if (!addressCache->hasSymbolCache(elf.originalPath)) {
+            // cache all symbols in a sorted lookup table and demangle them on-demand
+            // note that the symbols within the symtab aren't necessarily sorted,
+            // which makes searching repeatedly via dwfl_module_addrinfo potentially very slow
+            addressCache->setSymbolCache(elf.originalPath, cacheSymbols(mod, elfStart));
         }
 
-        if (off == addressLocation.address) {// no symbol found
-            symname = fakeSymbolFromSection(mod, addressLocation.address);
-            addressLocation.parentLocationId = m_unwind->resolveLocation(functionLocation);
-        } else {
+        auto cachedAddrInfo = addressCache->findSymbol(elf.originalPath, addressLocation.address - elfStart);
+        if (cachedAddrInfo.isValid()) {
+            off = addressLocation.address - elfStart - cachedAddrInfo.offset;
+            symname = cachedAddrInfo.symname;
+
             Dwarf_Addr bias = 0;
             functionLocation.address -= off; // in case we don't find anything better
 
@@ -820,7 +830,12 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
             // resolve and cache the inline chain
             if (addressLocation.parentLocationId == -1)
                 addressLocation.parentLocationId = m_unwind->resolveLocation(functionLocation);
+        } else {
+            // no symbol found
+            symname = fakeSymbolFromSection(mod, addressLocation.address);
+            addressLocation.parentLocationId = m_unwind->resolveLocation(functionLocation);
         }
+
         if (!m_unwind->hasSymbol(addressLocation.parentLocationId)) {
             // no sufficient debug information. Use what we already know
             qint32 symId = m_unwind->resolveString(symname);
