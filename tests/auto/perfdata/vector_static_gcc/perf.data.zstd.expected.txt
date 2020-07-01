@@ -333,7 +333,7 @@ vector_static_g	267677	267677	9952.370716207
 	41b3d3
 	41b3b0	__hypot_finite vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	417a57
-	417a40	__hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a40	hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	401585	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
 	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	40152b	../../../manual/clients/vector.cpp:16:6
@@ -419,7 +419,7 @@ vector_static_g	267677	267677	9952.372445088
 	41b541
 	41b3b0	__hypot_finite vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	417a57
-	417a40	__hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a40	hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	401585	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
 	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	40152b	../../../manual/clients/vector.cpp:16:6
@@ -435,7 +435,7 @@ vector_static_g	267677	267677	9952.372721927
 	41b4ba
 	41b3b0	__hypot_finite vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	417a57
-	417a40	__hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a40	hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	401585	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
 	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	40152b	../../../manual/clients/vector.cpp:16:6
@@ -513,7 +513,7 @@ vector_static_g	267677	267677	9952.373529882
 	cycles: 543898
 
 	417a7f
-	417a40	__hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a40	hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	401585	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
 	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	40152b	../../../manual/clients/vector.cpp:16:6
@@ -529,7 +529,7 @@ vector_static_g	267677	267677	9952.373792635
 	41b541
 	41b3b0	__hypot_finite vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	417a57
-	417a40	__hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a40	hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	401585	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
 	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	40152b	../../../manual/clients/vector.cpp:16:6
@@ -545,7 +545,7 @@ vector_static_g	267677	267677	9952.374053514
 	41b4b6
 	41b3b0	__hypot_finite vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	417a57
-	417a40	__hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a40	hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	401585	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
 	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	40152b	../../../manual/clients/vector.cpp:16:6
@@ -561,7 +561,7 @@ vector_static_g	267677	267677	9952.374312880
 	41b541
 	41b3b0	__hypot_finite vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	417a57
-	417a40	__hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a40	hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	401585	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
 	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	40152b	../../../manual/clients/vector.cpp:16:6
@@ -591,7 +591,7 @@ vector_static_g	267677	267677	9952.374830862
 	41b4b2
 	41b3b0	__hypot_finite vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	417a57
-	417a40	__hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a40	hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	401585	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
 	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	40152b	../../../manual/clients/vector.cpp:16:6
@@ -607,7 +607,7 @@ vector_static_g	267677	267677	9952.375086521
 	41b4ba
 	41b3b0	__hypot_finite vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	417a57
-	417a40	__hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a40	hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	401585	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
 	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	40152b	../../../manual/clients/vector.cpp:16:6
@@ -623,7 +623,7 @@ vector_static_g	267677	267677	9952.375341098
 	41b4b6
 	41b3b0	__hypot_finite vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	417a57
-	417a40	__hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a40	hypot vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	401585	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
 	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	40152b	../../../manual/clients/vector.cpp:16:6

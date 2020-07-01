@@ -234,7 +234,7 @@ vector_static_c	337401	337401	57697.314751138
 	41befa
 	41bdf0	__ieee754_hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	418497
-	418480	__hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	418480	hypotf32x vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402670	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:50
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:0	std::__complex_abs(double _Complex) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:619:-1
@@ -256,7 +256,7 @@ vector_static_c	337401	337401	57697.314846047
 	41befa
 	41bdf0	__ieee754_hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	418497
-	418480	__hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	418480	hypotf32x vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402670	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:50
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:0	std::__complex_abs(double _Complex) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:619:-1
@@ -348,7 +348,7 @@ vector_static_c	337401	337401	57697.315376058
 	41befa
 	41bdf0	__ieee754_hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	418497
-	418480	__hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	418480	hypotf32x vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402670	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:50
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:0	std::__complex_abs(double _Complex) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:619:-1
@@ -436,7 +436,7 @@ vector_static_c	337401	337401	57697.316229231
 	41bef2
 	41bdf0	__ieee754_hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	418497
-	418480	__hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	418480	hypotf32x vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402670	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:50
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:0	std::__complex_abs(double _Complex) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:619:-1
@@ -551,7 +551,7 @@ vector_static_c	337401	337401	57697.317627942
 	41bef6
 	41bdf0	__ieee754_hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	418497
-	418480	__hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	418480	hypotf32x vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402670	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:50
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:0	std::__complex_abs(double _Complex) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:619:-1
@@ -745,7 +745,7 @@ vector_static_c	337401	337401	57697.319587384
 	cycles: 288375
 
 	41848e
-	418480	__hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	418480	hypotf32x vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402670	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:50
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:0	std::__complex_abs(double _Complex) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:619:-1
@@ -803,7 +803,7 @@ vector_static_c	337401	337401	57697.320327591
 	41be3b
 	41bdf0	__ieee754_hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	418497
-	418480	__hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	418480	hypotf32x vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402670	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:50
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:0	std::__complex_abs(double _Complex) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:619:-1
@@ -843,7 +843,7 @@ vector_static_c	337401	337401	57697.320829914
 	41befa
 	41bdf0	__ieee754_hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	418497
-	418480	__hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	418480	hypotf32x vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402670	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:50
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:0	std::__complex_abs(double _Complex) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:619:-1
@@ -865,7 +865,7 @@ vector_static_c	337401	337401	57697.321077509
 	41befa
 	41bdf0	__ieee754_hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	418497
-	418480	__hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	418480	hypotf32x vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402670	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:50
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:0	std::__complex_abs(double _Complex) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:619:-1
@@ -903,7 +903,7 @@ vector_static_c	337401	337401	57697.321468353
 	cycles: 288972
 
 	4184c1
-	418480	__hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	418480	hypotf32x vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402670	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:50
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:0	std::__complex_abs(double _Complex) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:619:-1
@@ -925,7 +925,7 @@ vector_static_c	337401	337401	57697.321597300
 	41befa
 	41bdf0	__ieee754_hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	418497
-	418480	__hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	418480	hypotf32x vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402670	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:50
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:0	std::__complex_abs(double _Complex) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:619:-1
@@ -1205,7 +1205,7 @@ vector_static_c	337401	337401	57697.324274941
 	41bf81
 	41bdf0	__ieee754_hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	418497
-	418480	__hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	418480	hypotf32x vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402670	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:50
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:0	std::__complex_abs(double _Complex) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:619:-1
@@ -1263,7 +1263,7 @@ vector_static_c	337401	337401	57697.324982654
 	41bec4
 	41bdf0	__ieee754_hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	418497
-	418480	__hypot vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	418480	hypotf32x vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402670	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:50
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:611:0	std::__complex_abs(double _Complex) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40266c	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/complex:619:-1

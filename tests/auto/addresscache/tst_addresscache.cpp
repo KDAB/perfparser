@@ -64,41 +64,25 @@ private slots:
 
     void testSymbolCache()
     {
-        PerfElfMap::ElfInfo info_a{{}, 0x100, 100, 0,
-                                   QByteArrayLiteral("libfoo_a.so"),
-                                   QByteArrayLiteral("/usr/lib/libfoo_a.so")};
-        PerfElfMap::ElfInfo info_a_offset{{}, 0x200, 100, 0x100,
-                                   QByteArrayLiteral("libfoo_a.so"),
-                                   QByteArrayLiteral("/usr/lib/libfoo_a.so")};
-        info_a_offset.baseAddr = info_a.addr;
-        PerfElfMap::ElfInfo info_b{{}, 0x100, 100, 0,
-                                   QByteArrayLiteral("libfoo_b.so"),
-                                   QByteArrayLiteral("/usr/lib/libfoo_b.so")};
+        const auto libfoo_a = QByteArrayLiteral("/usr/lib/libfoo_a.so");
+        const auto libfoo_b = QByteArrayLiteral("/usr/lib/libfoo_b.so");
 
         PerfAddressCache cache;
 
-        QVERIFY(!cache.findSymbol(info_a, 0x100).isValid());
-        QVERIFY(!cache.findSymbol(info_a_offset, 0x100).isValid());
-        QVERIFY(!cache.findSymbol(info_a_offset, 0x200).isValid());
-        QVERIFY(!cache.findSymbol(info_b, 0x100).isValid());
+        QVERIFY(!cache.findSymbol(libfoo_a, 0).isValid());
+        QVERIFY(!cache.findSymbol(libfoo_b, 0).isValid());
 
-        cache.cacheSymbol(info_a, 0x100, 10, "Foo");
+        cache.setSymbolCache(libfoo_a, {{0x100, 10, "Foo"}});
         for (auto addr : {0x100, 0x100 + 9}) {
-            const auto cached = cache.findSymbol(info_a, addr);
+            const auto cached = cache.findSymbol(libfoo_a, addr);
             QVERIFY(cached.isValid());
-            QCOMPARE(int(cached.offset), 0);
-            QCOMPARE(int(cached.size), 10);
+            QCOMPARE(cached.offset, 0x100);
+            QCOMPARE(cached.size, 10);
             QCOMPARE(cached.symname, "Foo");
-            const auto cached2 = cache.findSymbol(info_a_offset, addr);
-            QCOMPARE(cached2.isValid(), cached.isValid());
-            QCOMPARE(cached2.offset, cached.offset);
-            QCOMPARE(cached2.size, cached.size);
-            QCOMPARE(cached2.symname, cached.symname);
         }
-        QVERIFY(!cache.findSymbol(info_a, 0x100 + 10).isValid());
-        QVERIFY(!cache.findSymbol(info_a_offset, 0x100 + 10).isValid());
-        QVERIFY(!cache.findSymbol(info_b, 0x100).isValid());
-        QVERIFY(!cache.findSymbol(info_b, 0x100 + 9).isValid());
+        QVERIFY(!cache.findSymbol(libfoo_a, 0x100 + 10).isValid());
+        QVERIFY(!cache.findSymbol(libfoo_b, 0x100).isValid());
+        QVERIFY(!cache.findSymbol(libfoo_b, 0x100 + 9).isValid());
     }
 };
 
