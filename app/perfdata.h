@@ -327,16 +327,6 @@ enum PerfEventType {
     PERF_RECORD_HEADER_MAX
 };
 
-/*
- * Bits that can be set in attr.sample_type to request information
- * in the overflow packets.
- */
-enum perf_event_sample_format {
-    PERF_SAMPLE_REGS_USER			= 1U << 12,
-    PERF_SAMPLE_STACK_USER			= 1U << 13,
-};
-
-
 enum PERF_RECORD_MISC {
     PERF_RECORD_MISC_SWITCH_OUT = (1 << 13),
 };

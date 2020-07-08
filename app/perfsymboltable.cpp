@@ -923,9 +923,9 @@ Dwfl *PerfSymbolTable::attachDwfl(void *arg)
     //  Fix for issue: dwfl_attach_state should be called only for user-level CPU register state
     //  and user-level stack, allowing stack unwinding.
     PerfUnwind::UnwindInfo *unwindInfo = static_cast<PerfUnwind::UnwindInfo *>(arg);
-    if (!((unwindInfo->sample->type() & PERF_SAMPLE_REGS_USER) &&
+    if (!((unwindInfo->sample->type() & PerfEventAttributes::SAMPLE_REGS_USER ) &&
           // Records the current user-level CPU register state
-          (unwindInfo->sample->type() & PERF_SAMPLE_STACK_USER)))
+          (unwindInfo->sample->type() & PerfEventAttributes::SAMPLE_STACK_USER)))
         // Records the user-level stack, allowing stack unwinding.
         return nullptr;
 
