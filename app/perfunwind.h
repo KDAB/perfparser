@@ -194,7 +194,6 @@ public:
     void fork(const PerfRecordFork &sample);
     void exit(const PerfRecordExit &sample);
     PerfSymbolTable *symbolTable(qint32 pid);
-    Dwfl *dwfl(qint32 pid);
 
     qint32 resolveString(const QByteArray &string);
     qint32 lookupString(const QByteArray &string);

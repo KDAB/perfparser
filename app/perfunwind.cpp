@@ -198,11 +198,6 @@ PerfSymbolTable *PerfUnwind::symbolTable(qint32 pid)
     return symbolTable;
 }
 
-Dwfl *PerfUnwind::dwfl(qint32 pid)
-{
-    return symbolTable(pid)->attachDwfl(&m_currentUnwind);
-}
-
 void PerfUnwind::registerElf(const PerfRecordMmap &mmap)
 {
     bufferEvent(mmap, &m_mmapBuffer, &m_stats.numMmapsInRound);
