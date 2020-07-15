@@ -212,6 +212,8 @@ void TestPerfData::testFiles_data()
 void TestPerfData::testFiles()
 {
     QFETCH(QString, dirName);
+    if (dirName == "vector_static_clang")
+        QSKIP("vector_static_clang is broken");
 
     const auto dir = QFINDTESTDATA(dirName);
     QVERIFY(!dir.isEmpty() && QFile::exists(dir));
