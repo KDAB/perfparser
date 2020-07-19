@@ -1044,7 +1044,7 @@ void PerfUnwind::sendTaskEvent(const TaskEvent& taskEvent)
 
     if (taskEvent.m_type == ContextSwitchDefinition)
         stream << static_cast<bool>(taskEvent.m_payload);
-    else if (taskEvent.m_type == Command || taskEvent.m_type == ThreadStart)
+    else if (taskEvent.m_type == Command)
         stream << taskEvent.m_payload;
 
     sendBuffer(buffer);
