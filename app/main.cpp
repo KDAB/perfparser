@@ -444,8 +444,12 @@ void PerfTcpSocket::processError(QAbstractSocket::SocketError error)
 PerfTcpSocket::PerfTcpSocket(QCoreApplication *app, const QString &host, quint16 port) :
     QTcpSocket(app), host(host), port(port)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+    connect(this, &QAbstractSocket::errorOccurred, this, &PerfTcpSocket::processError);
+#else
     connect(this, QOverload<QAbstractSocket::SocketError>::of(&QTcpSocket::error),
             this, &PerfTcpSocket::processError);
+#endif
     connect(this, &QAbstractSocket::disconnected, this, &QIODevice::close);
 }
 

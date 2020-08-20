@@ -247,7 +247,7 @@ static bool findBuildIdPath(QFileInfo &path, const QString &fileName)
 
 static QStringList splitPath(const QString &path)
 {
-    return path.split(QDir::listSeparator(), QString::SkipEmptyParts);
+    return path.split(QDir::listSeparator(), Qt::SkipEmptyParts);
 }
 
 QFileInfo PerfSymbolTable::findFile(const char *path, const QString &fileName,

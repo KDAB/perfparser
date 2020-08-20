@@ -793,7 +793,7 @@ PerfKallsymEntry PerfUnwind::findKallsymEntry(quint64 address)
             const auto &buildId = m_buildIds.value(QByteArrayLiteral("[kernel.kallsyms]"));
             if (!buildId.isEmpty()) {
                 const auto debugPaths = m_debugPath.split(QDir::listSeparator(),
-                                                        QString::SkipEmptyParts);
+                                                          Qt::SkipEmptyParts);
                 for (const auto &debugPath : debugPaths) {
                     const QString buildIdPath = debugPath + QDir::separator() +
                                                 QLatin1String("[kernel.kallsyms]") +
