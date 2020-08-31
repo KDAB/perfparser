@@ -257,6 +257,11 @@ void TestPerfData::testFiles()
         PerfParserTestClient client;
         client.extractTrace(&output);
         client.convertToText(stream);
+        stream.flush();
+
+        // some older platforms produce strange type names for complex doubles...
+        // use the new form as the canonical form
+        actualText.replace("doublecomplex ", "double _Complex");
 
         QFile actual(actualOutputFile);
         QVERIFY(actual.open(QIODevice::WriteOnly | QIODevice::Text));
