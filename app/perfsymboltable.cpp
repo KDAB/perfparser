@@ -935,6 +935,16 @@ Dwfl *PerfSymbolTable::attachDwfl(void *arg)
     if (static_cast<pid_t>(m_pid) == dwfl_pid(m_dwfl))
         return m_dwfl; // Already attached, nothing to do
 
+    // only attach state when we have the required information for stack unwinding
+    // for normal symbol resolution and inline frame resolution this is not needed
+    // most notably, this isn't needed for frame pointer callchains
+    PerfUnwind::UnwindInfo *unwindInfo = static_cast<PerfUnwind::UnwindInfo *>(arg);
+    const auto sampleType = unwindInfo->sample->type();
+    const auto hasSampleRegsUser = (sampleType & PerfEventAttributes::SAMPLE_REGS_USER);
+    const auto hasSampleStackUser = (sampleType & PerfEventAttributes::SAMPLE_STACK_USER);
+    if (!hasSampleRegsUser || !hasSampleStackUser)
+        return nullptr;
+
     if (!dwfl_attach_state(m_dwfl, m_firstElf.elf(), m_pid, &threadCallbacks, arg)) {
         qWarning() << m_pid << "failed to attach state" << dwfl_errmsg(dwfl_errno());
         return nullptr;
