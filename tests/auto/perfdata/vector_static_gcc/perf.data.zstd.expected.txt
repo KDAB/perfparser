@@ -247,7 +247,8 @@ vector_static_g	267677	267677	9952.368475245
 vector_static_g	267677	267677	9952.368668898
 	cycles: 415081
 
-	400490	<.plt+400490> vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	400490
+	400430	_init vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	401572	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13
 	40152b	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
 	40152b	../../../manual/clients/vector.cpp:16:6
