@@ -122,12 +122,12 @@ private:
     qint32 m_pid;
 
     QByteArray symbolFromPerfMap(quint64 ip, GElf_Off *offset) const;
-    int parseDie(CuDieRangeMapping *cudie, Dwarf_Die *top, qint32 binaryId, qint32 binaryPathId, bool isKernel,
+    int parseDie(CuDieRangeMapping *cudie, Dwarf_Die *top, quint64 offset, quint64 size, qint32 binaryId, qint32 binaryPathId, bool isKernel,
                  Dwarf_Files *files, Dwarf_Addr entry, qint32 parentLocationId);
-    int insertSubprogram(CuDieRangeMapping *cudie, Dwarf_Die *top, Dwarf_Addr entry, qint32 binaryId, qint32 binaryPathId,
+    int insertSubprogram(CuDieRangeMapping *cudie, Dwarf_Die *top, Dwarf_Addr entry, quint64 offset, quint64 size, qint32 binaryId, qint32 binaryPathId,
                          qint32 inlineParent, bool isKernel);
     qint32 parseDwarf(CuDieRangeMapping *cudie, SubProgramDie *subprogram, const QVector<Dwarf_Die> &inlined,
-                      Dwarf_Addr bias, qint32 binaryId, qint32 binaryPathId, bool isKernel);
+                      Dwarf_Addr bias, quint64 offset, quint64 size, qint32 binaryId, qint32 binaryPathId, bool isKernel);
 };
 
 QT_BEGIN_NAMESPACE

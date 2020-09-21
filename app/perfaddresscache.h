@@ -42,8 +42,9 @@ public:
 
     struct SymbolCacheEntry
     {
-        SymbolCacheEntry(quint64 offset = 0, quint64 size = 0, const QByteArray &symname = {})
+        SymbolCacheEntry(quint64 offset = 0, quint64 value = 0, quint64 size = 0, const QByteArray &symname = {})
             : offset(offset)
+            , value(value)
             , size(size)
             , symname(symname)
         {}
@@ -51,6 +52,8 @@ public:
         bool isValid() const { return !symname.isEmpty(); }
 
         quint64 offset;
+        // st_value in elf symbol table entry
+        quint64 value;
         quint64 size;
         QByteArray symname;
         bool demangled = false;
