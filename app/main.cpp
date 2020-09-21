@@ -25,6 +25,7 @@
 #include "perfregisterinfo.h"
 #include "perfstdin.h"
 #include "perfunwind.h"
+#include "logging/logging.h"
 
 #include <QAbstractSocket>
 #include <QTemporaryFile>
@@ -214,7 +215,27 @@ int main(int argc, char *argv[])
                                    QLatin1String("max-frames"), QLatin1String("64"));
     parser.addOption(maxFrames);
 
+    QCommandLineOption verbose(QLatin1String("verbose"),
+                               QCoreApplication::translate(
+                                "main", "Set the value to 'warning'- to display warnings on the console."
+                                " Set the value to 'debug' - to display debugging information on the console."
+                                " Set the value to 'all' - to display warnings and debugging information on the console."
+                                " By default, all warnings and debugging information are suppressed."),
+                                QLatin1String("verbose"));
+    parser.addOption(verbose);
+
     parser.process(app);
+
+    if (parser.isSet(verbose)) {
+        if (parser.value(verbose) == "warning")
+            qInstallMessageHandler(messageToConsole_W);
+        else if (parser.value(verbose) == "debug")
+            qInstallMessageHandler(messageToConsole_D);
+        else if (parser.value(verbose) == "all")
+            qInstallMessageHandler(messageToConsole_A);
+    } else {
+        qInstallMessageHandler(messageSuppress);
+    }
 
     QScopedPointer<QFile> outfile;
     if (parser.isSet(output)) {
