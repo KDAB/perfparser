@@ -64,13 +64,14 @@ public:
     };
 
     struct Location {
-        explicit Location(quint64 address = 0, qint32 file = -1,
+        explicit Location(quint64 address = 0, quint64 relAddr = 0, qint32 file = -1,
                           quint32 pid = 0, qint32 line = 0, qint32 column = 0,
                           qint32 parentLocationId = -1) :
-            address(address), file(file), pid(pid), line(line), column(column),
+            address(address), relAddr(relAddr), file(file), pid(pid), line(line), column(column),
             parentLocationId(parentLocationId) {}
 
         quint64 address;
+        quint64 relAddr;
         qint32 file;
         quint32 pid;
         qint32 line;

@@ -35,6 +35,7 @@ uint qHash(const PerfUnwind::Location &location, uint seed)
 {
     QtPrivate::QHashCombine hash;
     seed = hash(seed, location.address);
+    seed = hash(seed, location.relAddr);
     seed = hash(seed, location.file);
     seed = hash(seed, location.pid);
     seed = hash(seed, location.line);
@@ -44,7 +45,7 @@ uint qHash(const PerfUnwind::Location &location, uint seed)
 
 bool operator==(const PerfUnwind::Location &a, const PerfUnwind::Location &b)
 {
-    return a.address == b.address && a.file == b.file && a.pid == b.pid && a.line == b.line
+    return a.address == b.address && a.relAddr == b.relAddr && a.file == b.file && a.pid == b.pid && a.line == b.line
             && a.column == b.column;
 }
 
@@ -359,7 +360,7 @@ bool PerfUnwind::ipIsInKernelSpace(quint64 ip) const
 
 QDataStream &operator<<(QDataStream &stream, const PerfUnwind::Location &location)
 {
-    return stream << location.address << location.file << location.pid << location.line
+    return stream << location.address << location.relAddr << location.file << location.pid << location.line
                   << location.column << location.parentLocationId;
 }
 
