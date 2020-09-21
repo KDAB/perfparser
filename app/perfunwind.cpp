@@ -441,10 +441,16 @@ void PerfUnwind::resolveCallchain()
     bool addedUserFrames = false;
     PerfSymbolTable *symbols = symbolTable(m_currentUnwind.sample->pid());
 
-    auto reportIp = [&](quint64 ip) -> bool {
+    auto reportIp = [&](quint64 ip, bool branchStack) -> bool {
         symbols->attachDwfl(&m_currentUnwind);
-        m_currentUnwind.frames.append(symbols->lookupFrame(ip, isKernel,
-                                            &m_currentUnwind.isInterworking));
+        int frame = symbols->lookupFrame(ip, isKernel, &m_currentUnwind.isInterworking);
+        // There are some required frames are not looked up for LBR unwinding method.
+        // Entered disasmFrames to accumulate frames for LBR to compute then Disassembly events costs within function/method.
+        if (branchStack) {
+            m_currentUnwind.frames.append(frame);
+        } else {
+            m_currentUnwind.disasmFrames.append(frame);
+        }
         return !symbols->cacheIsDirty();
     };
 
@@ -475,21 +481,21 @@ void PerfUnwind::resolveCallchain()
                 return;
             }
         } else {
-            // prefer user frames from branch stack if available
-            if (hasBranchStack && !isKernel)
-                break;
-
             // sometimes it skips the first user frame.
             if (!addedUserFrames && !isKernel && ip != m_currentUnwind.sample->ip()) {
-                if (!reportIp(m_currentUnwind.sample->ip()))
+                if (!reportIp(m_currentUnwind.sample->ip(), !hasBranchStack))
                     return;
             }
 
-            if (!reportIp(ip))
+            if (!reportIp(ip, !hasBranchStack))
                 return;
 
             if (!isKernel)
                 addedUserFrames = true;
+
+            // prefer user frames from branch stack if available
+            if (hasBranchStack && !isKernel)
+                break;
         }
     }
 
@@ -502,9 +508,9 @@ void PerfUnwind::resolveCallchain()
     // so the branch is made up of the first callee and all callers
     for (int i = 0, c = m_currentUnwind.sample->branchStack().size(); i < c; ++i) {
         const auto& entry = m_currentUnwind.sample->branchStack()[i];
-        if (i == 0 && !reportIp(entry.to))
+        if (i == 0 && !reportIp(entry.to, hasBranchStack))
             return;
-        if (!reportIp(entry.from))
+        if (!reportIp(entry.from, hasBranchStack))
             return;
     }
 }
@@ -592,6 +598,7 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
         m_currentUnwind.firstGuessedFrame = -1;
         m_currentUnwind.sample = &sample;
         m_currentUnwind.frames.clear();
+        m_currentUnwind.disasmFrames.clear();
 
         userSymbols->updatePerfMap();
         if (!sample.callchain().isEmpty() || !sample.branchStack().isEmpty())
@@ -665,7 +672,7 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
     QByteArray buffer;
     QDataStream stream(&buffer, QIODevice::WriteOnly);
     stream << static_cast<quint8>(type) << sample.pid()
-           << sample.tid() << sample.time() << sample.cpu() << m_currentUnwind.frames
+           << sample.tid() << sample.time() << sample.cpu() << m_currentUnwind.frames << m_currentUnwind.disasmFrames
            << numGuessedFrames << values;
 
     if (type == TracePointSample) {

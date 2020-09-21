@@ -95,11 +95,12 @@ public:
     };
 
     struct UnwindInfo {
-        UnwindInfo() : frames(0), unwind(nullptr), sample(nullptr), maxFrames(64),
+        UnwindInfo() : frames(0), disasmFrames(0), unwind(nullptr), sample(nullptr), maxFrames(64),
             firstGuessedFrame(-1), isInterworking(false) {}
 
         QHash<qint32, QHash<quint64, Dwarf_Word>> stackValues;
         QVector<qint32> frames;
+        QVector<qint32> disasmFrames;
         PerfUnwind *unwind;
         const PerfRecordSample *sample;
         int maxFrames;
