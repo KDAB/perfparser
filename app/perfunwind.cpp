@@ -458,7 +458,7 @@ void PerfUnwind::resolveCallchain()
     // in the normal callchain. The branch stack contains the non-kernel IPs then.
     const bool hasBranchStack = !m_currentUnwind.sample->branchStack().isEmpty();
 
-    for (int i = 0, c = m_currentUnwind.sample->callchain().size(); i < c; ++i) {
+    for (int i = 0, c = qMin(maxUnwindStack(), m_currentUnwind.sample->callchain().size()); i < c; ++i) {
         quint64 ip = m_currentUnwind.sample->callchain()[i];
 
         if (ip > PERF_CONTEXT_MAX) {
@@ -506,7 +506,7 @@ void PerfUnwind::resolveCallchain()
     // if available, also resolve the callchain stored in the branch stack:
     // caller is stored in "from", callee is stored in "to"
     // so the branch is made up of the first callee and all callers
-    for (int i = 0, c = m_currentUnwind.sample->branchStack().size(); i < c; ++i) {
+    for (int i = 0, c = qMin(maxUnwindStack(), m_currentUnwind.sample->branchStack().size()); i < c; ++i) {
         const auto& entry = m_currentUnwind.sample->branchStack()[i];
         if (i == 0 && !reportIp(entry.to, hasBranchStack))
             return;

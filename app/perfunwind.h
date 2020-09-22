@@ -95,7 +95,7 @@ public:
     };
 
     struct UnwindInfo {
-        UnwindInfo() : frames(0), disasmFrames(0), unwind(nullptr), sample(nullptr), maxFrames(64),
+        UnwindInfo() : frames(0), disasmFrames(0), unwind(nullptr), sample(nullptr), maxFrames(64), maxStack(127),
             firstGuessedFrame(-1), isInterworking(false) {}
 
         QHash<qint32, QHash<quint64, Dwarf_Word>> stackValues;
@@ -104,6 +104,7 @@ public:
         PerfUnwind *unwind;
         const PerfRecordSample *sample;
         int maxFrames;
+        int maxStack;
         int firstGuessedFrame;
         bool isInterworking;
     };
@@ -174,6 +175,9 @@ public:
 
     int maxUnwindFrames() const { return m_currentUnwind.maxFrames; }
     void setMaxUnwindFrames(int maxUnwindFrames) { m_currentUnwind.maxFrames = maxUnwindFrames; }
+
+    int maxUnwindStack() const { return m_currentUnwind.maxStack; }
+    void setMaxUnwindStack(int maxUnwindStack) { m_currentUnwind.maxStack = maxUnwindStack; }
 
     PerfRegisterInfo::Architecture architecture() const { return m_architecture; }
     void setArchitecture(PerfRegisterInfo::Architecture architecture)
