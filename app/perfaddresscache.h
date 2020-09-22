@@ -42,11 +42,13 @@ public:
 
     struct SymbolCacheEntry
     {
-        SymbolCacheEntry(quint64 offset = 0, quint64 value = 0, quint64 size = 0, const QByteArray &symname = {})
+        SymbolCacheEntry(quint64 offset = 0, quint64 value = 0, quint64 size = 0, const QByteArray &symname = {}, bool relocated = false, quint64 adjust = 0)
             : offset(offset)
             , value(value)
             , size(size)
             , symname(symname)
+            , relocated(relocated)
+            , adjust(adjust)
         {}
 
         bool isValid() const { return !symname.isEmpty(); }
@@ -56,6 +58,9 @@ public:
         quint64 value;
         quint64 size;
         QByteArray symname;
+        // address of section start
+        quint64 adjust;
+        bool relocated = false;
         bool demangled = false;
     };
     using SymbolCache = QVector<SymbolCacheEntry>;
