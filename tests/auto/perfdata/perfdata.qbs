@@ -17,6 +17,8 @@ QtcAutotest {
         "../../../app/perfattributes.h",
         "../../../app/perfdata.cpp",
         "../../../app/perfdata.h",
+        "../../../app/perfdwarfdiecache.cpp",
+        "../../../app/perfdwarfdiecache.h",
         "../../../app/perfelfmap.cpp",
         "../../../app/perfelfmap.h",
         "../../../app/perffeatures.cpp",
