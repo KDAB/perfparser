@@ -96,7 +96,7 @@ public:
 
     struct UnwindInfo {
         UnwindInfo() : frames(0), disasmFrames(0), unwind(nullptr), sample(nullptr), maxFrames(64), maxStack(127),
-            branchTraverse(false), firstGuessedFrame(-1), isInterworking(false) {}
+            branchTraverse(false), firstGuessedFrame(-1), isInterworking(false), isIncompleteCallchain(false) {}
 
         QHash<qint32, QHash<quint64, Dwarf_Word>> stackValues;
         QVector<qint32> frames;
@@ -108,6 +108,7 @@ public:
         bool branchTraverse;
         int firstGuessedFrame;
         bool isInterworking;
+        bool isIncompleteCallchain;
     };
 
     struct Stats

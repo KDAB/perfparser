@@ -458,6 +458,10 @@ void PerfUnwind::resolveCallchain()
     // in the normal callchain. The branch stack contains the non-kernel IPs then.
     const bool hasBranchStack = !m_currentUnwind.sample->branchStack().isEmpty();
 
+    if (m_currentUnwind.sample->callchain().size() > maxUnwindStack()) {
+        m_currentUnwind.isIncompleteCallchain = true;
+    }
+
     for (int i = 0, c = qMin(maxUnwindStack(), m_currentUnwind.sample->callchain().size()); i < c; ++i) {
         quint64 ip = m_currentUnwind.sample->callchain()[i];
 
@@ -507,6 +511,10 @@ void PerfUnwind::resolveCallchain()
     // when we are still in the kernel, we cannot have a meaningful branch stack
     if (isKernel)
         return;
+
+    if (m_currentUnwind.sample->branchStack().size() > maxUnwindStack()) {
+        m_currentUnwind.isIncompleteCallchain = true;
+    }
 
     // if available, also resolve the callchain stored in the branch stack:
     // caller is stored in "from", callee is stored in "to"
@@ -604,6 +612,7 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
         m_currentUnwind.sample = &sample;
         m_currentUnwind.frames.clear();
         m_currentUnwind.disasmFrames.clear();
+        m_currentUnwind.isIncompleteCallchain = false;
 
         userSymbols->updatePerfMap();
         if (!sample.callchain().isEmpty() || !sample.branchStack().isEmpty())
@@ -678,7 +687,7 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
     QDataStream stream(&buffer, QIODevice::WriteOnly);
     stream << static_cast<quint8>(type) << sample.pid()
            << sample.tid() << sample.time() << sample.cpu() << m_currentUnwind.frames << m_currentUnwind.disasmFrames
-           << numGuessedFrames << values;
+           << numGuessedFrames << values << m_currentUnwind.isIncompleteCallchain;
 
     if (type == TracePointSample) {
         QHash<qint32, QVariant> traceData;
