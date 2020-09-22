@@ -230,6 +230,11 @@ int main(int argc, char *argv[])
                                 QLatin1String("max-stack"), QLatin1String("127"));
     parser.addOption(maxStack);
 
+    QCommandLineOption branchTraverse(QLatin1String("branch-traverse"),
+                                      QCoreApplication::translate(
+                                              "main", "Short branchStack resolveCallchain traverse. Concerns lbr."));
+    parser.addOption(branchTraverse);
+
     parser.process(app);
 
     if (parser.isSet(verbose)) {
@@ -304,7 +309,8 @@ int main(int argc, char *argv[])
 
     PerfUnwind unwind(outfile.data(), parser.value(sysroot), parser.isSet(debug) ?
                           parser.value(debug) : parser.value(sysroot) + parser.value(debug),
-                      parser.value(extra), parser.value(appPath), parser.isSet(printStats));
+                      parser.value(extra), parser.value(appPath), parser.isSet(printStats),
+                      parser.isSet(branchTraverse));
 
     unwind.setKallsymsPath(parser.isSet(kallsymsPath)
                            ? parser.value(kallsymsPath)
@@ -316,6 +322,7 @@ int main(int argc, char *argv[])
     unwind.setMaxEventBufferSize(maxEventBufferSize);
     unwind.setMaxUnwindFrames(maxFramesValue);
     unwind.setMaxUnwindStack(maxStackValue);
+    unwind.setBranchTraverse(parser.isSet(branchTraverse));
 
     PerfHeader header(infile.data());
     PerfAttributes attributes;

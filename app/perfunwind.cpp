@@ -102,7 +102,7 @@ QString PerfUnwind::defaultKallsymsPath()
 }
 
 PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugPath,
-                       const QString &extraLibsPath, const QString &appPath, bool printStats) :
+                       const QString &extraLibsPath, const QString &appPath, bool printStats, bool branchTraverse) :
     m_output(output), m_architecture(PerfRegisterInfo::ARCH_INVALID), m_systemRoot(systemRoot),
     m_extraLibsPath(extraLibsPath), m_appPath(appPath), m_debugPath(debugPath),
     m_kallsymsPath(QDir::rootPath() + defaultKallsymsPath()), m_ignoreKallsymsBuildId(false),
@@ -481,6 +481,11 @@ void PerfUnwind::resolveCallchain()
                 return;
             }
         } else {
+            // traverse only branchStack by option --branch-traverse
+            bool lbrBranchStack = hasBranchStack && !isKernel;
+            if (branchTraverse() && lbrBranchStack)
+                break;
+
             // sometimes it skips the first user frame.
             if (!addedUserFrames && !isKernel && ip != m_currentUnwind.sample->ip()) {
                 if (!reportIp(m_currentUnwind.sample->ip(), !hasBranchStack))
@@ -494,7 +499,7 @@ void PerfUnwind::resolveCallchain()
                 addedUserFrames = true;
 
             // prefer user frames from branch stack if available
-            if (hasBranchStack && !isKernel)
+            if (lbrBranchStack)
                 break;
         }
     }
