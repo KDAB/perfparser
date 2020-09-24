@@ -603,6 +603,23 @@ private:
 
 QDataStream &operator>>(QDataStream &stream, PerfRecordContextSwitch &record);
 
+class PerfRecordContextSwitchCpuWide : public PerfRecordContextSwitch
+{
+public:
+    PerfRecordContextSwitchCpuWide(PerfEventHeader *header = 0, quint64 sampleType = 0,
+                            bool sampleIdAll = false);
+
+    qint32 nextPrevPid() const { return m_nextPrevPid; }
+    qint32 nextPrevTid() const { return m_nextPrevTid; }
+
+private:
+    qint32 m_nextPrevPid;
+    qint32 m_nextPrevTid;
+    friend QDataStream &operator>>(QDataStream &stream, PerfRecordContextSwitchCpuWide &record);
+};
+
+QDataStream &operator>>(QDataStream &stream, PerfRecordContextSwitchCpuWide &record);
+
 class PerfUnwind;
 class PerfData : public QObject
 {
