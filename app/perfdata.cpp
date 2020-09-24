@@ -254,6 +254,14 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
         m_destination->contextSwitch(switchEvent);
         break;
     }
+    case PERF_RECORD_SWITCH_CPU_WIDE: {
+        PerfRecordContextSwitchCpuWide switchEvent(&m_eventHeader, sampleType, sampleIdAll);
+        stream >> switchEvent;
+        // TODO: also send prevNext{T,P}id, that would allow switch markers in the GUI to
+        //       show where a switch comes from/goes to
+        m_destination->contextSwitch(switchEvent);
+        break;
+    }
 
 #ifdef HAVE_ZSTD
     case PERF_RECORD_COMPRESSED: {
@@ -801,4 +809,14 @@ PerfRecordContextSwitch::PerfRecordContextSwitch(PerfEventHeader *header, quint6
 QDataStream &operator>>(QDataStream &stream, PerfRecordContextSwitch &record)
 {
     return stream >> record.m_sampleId;
+}
+
+PerfRecordContextSwitchCpuWide::PerfRecordContextSwitchCpuWide(PerfEventHeader *header, quint64 sampleType, bool sampleIdAll) :
+    PerfRecordContextSwitch(header, sampleType, sampleIdAll)
+{
+}
+
+QDataStream &operator>>(QDataStream &stream, PerfRecordContextSwitchCpuWide &record)
+{
+    return stream >> record.m_nextPrevPid >> record.m_nextPrevTid >> record.m_sampleId;
 }
