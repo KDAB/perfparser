@@ -7,7 +7,11 @@ QtcAutotest {
         "../../../app/perfelfmap.cpp",
         "../../../app/perfelfmap.h",
         "../../../app/perfaddresscache.cpp",
-        "../../../app/perfaddresscache.h"
+        "../../../app/perfaddresscache.h",
+        "../../../app/perfdwarfdiecache.cpp",
+        "../../../app/perfdwarfdiecache.h",
     ]
-    cpp.includePaths: base.concat(["../../../app"])
+    cpp.includePaths: base.concat(["../../../app"]).concat(project.includePaths)
+    cpp.libraryPaths: project.libPaths
+    cpp.dynamicLibraries: ["dw", "elf"]
 }
