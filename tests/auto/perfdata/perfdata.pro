@@ -23,7 +23,8 @@ SOURCES += \
     ../../../app/perfregisterinfo.cpp \
     ../../../app/perfsymboltable.cpp \
     ../../../app/perftracingdata.cpp \
-    ../../../app/perfunwind.cpp
+    ../../../app/perfunwind.cpp \
+    ../../../app/perfdwarfdiecache.cpp
 
 HEADERS += \
     ../../../app/perfaddresscache.h \
@@ -37,7 +38,8 @@ HEADERS += \
     ../../../app/perfregisterinfo.h \
     ../../../app/perfsymboltable.h \
     ../../../app/perftracingdata.h \
-    ../../../app/perfunwind.h
+    ../../../app/perfunwind.h \
+    ../../../app/perfdwarfdiecache.h
 
 RESOURCES += \
     perfdata.qrc

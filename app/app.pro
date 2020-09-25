@@ -30,7 +30,8 @@ SOURCES += main.cpp \
     perfsymboltable.cpp \
     perfelfmap.cpp \
     perfkallsyms.cpp \
-    perftracingdata.cpp
+    perftracingdata.cpp \
+    perfdwarfdiecache.cpp
 
 HEADERS += \
     perfaddresscache.h \
@@ -45,6 +46,7 @@ HEADERS += \
     perfsymboltable.h \
     perfelfmap.h \
     perfkallsyms.h \
-    perftracingdata.h
+    perftracingdata.h \
+    perfdwarfdiecache.h
 
 OTHER_FILES += app.qbs
