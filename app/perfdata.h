@@ -454,6 +454,8 @@ class PerfRecordLost : public PerfRecord {
 public:
     PerfRecordLost(PerfEventHeader *header = nullptr, quint64 sampleType = 0,
                    bool sampleIdAll = false);
+
+    quint64 lost() const { return m_lost; }
 private:
     quint64 m_id;
     quint64 m_lost;

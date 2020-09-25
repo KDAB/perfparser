@@ -36,6 +36,7 @@
 #include <QObject>
 #include <QString>
 #include <QMap>
+#include <QVariant>
 
 #include <limits>
 
@@ -280,8 +281,8 @@ private:
         qint32 m_tid;
         quint64 m_time;
         quint32 m_cpu;
-        qint32 m_payload;
         EventType m_type;
+        QVariant m_payload;
 
         quint64 time() const { return m_time; }
         quint64 size() const { return sizeof(TaskEvent); }

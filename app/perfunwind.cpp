@@ -218,7 +218,7 @@ void PerfUnwind::comm(const PerfRecordComm &comm)
     const qint32 commId = resolveString(comm.comm());
 
     bufferEvent(TaskEvent{comm.pid(), comm.tid(), comm.time(), comm.cpu(),
-                          commId, Command},
+                          Command, commId},
                 &m_taskEventsBuffer, &m_stats.numTaskEventsInRound);
 }
 
@@ -294,7 +294,7 @@ void PerfUnwind::sendEventFormat(qint32 id, const EventFormat &format)
 void PerfUnwind::lost(const PerfRecordLost &lost)
 {
     bufferEvent(TaskEvent{lost.pid(), lost.tid(), lost.time(), lost.cpu(),
-                          0, LostDefinition},
+                          LostDefinition, lost.lost()},
                 &m_taskEventsBuffer, &m_stats.numTaskEventsInRound);
 }
 
@@ -684,14 +684,14 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
 void PerfUnwind::fork(const PerfRecordFork &sample)
 {
     bufferEvent(TaskEvent{sample.childPid(), sample.childTid(), sample.time(), sample.cpu(),
-                          sample.parentPid(), ThreadStart},
+                          ThreadStart, sample.parentPid()},
                 &m_taskEventsBuffer, &m_stats.numTaskEventsInRound);
 }
 
 void PerfUnwind::exit(const PerfRecordExit &sample)
 {
     bufferEvent(TaskEvent{sample.childPid(), sample.childTid(), sample.time(), sample.cpu(),
-                          0, ThreadEnd},
+                          ThreadEnd, {}},
                 &m_taskEventsBuffer, &m_stats.numTaskEventsInRound);
 }
 
@@ -950,7 +950,7 @@ void PerfUnwind::flushEventBuffer(uint desiredBufferSize)
                 if (taskEventIt->m_type == ThreadStart && taskEventIt->m_pid != taskEventIt->m_payload) {
                     forwardMmapBuffer(mmapIt, mmapEnd, taskEventIt->time());
                     const auto childPid = taskEventIt->m_pid;
-                    const auto parentPid = taskEventIt->m_payload;
+                    const auto parentPid = taskEventIt->m_payload.value<qint32>();
                     symbolTable(childPid)->initAfterFork(symbolTable(parentPid));
                 } else if (taskEventIt->m_type == ThreadEnd && taskEventIt->m_pid == taskEventIt->m_tid) {
                     delete m_symbolTables.take(taskEventIt->m_pid);
@@ -1025,7 +1025,8 @@ void PerfUnwind::contextSwitch(const PerfRecordContextSwitch& contextSwitch)
 {
     bufferEvent(TaskEvent{contextSwitch.pid(), contextSwitch.tid(),
                 contextSwitch.time(), contextSwitch.cpu(),
-                contextSwitch.misc() & PERF_RECORD_MISC_SWITCH_OUT, ContextSwitchDefinition},
+                ContextSwitchDefinition,
+                static_cast<bool>(contextSwitch.misc() & PERF_RECORD_MISC_SWITCH_OUT)},
                 &m_taskEventsBuffer, &m_stats.numTaskEventsInRound);
 }
 
@@ -1038,9 +1039,11 @@ void PerfUnwind::sendTaskEvent(const TaskEvent& taskEvent)
            << taskEvent.m_time << taskEvent.m_cpu;
 
     if (taskEvent.m_type == ContextSwitchDefinition)
-        stream << static_cast<bool>(taskEvent.m_payload);
+        stream << taskEvent.m_payload.value<bool>();
     else if (taskEvent.m_type == Command || taskEvent.m_type == ThreadStart)
-        stream << taskEvent.m_payload;
+        stream << taskEvent.m_payload.value<qint32>();
+    else if (taskEvent.m_type == LostDefinition)
+        stream << taskEvent.m_payload.value<quint64>();
 
     sendBuffer(buffer);
 }
