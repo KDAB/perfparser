@@ -48,7 +48,7 @@ public:
             , symname(symname)
         {}
 
-        bool isValid() const { return size != 0; }
+        bool isValid() const { return !symname.isEmpty(); }
 
         quint64 offset;
         quint64 size;
