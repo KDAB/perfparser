@@ -660,7 +660,7 @@ private:
     QByteArray m_decompressBuffer;
     QByteArray m_compressedBuffer;
     int m_remaininingDecompressedDataSize = 0;
-#if HAVE_ZSTD
+#ifdef HAVE_ZSTD
     ZSTD_DStream *m_zstdDstream = nullptr;
 #endif
 
