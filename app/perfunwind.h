@@ -80,12 +80,14 @@ public:
     };
 
     struct Symbol {
-        explicit Symbol(qint32 name = -1, qint32 binary = -1, qint32 path = -1,
+        explicit Symbol(qint32 name = -1, quint64 relAddr = 0, quint64 size = 0, qint32 binary = -1, qint32 path = -1,
                         bool isKernel = false) :
-            name(name), binary(binary), path(path), isKernel(isKernel)
+            name(name), relAddr(relAddr), size(size), binary(binary), path(path), isKernel(isKernel)
         {}
 
         qint32 name;
+        quint64 relAddr;
+        quint64 size;
         qint32 binary;
         qint32 path;
         bool isKernel;

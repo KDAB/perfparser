@@ -72,7 +72,7 @@ private slots:
         QVERIFY(!cache.findSymbol(libfoo_a, 0).isValid());
         QVERIFY(!cache.findSymbol(libfoo_b, 0).isValid());
 
-        cache.setSymbolCache(libfoo_a, {{0x100, 10, "Foo"}, {0x11a, 0, "FooZ"}, {0x12a, 10, "FooN"}});
+        cache.setSymbolCache(libfoo_a, {{0x100, 0x100, 10, "Foo"}, {0x11a, 0x11a, 0, "FooZ"}, {0x12a, 0x12a, 10, "FooN"}});
         for (auto addr : {0x100, 0x100 + 9}) {
             const auto cached = cache.findSymbol(libfoo_a, addr);
             QVERIFY(cached.isValid());

@@ -1,1344 +1,1344 @@
 fork	18175	18175	4226.737904138
 	cycles: 5000000
 
-	22c825
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	2295cb
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c825	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	2295cb	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.740178957
 	cycles: 5000000
 
-	22cbdf
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	2295e8
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cbdf	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	2295e8	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.742455979
 	cycles: 5000000
 
-	22ca1b
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22965c
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ca1b	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22965c	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.744733012
 	cycles: 5000000
 
-	22ae43
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ae43	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.747010114
 	cycles: 5000000
 
-	22af12
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22af12	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.749287237
 	cycles: 5000000
 
-	22c825
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229635
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c825	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229635	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.751564419
 	cycles: 5000000
 
-	22c825
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	2295cb
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c825	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	2295cb	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.753841502
 	cycles: 5000000
 
-	22c93d
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229644
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c93d	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229644	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.756118554
 	cycles: 5000000
 
-	22caa9
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229635
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22caa9	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229635	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.758396018
 	cycles: 5000000
 
-	22c93d
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	2295cb
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c93d	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	2295cb	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.760673150
 	cycles: 5000000
 
-	22adce
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22adce	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.762950563
 	cycles: 5000000
 
-	22964e
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22964e	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.765227937
 	cycles: 5000000
 
-	22cfad
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cfad	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.767505059
 	cycles: 5000000
 
-	22c914
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229644
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c914	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229644	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.769782492
 	cycles: 5000000
 
-	22ae3a
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ae3a	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.772059915
 	cycles: 5000000
 
-	22cfe6
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cfe6	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.774337058
 	cycles: 5000000
 
-	22aea0
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22aea0	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.776614481
 	cycles: 5000000
 
-	22ad75
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ad75	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.778891594
 	cycles: 5000000
 
-	22c825
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	2295e8
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c825	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	2295e8	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.781168746
 	cycles: 5000000
 
-	22ae1a
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ae1a	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.783445869
 	cycles: 5000000
 
-	22c8c3
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22965c
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c8c3	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22965c	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.785293666
 	cycles: 5000000
 
-	22cb8f
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229635
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cb8f	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229635	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.787007772
 	cycles: 5000000
 
-	22ae1a
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ae1a	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.788096826
 	cycles: 5000000
 
-	22ad75
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ad75	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.789185889
 	cycles: 5000000
 
-	22c8a1
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229644
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c8a1	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229644	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.790288238
 	cycles: 5000000
 
-	22ca4f
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22965c
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ca4f	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22965c	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.791389273
 	cycles: 5000000
 
-	22adfa
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22adfa	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.792490720
 	cycles: 5000000
 
-	22c825
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	2295cb
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c825	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	2295cb	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.793603578
 	cycles: 5000000
 
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	2295e8
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	2295e8	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.794710705
 	cycles: 5000000
 
-	22ad5f
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ad5f	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.795818133
 	cycles: 5000000
 
-	22c825
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229644
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c825	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229644	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.796933386
 	cycles: 5000000
 
-	22ccc3
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	2295cb
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ccc3	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	2295cb	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.798046685
 	cycles: 5000000
 
-	22c829
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c829	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.799160244
 	cycles: 5000000
 
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	2295e8
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	2295e8	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.800273553
 	cycles: 5000000
 
-	22c825
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229635
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c825	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229635	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.801386812
 	cycles: 5000000
 
-	22ae9c
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ae9c	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.802500371
 	cycles: 5000000
 
-	22c825
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c825	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.803613680
 	cycles: 5000000
 
-	22ae6c
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ae6c	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.804726929
 	cycles: 5000000
 
-	22c825
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	2295cb
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c825	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	2295cb	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.805840198
 	cycles: 5000000
 
-	22c96f
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22965c
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c96f	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22965c	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.806953497
 	cycles: 5000000
 
-	22cfa5
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cfa5	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.808066746
 	cycles: 5000000
 
-	22cde5
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cde5	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.809180325
 	cycles: 5000000
 
-	22ace6
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ace6	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.810299725
 	cycles: 5000000
 
-	229653
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229653	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.811412904
 	cycles: 5000000
 
-	22c80a
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22965c
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c80a	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22965c	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.812537574
 	cycles: 5000000
 
-	22c829
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c829	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.813657095
 	cycles: 5000000
 
-	22ad65
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ad65	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.814776575
 	cycles: 5000000
 
-	22adf1
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22adf1	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.815903840
 	cycles: 5000000
 
-	22af28
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22af28	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.817017149
 	cycles: 5000000
 
-	22ac78
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ac78	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.818139836
 	cycles: 5000000
 
-	22c81f
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229644
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c81f	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229644	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.819259367
 	cycles: 5000000
 
-	22c9f9
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22965c
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c9f9	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22965c	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.820378887
 	cycles: 5000000
 
-	22c93d
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22965c
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c93d	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22965c	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.821503317
 	cycles: 5000000
 
-	22ab19
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ab19	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.822622817
 	cycles: 5000000
 
-	22adce
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22adce	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.823742358
 	cycles: 5000000
 
-	22ac37
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ac37	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.824861818
 	cycles: 5000000
 
-	22adce
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22adce	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.825981299
 	cycles: 5000000
 
-	22ac29
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ac29	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.827100820
 	cycles: 5000000
 
-	22adce
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22adce	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.828220300
 	cycles: 5000000
 
-	22c825
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22965c
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c825	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22965c	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.829337336
 	cycles: 5000000
 
-	22cff8
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cff8	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.830460724
 	cycles: 5000000
 
-	22c829
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	2295e8
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c829	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	2295e8	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.831585144
 	cycles: 5000000
 
-	22cc92
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cc92	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.832711787
 	cycles: 5000000
 
-	22c825
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22965c
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c825	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22965c	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.833831228
 	cycles: 5000000
 
-	22ae3e
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ae3e	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.834952612
 	cycles: 5000000
 
-	22c93d
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	2295cb
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c93d	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	2295cb	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.836072744
 	cycles: 5000000
 
-	22ad89
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ad89	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.837184870
 	cycles: 5000000
 
-	22cb49
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	2295cb
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cb49	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	2295cb	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.838291998
 	cycles: 5000000
 
-	22ad75
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ad75	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.839399105
 	cycles: 5000000
 
-	22c837
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	2295cb
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c837	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	2295cb	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.840506573
 	cycles: 5000000
 
-	22cd35
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd35	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.841613690
 	cycles: 5000000
 
-	22ad89
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ad89	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.842720818
 	cycles: 5000000
 
-	22c825
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229644
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c825	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229644	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.843842873
 	cycles: 5000000
 
-	22abaa
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22abaa	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.844964397
 	cycles: 5000000
 
-	22ae43
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ae43	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.846071505
 	cycles: 5000000
 
-	22c825
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22965c
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c825	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22965c	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.847178972
 	cycles: 5000000
 
-	22ca30
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229644
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ca30	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229644	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.848286060
 	cycles: 5000000
 
-	22cb0b
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	2295cb
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cb0b	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	2295cb	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.849393177
 	cycles: 5000000
 
-	22ac37
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ac37	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.850500635
 	cycles: 5000000
 
-	22ae80
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ae80	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.851617380
 	cycles: 5000000
 
-	22c829
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c829	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.852736861
 	cycles: 5000000
 
-	22c829
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	2295cb
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c829	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	2295cb	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.853848707
 	cycles: 5000000
 
-	22c825
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22965c
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c825	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22965c	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.854955804
 	cycles: 5000000
 
-	22cb8b
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	2295e8
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cb8b	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	2295e8	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.856067881
 	cycles: 5000000
 
-	22c939
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229635
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c939	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229635	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.857175038
 	cycles: 5000000
 
-	22c825
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22965c
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c825	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22965c	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.858282136
 	cycles: 5000000
 
-	22ae1a
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ae1a	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.859389553
 	cycles: 5000000
 
-	22ac05
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ac05	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.860496711
 	cycles: 5000000
 
-	22adce
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22adce	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.861603838
 	cycles: 5000000
 
-	22acfb
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22acfb	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.862716235
 	cycles: 5000000
 
-	22c825
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229644
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c825	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229644	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.863828663
 	cycles: 5000000
 
-	22ac09
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ac09	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.864935780
 	cycles: 5000000
 
-	22c80a
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22965c
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c80a	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22965c	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.866043218
 	cycles: 5000000
 
-	22cd0d
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229635
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd0d	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229635	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.867166445
 	cycles: 5000000
 
-	22ce45
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22965c
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ce45	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22965c	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.868289192
 	cycles: 5000000
 
-	22ca4f
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229644
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ca4f	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229644	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.869413131
 	cycles: 5000000
 
-	22c825
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229635
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c825	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229635	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.870528914
 	cycles: 5000000
 
-	22cf20
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cf20	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.871635992
 	cycles: 5000000
 
-	22ac49
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ac49	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.872743129
 	cycles: 5000000
 
-	22c914
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22965c
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c914	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22965c	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.873850286
 	cycles: 5000000
 
-	22c825
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c825	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.874957414
 	cycles: 5000000
 
-	22ce2f
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22965c
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ce2f	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22965c	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.876064551
 	cycles: 5000000
 
-	22c914
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22965c
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c914	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22965c	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.877171698
 	cycles: 5000000
 
-	22c825
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229635
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c825	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229635	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.878278816
 	cycles: 5000000
 
-	22ac37
-	22aae0	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22cd2e
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	229613
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ac37	0 0
+	22aae0	22aae0 452	__branred fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22cd2e	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	229613	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
 fork	18175	18175	4226.879385963
 	cycles: 5000000
 
-	22c829
-	22c800	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	2295e8
-	229585	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22ec02
-	22e760	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
-	22948d
-	229460	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22c829	0 0
+	22c800	22c800 806	__cos_fma fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	2295e8	0 0
+	229585	229585 146	main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22ec02	0 0
+	22e760	22e760 71c	__libc_start_main fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
+	22948d	0 0
+	229460	229460 2f	_start fork /home/milian/projects/kdab/rnd/hotspot/3rdparty/perfparser/tests/auto/perfdata/fork_static_gcc/fork 
 
