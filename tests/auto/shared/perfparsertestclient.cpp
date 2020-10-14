@@ -104,7 +104,7 @@ void PerfParserTestClient::extractTrace(QIODevice *device)
         case LocationDefinition: {
             qint32 id;
             LocationEvent location;
-            stream >> id >> location.address >> location.file >> location.pid >> location.line
+            stream >> id >> location.address >> location.relAddr >> location.file >> location.pid >> location.line
                    >> location.column >> location.parentLocationId;
             if (location.file != -1)
                 checkString(location.file);
@@ -222,7 +222,7 @@ void PerfParserTestClient::convertToText(QTextStream &out) const
         out << '\n';
         auto printFrame = [&out, this](qint32 locationId) -> qint32 {
             const auto location = this->location(locationId);
-            out << '\t' << hex << location.address << dec;
+            out << '\t' << hex << location.address << ' ' << location.relAddr << dec;
             const auto symbol = this->symbol(locationId);
             if (location.file != -1)
                 out << '\t' << string(location.file) << ':' << location.line << ':' << location.column;
