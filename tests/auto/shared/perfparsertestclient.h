@@ -77,6 +77,7 @@ public:
         quint64 size = 0;
         qint32 binary = -1;
         qint32 path = -1;
+        qint32 actualPath = -1;
         bool isKernel = false;
     };
 
