@@ -117,7 +117,7 @@ void PerfParserTestClient::extractTrace(QIODevice *device)
         case SymbolDefinition: {
             qint32 id;
             SymbolEvent symbol;
-            stream >> id >> symbol.name >> symbol.binary >> symbol.path >> symbol.isKernel >> symbol.relAddr >> symbol.size;
+            stream >> id >> symbol.name >> symbol.binary >> symbol.path >> symbol.isKernel >> symbol.relAddr >> symbol.size >> symbol.actualPath;
             if (symbol.name != -1)
                 checkString(symbol.name);
             if (symbol.binary != -1)
