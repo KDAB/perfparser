@@ -117,7 +117,7 @@ void PerfParserTestClient::extractTrace(QIODevice *device)
         case SymbolDefinition: {
             qint32 id;
             SymbolEvent symbol;
-            stream >> id >> symbol.name >> symbol.binary >> symbol.path >> symbol.isKernel;
+            stream >> id >> symbol.name >> symbol.binary >> symbol.path >> symbol.isKernel >> symbol.relAddr >> symbol.size;
             if (symbol.name != -1)
                 checkString(symbol.name);
             if (symbol.binary != -1)
@@ -228,6 +228,8 @@ void PerfParserTestClient::convertToText(QTextStream &out) const
             const auto symbol = this->symbol(locationId);
             if (location.file != -1)
                 out << '\t' << string(location.file) << ':' << location.line << ':' << location.column;
+
+            out << '\t' << Qt::hex << symbol.relAddr << ' ' << symbol.size << Qt::dec;
             if (symbol.path != -1)
                 out << '\t' << string(symbol.name) << ' ' << string(symbol.binary) << ' ' << string(symbol.path) << ' ' << (symbol.isKernel ? "[kernel]" : "");
             out << '\n';

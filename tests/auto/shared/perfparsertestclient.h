@@ -72,6 +72,8 @@ public:
 
     struct SymbolEvent {
         qint32 name = -1;
+        quint64 relAddr = 0;
+        quint64 size = 0;
         qint32 binary = -1;
         qint32 path = -1;
         bool isKernel = false;

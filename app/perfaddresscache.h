@@ -42,15 +42,19 @@ public:
 
     struct SymbolCacheEntry
     {
-        SymbolCacheEntry(quint64 offset = 0, quint64 size = 0, const QByteArray &symname = {})
+        SymbolCacheEntry(quint64 offset = 0, quint64 value = 0, quint64 size = 0, const QByteArray &symname = {})
             : offset(offset)
+            , value(value)
             , size(size)
             , symname(symname)
         {}
 
         bool isValid() const { return !symname.isEmpty(); }
 
+        // adjusted/absolute st_value, see documentation of the `addr` arg in `dwfl_module_getsym_info`
         quint64 offset;
+        // unadjusted/relative st_value
+        quint64 value;
         quint64 size;
         QByteArray symname;
         bool demangled = false;

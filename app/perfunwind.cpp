@@ -365,7 +365,7 @@ QDataStream &operator<<(QDataStream &stream, const PerfUnwind::Location &locatio
 
 QDataStream &operator<<(QDataStream &stream, const PerfUnwind::Symbol &symbol)
 {
-    return stream << symbol.name << symbol.binary << symbol.path << symbol.isKernel;
+    return stream << symbol.name << symbol.binary << symbol.path << symbol.isKernel << symbol.relAddr << symbol.size;
 }
 
 static int frameCallback(Dwfl_Frame *state, void *arg)
