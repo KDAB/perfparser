@@ -723,7 +723,19 @@ static QByteArray fakeSymbolFromSection(Dwfl_Module *mod, Dwarf_Addr addr)
     return sym;
 }
 
-static PerfAddressCache::SymbolCache cacheSymbols(Dwfl_Module *module, quint64 elfStart)
+static quint64 symbolAddress(quint64 addr, bool isArmArch)
+{
+    // For dwfl API call we need the raw pointer into symtab, so we need to adjust ip.
+    return (!isArmArch || (addr & 1)) ? addr : addr + 1;
+}
+
+static quint64 alignedAddress(quint64 addr, bool isArmArch)
+{
+    // Adjust addr back. The symtab entries are 1 off for all practical purposes.
+    return (isArmArch && (addr & 1)) ? addr - 1 : addr;
+}
+
+static PerfAddressCache::SymbolCache cacheSymbols(Dwfl_Module *module, quint64 elfStart, bool isArmArch)
 {
     PerfAddressCache::SymbolCache cache;
 
@@ -732,8 +744,10 @@ static PerfAddressCache::SymbolCache cacheSymbols(Dwfl_Module *module, quint64 e
         GElf_Sym sym;
         GElf_Addr symAddr;
         const auto symbol = dwfl_module_getsym_info(module, i, &sym, &symAddr, nullptr, nullptr, nullptr);
-        if (symbol)
-            cache.append({symAddr - elfStart, sym.st_value, sym.st_size, symbol});
+        if (symbol) {
+            const quint64 start = alignedAddress(sym.st_value, isArmArch);
+            cache.append({symAddr - elfStart, start, sym.st_size, symbol});
+        }
     }
     return cache;
 }
@@ -761,9 +775,8 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
 
     Dwfl_Module *mod = module(ip, elf);
 
-    PerfUnwind::Location addressLocation(
-                (m_unwind->architecture() != PerfRegisterInfo::ARCH_ARM || (ip & 1))
-                ? ip : ip + 1, 0, -1, m_pid);
+    const bool isArmArch = (m_unwind->architecture() == PerfRegisterInfo::ARCH_ARM);
+    PerfUnwind::Location addressLocation(symbolAddress(ip, isArmArch), 0, -1, m_pid);
     PerfUnwind::Location functionLocation(addressLocation);
 
     QByteArray symname;
@@ -777,7 +790,7 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
             // cache all symbols in a sorted lookup table and demangle them on-demand
             // note that the symbols within the symtab aren't necessarily sorted,
             // which makes searching repeatedly via dwfl_module_addrinfo potentially very slow
-            addressCache->setSymbolCache(elf.originalPath, cacheSymbols(mod, elfStart));
+            addressCache->setSymbolCache(elf.originalPath, cacheSymbols(mod, elfStart, isArmArch));
         }
 
         auto cachedAddrInfo = addressCache->findSymbol(elf.originalPath, addressLocation.address - elfStart);
@@ -786,7 +799,7 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
             symname = cachedAddrInfo.symname;
             start = cachedAddrInfo.value;
             size = cachedAddrInfo.size;
-            relAddr = start + off;
+            relAddr = alignedAddress(start + off, isArmArch);
 
             Dwarf_Addr bias = 0;
             functionLocation.address -= off; // in case we don't find anything better
