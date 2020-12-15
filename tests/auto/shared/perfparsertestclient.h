@@ -63,6 +63,7 @@ public:
 
     struct LocationEvent {
         quint64 address = 0;
+        quint64 relAddr = 0;
         qint32 file = -1;
         quint32 pid = 0;
         qint32 line = -1;
