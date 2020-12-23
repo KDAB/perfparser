@@ -240,6 +240,16 @@ QByteArray demangle(const QByteArray &mangledName)
             if (status == 0)
                 return demangleBuffer = dsymname;
         }
+
+#ifdef HAVE_D_DEMANGLE
+        if (mangledName[0] == '_' && mangledName[1] == 'D') {
+            extern const char* ddemangle(const char*, char*, size_t*);
+            size_t len = demangleBufferLength;
+
+            if (ddemangle(mangledName.constData(), demangleBuffer, &len))
+                return QByteArray(out, len);
+        }
+#endif
     }
     return mangledName;
 }
