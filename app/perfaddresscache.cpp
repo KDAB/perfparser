@@ -79,21 +79,25 @@ PerfAddressCache::SymbolCacheEntry PerfAddressCache::findSymbol(const QByteArray
     auto &symbols = m_symbolCache[filePath];
     auto it = std::lower_bound(symbols.begin(), symbols.end(), relAddr);
 
+    // demangle symbols on demand instead of demangling all symbols directly
+    // hopefully most of the symbols we won't ever encounter after all
+    auto lazyDemangle = [](PerfAddressCache::SymbolCacheEntry& entry) {
+        if (!entry.demangled) {
+            entry.symname = demangle(entry.symname);
+            entry.demangled = true;
+        }
+        return entry;
+    };
+
     if (it != symbols.end() && it->offset == relAddr)
-        return *it;
+        return lazyDemangle(*it);
     if (it == symbols.begin())
         return {};
 
     --it;
 
     if (it->offset <= relAddr && (it->offset + it->size > relAddr || (it->size == 0))) {
-        // demangle symbols on demand instead of demangling all symbols directly
-        // hopefully most of the symbols we won't ever encounter after all
-        if (!it->demangled) {
-            it->symname = demangle(it->symname);
-            it->demangled = true;
-        }
-        return *it;
+        return lazyDemangle(*it);
     }
     return {};
 }
