@@ -28,7 +28,6 @@
 namespace {
 bool rustc_demangle(const char *symbol, char *buffer, size_t bufferSize)
 {
-    // we are not allowed to return a function ptr from a lambda... so wrap it
     using demangler_t = int (*) (const char*, char *, size_t);
     static const auto demangler = []() -> demangler_t {
         QLibrary lib(QStringLiteral("rustc_demangle"));
