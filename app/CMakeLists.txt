@@ -30,12 +30,6 @@ if (Zstd_FOUND)
     target_compile_definitions(perfparser_lib PRIVATE HAVE_ZSTD=1)
 endif()
 
-if (WITH_RUSTC_DEMANGLE)
-    target_include_directories(perfparser_lib PRIVATE ${RUSTC_DEMANGLE_INCLUDE_DIR})
-    target_link_libraries(perfparser_lib PRIVATE ${RUSTC_DEMANGLE_LIBRARY})
-    target_compile_definitions(perfparser_lib PRIVATE HAVE_RUSTC_DEMANGLE=1)
-endif()
-
 add_qtc_executable(perfparser
   DEPENDS
     perfparser_lib

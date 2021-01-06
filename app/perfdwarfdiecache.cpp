@@ -22,11 +22,36 @@
 
 #include <dwarf.h>
 
-#ifdef HAVE_RUSTC_DEMANGLE
-#include <rustc_demangle.h>
-#endif
+#include <QLibrary>
+#include <QDebug>
 
 namespace {
+bool rustc_demangle(const char *symbol, char *buffer, size_t bufferSize)
+{
+    // we are not allowed to return a function ptr from a lambda... so wrap it
+    using demangler_t = int (*) (const char*, char *, size_t);
+    static const auto demangler = []() -> demangler_t {
+        QLibrary lib(QStringLiteral("rustc_demangle"));
+        if (!lib.load()) {
+            qDebug() << "failed to load rustc_demangle library, rust demangling is support not available."
+                     << lib.errorString();
+            return nullptr;
+        }
+        const auto rawSymbol = lib.resolve("rustc_demangle");
+        if (!rawSymbol) {
+            qDebug() << "failed to resolve rustc_demangle function in library"
+                     << lib.fileName() << lib.errorString();
+            return nullptr;
+        }
+        return reinterpret_cast<demangler_t>(rawSymbol);
+    }();
+
+    if (demangler)
+        return demangler(symbol, buffer, bufferSize);
+    else
+        return false;
+}
+
 enum class WalkResult
 {
     Recurse,
@@ -227,10 +252,8 @@ QByteArray demangle(const QByteArray &mangledName)
         static size_t demangleBufferLength = 1024;
         static char *demangleBuffer = reinterpret_cast<char *>(eu_compat_malloc(demangleBufferLength));
 
-#ifdef HAVE_RUSTC_DEMANGLE
         if (rustc_demangle(mangledName.constData(), demangleBuffer, demangleBufferLength))
             return demangleBuffer;
-#endif
 
         // Require GNU v3 ABI by the "_Z" prefix.
         if (mangledName[0] == '_' && mangledName[1] == 'Z') {
