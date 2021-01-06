@@ -47,7 +47,7 @@ bool PerfKallsyms::parseMapping(const QString &path)
         char type = 0;
         char eol = '\n';
 
-        stream >> address >> ws >> type >> ws >> entry.symbol >> eol;
+        stream >> address >> Qt::ws >> type >> Qt::ws >> entry.symbol >> eol;
         if (address.isEmpty())
             break;
 

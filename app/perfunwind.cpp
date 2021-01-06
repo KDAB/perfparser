@@ -471,7 +471,7 @@ void PerfUnwind::resolveCallchain()
                 }
                 break;
             default:
-                qWarning() << "invalid callchain context" << hex << ip;
+                qWarning() << "invalid callchain context" << Qt::hex << ip;
                 return;
             }
         } else {
