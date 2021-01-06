@@ -130,7 +130,7 @@ static bool memoryRead(Dwfl *, Dwarf_Addr addr, Dwarf_Word *result, void *arg)
 
     /* Check overflow. */
     if (addr + sizeof(Dwarf_Word) < addr) {
-        qDebug() << "Invalid memory read requested by dwfl" << hex << addr;
+        qDebug() << "Invalid memory read requested by dwfl" << Qt::hex << addr;
         ui->firstGuessedFrame = ui->frames.length();
         return false;
     }
@@ -146,7 +146,7 @@ static bool memoryRead(Dwfl *, Dwarf_Addr addr, Dwarf_Word *result, void *arg)
         // not stack, try reading from ELF
         if (ui->unwind->ipIsInKernelSpace(addr)) {
             // DWARF unwinding is not done for the kernel
-            qWarning() << "DWARF unwind tried to access kernel space" << hex << addr;
+            qWarning() << "DWARF unwind tried to access kernel space" << Qt::hex << addr;
             return false;
         }
         if (!accessDsoMem(ui, addr, result, wordWidth)) {
