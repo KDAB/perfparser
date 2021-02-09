@@ -32,7 +32,7 @@ bool rustc_demangle(const char *symbol, char *buffer, size_t bufferSize)
     static const auto demangler = []() -> demangler_t {
         QLibrary lib(QStringLiteral("rustc_demangle"));
         if (!lib.load()) {
-            qDebug() << "failed to load rustc_demangle library, rust demangling is support not available."
+            qDebug() << "failed to load rustc_demangle library, rust demangling support is not available."
                      << lib.errorString();
             return nullptr;
         }
