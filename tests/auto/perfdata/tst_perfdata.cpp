@@ -348,6 +348,8 @@ void TestPerfData::testFiles()
     }
 
     if (actualText != expectedText) {
+        compressFile(actualOutputFile);
+
         const auto diff = QStandardPaths::findExecutable("diff");
         if (!diff.isEmpty()) {
             {

@@ -139,6 +139,14 @@ void prependScopeNames(QByteArray &name, Dwarf_Die *die, QHash<Dwarf_Off, QByteA
     Dwarf_Die *scopes = nullptr;
     auto nscopes = dwarf_getscopes_die(die, &scopes);
 
+    // We essentially visit and build the scope name in reverse order.
+    // The cache ops encode offsets we can lookup directly that then map to fully
+    // qualified identifiers, which must obviously _not_ end on a double-colon separator.
+    // Note that while filling cacheOps below, we thus always have to prepend the double-colon
+    // first to the name, then store the cacheOps with the size of `name`. While that may sound
+    // confusing, that gives us the desired results: `ScopesToCache::trailing` will then be set
+    // to the size _following_ the current entry, which may get more identifiers appended to
+    // it when we continue to visit the other DIEs next.
     struct ScopesToCache
     {
         Dwarf_Off offset;
@@ -154,6 +162,10 @@ void prependScopeNames(QByteArray &name, Dwarf_Die *die, QHash<Dwarf_Off, QByteA
 
         auto it = cache.find(scopeOffset);
         if (it != cache.end()) {
+            // prepend the fully qualified cached identifier
+            // that won't end on `::`, so we have to add that manually here
+            if (!name.isEmpty())
+                name.prepend("::");
             name.prepend(*it);
             // we can stop, cached names are always fully qualified
             break;
