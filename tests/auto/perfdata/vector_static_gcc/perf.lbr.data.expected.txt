@@ -1,0 +1,747 @@
+vector_static_g	3509027	3509027	7037283.203982348
+	cycles: 1
+
+	ffffffff8da78b06 0	0 0
+	0 0	0 0
+	ffffffff8da0d810 0	0 0
+	0 0	0 0
+	ffffffff8da07ac8 0	0 0
+	0 0	0 0
+	ffffffff8dc0aa6d 0	0 0
+	0 0	0 0
+	ffffffff8dc0b0ce 0	0 0
+	0 0	0 0
+	ffffffff8dc15f66 0	0 0
+	0 0	0 0
+	ffffffff8dce7f02 0	0 0
+	0 0	0 0
+	ffffffff8dd5aaf6 0	0 0
+	0 0	0 0
+	ffffffff8dce5c9b 0	0 0
+	0 0	0 0
+	ffffffff8dce6f6e 0	0 0
+	0 0	0 0
+	ffffffff8dce74b9 0	0 0
+	0 0	0 0
+	ffffffff8da044c7 0	0 0
+	0 0	0 0
+	ffffffff8e60008c 0	0 0
+	0 0	0 0
+	ffffffff8da78b04 0	0 0
+	0 0	0 0
+	7fb025ecd2fb 0	0 0
+	0 0	0 0
+
+vector_static_g	3509027	3509027	7037283.203987809
+	cycles: 1
+
+	ffffffff8da78b06 0	0 0
+	0 0	0 0
+	ffffffff8da0d810 0	0 0
+	0 0	0 0
+	ffffffff8da07ac8 0	0 0
+	0 0	0 0
+	ffffffff8dc0aa6d 0	0 0
+	0 0	0 0
+	ffffffff8dc0b0ce 0	0 0
+	0 0	0 0
+	ffffffff8dc15f66 0	0 0
+	0 0	0 0
+	ffffffff8dce7f02 0	0 0
+	0 0	0 0
+	ffffffff8dd5aaf6 0	0 0
+	0 0	0 0
+	ffffffff8dce5c9b 0	0 0
+	0 0	0 0
+	ffffffff8dce6f6e 0	0 0
+	0 0	0 0
+	ffffffff8dce74b9 0	0 0
+	0 0	0 0
+	ffffffff8da044c7 0	0 0
+	0 0	0 0
+	ffffffff8e60008c 0	0 0
+	0 0	0 0
+	ffffffff8da78b04 0	0 0
+	0 0	0 0
+	7fb025ecd2fb 0	0 0
+	0 0	0 0
+
+vector_static_g	3509027	3509027	7037283.203991340
+	cycles: 7
+
+	ffffffff8da78b06 0	0 0
+	0 0	0 0
+	ffffffff8da0d810 0	0 0
+	0 0	0 0
+	ffffffff8da07ac8 0	0 0
+	0 0	0 0
+	ffffffff8dc0aa6d 0	0 0
+	0 0	0 0
+	ffffffff8dc0b0ce 0	0 0
+	0 0	0 0
+	ffffffff8dc15f66 0	0 0
+	0 0	0 0
+	ffffffff8dce7f02 0	0 0
+	0 0	0 0
+	ffffffff8dd5aaf6 0	0 0
+	0 0	0 0
+	ffffffff8dce5c9b 0	0 0
+	0 0	0 0
+	ffffffff8dce6f6e 0	0 0
+	0 0	0 0
+	ffffffff8dce74b9 0	0 0
+	0 0	0 0
+	ffffffff8da044c7 0	0 0
+	0 0	0 0
+	ffffffff8e60008c 0	0 0
+	0 0	0 0
+	ffffffff8da78b04 0	0 0
+	0 0	0 0
+	7fb025ecd2fb 0	0 0
+	0 0	0 0
+
+vector_static_g	3509027	3509027	7037283.203994672
+	cycles: 67
+
+	ffffffff8da78b06 0	0 0
+	0 0	0 0
+	ffffffff8da0d810 0	0 0
+	0 0	0 0
+	ffffffff8da07ac8 0	0 0
+	0 0	0 0
+	ffffffff8dc0aa6d 0	0 0
+	0 0	0 0
+	ffffffff8dc0b0ce 0	0 0
+	0 0	0 0
+	ffffffff8dc15f66 0	0 0
+	0 0	0 0
+	ffffffff8dce7f02 0	0 0
+	0 0	0 0
+	ffffffff8dd5aaf6 0	0 0
+	0 0	0 0
+	ffffffff8dce5c9b 0	0 0
+	0 0	0 0
+	ffffffff8dce6f6e 0	0 0
+	0 0	0 0
+	ffffffff8dce74b9 0	0 0
+	0 0	0 0
+	ffffffff8da044c7 0	0 0
+	0 0	0 0
+	ffffffff8e60008c 0	0 0
+	0 0	0 0
+	ffffffff8da78b06 0	0 0
+	0 0	0 0
+	7fb025ecd2fb 0	0 0
+	0 0	0 0
+
+vector_static_g	3509027	3509027	7037283.203998132
+	cycles: 683
+
+	ffffffff8da78b06 0	0 0
+	0 0	0 0
+	ffffffff8da0d810 0	0 0
+	0 0	0 0
+	ffffffff8da07ac8 0	0 0
+	0 0	0 0
+	ffffffff8dc0aa6d 0	0 0
+	0 0	0 0
+	ffffffff8dc0b0ce 0	0 0
+	0 0	0 0
+	ffffffff8dc15f66 0	0 0
+	0 0	0 0
+	ffffffff8dce7f02 0	0 0
+	0 0	0 0
+	ffffffff8dd5aaf6 0	0 0
+	0 0	0 0
+	ffffffff8dce5c9b 0	0 0
+	0 0	0 0
+	ffffffff8dce6f6e 0	0 0
+	0 0	0 0
+	ffffffff8dce74b9 0	0 0
+	0 0	0 0
+	ffffffff8da044c7 0	0 0
+	0 0	0 0
+	ffffffff8e60008c 0	0 0
+	0 0	0 0
+	ffffffff8da6e680 0	0 0
+	0 0	0 0
+	7fb025ecd2fb 0	0 0
+	0 0	0 0
+
+vector_static_g	3509027	3509027	7037283.204001497
+	cycles: 6774
+
+	ffffffff8da78b06 0	0 0
+	0 0	0 0
+	ffffffff8da0d810 0	0 0
+	0 0	0 0
+	ffffffff8da07ac8 0	0 0
+	0 0	0 0
+	ffffffff8dc0aa6d 0	0 0
+	0 0	0 0
+	ffffffff8dc0b0ce 0	0 0
+	0 0	0 0
+	ffffffff8dc15f66 0	0 0
+	0 0	0 0
+	ffffffff8dce7f02 0	0 0
+	0 0	0 0
+	ffffffff8dd5aaf6 0	0 0
+	0 0	0 0
+	ffffffff8dce5c9b 0	0 0
+	0 0	0 0
+	ffffffff8dce6f6e 0	0 0
+	0 0	0 0
+	ffffffff8dce74b9 0	0 0
+	0 0	0 0
+	ffffffff8da044c7 0	0 0
+	0 0	0 0
+	ffffffff8e60008c 0	0 0
+	0 0	0 0
+	ffffffff8e6016f2 0	0 0
+	0 0	0 0
+	7fb025ecd2fb 0	0 0
+	0 0	0 0
+
+vector_static_g	3509027	3509027	7037283.204006527
+	cycles: 69193
+
+	ffffffff8dab12c3 0	0 0
+	0 0	0 0
+	ffffffff8dce7f8e 0	0 0
+	0 0	0 0
+	ffffffff8dd5aaf6 0	0 0
+	0 0	0 0
+	ffffffff8dce5c9b 0	0 0
+	0 0	0 0
+	ffffffff8dce6f6e 0	0 0
+	0 0	0 0
+	ffffffff8dce74b9 0	0 0
+	0 0	0 0
+	ffffffff8da044c7 0	0 0
+	0 0	0 0
+	ffffffff8e60008c 0	0 0
+	0 0	0 0
+	ffffffff8dab12bf 0	0 0
+	0 0	0 0
+	7fb025ecd2fb 0	0 0
+	0 0	0 0
+
+vector_static_g	3509027	3509027	7037283.204037128
+	cycles: 490592
+
+	ffffffff8df5c0a1 0	0 0
+	0 0	0 0
+	ffffffff8dd5a6ab 0	0 0
+	0 0	0 0
+	ffffffff8dd5b41f 0	0 0
+	0 0	0 0
+	ffffffff8dce5c9b 0	0 0
+	0 0	0 0
+	ffffffff8dce6f6e 0	0 0
+	0 0	0 0
+	ffffffff8dce74b9 0	0 0
+	0 0	0 0
+	ffffffff8da044c7 0	0 0
+	0 0	0 0
+	ffffffff8e60008c 0	0 0
+	0 0	0 0
+	ffffffff8df5c0cd 0	0 0
+	0 0	0 0
+	7fb025ecd2fb 0	0 0
+	0 0	0 0
+
+vector_static_g	3509027	3509027	7037283.204239728
+	cycles: 930396
+
+	41b3b0 41b3b0	0 0
+	41b3b0 0	41b3b0 34b	__hypot_finite vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	41b3b0 41b3b0	0 0
+	41b3b0 0	41b3b0 34b	__hypot_finite vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a53 417a53	0 0
+	417a40 0	417a40 74	hypot vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401581 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13	0 0
+	40152b 0	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 0	../../../manual/clients/vector.cpp:16:6	0 0
+	0 401581	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089e 42089e	0 0
+	420410 0	420410 817	__libc_start_main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b68 401b68	0 0
+	401b40 0	401b40 2f	_start vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	3509027	3509027	7037283.204666523
+	cycles: 957705
+
+	ffffffff8e601250 0	0 0
+	0 0	0 0
+	401d02 401d02	/usr/include/c++/9.1.0/new:174:3	0 0
+	401cf1 0	/usr/include/c++/9.1.0/ext/new_allocator.h:144:2	401c70 162	void __gnu_cxx::new_allocator<double>::construct<double, double>(double*, double&&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401cf1 401d02	/usr/include/c++/9.1.0/ext/new_allocator.h:144:2	401c70 162	void __gnu_cxx::new_allocator<double>::construct<double, double>(double*, double&&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401cf1 0	/usr/include/c++/9.1.0/bits/alloc_traits.h:484:4	0 0
+	401cf1 401d02	/usr/include/c++/9.1.0/bits/alloc_traits.h:482:2	401c70 162	void std::allocator_traits<std::allocator<double> >::construct<double, double>(std::allocator<double>&, double*, double&&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401cf1 0	/usr/include/c++/9.1.0/bits/vector.tcc:449:28	0 0
+	401c70 401d02	/usr/include/c++/9.1.0/bits/vector.tcc:426:7	401c70 162	void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401c70 401c70	/usr/include/c++/9.1.0/bits/stl_vector.h:1755:2	0 0
+	401c70 0	/usr/include/c++/9.1.0/bits/stl_vector.h:1753:7	401c70 162	std::vector<double, std::allocator<double> >::_M_check_len(unsigned long, char const*) const vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401c70 401c70	/usr/include/c++/9.1.0/bits/stl_vector.h:1753:7	401c70 162	std::vector<double, std::allocator<double> >::_M_check_len(unsigned long, char const*) const vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401c70 0	/usr/include/c++/9.1.0/bits/vector.tcc:435:23	0 0
+	401c70 401c70	/usr/include/c++/9.1.0/bits/vector.tcc:426:7	401c70 162	void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	4015a0 4015a0	/usr/include/c++/9.1.0/bits/vector.tcc:121:4	0 0
+	401590 0	/usr/include/c++/9.1.0/bits/vector.tcc:109:7	4014e0 149	void std::vector<double, std::allocator<double> >::emplace_back<double>(double&&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590 4015a0	/usr/include/c++/9.1.0/bits/vector.tcc:109:7	4014e0 149	void std::vector<double, std::allocator<double> >::emplace_back<double>(double&&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590 0	/usr/include/c++/9.1.0/bits/stl_vector.h:1201:9	0 0
+	401590 4015a0	/usr/include/c++/9.1.0/bits/stl_vector.h:1200:7	4014e0 149	std::vector<double, std::allocator<double> >::push_back(double&&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590 0	/usr/include/c++/9.1.0/bits/stl_iterator.h:522:2	0 0
+	401590 4015a0	/usr/include/c++/9.1.0/bits/stl_iterator.h:520:7	4014e0 149	std::back_insert_iterator<std::vector<double, std::allocator<double> > >::operator=(double&&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590 0	/usr/include/c++/9.1.0/bits/stl_algo.h:4450:11	0 0
+	40152b 4015a0	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 0	../../../manual/clients/vector.cpp:16:6	0 0
+	0 401581	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089e 42089e	0 0
+	420410 0	420410 817	__libc_start_main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b68 401b68	0 0
+	401b40 0	401b40 2f	_start vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	3509027	3509027	7037283.205106199
+	cycles: 908112
+
+	41b492 41b492	0 0
+	41b3b0 0	41b3b0 34b	__hypot_finite vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	41b3b0 41b3b0	0 0
+	41b3b0 0	41b3b0 34b	__hypot_finite vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a53 417a53	0 0
+	417a40 0	417a40 74	hypot vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401581 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13	0 0
+	40152b 0	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 0	../../../manual/clients/vector.cpp:16:6	0 0
+	0 401581	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089e 42089e	0 0
+	420410 0	420410 817	__libc_start_main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b68 401b68	0 0
+	401b40 0	401b40 2f	_start vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	3509027	3509027	7037283.205523681
+	cycles: 859133
+
+	41b4b6 41b4b6	0 0
+	41b3b0 0	41b3b0 34b	__hypot_finite vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	41b3b0 41b3b0	0 0
+	41b3b0 0	41b3b0 34b	__hypot_finite vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a53 417a53	0 0
+	417a40 0	417a40 74	hypot vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401581 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13	0 0
+	40152b 0	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 0	../../../manual/clients/vector.cpp:16:6	0 0
+	0 401581	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089e 42089e	0 0
+	420410 0	420410 817	__libc_start_main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b68 401b68	0 0
+	401b40 0	401b40 2f	_start vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	3509027	3509027	7037283.205920920
+	cycles: 744285
+
+	41b4b6 41b4b6	0 0
+	41b3b0 0	41b3b0 34b	__hypot_finite vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	41b3b0 41b3b0	0 0
+	41b3b0 0	41b3b0 34b	__hypot_finite vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a53 417a53	0 0
+	417a40 0	417a40 74	hypot vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401581 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13	0 0
+	40152b 0	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 0	../../../manual/clients/vector.cpp:16:6	0 0
+	0 401581	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089e 42089e	0 0
+	420410 0	420410 817	__libc_start_main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b68 401b68	0 0
+	401b40 0	401b40 2f	_start vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	3509027	3509027	7037283.206264631
+	cycles: 709796
+
+	ffffffff8e4c6609 0	0 0
+	0 0	0 0
+	ffffffff8dc8060c 0	0 0
+	0 0	0 0
+	ffffffff8dc81a73 0	0 0
+	0 0	0 0
+	ffffffff8dc9bf7f 0	0 0
+	0 0	0 0
+	ffffffff8dc5ea98 0	0 0
+	0 0	0 0
+	ffffffff8dc638a0 0	0 0
+	0 0	0 0
+	ffffffff8dc639aa 0	0 0
+	0 0	0 0
+	ffffffff8da80a69 0	0 0
+	0 0	0 0
+	ffffffff8da80ff8 0	0 0
+	0 0	0 0
+	ffffffff8da8105c 0	0 0
+	0 0	0 0
+	ffffffff8e601284 0	0 0
+	0 0	0 0
+	ffffffff8e4c6607 0	0 0
+	0 0	0 0
+	400460 400460	0 0
+	400430 0	400430 0	_init vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d47 401d47	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:911:19	0 0
+	401d08 0	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:906:5	401c70 162	std::enable_if<std::__is_bitwise_relocatable<double, void>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08 401d47	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:906:5	401c70 162	std::enable_if<std::__is_bitwise_relocatable<double, void>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08 0	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:946:28	0 0
+	401d08 401d47	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:940:5	401c70 162	double* std::__relocate_a<double*, double*, std::allocator<double> >(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08 0	/usr/include/c++/9.1.0/bits/stl_vector.h:453:26	0 0
+	401d08 401d47	/usr/include/c++/9.1.0/bits/stl_vector.h:450:7	401c70 162	std::vector<double, std::allocator<double> >::_S_do_relocate(double*, double*, double*, std::allocator<double>&, std::integral_constant<bool, true>) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08 0	/usr/include/c++/9.1.0/bits/stl_vector.h:466:23	0 0
+	401d08 401d47	/usr/include/c++/9.1.0/bits/stl_vector.h:462:7	401c70 162	std::vector<double, std::allocator<double> >::_S_relocate(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08 0	/usr/include/c++/9.1.0/bits/vector.tcc:461:34	0 0
+	401c70 401d47	/usr/include/c++/9.1.0/bits/vector.tcc:426:7	401c70 162	void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	4015a0 4015a0	/usr/include/c++/9.1.0/bits/vector.tcc:121:4	0 0
+	401590 0	/usr/include/c++/9.1.0/bits/vector.tcc:109:7	4014e0 149	void std::vector<double, std::allocator<double> >::emplace_back<double>(double&&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590 4015a0	/usr/include/c++/9.1.0/bits/vector.tcc:109:7	4014e0 149	void std::vector<double, std::allocator<double> >::emplace_back<double>(double&&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590 0	/usr/include/c++/9.1.0/bits/stl_vector.h:1201:9	0 0
+	401590 4015a0	/usr/include/c++/9.1.0/bits/stl_vector.h:1200:7	4014e0 149	std::vector<double, std::allocator<double> >::push_back(double&&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590 0	/usr/include/c++/9.1.0/bits/stl_iterator.h:522:2	0 0
+	401590 4015a0	/usr/include/c++/9.1.0/bits/stl_iterator.h:520:7	4014e0 149	std::back_insert_iterator<std::vector<double, std::allocator<double> > >::operator=(double&&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590 0	/usr/include/c++/9.1.0/bits/stl_algo.h:4450:11	0 0
+	40152b 4015a0	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 0	../../../manual/clients/vector.cpp:16:6	0 0
+	0 401581	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089e 42089e	0 0
+	420410 0	420410 817	__libc_start_main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b68 401b68	0 0
+	401b40 0	401b40 2f	_start vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	3509027	3509027	7037283.206592532
+	cycles: 685599
+
+	41828b 41828b	0 0
+	417f60 0	417f60 82a	__sin_fma vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	400480 400480	0 0
+	400430 0	400430 0	_init vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401558 401558	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13	0 0
+	40152b 0	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 0	../../../manual/clients/vector.cpp:16:6	0 0
+	0 401581	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089e 42089e	0 0
+	420410 0	420410 817	__libc_start_main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b68 401b68	0 0
+	401b40 0	401b40 2f	_start vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	3509027	3509027	7037283.206908202
+	cycles: 665256
+
+	418187 418187	0 0
+	417f60 0	417f60 82a	__sin_fma vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	400480 400480	0 0
+	400430 0	400430 0	_init vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401558 401558	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13	0 0
+	40152b 0	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 0	../../../manual/clients/vector.cpp:16:6	0 0
+	0 401581	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089e 42089e	0 0
+	420410 0	420410 817	__libc_start_main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b68 401b68	0 0
+	401b40 0	401b40 2f	_start vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	3509027	3509027	7037283.207215307
+	cycles: 647945
+
+	ffffffff8dcc2bd7 0	0 0
+	0 0	0 0
+	ffffffff8dcc8dd0 0	0 0
+	0 0	0 0
+	ffffffff8dcc8f22 0	0 0
+	0 0	0 0
+	ffffffff8dc5eabc 0	0 0
+	0 0	0 0
+	ffffffff8dc638a0 0	0 0
+	0 0	0 0
+	ffffffff8dc639aa 0	0 0
+	0 0	0 0
+	ffffffff8da80a69 0	0 0
+	0 0	0 0
+	ffffffff8da80ff8 0	0 0
+	0 0	0 0
+	ffffffff8da8105c 0	0 0
+	0 0	0 0
+	ffffffff8e601284 0	0 0
+	0 0	0 0
+	ffffffff8dcc2bd3 0	0 0
+	0 0	0 0
+	4014e0 4014e0	../../../manual/clients/vector.cpp:10:1	0 0
+	0 0	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089e 42089e	0 0
+	420410 0	420410 817	__libc_start_main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b68 401b68	0 0
+	401b40 0	401b40 2f	_start vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	3509027	3509027	7037283.207514100
+	cycles: 632889
+
+	ffffffff8dc7e880 0	0 0
+	0 0	0 0
+	ffffffff8dc805eb 0	0 0
+	0 0	0 0
+	ffffffff8dc81a73 0	0 0
+	0 0	0 0
+	ffffffff8dc9bf7f 0	0 0
+	0 0	0 0
+	ffffffff8dc5ea98 0	0 0
+	0 0	0 0
+	ffffffff8dc638a0 0	0 0
+	0 0	0 0
+	ffffffff8dc639aa 0	0 0
+	0 0	0 0
+	ffffffff8da80a69 0	0 0
+	0 0	0 0
+	ffffffff8da80ff8 0	0 0
+	0 0	0 0
+	ffffffff8da8105c 0	0 0
+	0 0	0 0
+	ffffffff8e601284 0	0 0
+	0 0	0 0
+	ffffffff8dc7e87c 0	0 0
+	0 0	0 0
+	4014e0 4014e0	../../../manual/clients/vector.cpp:10:1	0 0
+	0 0	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089e 42089e	0 0
+	420410 0	420410 817	__libc_start_main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b68 401b68	0 0
+	401b40 0	401b40 2f	_start vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	3509027	3509027	7037283.207806468
+	cycles: 619959
+
+	417a44 417a44	0 0
+	417a40 0	417a40 74	hypot vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a30 417a30	0 0
+	417a30 0	417a30 9	cabsf64 vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401581 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13	0 0
+	40152b 0	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 0	../../../manual/clients/vector.cpp:16:6	0 0
+	0 401581	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089e 42089e	0 0
+	420410 0	420410 817	__libc_start_main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b68 401b68	0 0
+	401b40 0	401b40 2f	_start vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	3509027	3509027	7037283.208092414
+	cycles: 608730
+
+	418cbd 418cbd	0 0
+	418790 0	418790 82d	__cos_fma vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	400490 400490	0 0
+	400430 0	400430 0	_init vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40156e 40156e	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13	0 0
+	40152b 0	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 0	../../../manual/clients/vector.cpp:16:6	0 0
+	0 401581	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089e 42089e	0 0
+	420410 0	420410 817	__libc_start_main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b68 401b68	0 0
+	401b40 0	401b40 2f	_start vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	3509027	3509027	7037283.208373790
+	cycles: 599166
+
+	ffffffff8e4c6609 0	0 0
+	0 0	0 0
+	ffffffff8dc8060c 0	0 0
+	0 0	0 0
+	ffffffff8dc81a73 0	0 0
+	0 0	0 0
+	ffffffff8dc9bf7f 0	0 0
+	0 0	0 0
+	ffffffff8dc5ea98 0	0 0
+	0 0	0 0
+	ffffffff8dc638a0 0	0 0
+	0 0	0 0
+	ffffffff8dc639aa 0	0 0
+	0 0	0 0
+	ffffffff8da80a69 0	0 0
+	0 0	0 0
+	ffffffff8da80ff8 0	0 0
+	0 0	0 0
+	ffffffff8da8105c 0	0 0
+	0 0	0 0
+	ffffffff8e601284 0	0 0
+	0 0	0 0
+	ffffffff8e4c6607 0	0 0
+	0 0	0 0
+	400460 400460	0 0
+	400430 0	400430 0	_init vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d47 401d47	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:911:19	0 0
+	401d08 0	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:906:5	401c70 162	std::enable_if<std::__is_bitwise_relocatable<double, void>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08 401d47	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:906:5	401c70 162	std::enable_if<std::__is_bitwise_relocatable<double, void>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08 0	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:946:28	0 0
+	401d08 401d47	/usr/include/c++/9.1.0/bits/stl_uninitialized.h:940:5	401c70 162	double* std::__relocate_a<double*, double*, std::allocator<double> >(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08 0	/usr/include/c++/9.1.0/bits/stl_vector.h:453:26	0 0
+	401d08 401d47	/usr/include/c++/9.1.0/bits/stl_vector.h:450:7	401c70 162	std::vector<double, std::allocator<double> >::_S_do_relocate(double*, double*, double*, std::allocator<double>&, std::integral_constant<bool, true>) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08 0	/usr/include/c++/9.1.0/bits/stl_vector.h:466:23	0 0
+	401d08 401d47	/usr/include/c++/9.1.0/bits/stl_vector.h:462:7	401c70 162	std::vector<double, std::allocator<double> >::_S_relocate(double*, double*, double*, std::allocator<double>&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401d08 0	/usr/include/c++/9.1.0/bits/vector.tcc:461:34	0 0
+	401c70 401d47	/usr/include/c++/9.1.0/bits/vector.tcc:426:7	401c70 162	void std::vector<double, std::allocator<double> >::_M_realloc_insert<double>(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, double&&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	4015a0 4015a0	/usr/include/c++/9.1.0/bits/vector.tcc:121:4	0 0
+	401590 0	/usr/include/c++/9.1.0/bits/vector.tcc:109:7	4014e0 149	void std::vector<double, std::allocator<double> >::emplace_back<double>(double&&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590 4015a0	/usr/include/c++/9.1.0/bits/vector.tcc:109:7	4014e0 149	void std::vector<double, std::allocator<double> >::emplace_back<double>(double&&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590 0	/usr/include/c++/9.1.0/bits/stl_vector.h:1201:9	0 0
+	401590 4015a0	/usr/include/c++/9.1.0/bits/stl_vector.h:1200:7	4014e0 149	std::vector<double, std::allocator<double> >::push_back(double&&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590 0	/usr/include/c++/9.1.0/bits/stl_iterator.h:522:2	0 0
+	401590 4015a0	/usr/include/c++/9.1.0/bits/stl_iterator.h:520:7	4014e0 149	std::back_insert_iterator<std::vector<double, std::allocator<double> > >::operator=(double&&) vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401590 0	/usr/include/c++/9.1.0/bits/stl_algo.h:4450:11	0 0
+	40152b 4015a0	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 0	../../../manual/clients/vector.cpp:16:6	0 0
+	0 401581	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089e 42089e	0 0
+	420410 0	420410 817	__libc_start_main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b68 401b68	0 0
+	401b40 0	401b40 2f	_start vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	3509027	3509027	7037283.208650605
+	cycles: 590828
+
+	41b531 41b531	0 0
+	41b3b0 0	41b3b0 34b	__hypot_finite vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	41b3b0 41b3b0	0 0
+	41b3b0 0	41b3b0 34b	__hypot_finite vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a53 417a53	0 0
+	417a40 0	417a40 74	hypot vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401581 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13	0 0
+	40152b 0	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 0	../../../manual/clients/vector.cpp:16:6	0 0
+	0 401581	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089e 42089e	0 0
+	420410 0	420410 817	__libc_start_main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b68 401b68	0 0
+	401b40 0	401b40 2f	_start vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	3509027	3509027	7037283.208923338
+	cycles: 583688
+
+	418b42 418b42	0 0
+	418790 0	418790 82d	__cos_fma vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	400490 400490	0 0
+	400430 0	400430 0	_init vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40156e 40156e	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13	0 0
+	40152b 0	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 0	../../../manual/clients/vector.cpp:16:6	0 0
+	0 401581	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089e 42089e	0 0
+	420410 0	420410 817	__libc_start_main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b68 401b68	0 0
+	401b40 0	401b40 2f	_start vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	3509027	3509027	7037283.209192742
+	cycles: 577580
+
+	4184d8 4184d8	0 0
+	417f60 0	417f60 82a	__sin_fma vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	400480 400480	0 0
+	400430 0	400430 0	_init vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401558 401558	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13	0 0
+	40152b 0	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 0	../../../manual/clients/vector.cpp:16:6	0 0
+	0 401581	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089e 42089e	0 0
+	420410 0	420410 817	__libc_start_main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b68 401b68	0 0
+	401b40 0	401b40 2f	_start vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	3509027	3509027	7037283.209458656
+	cycles: 572383
+
+	417a30 417a30	0 0
+	417a30 0	417a30 9	cabsf64 vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a30 417a30	0 0
+	417a30 0	417a30 9	cabsf64 vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401581 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13	0 0
+	40152b 0	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 0	../../../manual/clients/vector.cpp:16:6	0 0
+	0 401581	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089e 42089e	0 0
+	420410 0	420410 817	__libc_start_main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b68 401b68	0 0
+	401b40 0	401b40 2f	_start vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	3509027	3509027	7037283.209584932
+	cycles: 568088
+
+	40154b 40154b	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13	0 0
+	40152b 0	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 0	../../../manual/clients/vector.cpp:16:6	0 0
+	0 401581	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	4014e0 4014e0	../../../manual/clients/vector.cpp:10:1	0 0
+	0 0	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089e 42089e	0 0
+	420410 0	420410 817	__libc_start_main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b68 401b68	0 0
+	401b40 0	401b40 2f	_start vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	3509027	3509027	7037283.209710162
+	cycles: 637663
+
+	41b53d 41b53d	0 0
+	41b3b0 0	41b3b0 34b	__hypot_finite vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	41b3b0 41b3b0	0 0
+	41b3b0 0	41b3b0 34b	__hypot_finite vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a53 417a53	0 0
+	417a40 0	417a40 74	hypot vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401581 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13	0 0
+	40152b 0	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 0	../../../manual/clients/vector.cpp:16:6	0 0
+	0 401581	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089e 42089e	0 0
+	420410 0	420410 817	__libc_start_main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b68 401b68	0 0
+	401b40 0	401b40 2f	_start vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	3509027	3509027	7037283.209913423
+	cycles: 700325
+
+	417a7b 417a7b	0 0
+	417a40 0	417a40 74	hypot vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a30 417a30	0 0
+	417a30 0	417a30 9	cabsf64 vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401581 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13	0 0
+	40152b 0	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 0	../../../manual/clients/vector.cpp:16:6	0 0
+	0 401581	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089e 42089e	0 0
+	420410 0	420410 817	__libc_start_main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b68 401b68	0 0
+	401b40 0	401b40 2f	_start vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+
+vector_static_g	3509027	3509027	7037283.210067432
+	cycles: 720467
+
+	41b477 41b477	0 0
+	41b3b0 0	41b3b0 34b	__hypot_finite vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	41b3b0 41b3b0	0 0
+	41b3b0 0	41b3b0 34b	__hypot_finite vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	417a53 417a53	0 0
+	417a40 0	417a40 74	hypot vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401581 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4449:13	0 0
+	40152b 0	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 401581	/usr/include/c++/9.1.0/bits/stl_algo.h:4441:5	4014e0 149	std::generate_n<std::back_insert_iterator<std::vector<double> >, int, main()::<lambda()> > vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	40152b 0	../../../manual/clients/vector.cpp:16:6	0 0
+	0 401581	../../../manual/clients/vector.cpp:9:5	4014e0 149	main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	42089e 42089e	0 0
+	420410 0	420410 817	__libc_start_main vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+	401b68 401b68	0 0
+	401b40 0	401b40 2f	_start vector_static_gcc_v9.1.0 /home/dknysh/kdab-disasm-fraames/hotspot/3rdparty/perfparser/tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0 
+

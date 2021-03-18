@@ -475,15 +475,15 @@ void PerfUnwind::resolveCallchain()
                 return;
             }
         } else {
-            // prefer user frames from branch stack if available
-            if (hasBranchStack && !isKernel)
-                break;
-
             // sometimes it skips the first user frame.
             if (!addedUserFrames && !isKernel && ip != m_currentUnwind.sample->ip()) {
                 if (!reportIp(m_currentUnwind.sample->ip()))
                     return;
             }
+
+            // prefer user frames from branch stack if available
+            if (hasBranchStack && !isKernel)
+                break;
 
             if (!reportIp(ip))
                 return;
