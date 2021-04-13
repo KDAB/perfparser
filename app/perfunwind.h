@@ -37,6 +37,7 @@
 #include <QString>
 #include <QMap>
 #include <QVariant>
+#include <QHash>
 
 #include <limits>
 
@@ -106,6 +107,20 @@ public:
         int maxFrames;
         int firstGuessedFrame;
         bool isInterworking;
+
+        struct Ip
+        {
+            quint64 address = 0;
+            int frameOffset = 0;
+        };
+
+        inline void extendStack(const Ip& ip)
+        {
+            if (!isInterworking)
+                ipStack.append(ip);
+        }
+
+        QVector<Ip> ipStack;
     };
 
     struct Stats
@@ -279,6 +294,26 @@ private:
 
     QList<PerfRecordSample> m_sampleBuffer;
     QList<PerfRecordMmap> m_mmapBuffer;
+
+    // Cache Entry containing follow up addresses, used for stack stitching
+    struct OffsetFrames
+    {
+        // QVector is COW so we only have one instance
+        QVector<int> frames;
+        int framesOffset = 0;
+
+        void appendFramesTo(QVector<int>& target) const
+        {
+            // when extending, frameOffset points to the current frame
+            // but we don't want duplicates so we need the next one
+            target.reserve(target.size() + frames.size() - framesOffset - 1);
+            std::copy(frames.begin() + framesOffset + 1, frames.end(), std::back_inserter(target));
+        }
+    };
+
+    // maps the pid to address frames
+    QHash<int, QHash<quint64, OffsetFrames>> m_ipCache;
+
     struct TaskEvent
     {
         qint32 m_pid;
@@ -319,6 +354,8 @@ private:
     void unwindStack();
     void resolveCallchain();
     void analyze(const PerfRecordSample &sample);
+    void updateIpCache();
+    void stitchCurrentCallchain();
     void sendBuffer(const QByteArray &buffer);
     void sendString(qint32 id, const QByteArray &string);
     void sendLocation(qint32 id, const Location &location);
@@ -341,3 +378,5 @@ private:
 
 uint qHash(const PerfUnwind::Location &location, uint seed = 0);
 bool operator==(const PerfUnwind::Location &a, const PerfUnwind::Location &b);
+
+Q_DECLARE_TYPEINFO(PerfUnwind::UnwindInfo::Ip, Q_MOVABLE_TYPE);

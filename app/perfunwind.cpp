@@ -403,6 +403,7 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
         return DWARF_CB_ABORT;
 
     ui->frames.append(frame);
+    ui->extendStack({pc_adjusted, ui->ipStack.length()});
     if (isInterworking && ui->frames.length() == 1)
         ui->isInterworking = true;
     return DWARF_CB_OK;
@@ -445,6 +446,7 @@ void PerfUnwind::resolveCallchain()
         symbols->attachDwfl(&m_currentUnwind);
         m_currentUnwind.frames.append(symbols->lookupFrame(ip, isKernel,
                                             &m_currentUnwind.isInterworking));
+        m_currentUnwind.extendStack({ip, m_currentUnwind.ipStack.length()});
         return !symbols->cacheIsDirty();
     };
 
@@ -592,6 +594,7 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
         m_currentUnwind.firstGuessedFrame = -1;
         m_currentUnwind.sample = &sample;
         m_currentUnwind.frames.clear();
+        m_currentUnwind.ipStack.clear();
 
         userSymbols->updatePerfMap();
         if (!sample.callchain().isEmpty() || !sample.branchStack().isEmpty())
@@ -653,6 +656,8 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
         }
     }
 
+    stitchCurrentCallchain();
+
     QVector<QPair<qint32, quint64>> values;
     if (sample.readFormats().isEmpty()) {
         values.push_back({ attributesId, sample.period() });
@@ -680,6 +685,44 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
     }
 
     sendBuffer(buffer);
+}
+
+void PerfUnwind::updateIpCache()
+{
+    const auto& stack = m_currentUnwind.ipStack;
+    auto& cache = m_ipCache[m_currentUnwind.sample->pid()];
+
+    // the entries in the cache don't need to be updated, since they already contain the longest known
+    // callchain for their ip -> only new ones need to be added
+
+    // limit length to prevent high memory usage since every new sample doubles the memory
+    // usage of the cache
+    const auto& frames = m_currentUnwind.frames.mid(0, std::min(1024, m_currentUnwind.ipStack.length()));
+    for (const auto &stack_address : stack) {
+        cache[stack_address.address] = {frames, stack_address.frameOffset};
+    }
+}
+
+void PerfUnwind::stitchCurrentCallchain()
+{
+    // FIXME: use a command line switch
+    if (!qEnvironmentVariableIsSet("STITCH_CALLCHAIN"))
+        return;
+
+    if (m_currentUnwind.firstGuessedFrame != -1)
+        return;
+
+    if (m_currentUnwind.ipStack.isEmpty())
+        return;
+
+    const auto& cache = m_ipCache[m_currentUnwind.sample->pid()];
+    auto it = cache.find(m_currentUnwind.ipStack.last().address);
+
+    if (it != cache.end()) {
+        it->appendFramesTo(m_currentUnwind.frames);
+    }
+
+    updateIpCache();
 }
 
 void PerfUnwind::fork(const PerfRecordFork &sample)
@@ -1048,3 +1091,4 @@ void PerfUnwind::sendTaskEvent(const TaskEvent& taskEvent)
 
     sendBuffer(buffer);
 }
+
