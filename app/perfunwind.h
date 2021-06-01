@@ -190,6 +190,11 @@ public:
     int maxUnwindFrames() const { return m_currentUnwind.maxFrames; }
     void setMaxUnwindFrames(int maxUnwindFrames) { m_currentUnwind.maxFrames = maxUnwindFrames; }
 
+    void setEnableCallchainStitching(bool enable)
+    {
+        m_stitchCallChain = enable;
+    }
+
     PerfRegisterInfo::Architecture architecture() const { return m_architecture; }
     void setArchitecture(PerfRegisterInfo::Architecture architecture)
     {
@@ -345,6 +350,8 @@ private:
     uint m_eventBufferSize;
 
     uint m_timeOrderViolations;
+
+    bool m_stitchCallChain = false;
 
     quint64 m_lastFlushMaxTime;
     QSysInfo::Endian m_byteOrder = QSysInfo::LittleEndian;

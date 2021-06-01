@@ -705,8 +705,7 @@ void PerfUnwind::updateIpCache()
 
 void PerfUnwind::stitchCurrentCallchain()
 {
-    // FIXME: use a command line switch
-    if (!qEnvironmentVariableIsSet("STITCH_CALLCHAIN"))
+    if (!m_stitchCallChain)
         return;
 
     if (m_currentUnwind.firstGuessedFrame != -1)

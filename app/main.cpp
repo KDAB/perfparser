@@ -214,6 +214,12 @@ int main(int argc, char *argv[])
                                    QLatin1String("max-frames"), QLatin1String("64"));
     parser.addOption(maxFrames);
 
+    QCommandLineOption stitchCallchain(QLatin1String("stitch-callchain"),
+                                   QCoreApplication::translate(
+                                   "main", "Enabling callchain stitching. This feature is"
+                                   " experimental and can improve stacktraces by stitching broken"
+                                   " callchains together."));
+    parser.addOption(stitchCallchain);
     parser.process(app);
 
     QScopedPointer<QFile> outfile;
@@ -281,6 +287,7 @@ int main(int argc, char *argv[])
     unwind.setTargetEventBufferSize(targetEventBufferSize);
     unwind.setMaxEventBufferSize(maxEventBufferSize);
     unwind.setMaxUnwindFrames(maxFramesValue);
+    unwind.setEnableCallchainStitching(parser.isSet(stitchCallchain));
 
     PerfHeader header(infile.data());
     PerfAttributes attributes;
