@@ -4,6 +4,6 @@ Project {
     name: "PerfParserAutotests"
     condition: project.withAutotests
     references: [
-        "addresscache", "elfmap", "kallsyms", "perfdata", "perfstdin"
+        "addresscache", "elfmap", "kallsyms", "perfdata", "perfstdin", "finddebugsym"
     ]
 }
