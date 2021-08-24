@@ -4,6 +4,7 @@ SUBDIRS = \
     elfmap \
     kallsyms \
     perfdata \
-    perfstdin
+    perfstdin \
+    finddebugsym
 
 OTHER_FILES += auto.qbs
