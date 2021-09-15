@@ -15,5 +15,12 @@ set_package_properties(LibRustcDemangle PROPERTIES
         URL "https://github.com/alexcrichton/rustc-demangle"
         TYPE RUNTIME)
 
+find_package(LibDDemangle)
+set_package_properties(LibDDemangle PROPERTIES
+        DESCRIPTION "Demangling for D symbols, written in D."
+        PURPOSE "Demangling of D symbols"
+        URL "https://github.com/lievenhey/d_demangler"
+        TYPE RUNTIME)
+
 add_subdirectory(app)
 add_subdirectory(tests)
