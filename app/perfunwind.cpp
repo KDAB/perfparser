@@ -677,6 +677,7 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
                     = readTraceData(data, field, m_byteOrder != QSysInfo::ByteOrder);
         }
         stream << traceData;
+        stream << eventFormatId;
     }
 
     sendBuffer(buffer);
