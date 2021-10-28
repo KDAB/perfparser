@@ -337,6 +337,13 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
     }
 #endif
 
+    // list of events we are not interested in and just skip
+    // [UN]THROTTLE: if seen in a recording then commonly much too much to just warn on
+    case PERF_RECORD_THROTTLE:
+    case PERF_RECORD_UNTHROTTLE:
+        stream.skipRawData(contentSize);
+        break;
+
     default:
         qWarning() << "unhandled event type" << m_eventHeader.type << " " << perfEventToString(m_eventHeader.type);
         stream.skipRawData(contentSize);
