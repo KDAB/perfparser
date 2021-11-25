@@ -37,5 +37,7 @@ QtcAutotest {
         "../../../app/perftracingdata.h",
         "../../../app/perfunwind.cpp",
         "../../../app/perfunwind.h",
+        "../../../app/demangle.cpp",
+        "../../../app/demangle.h"
     ]
 }
