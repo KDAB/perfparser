@@ -204,6 +204,8 @@ bool PerfEventAttributes::operator==(const PerfEventAttributes &rhs) const
         && m_sampleIdAll == rhs.m_sampleIdAll
         && m_excludeHost == rhs.m_excludeHost
         && m_excludeGuest == rhs.m_excludeGuest
+        && m_excludeCallchainKernel == rhs.m_excludeCallchainKernel
+        && m_excludeCallchainUser == rhs.m_excludeCallchainUser
         && m_reserved1 == rhs.m_reserved1
         && m_wakeupEvents == rhs.m_wakeupEvents
         && m_bpType == rhs.m_bpType
