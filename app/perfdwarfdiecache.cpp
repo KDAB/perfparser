@@ -17,6 +17,8 @@
 **
 ****************************************************************************/
 
+#include <time.h>
+
 #include "perfdwarfdiecache.h"
 #include "perfeucompat.h"
 
@@ -186,7 +188,7 @@ void prependScopeNames(QByteArray &name, Dwarf_Die *die, QHash<Dwarf_Off, QByteA
         if (auto scopeLinkageName = linkageName(scope)) {
             // prepend the fully qualified linkage name
             name.prepend("::");
-            cacheOps.append({scopeOffset, name.size()});
+            cacheOps.append({scopeOffset, int(name.size())});
             // we have to demangle the scope linkage name, otherwise we get a
             // mish-mash of mangled and non-mangled names
             name.prepend(demangle(scopeLinkageName));
@@ -197,15 +199,15 @@ void prependScopeNames(QByteArray &name, Dwarf_Die *die, QHash<Dwarf_Off, QByteA
         if (auto scopeName = dwarf_diename(scope)) {
             // prepend this scope's name, e.g. the class or namespace name
             name.prepend("::");
-            cacheOps.append({scopeOffset, name.size()});
+            cacheOps.append({scopeOffset, int(name.size())});
             name.prepend(scopeName);
         }
 
         if (auto specification = specificationDie(scope, &dieMem)) {
             eu_compat_free(scopes);
             scopes = nullptr;
-            cacheOps.append({scopeOffset, name.size()});
-            cacheOps.append({dwarf_dieoffset(specification), name.size()});
+            cacheOps.append({scopeOffset, int(name.size())});
+            cacheOps.append({dwarf_dieoffset(specification), int(name.size())});
             // follow the scope's specification DIE instead
             prependScopeNames(name, specification, cache);
             break;

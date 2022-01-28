@@ -20,6 +20,7 @@
 #include "perfkallsyms.h"
 
 #include <QFile>
+#include <QLocale>
 #include <QTextStream>
 
 #include <algorithm>

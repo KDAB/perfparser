@@ -25,9 +25,9 @@ add_qtc_library(perfparser_lib STATIC
 )
 
 if (Zstd_FOUND)
-    target_include_directories(perfparser_lib PRIVATE ${Zstd_INCLUDE_DIR})
-    target_link_libraries(perfparser_lib PRIVATE ${Zstd_LIBRARY})
-    target_compile_definitions(perfparser_lib PRIVATE HAVE_ZSTD=1)
+    target_include_directories(perfparser_lib PUBLIC ${Zstd_INCLUDE_DIR})
+    target_link_libraries(perfparser_lib PUBLIC ${Zstd_LIBRARY})
+    target_compile_definitions(perfparser_lib PUBLIC HAVE_ZSTD=1)
 endif()
 
 add_qtc_executable(perfparser
