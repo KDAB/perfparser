@@ -30,9 +30,11 @@
 
 #include <QDebug>
 #include <QDir>
+#include <QScopeGuard>
 #include <QStack>
 
 #include <dwarf.h>
+#include <elfutils/libdwelf.h>
 
 #if HAVE_DWFL_GET_DEBUGINFOD_CLIENT
 #include <debuginfod.h>
@@ -115,7 +117,33 @@ static QStringList splitPath(const QString &path)
     return path.split(QDir::listSeparator(), Qt::SkipEmptyParts);
 }
 
-QFileInfo PerfSymbolTable::findFile(const QString& path, const QString& fileName, const QByteArray& buildId) const
+static bool matchesBuildId(const QByteArray &buildId, const QFileInfo& path)
+{
+    if (buildId.isEmpty())
+        return true;
+
+    QFile file(path.absoluteFilePath());
+    file.open(QIODevice::ReadOnly);
+    if (!file.isOpen())
+        return false;
+
+    auto elf = elf_begin(file.handle(), ELF_C_READ, NULL);
+    auto guard = qScopeGuard([elf] { elf_end(elf); });
+
+    if (!elf)
+        return false;
+
+    const void* pathBuildId = nullptr;
+    auto len = dwelf_elf_gnu_build_id(elf, &pathBuildId);
+
+    if (len != buildId.size())
+        return false;
+
+    return memcmp(buildId.constData(), pathBuildId, len) == 0;
+}
+
+QFileInfo PerfSymbolTable::findFile(const QString& path, const QString &fileName,
+                                    const QByteArray &buildId) const
 {
     QFileInfo fullPath;
     // first try to find the debug information via build id, if available
@@ -131,15 +159,17 @@ QFileInfo PerfSymbolTable::findFile(const QString& path, const QString& fileName
     if (!m_unwind->appPath().isEmpty()) {
         // try to find the file in the app path
         fullPath.setFile(m_unwind->appPath());
-        if (findInExtraPath(fullPath, fileName))
+        if (findInExtraPath(fullPath, fileName) && matchesBuildId(buildId, fullPath)) {
             return fullPath;
+        }
     }
 
     // try to find the file in the extra libs path
     foreach (const QString &extraPath, splitPath(m_unwind->extraLibsPath())) {
         fullPath.setFile(extraPath);
-        if (findInExtraPath(fullPath, fileName))
+        if (findInExtraPath(fullPath, fileName) && matchesBuildId(buildId, fullPath)) {
             return fullPath;
+        }
     }
 
     // last fall-back, try the system root
