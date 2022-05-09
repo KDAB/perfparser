@@ -30,9 +30,11 @@
 
 #include <QDebug>
 #include <QDir>
+#include <QScopeGuard>
 #include <QStack>
 
 #include <dwarf.h>
+#include <elfutils/libdwelf.h>
 
 #if HAVE_DWFL_GET_DEBUGINFOD_CLIENT
 #include <debuginfod.h>
@@ -115,7 +117,31 @@ static QStringList splitPath(const QString &path)
     return path.split(QDir::listSeparator(), Qt::SkipEmptyParts);
 }
 
-QFileInfo PerfSymbolTable::findFile(const QString& path, const QString& fileName, const QByteArray& buildId) const
+static QByteArray buildIdFromFile(const QFileInfo& path)
+{
+    QFile file(path.absoluteFilePath());
+    file.open(QIODevice::ReadOnly);
+    if (!file.isOpen())
+        return {};
+
+    Elf* elf = elf_begin(file.handle(), ELF_C_READ, NULL);
+
+    auto guard = qScopeGuard([elf] { elf_end(elf); });
+
+    if (!elf)
+        return {};
+
+    const void* buildId = nullptr;
+    auto len = dwelf_elf_gnu_build_id(elf, &buildId);
+
+    if (len <= 0)
+        return {};
+
+    return QByteArray(static_cast<const char*>(buildId), len);
+}
+
+QFileInfo PerfSymbolTable::findFile(const char *path, const QString &fileName,
+                                    const QByteArray &buildId) const
 {
     QFileInfo fullPath;
     // first try to find the debug information via build id, if available
@@ -131,15 +157,17 @@ QFileInfo PerfSymbolTable::findFile(const QString& path, const QString& fileName
     if (!m_unwind->appPath().isEmpty()) {
         // try to find the file in the app path
         fullPath.setFile(m_unwind->appPath());
-        if (findInExtraPath(fullPath, fileName))
+        if (findInExtraPath(fullPath, fileName) && buildId == buildIdFromFile(fullPath)) {
             return fullPath;
+        }
     }
 
     // try to find the file in the extra libs path
     foreach (const QString &extraPath, splitPath(m_unwind->extraLibsPath())) {
         fullPath.setFile(extraPath);
-        if (findInExtraPath(fullPath, fileName))
+        if (findInExtraPath(fullPath, fileName) && buildId == buildIdFromFile(fullPath)) {
             return fullPath;
+        }
     }
 
     // last fall-back, try the system root
