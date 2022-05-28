@@ -259,6 +259,19 @@ QVector<Dwarf_Die> findInlineScopes(Dwarf_Die *subprogram, Dwarf_Addr offset)
     return scopes;
 }
 
+DwarfSourceLocation findSourceLocation(Dwarf_Die* cuDie, Dwarf_Addr offset)
+{
+    DwarfSourceLocation ret;
+    if (auto srcloc = dwarf_getsrc_die(cuDie, offset)) {
+        if (const char* srcfile = dwarf_linesrc(srcloc, nullptr, nullptr)) {
+            ret.file = srcfile;
+            dwarf_lineno(srcloc, &ret.line);
+            dwarf_linecol(srcloc, &ret.column);
+        }
+    }
+    return ret;
+}
+
 SubProgramDie::SubProgramDie(Dwarf_Die die)
     : m_ranges{die, {}}
 {

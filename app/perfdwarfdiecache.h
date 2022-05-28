@@ -108,6 +108,25 @@ private:
  */
 QVector<Dwarf_Die> findInlineScopes(Dwarf_Die *subprogram, Dwarf_Addr offset);
 
+struct DwarfSourceLocation
+{
+    QByteArray file;
+    int line = -1;
+    int column = -1;
+
+    explicit operator bool() const
+    {
+        return !file.isEmpty();
+    }
+};
+/**
+ * @return the file name, line number and column for the instruction at the given @p offset in @p cuDie
+ * @p cuDie CU DIE that should be queried
+ * @p offset bias-corrected address of an instruction for which the information should be found
+ * @sa CuDieRangeMapping
+ */
+DwarfSourceLocation findSourceLocation(Dwarf_Die* cuDie, Dwarf_Addr offset);
+
 /**
  * This cache makes it easily possible to find a CU DIE (i.e. Compilation Unit Debugging Information Entry)
  * based on a

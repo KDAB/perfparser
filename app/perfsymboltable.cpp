@@ -841,15 +841,10 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
             if (cudie) {
                 bias = cudie->bias();
                 const auto offset = addressLocation.address - bias;
-                auto srcloc = dwarf_getsrc_die(cudie->cudie(), offset);
-                if (srcloc) {
-                    const char* srcfile = dwarf_linesrc(srcloc, nullptr, nullptr);
-                    if (srcfile) {
-                        const QByteArray file = srcfile;
-                        addressLocation.file = m_unwind->resolveString(file);
-                        dwarf_lineno(srcloc, &addressLocation.line);
-                        dwarf_linecol(srcloc, &addressLocation.column);
-                    }
+                if (auto srcloc = findSourceLocation(cudie->cudie(), offset)) {
+                    addressLocation.file = m_unwind->resolveString(srcloc.file);
+                    addressLocation.line = srcloc.line;
+                    addressLocation.column = srcloc.column;
                 }
 
                 auto *subprogram = cudie->findSubprogramDie(offset);
