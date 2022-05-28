@@ -836,7 +836,7 @@ bool PerfSymbolTable::containsAddress(quint64 address) const
     return m_elfs.isAddressInRange(address);
 }
 
-Dwfl *PerfSymbolTable::attachDwfl(const Dwfl_Thread_Callbacks *callbacks, void *arg)
+Dwfl *PerfSymbolTable::attachDwfl(const Dwfl_Thread_Callbacks *callbacks, PerfUnwind::UnwindInfo *unwindInfo)
 {
     if (static_cast<pid_t>(m_pid) == dwfl_pid(m_dwfl))
         return m_dwfl; // Already attached, nothing to do
@@ -844,14 +844,13 @@ Dwfl *PerfSymbolTable::attachDwfl(const Dwfl_Thread_Callbacks *callbacks, void *
     // only attach state when we have the required information for stack unwinding
     // for normal symbol resolution and inline frame resolution this is not needed
     // most notably, this isn't needed for frame pointer callchains
-    PerfUnwind::UnwindInfo *unwindInfo = static_cast<PerfUnwind::UnwindInfo *>(arg);
     const auto sampleType = unwindInfo->sample->type();
     const auto hasSampleRegsUser = (sampleType & PerfEventAttributes::SAMPLE_REGS_USER);
     const auto hasSampleStackUser = (sampleType & PerfEventAttributes::SAMPLE_STACK_USER);
     if (!hasSampleRegsUser || !hasSampleStackUser)
         return nullptr;
 
-    if (!dwfl_attach_state(m_dwfl, m_firstElf.elf(), m_pid, callbacks, arg)) {
+    if (!dwfl_attach_state(m_dwfl, m_firstElf.elf(), m_pid, callbacks, unwindInfo)) {
         qWarning() << m_pid << "failed to attach state" << dwfl_errmsg(dwfl_errno());
         return nullptr;
     }

@@ -72,7 +72,7 @@ public:
     void updatePerfMap();
     bool containsAddress(quint64 address) const;
 
-    Dwfl *attachDwfl(const Dwfl_Thread_Callbacks *callbacks, void *arg);
+    Dwfl *attachDwfl(const Dwfl_Thread_Callbacks *callbacks, PerfUnwind::UnwindInfo *unwindInfo);
     void clearCache();
     bool cacheIsDirty() const { return m_cacheIsDirty; }
 
