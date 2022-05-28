@@ -25,9 +25,23 @@
 
 #include "perfelfmap.h"
 
+#include <libdwfl.h>
+
 class PerfAddressCache
 {
 public:
+    static quint64 symbolAddress(quint64 addr, bool isArmArch)
+    {
+        // For dwfl API call we need the raw pointer into symtab, so we need to adjust ip.
+        return (!isArmArch || (addr & 1)) ? addr : addr + 1;
+    }
+
+    static quint64 alignedAddress(quint64 addr, bool isArmArch)
+    {
+        // Adjust addr back. The symtab entries are 1 off for all practical purposes.
+        return (isArmArch && (addr & 1)) ? addr - 1 : addr;
+    }
+
     struct AddressCacheEntry
     {
         AddressCacheEntry(int locationId = -1, bool isInterworking = false)
@@ -73,6 +87,10 @@ public:
     /// find the symbol that encompasses @p relAddr in @p filePath
     /// if the found symbol wasn't yet demangled, it will be demangled now
     SymbolCacheEntry findSymbol(const QByteArray &filePath, quint64 relAddr);
+
+    /// extract all symbols in @p module into a structure suitable to be passed to @p setSymbols
+    static SymbolCache extractSymbols(Dwfl_Module *module, quint64 elfStart, bool isArmArch);
+
 private:
     QHash<QByteArray, OffsetAddressCache> m_cache;
     QHash<QByteArray, SymbolCache> m_symbolCache;

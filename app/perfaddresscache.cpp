@@ -120,3 +120,20 @@ void PerfAddressCache::setSymbolCache(const QByteArray &filePath, SymbolCache ca
     cache.erase(std::unique(cache.begin(), cache.end()), cache.end());
     m_symbolCache[filePath] = cache;
 }
+
+PerfAddressCache::SymbolCache PerfAddressCache::extractSymbols(Dwfl_Module *module, quint64 elfStart, bool isArmArch)
+{
+    PerfAddressCache::SymbolCache cache;
+
+    const auto numSymbols = dwfl_module_getsymtab(module);
+    for (int i = 0; i < numSymbols; ++i) {
+        GElf_Sym sym;
+        GElf_Addr symAddr;
+        const auto symbol = dwfl_module_getsym_info(module, i, &sym, &symAddr, nullptr, nullptr, nullptr);
+        if (symbol) {
+            const quint64 start = alignedAddress(sym.st_value, isArmArch);
+            cache.append({symAddr - elfStart, start, sym.st_size, symbol});
+        }
+    }
+    return cache;
+}
