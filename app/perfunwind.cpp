@@ -49,6 +49,143 @@ bool operator==(const PerfUnwind::Location &a, const PerfUnwind::Location &b)
             && a.column == b.column;
 }
 
+static pid_t nextThread(Dwfl *dwfl, void *arg, void **threadArg)
+{
+    /* Stop after first thread. */
+    if (*threadArg != nullptr)
+        return 0;
+
+    *threadArg = arg;
+    return dwfl_pid(dwfl);
+}
+
+static void *memcpyTarget(Dwarf_Word *result, int wordWidth)
+{
+    if (wordWidth == 4)
+        return (uint32_t *)result;
+
+    Q_ASSERT(wordWidth == 8);
+    return result;
+}
+
+static void doMemcpy(Dwarf_Word *result, const void *src, int wordWidth)
+{
+    Q_ASSERT(wordWidth > 0);
+    *result = 0; // initialize, as we might only overwrite half of it
+    std::memcpy(memcpyTarget(result, wordWidth), src, static_cast<size_t>(wordWidth));
+}
+
+static quint64 registerAbi(const PerfRecordSample *sample)
+{
+    const quint64 abi = sample->registerAbi();
+    Q_ASSERT(abi > 0); // ABI 0 means "no registers" - we shouldn't unwind in this case.
+    return abi - 1;
+}
+
+static bool accessDsoMem(const PerfUnwind::UnwindInfo *ui, Dwarf_Addr addr,
+                         Dwarf_Word *result, int wordWidth)
+{
+    Q_ASSERT(wordWidth > 0);
+    // TODO: Take the pgoff into account? Or does elf_getdata do that already?
+    auto mod = ui->unwind->symbolTable(ui->sample->pid())->module(addr);
+    if (!mod)
+        return false;
+
+    Dwarf_Addr bias;
+    Elf_Scn *section = dwfl_module_address_section(mod, &addr, &bias);
+
+    if (section) {
+        Elf_Data *data = elf_getdata(section, nullptr);
+        if (data && data->d_buf && data->d_size > addr) {
+            doMemcpy(result, static_cast<char *>(data->d_buf) + addr, wordWidth);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+static bool memoryRead(Dwfl *, Dwarf_Addr addr, Dwarf_Word *result, void *arg)
+{
+    PerfUnwind::UnwindInfo *ui = static_cast<PerfUnwind::UnwindInfo *>(arg);
+    const int wordWidth =
+            PerfRegisterInfo::s_wordWidth[ui->unwind->architecture()][registerAbi(ui->sample)];
+
+    /* Check overflow. */
+    if (addr + sizeof(Dwarf_Word) < addr) {
+        qDebug() << "Invalid memory read requested by dwfl" << Qt::hex << addr;
+        ui->firstGuessedFrame = ui->frames.length();
+        return false;
+    }
+
+    const QByteArray &stack = ui->sample->userStack();
+
+    quint64 start = ui->sample->registerValue(
+                PerfRegisterInfo::s_perfSp[ui->unwind->architecture()]);
+    Q_ASSERT(stack.size() >= 0);
+    quint64 end = start + static_cast<quint64>(stack.size());
+
+    if (addr < start || addr + sizeof(Dwarf_Word) > end) {
+        // not stack, try reading from ELF
+        if (ui->unwind->ipIsInKernelSpace(addr)) {
+            // DWARF unwinding is not done for the kernel
+            qWarning() << "DWARF unwind tried to access kernel space" << Qt::hex << addr;
+            return false;
+        }
+        if (!accessDsoMem(ui, addr, result, wordWidth)) {
+            ui->firstGuessedFrame = ui->frames.length();
+            const QHash<quint64, Dwarf_Word> &stackValues = ui->stackValues[ui->sample->pid()];
+            auto it = stackValues.find(addr);
+            if (it == stackValues.end()) {
+                return false;
+            } else {
+                *result = *it;
+            }
+        }
+    } else {
+        doMemcpy(result, &(stack.data()[addr - start]), wordWidth);
+        ui->stackValues[ui->sample->pid()][addr] = *result;
+    }
+    return true;
+}
+
+static bool setInitialRegisters(Dwfl_Thread *thread, void *arg)
+{
+    const PerfUnwind::UnwindInfo *ui = static_cast<PerfUnwind::UnwindInfo *>(arg);
+    const quint64 abi = registerAbi(ui->sample);
+    const uint architecture = ui->unwind->architecture();
+    const int numRegs = PerfRegisterInfo::s_numRegisters[architecture][abi];
+    Q_ASSERT(numRegs >= 0);
+    QVarLengthArray<Dwarf_Word, 64> dwarfRegs(numRegs);
+    for (int i = 0; i < numRegs; ++i) {
+        dwarfRegs[i] = ui->sample->registerValue(
+                    PerfRegisterInfo::s_perfToDwarf[architecture][abi][i]);
+    }
+
+    // Go one frame up to get the rest of the stack at interworking veneers.
+    if (ui->isInterworking) {
+        dwarfRegs[static_cast<int>(PerfRegisterInfo::s_dwarfIp[architecture][abi])] =
+                dwarfRegs[static_cast<int>(PerfRegisterInfo::s_dwarfLr[architecture][abi])];
+    }
+
+    int dummyBegin = PerfRegisterInfo::s_dummyRegisters[architecture][0];
+    int dummyNum = PerfRegisterInfo::s_dummyRegisters[architecture][1] - dummyBegin;
+
+    if (dummyNum > 0) {
+        QVarLengthArray<Dwarf_Word, 64> dummyRegs(dummyNum);
+        std::memset(dummyRegs.data(), 0, static_cast<size_t>(dummyNum) * sizeof(Dwarf_Word));
+        if (!dwfl_thread_state_registers(thread, dummyBegin, static_cast<uint>(dummyNum),
+                                         dummyRegs.data()))
+            return false;
+    }
+
+    return dwfl_thread_state_registers(thread, 0, static_cast<uint>(numRegs), dwarfRegs.data());
+}
+
+static const Dwfl_Thread_Callbacks threadCallbacks = {
+    nextThread, nullptr, memoryRead, setInitialRegisters, nullptr, nullptr
+};
+
 void PerfUnwind::Stats::addEventTime(quint64 time)
 {
     if (time && time < maxTime)
@@ -410,7 +547,7 @@ static int frameCallback(Dwfl_Frame *state, void *arg)
 
 void PerfUnwind::unwindStack()
 {
-    Dwfl *dwfl = symbolTable(m_currentUnwind.sample->pid())->attachDwfl(&m_currentUnwind);
+    Dwfl *dwfl = symbolTable(m_currentUnwind.sample->pid())->attachDwfl(&threadCallbacks, &m_currentUnwind);
     if (!dwfl)
         return;
 
@@ -442,7 +579,7 @@ void PerfUnwind::resolveCallchain()
     PerfSymbolTable *symbols = symbolTable(m_currentUnwind.sample->pid());
 
     auto reportIp = [&](quint64 ip) -> bool {
-        symbols->attachDwfl(&m_currentUnwind);
+        symbols->attachDwfl(&threadCallbacks, &m_currentUnwind);
         m_currentUnwind.frames.append(symbols->lookupFrame(ip, isKernel,
                                             &m_currentUnwind.isInterworking));
         return !symbols->cacheIsDirty();
