@@ -214,7 +214,12 @@ void PerfParserTestClient::convertToText(QTextStream &out) const
             if (attribute.type == 2) {
                 const auto format = tracePointFormat(static_cast<qint32>(attribute.config));
                 out << string(format.system) << ' ' << string(format.name) << ' ' << Qt::hex << format.flags << Qt::dec << '\n';
+                // we need stable output to allow comparisons, so convert to map
+                QMap<qint32, QVariant> sortedTracePointData;
                 for (auto it = sample.tracePointData.begin(); it != sample.tracePointData.end(); ++it) {
+                    sortedTracePointData.insert(it.key(), it.value());
+                }
+                for (auto it = sortedTracePointData.begin(); it != sortedTracePointData.end(); ++it) {
                     out << "\t\t" << string(it.key()) << '=' << it.value().toString() << '\n';
                 }
             } else {

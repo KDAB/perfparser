@@ -43,7 +43,7 @@ private slots:
 };
 
 static void setupUnwind(PerfUnwind *unwind, PerfHeader *header, QIODevice *input,
-                        PerfAttributes *attributes, PerfData *data)
+                        PerfAttributes *attributes, PerfData *data, const QByteArray &expectedVersion)
 {
     if (!header->isPipe()) {
         const qint64 filePos = input->pos();
@@ -58,7 +58,7 @@ static void setupUnwind(PerfUnwind *unwind, PerfHeader *header, QIODevice *input
 
         PerfTracingData tracingData = features.tracingData();
         if (tracingData.size() > 0)
-            QCOMPARE(tracingData.version(), QByteArray("0.5"));
+            QCOMPARE(tracingData.version(), expectedVersion);
 
         unwind->features(features);
         const auto& attrs = attributes->attributes();
@@ -70,7 +70,7 @@ static void setupUnwind(PerfUnwind *unwind, PerfHeader *header, QIODevice *input
     }
 }
 
-static void process(PerfUnwind *unwind, QIODevice *input)
+static void process(PerfUnwind *unwind, QIODevice *input, const QByteArray &expectedVersion)
 {
     PerfHeader header(input);
     PerfAttributes attributes;
@@ -79,7 +79,7 @@ static void process(PerfUnwind *unwind, QIODevice *input)
 
     QSignalSpy spy(&data, SIGNAL(finished()));
     QObject::connect(&header, &PerfHeader::finished, &data, [&](){
-        setupUnwind(unwind, &header, input, &attributes, &data);
+        setupUnwind(unwind, &header, input, &attributes, &data, expectedVersion);
         data.read();
     });
 
@@ -146,7 +146,7 @@ void TestPerfData::testTracingData()
                              "/lib/x86_64-linux-gnu/libc-2.24.so. "
                              "This can break stack unwinding and lead to missing symbols.")));
     }
-    process(&unwind, &input);
+    process(&unwind, &input, QByteArray("0.5"));
 
     if (stats) {
         const PerfUnwind::Stats stats = unwind.stats();
@@ -200,7 +200,7 @@ void TestPerfData::testContentSize()
 
     // Don't try to load any system files. They are not the same as the ones we use to report.
     PerfUnwind unwind(&output, ":/", QString(), QString(), QString(), true);
-    process(&unwind, &input);
+    process(&unwind, &input, QByteArray("0.5"));
 
     QCOMPARE(unwind.stats().numSamples, 69u);
 }
@@ -254,6 +254,7 @@ void TestPerfData::testFiles_data()
     uncompressFile(QFINDTESTDATA("vector_static_clang/vector_static_clang_v8.0.1.zlib"));
     uncompressFile(QFINDTESTDATA("vector_static_gcc/vector_static_gcc_v9.1.0.zlib"));
     uncompressFile(QFINDTESTDATA("fork_static_gcc/fork.zlib"));
+    uncompressFile(QFINDTESTDATA("parallel_static_gcc/parallel_static_gcc.zlib"));
 
     const auto files = {
         "vector_static_clang/perf.data",
@@ -261,6 +262,7 @@ void TestPerfData::testFiles_data()
         "vector_static_gcc/perf.lbr.data",
         "vector_static_gcc/perf.data.zstd",
         "fork_static_gcc/perf.data.zstd",
+        "parallel_static_gcc/perf.data.zstd",
     };
     for (auto file : files)
         QTest::addRow("%s", file) << file;
@@ -297,7 +299,11 @@ void TestPerfData::testFiles()
         if (QTest::currentDataTag() != QLatin1String("fork_static_gcc/perf.data.zstd"))
             QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Failed to parse kernel symbol mapping file \".+\": Mapping is empty"));
         unwind.setKallsymsPath(QProcess::nullDevice());
-        process(&unwind, &input);
+
+        auto version = QByteArray("0.5");
+        if (dataFile == "parallel_static_gcc/perf.data.zstd")
+            version = "0.6";
+        process(&unwind, &input, version);
     }
 
     output.close();

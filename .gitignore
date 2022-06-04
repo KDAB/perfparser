@@ -7,3 +7,5 @@ tests/auto/perfdata/vector_static_gcc/perf.data
 tests/auto/perfdata/vector_static_gcc/perf.data.zstd
 tests/auto/perfdata/vector_static_gcc/perf.lbr.data
 tests/auto/perfdata/vector_static_gcc/vector_static_gcc_v9.1.0
+tests/auto/perfdata/parallel_static_gcc/parallel_static_gcc
+tests/auto/perfdata/parallel_static_gcc/perf.data.zstd
