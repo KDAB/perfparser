@@ -207,8 +207,8 @@ vector_static_c	337401	337401	57697.314709902
 	45abd3 45abd3	0 0
 	45ab80 0	45ab80 3d8	__memcpy_avx_unaligned_erms vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40272f 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:911:2	0 0
-	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	_ZSt14__relocate_a_1IddENSt9enable_ifIXsr3std24__is_bitwise_relocatableIT_EE5valueEPS1_E4typeES2_S2_S2_RSaIT0_E vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402716 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	_ZSt14__relocate_a_1IddENSt9enable_ifIXsr3std24__is_bitwise_relocatableIT_EE5valueEPS1_E4typeES2_S2_S2_RSaIT0_E vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	std::enable_if<std::__is_bitwise_relocatable<double>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402716 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	std::enable_if<std::__is_bitwise_relocatable<double>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:946:-1	0 0
 	402716 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:940:0	402610 251	double* std::__relocate_a<double*, double*, std::allocator<double> >(double*, double*, double*, std::allocator<double>&) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_vector.h:453:-1	0 0
@@ -284,8 +284,8 @@ vector_static_c	337401	337401	57697.314996642
 	418ccf 418ccf	0 0
 	4189a0 0	4189a0 82a	__sin_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40264b 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:438:14	0 0
-	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	./vector.cpp:13:-1	0 0
 	402640 40264b	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -325,8 +325,8 @@ vector_static_c	337401	337401	57697.315177730
 	45abd3 45abd3	0 0
 	45ab80 0	45ab80 3d8	__memcpy_avx_unaligned_erms vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40272f 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:911:2	0 0
-	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	_ZSt14__relocate_a_1IddENSt9enable_ifIXsr3std24__is_bitwise_relocatableIT_EE5valueEPS1_E4typeES2_S2_S2_RSaIT0_E vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402716 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	_ZSt14__relocate_a_1IddENSt9enable_ifIXsr3std24__is_bitwise_relocatableIT_EE5valueEPS1_E4typeES2_S2_S2_RSaIT0_E vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	std::enable_if<std::__is_bitwise_relocatable<double>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402716 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	std::enable_if<std::__is_bitwise_relocatable<double>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:946:-1	0 0
 	402716 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:940:0	402610 251	double* std::__relocate_a<double*, double*, std::allocator<double> >(double*, double*, double*, std::allocator<double>&) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_vector.h:453:-1	0 0
@@ -379,8 +379,8 @@ vector_static_c	337401	337401	57697.315580327
 	419570 419570	0 0
 	4191d0 0	4191d0 82d	__cos_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402662 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:197:14	0 0
-	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402652 0	./vector.cpp:14:-1	0 0
 	402640 402662	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -429,8 +429,8 @@ vector_static_c	337401	337401	57697.316007790
 	4195a5 4195a5	0 0
 	4191d0 0	4191d0 82d	__cos_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402662 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:197:14	0 0
-	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402652 0	./vector.cpp:14:-1	0 0
 	402640 402662	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -471,8 +471,8 @@ vector_static_c	337401	337401	57697.316454465
 	4189dc 4189dc	0 0
 	4189a0 0	4189a0 82a	__sin_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40264b 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:438:14	0 0
-	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	./vector.cpp:13:-1	0 0
 	402640 40264b	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -490,8 +490,8 @@ vector_static_c	337401	337401	57697.316683420
 	419460 419460	0 0
 	4191d0 0	4191d0 82d	__cos_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402662 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:197:14	0 0
-	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402652 0	./vector.cpp:14:-1	0 0
 	402640 402662	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -513,8 +513,8 @@ vector_static_c	337401	337401	57697.316915884
 	45abd3 45abd3	0 0
 	45ab80 0	45ab80 3d8	__memcpy_avx_unaligned_erms vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40272f 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:911:2	0 0
-	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	_ZSt14__relocate_a_1IddENSt9enable_ifIXsr3std24__is_bitwise_relocatableIT_EE5valueEPS1_E4typeES2_S2_S2_RSaIT0_E vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402716 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	_ZSt14__relocate_a_1IddENSt9enable_ifIXsr3std24__is_bitwise_relocatableIT_EE5valueEPS1_E4typeES2_S2_S2_RSaIT0_E vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	std::enable_if<std::__is_bitwise_relocatable<double>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402716 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	std::enable_if<std::__is_bitwise_relocatable<double>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:946:-1	0 0
 	402716 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:940:0	402610 251	double* std::__relocate_a<double*, double*, std::allocator<double> >(double*, double*, double*, std::allocator<double>&) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_vector.h:453:-1	0 0
@@ -544,8 +544,8 @@ vector_static_c	337401	337401	57697.317152310
 	418ea6 418ea6	0 0
 	4189a0 0	4189a0 82a	__sin_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40264b 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:438:14	0 0
-	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	./vector.cpp:13:-1	0 0
 	402640 40264b	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -591,8 +591,8 @@ vector_static_c	337401	337401	57697.317867990
 	419228 419228	0 0
 	4191d0 0	4191d0 82d	__cos_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402662 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:197:14	0 0
-	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402652 0	./vector.cpp:14:-1	0 0
 	402640 402662	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -610,8 +610,8 @@ vector_static_c	337401	337401	57697.318113678
 	418c6c 418c6c	0 0
 	4189a0 0	4189a0 82a	__sin_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40264b 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:438:14	0 0
-	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	./vector.cpp:13:-1	0 0
 	402640 40264b	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -629,8 +629,8 @@ vector_static_c	337401	337401	57697.318357113
 	4191ea 4191ea	0 0
 	4191d0 0	4191d0 82d	__cos_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402662 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:197:14	0 0
-	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402652 0	./vector.cpp:14:-1	0 0
 	402640 402662	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -648,8 +648,8 @@ vector_static_c	337401	337401	57697.318600578
 	4194cb 4194cb	0 0
 	4191d0 0	4191d0 82d	__cos_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402662 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:197:14	0 0
-	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402652 0	./vector.cpp:14:-1	0 0
 	402640 402662	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -667,8 +667,8 @@ vector_static_c	337401	337401	57697.318844689
 	4189a8 4189a8	0 0
 	4189a0 0	4189a0 82a	__sin_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40264b 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:438:14	0 0
-	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	./vector.cpp:13:-1	0 0
 	402640 40264b	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -708,8 +708,8 @@ vector_static_c	337401	337401	57697.319090507
 	45abd3 45abd3	0 0
 	45ab80 0	45ab80 3d8	__memcpy_avx_unaligned_erms vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40272f 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:911:2	0 0
-	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	_ZSt14__relocate_a_1IddENSt9enable_ifIXsr3std24__is_bitwise_relocatableIT_EE5valueEPS1_E4typeES2_S2_S2_RSaIT0_E vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402716 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	_ZSt14__relocate_a_1IddENSt9enable_ifIXsr3std24__is_bitwise_relocatableIT_EE5valueEPS1_E4typeES2_S2_S2_RSaIT0_E vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	std::enable_if<std::__is_bitwise_relocatable<double>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402716 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	std::enable_if<std::__is_bitwise_relocatable<double>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:946:-1	0 0
 	402716 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:940:0	402610 251	double* std::__relocate_a<double*, double*, std::allocator<double> >(double*, double*, double*, std::allocator<double>&) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_vector.h:453:-1	0 0
@@ -741,8 +741,8 @@ vector_static_c	337401	337401	57697.319339920
 	45abd3 45abd3	0 0
 	45ab80 0	45ab80 3d8	__memcpy_avx_unaligned_erms vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40272f 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:911:2	0 0
-	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	_ZSt14__relocate_a_1IddENSt9enable_ifIXsr3std24__is_bitwise_relocatableIT_EE5valueEPS1_E4typeES2_S2_S2_RSaIT0_E vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402716 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	_ZSt14__relocate_a_1IddENSt9enable_ifIXsr3std24__is_bitwise_relocatableIT_EE5valueEPS1_E4typeES2_S2_S2_RSaIT0_E vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	std::enable_if<std::__is_bitwise_relocatable<double>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402716 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	std::enable_if<std::__is_bitwise_relocatable<double>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:946:-1	0 0
 	402716 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:940:0	402610 251	double* std::__relocate_a<double*, double*, std::allocator<double> >(double*, double*, double*, std::allocator<double>&) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_vector.h:453:-1	0 0
@@ -793,8 +793,8 @@ vector_static_c	337401	337401	57697.319833871
 	418f18 418f18	0 0
 	4189a0 0	4189a0 82a	__sin_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40264b 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:438:14	0 0
-	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	./vector.cpp:13:-1	0 0
 	402640 40264b	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -812,8 +812,8 @@ vector_static_c	337401	337401	57697.320080523
 	418c60 418c60	0 0
 	4189a0 0	4189a0 82a	__sin_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40264b 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:438:14	0 0
-	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	./vector.cpp:13:-1	0 0
 	402640 40264b	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -854,8 +854,8 @@ vector_static_c	337401	337401	57697.320578420
 	418b82 418b82	0 0
 	4189a0 0	4189a0 82a	__sin_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40264b 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:438:14	0 0
-	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	./vector.cpp:13:-1	0 0
 	402640 40264b	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -919,8 +919,8 @@ vector_static_c	337401	337401	57697.321337274
 	4196b8 4196b8	0 0
 	4191d0 0	4191d0 82d	__cos_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402662 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:197:14	0 0
-	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402652 0	./vector.cpp:14:-1	0 0
 	402640 402662	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -982,8 +982,8 @@ vector_static_c	337401	337401	57697.321740591
 	419541 419541	0 0
 	4191d0 0	4191d0 82d	__cos_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402662 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:197:14	0 0
-	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402652 0	./vector.cpp:14:-1	0 0
 	402640 402662	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -1001,8 +1001,8 @@ vector_static_c	337401	337401	57697.321900495
 	418b82 418b82	0 0
 	4189a0 0	4189a0 82a	__sin_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40264b 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:438:14	0 0
-	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	./vector.cpp:13:-1	0 0
 	402640 40264b	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -1033,8 +1033,8 @@ vector_static_c	337401	337401	57697.322260841
 	418f07 418f07	0 0
 	4189a0 0	4189a0 82a	__sin_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40264b 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:438:14	0 0
-	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	./vector.cpp:13:-1	0 0
 	402640 40264b	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -1052,8 +1052,8 @@ vector_static_c	337401	337401	57697.322457215
 	419536 419536	0 0
 	4191d0 0	4191d0 82d	__cos_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402662 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:197:14	0 0
-	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402652 0	./vector.cpp:14:-1	0 0
 	402640 402662	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -1073,8 +1073,8 @@ vector_static_c	337401	337401	57697.322742520
 	45abd3 45abd3	0 0
 	45ab80 0	45ab80 3d8	__memcpy_avx_unaligned_erms vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40272f 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:911:2	0 0
-	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	_ZSt14__relocate_a_1IddENSt9enable_ifIXsr3std24__is_bitwise_relocatableIT_EE5valueEPS1_E4typeES2_S2_S2_RSaIT0_E vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402716 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	_ZSt14__relocate_a_1IddENSt9enable_ifIXsr3std24__is_bitwise_relocatableIT_EE5valueEPS1_E4typeES2_S2_S2_RSaIT0_E vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	std::enable_if<std::__is_bitwise_relocatable<double>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402716 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	std::enable_if<std::__is_bitwise_relocatable<double>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:946:-1	0 0
 	402716 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:940:0	402610 251	double* std::__relocate_a<double*, double*, std::allocator<double> >(double*, double*, double*, std::allocator<double>&) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_vector.h:453:-1	0 0
@@ -1126,8 +1126,8 @@ vector_static_c	337401	337401	57697.322955746
 	45abd3 45abd3	0 0
 	45ab80 0	45ab80 3d8	__memcpy_avx_unaligned_erms vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40272f 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:911:2	0 0
-	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	_ZSt14__relocate_a_1IddENSt9enable_ifIXsr3std24__is_bitwise_relocatableIT_EE5valueEPS1_E4typeES2_S2_S2_RSaIT0_E vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402716 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	_ZSt14__relocate_a_1IddENSt9enable_ifIXsr3std24__is_bitwise_relocatableIT_EE5valueEPS1_E4typeES2_S2_S2_RSaIT0_E vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	std::enable_if<std::__is_bitwise_relocatable<double>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402716 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:906:0	402610 251	std::enable_if<std::__is_bitwise_relocatable<double>::value, double*>::type std::__relocate_a_1<double, double>(double*, double*, double*, std::allocator<double>&) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:946:-1	0 0
 	402716 40272f	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_uninitialized.h:940:0	402610 251	double* std::__relocate_a<double*, double*, std::allocator<double> >(double*, double*, double*, std::allocator<double>&) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402716 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_vector.h:453:-1	0 0
@@ -1157,8 +1157,8 @@ vector_static_c	337401	337401	57697.323166410
 	4194a3 4194a3	0 0
 	4191d0 0	4191d0 82d	__cos_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402662 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:197:14	0 0
-	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402652 0	./vector.cpp:14:-1	0 0
 	402640 402662	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -1176,8 +1176,8 @@ vector_static_c	337401	337401	57697.323379243
 	4189ba 4189ba	0 0
 	4189a0 0	4189a0 82a	__sin_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40264b 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:438:14	0 0
-	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	./vector.cpp:13:-1	0 0
 	402640 40264b	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -1195,8 +1195,8 @@ vector_static_c	337401	337401	57697.323596731
 	418f18 418f18	0 0
 	4189a0 0	4189a0 82a	__sin_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40264b 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:438:14	0 0
-	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	./vector.cpp:13:-1	0 0
 	402640 40264b	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -1214,8 +1214,8 @@ vector_static_c	337401	337401	57697.323818911
 	418cc3 418cc3	0 0
 	4189a0 0	4189a0 82a	__sin_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40264b 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:438:14	0 0
-	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	./vector.cpp:13:-1	0 0
 	402640 40264b	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -1233,8 +1233,8 @@ vector_static_c	337401	337401	57697.324045267
 	419654 419654	0 0
 	4191d0 0	4191d0 82d	__cos_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402662 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:197:14	0 0
-	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402652 0	./vector.cpp:14:-1	0 0
 	402640 402662	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -1275,8 +1275,8 @@ vector_static_c	337401	337401	57697.324507478
 	4189c2 4189c2	0 0
 	4189a0 0	4189a0 82a	__sin_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	40264b 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:438:14	0 0
-	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402640 40264b	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:437:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	./vector.cpp:13:-1	0 0
 	402640 40264b	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0
@@ -1294,8 +1294,8 @@ vector_static_c	337401	337401	57697.324744798
 	419228 419228	0 0
 	4191d0 0	4191d0 82d	__cos_fma vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402662 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:197:14	0 0
-	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
-	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_ vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
+	402652 402662	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/cmath:196:0	402610 251	__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int) vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402652 0	./vector.cpp:14:-1	0 0
 	402640 402662	./vector.cpp:12:0	402610 251	main::$_0::operator()() vector_static_clang_v8.0.1 /tmp/vector_static_clang_v8.0.1 
 	402640 0	/usr/bin/../lib64/gcc/x86_64-pc-linux-gnu/9.1.0/../../../../include/c++/9.1.0/bits/stl_algo.h:4450:-1	0 0

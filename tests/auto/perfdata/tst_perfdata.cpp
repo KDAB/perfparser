@@ -261,8 +261,22 @@ void TestPerfData::testFiles()
         stream.flush();
 
         // some older platforms produce strange type names for complex doubles...
-        // use the new form as the canonical form
-        actualText.replace("doublecomplex ", "double _Complex");
+        // similarly, older systems failed to demangle some symbols
+        // always use the new form as the canonical form in our expected files
+        // and replace the actual text in case we run on an older system
+        const std::pair<const char*, const char*> replacements[] = {
+            {"doublecomplex ", "double _Complex"},
+            {"_ZSt3cosIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_",
+             "__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::cos<int>(int)"},
+            {"_ZSt3sinIiEN9__gnu_cxx11__enable_ifIXsr12__is_integerIT_EE7__valueEdE6__typeES2_",
+             "__gnu_cxx::__enable_if<__is_integer<int>::__value, double>::__type std::sin<int>(int)"},
+            {"_ZSt14__relocate_a_1IddENSt9enable_ifIXsr3std24__is_bitwise_relocatableIT_EE5valueEPS1_E4typeES2_S2_S2_"
+             "RSaIT0_E",
+             "std::enable_if<std::__is_bitwise_relocatable<double>::value, double*>::type std::__relocate_a_1<double, "
+             "double>(double*, double*, double*, std::allocator<double>&)"}};
+        for (const auto& replacement : replacements) {
+            actualText.replace(replacement.first, replacement.second);
+        }
 
         QFile actual(actualOutputFile);
         QVERIFY(actual.open(QIODevice::WriteOnly | QIODevice::Text));
