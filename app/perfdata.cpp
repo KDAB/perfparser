@@ -345,7 +345,7 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
         break;
 
     default:
-        qWarning() << "unhandled event type" << m_eventHeader.type << " " << perfEventToString(m_eventHeader.type);
+        qDebug() << "unhandled event type" << m_eventHeader.type << " " << perfEventToString(m_eventHeader.type);
         stream.skipRawData(contentSize);
         break;
     }

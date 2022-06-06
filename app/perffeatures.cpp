@@ -106,7 +106,8 @@ void PerfFeatures::createFeature(QIODevice *device, QDataStream::ByteOrder byteO
         stream >> m_compressed;
         break;
     default:
-        break;
+        qDebug() << "unhandled feature" << featureId << section.size;
+        return;
     }
 
     qint64 readSize = device->pos() - section.offset;
