@@ -205,9 +205,55 @@ void TestPerfData::testContentSize()
     QCOMPARE(unwind.stats().numSamples, 69u);
 }
 
+[[maybe_unused]] static void compressFile(const QString& input, const QString& output = QString())
+{
+    QVERIFY(!input.isEmpty() && QFile::exists(input));
+
+    if (output.isEmpty()) {
+        compressFile(input, input + ".zlib");
+        return;
+    }
+
+    QFile raw(input);
+    QVERIFY(raw.open(QIODevice::ReadOnly));
+
+    QFile compressed(output);
+    QVERIFY(compressed.open(QIODevice::WriteOnly));
+
+    compressed.write(qCompress(raw.readAll()));
+}
+
+static void uncompressFile(const QString& input, const QString& output = QString())
+{
+    QVERIFY(!input.isEmpty() && QFile::exists(input));
+
+    if (output.isEmpty()) {
+        auto suffix = QLatin1String(".zlib");
+        QVERIFY(input.endsWith(suffix));
+        uncompressFile(input, input.chopped(suffix.size()));
+        return;
+    }
+
+    QFile compressed(input);
+    QVERIFY(compressed.open(QIODevice::ReadOnly));
+
+    QFile raw(output);
+    QVERIFY(raw.open(QIODevice::WriteOnly));
+
+    raw.write(qUncompress(compressed.readAll()));
+}
+
 void TestPerfData::testFiles_data()
 {
     QTest::addColumn<QString>("dataFile");
+
+    // to add a new compressed binary, you'd run this test once with a line like the following:
+    // compressFile(QFINDTESTDATA("vector_static_clang/vector_static_clang_v8.0.1"));
+
+    // uncompress binaries to let unwinding work
+    uncompressFile(QFINDTESTDATA("vector_static_clang/vector_static_clang_v8.0.1.zlib"));
+    uncompressFile(QFINDTESTDATA("vector_static_gcc/vector_static_gcc_v9.1.0.zlib"));
+    uncompressFile(QFINDTESTDATA("fork_static_gcc/fork.zlib"));
 
     const auto files = {
         "vector_static_clang/perf.data",
@@ -228,9 +274,14 @@ void TestPerfData::testFiles()
         QSKIP("zstd support disabled, skipping test");
 #endif
 
+    const auto perfDataFileCompressed = QFINDTESTDATA(dataFile + ".zlib");
+    QVERIFY(!perfDataFileCompressed.isEmpty() && QFile::exists(perfDataFileCompressed));
+    uncompressFile(perfDataFileCompressed);
+
     const auto perfDataFile = QFINDTESTDATA(dataFile);
     QVERIFY(!perfDataFile.isEmpty() && QFile::exists(perfDataFile));
-    const auto expectedOutputFile = perfDataFile + ".expected.txt";
+    const auto expectedOutputFileCompressed = perfDataFile + ".expected.txt.zlib";
+    const auto expectedOutputFileUncompressed = perfDataFile + ".expected.txt";
     const auto actualOutputFile = perfDataFile + ".actual.txt";
 
     QBuffer output;
@@ -285,15 +336,20 @@ void TestPerfData::testFiles()
 
     QString expectedText;
     {
-        QFile expected(expectedOutputFile);
-        QVERIFY(expected.open(QIODevice::ReadOnly | QIODevice::Text));
-        expectedText = QString::fromUtf8(expected.readAll());
+        QFile expected(expectedOutputFileCompressed);
+        QVERIFY(expected.open(QIODevice::ReadOnly));
+        expectedText = QString::fromUtf8(qUncompress(expected.readAll()));
     }
 
     if (actualText != expectedText) {
         const auto diff = QStandardPaths::findExecutable("diff");
         if (!diff.isEmpty()) {
-            QProcess::execute(diff, {"-u", expectedOutputFile, actualOutputFile});
+            {
+                QFile expectedUncompressed(expectedOutputFileUncompressed);
+                QVERIFY(expectedUncompressed.open(QIODevice::WriteOnly | QIODevice::Text));
+                expectedUncompressed.write(expectedText.toUtf8());
+            }
+            QProcess::execute(diff, {"-u", expectedOutputFileUncompressed, actualOutputFile});
         }
     }
     QCOMPARE(actualText, expectedText);
