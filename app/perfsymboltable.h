@@ -108,6 +108,7 @@ private:
 
     QFile m_perfMapFile;
     QVector<PerfMapSymbol> m_perfMap;
+    bool m_hasPerfMap;
     bool m_cacheIsDirty;
 
     PerfUnwind *m_unwind;

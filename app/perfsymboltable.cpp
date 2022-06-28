@@ -37,6 +37,7 @@
 PerfSymbolTable::PerfSymbolTable(qint32 pid, Dwfl_Callbacks *callbacks, PerfUnwind *parent) :
     m_perfMapFile(QDir::tempPath() + QDir::separator()
                   + QString::fromLatin1("perf-%1.map").arg(pid)),
+    m_hasPerfMap(m_perfMapFile.exists()),
     m_cacheIsDirty(false),
     m_unwind(parent),
     m_callbacks(callbacks),
@@ -775,7 +776,7 @@ QByteArray PerfSymbolTable::symbolFromPerfMap(quint64 ip, GElf_Off *offset) cons
 
 void PerfSymbolTable::updatePerfMap()
 {
-    if (!m_perfMapFile.exists())
+    if (!m_hasPerfMap)
         return;
 
     if (!m_perfMapFile.isOpen())
