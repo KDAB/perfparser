@@ -31,6 +31,11 @@ if (Zstd_FOUND)
     target_compile_definitions(perfparser_lib PUBLIC HAVE_ZSTD=1)
 endif()
 
+if (HAVE_DWFL_GET_DEBUGINFOD_CLIENT)
+    target_link_libraries(perfparser_lib PRIVATE elfutils::debuginfod)
+    target_compile_definitions(perfparser_lib PRIVATE HAVE_DWFL_GET_DEBUGINFOD_CLIENT=1)
+endif()
+
 add_qtc_executable(perfparser
   DEPENDS
     perfparser_lib

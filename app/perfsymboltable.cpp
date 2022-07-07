@@ -34,6 +34,10 @@
 
 #include <dwarf.h>
 
+#if HAVE_DWFL_GET_DEBUGINFOD_CLIENT
+#include <debuginfod.h>
+#endif
+
 PerfSymbolTable::PerfSymbolTable(qint32 pid, Dwfl_Callbacks *callbacks, PerfUnwind *parent) :
     m_perfMapFile(QDir::tempPath() + QDir::separator()
                   + QString::fromLatin1("perf-%1.map").arg(pid)),
@@ -51,6 +55,19 @@ PerfSymbolTable::PerfSymbolTable(qint32 pid, Dwfl_Callbacks *callbacks, PerfUnwi
                      });
 
     m_dwfl = dwfl_begin(m_callbacks);
+
+#if HAVE_DWFL_GET_DEBUGINFOD_CLIENT
+    auto client = dwfl_get_debuginfod_client(m_dwfl);
+    debuginfod_set_user_data(client, this);
+    debuginfod_set_progressfn(client, [](debuginfod_client* client, long numerator, long denominator) {
+        auto self = reinterpret_cast<PerfSymbolTable*>(debuginfod_get_user_data(client));
+        auto url = self->m_unwind->resolveString(QByteArray(debuginfod_get_url(client)));
+        self->m_unwind->sendDebugInfoDownloadProgress(url, numerator, denominator);
+        // NOTE: eventually we could add a back channel to allow the user to cancel an ongoing download
+        //       to do so, we'd have to return any non-zero value here then
+        return 0;
+    });
+#endif
 
     dwfl_report_begin(m_dwfl);
 

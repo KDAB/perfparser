@@ -875,6 +875,15 @@ void PerfUnwind::sendProgress(float percent)
     sendBuffer(buffer);
 }
 
+void PerfUnwind::sendDebugInfoDownloadProgress(qint32 url, qint64 numerator, qint64 denominator)
+{
+    QByteArray buffer;
+    buffer.reserve(21);
+    QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(DebugInfoDownloadProgress)
+                                               << url << numerator << denominator;
+    sendBuffer(buffer);
+}
+
 qint32 PerfUnwind::resolveString(const QByteArray& string)
 {
     if (string.isEmpty())

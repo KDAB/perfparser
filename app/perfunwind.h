@@ -61,6 +61,7 @@ public:
         ContextSwitchDefinition,
         Sample,
         TracePointSample,
+        DebugInfoDownloadProgress,
         InvalidType
     };
 
@@ -223,6 +224,7 @@ public:
     Q_ENUM(ErrorCode)
     void sendError(ErrorCode error, const QString &message);
     void sendProgress(float percent);
+    void sendDebugInfoDownloadProgress(qint32 url, qint64 numerator, qint64 denominator);
 
     QString systemRoot() const { return m_systemRoot; }
     QString extraLibsPath() const { return m_extraLibsPath; }

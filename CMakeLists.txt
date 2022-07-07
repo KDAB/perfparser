@@ -22,5 +22,9 @@ set_package_properties(LibDDemangle PROPERTIES
         URL "https://github.com/lievenhey/d_demangler"
         TYPE RUNTIME)
 
+include(CheckSymbolExists)
+set(CMAKE_REQUIRED_LIBRARIES elfutils::dw elfutils::elf)
+check_symbol_exists(dwfl_get_debuginfod_client "libdwfl.h" HAVE_DWFL_GET_DEBUGINFOD_CLIENT)
+
 add_subdirectory(app)
 add_subdirectory(tests)
