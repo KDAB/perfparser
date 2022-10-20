@@ -28,12 +28,12 @@ add_qtc_library(perfparser_lib STATIC
 if (Zstd_FOUND)
     target_include_directories(perfparser_lib PUBLIC ${Zstd_INCLUDE_DIR})
     target_link_libraries(perfparser_lib PUBLIC ${Zstd_LIBRARY})
-    target_compile_definitions(perfparser_lib PUBLIC HAVE_ZSTD=1)
+    target_compile_definitions(perfparser_lib PUBLIC HAVE_ZSTD)
 endif()
 
 if (HAVE_DWFL_GET_DEBUGINFOD_CLIENT)
     target_link_libraries(perfparser_lib PRIVATE elfutils::debuginfod)
-    target_compile_definitions(perfparser_lib PRIVATE HAVE_DWFL_GET_DEBUGINFOD_CLIENT=1)
+    target_compile_definitions(perfparser_lib PRIVATE HAVE_DWFL_GET_DEBUGINFOD_CLIENT)
 endif()
 
 add_qtc_executable(perfparser

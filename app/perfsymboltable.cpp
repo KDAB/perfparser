@@ -36,7 +36,7 @@
 #include <dwarf.h>
 #include <elfutils/libdwelf.h>
 
-#if HAVE_DWFL_GET_DEBUGINFOD_CLIENT
+#ifdef HAVE_DWFL_GET_DEBUGINFOD_CLIENT
 #include <debuginfod.h>
 #endif
 
@@ -70,7 +70,7 @@ PerfSymbolTable::PerfSymbolTable(qint32 pid, Dwfl_Callbacks *callbacks, PerfUnwi
 
     m_dwfl = dwfl_begin(m_callbacks);
 
-#if HAVE_DWFL_GET_DEBUGINFOD_CLIENT
+#ifdef HAVE_DWFL_GET_DEBUGINFOD_CLIENT
     auto client = dwfl_get_debuginfod_client(m_dwfl);
     debuginfod_set_user_data(client, this);
     debuginfod_set_progressfn(client, [](debuginfod_client* client, long numerator, long denominator) {
