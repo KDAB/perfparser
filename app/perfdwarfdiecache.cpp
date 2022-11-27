@@ -271,12 +271,30 @@ QVector<Dwarf_Die> findInlineScopes(Dwarf_Die *subprogram, Dwarf_Addr offset)
     return scopes;
 }
 
+QByteArray absoluteSourcePath(const char *path, Dwarf_Die *cuDie)
+{
+    if (!path || !cuDie || path[0] == '/')
+        return path;
+
+    Dwarf_Attribute attr;
+    auto compDir = dwarf_formstring(dwarf_attr(cuDie, DW_AT_comp_dir, &attr));
+    if (!compDir)
+        return path;
+
+    QByteArray ret;
+    ret.reserve(strlen(compDir) + strlen(path) + 1);
+    ret.append(compDir);
+    ret.append('/');
+    ret.append(path);
+    return ret;
+}
+
 DwarfSourceLocation findSourceLocation(Dwarf_Die* cuDie, Dwarf_Addr offset)
 {
     DwarfSourceLocation ret;
     if (auto srcloc = dwarf_getsrc_die(cuDie, offset)) {
         if (const char* srcfile = dwarf_linesrc(srcloc, nullptr, nullptr)) {
-            ret.file = srcfile;
+            ret.file = absoluteSourcePath(srcfile, cuDie);
             dwarf_lineno(srcloc, &ret.line);
             dwarf_linecol(srcloc, &ret.column);
         }

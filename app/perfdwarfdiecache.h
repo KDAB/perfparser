@@ -108,6 +108,14 @@ private:
  */
 QVector<Dwarf_Die> findInlineScopes(Dwarf_Die *subprogram, Dwarf_Addr offset);
 
+/**
+ * @return the absolute source path for a @p path that may be absolute already or relative to the compilation directory
+ * @p path either an absolute that will be passed through directly or a path relative to the compilation directory
+ * @p cuDie the CU DIE that will be queried for the compilation directory to resolve relative paths
+ * @sa findSourceLocation
+ */
+QByteArray absoluteSourcePath(const char *path, Dwarf_Die *cuDie);
+
 struct DwarfSourceLocation
 {
     QByteArray file;
@@ -120,7 +128,7 @@ struct DwarfSourceLocation
     }
 };
 /**
- * @return the file name, line number and column for the instruction at the given @p offset in @p cuDie
+ * @return the absolute file name, line number and column for the instruction at the given @p offset in @p cuDie
  * @p cuDie CU DIE that should be queried
  * @p offset bias-corrected address of an instruction for which the information should be found
  * @sa CuDieRangeMapping

@@ -203,7 +203,7 @@ int PerfSymbolTable::insertSubprogram(CuDieRangeMapping *cudie, Dwarf_Die *top, 
     dwarf_decl_line(top, &line);
     int column = 0;
     dwarf_decl_column(top, &column);
-    const QByteArray file = dwarf_decl_file(top);
+    const QByteArray file = absoluteSourcePath(dwarf_decl_file(top), cudie->cudie());
 
     qint32 fileId = m_unwind->resolveString(file);
     int locationId = m_unwind->resolveLocation(PerfUnwind::Location(entry, relAddr, fileId, m_pid, line,
@@ -223,9 +223,10 @@ int PerfSymbolTable::parseDie(CuDieRangeMapping *cudie, Dwarf_Die *top, quint64 
         PerfUnwind::Location location(entry);
         Dwarf_Attribute attr;
         Dwarf_Word val = 0;
-        const QByteArray file
-                = (dwarf_formudata(dwarf_attr(top, DW_AT_call_file, &attr), &val) == 0)
-                ? dwarf_filesrc (files, val, nullptr, nullptr) : "";
+        const QByteArray file = absoluteSourcePath((dwarf_formudata(dwarf_attr(top, DW_AT_call_file, &attr), &val) == 0)
+                                                       ? dwarf_filesrc(files, val, nullptr, nullptr)
+                                                       : "",
+                                                   cudie->cudie());
         location.file = m_unwind->resolveString(file);
         location.line
                 = (dwarf_formudata(dwarf_attr(top, DW_AT_call_line, &attr), &val) == 0)
@@ -706,7 +707,8 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
                         dwarf_entrypc(&die, &entry);
                         symname = cudie->dieName(&die); // use name of inlined function as symbol
                         functionLocation.address = entry + bias;
-                        functionLocation.file = m_unwind->resolveString(dwarf_decl_file(&die));
+                        functionLocation.file =
+                            m_unwind->resolveString(absoluteSourcePath(dwarf_decl_file(&die), cudie->cudie()));
                         dwarf_decl_line(&die, &functionLocation.line);
                         dwarf_decl_column(&die, &functionLocation.column);
                     }(scopes.isEmpty() ? *subprogram->die() : scopes.last());
