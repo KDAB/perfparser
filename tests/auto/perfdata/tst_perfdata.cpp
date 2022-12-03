@@ -119,32 +119,38 @@ void TestPerfData::testTracingData()
     QVERIFY(output.open(QIODevice::WriteOnly));
 
     // Don't try to load any system files. They are not the same as the ones we use to report.
-    PerfUnwind unwind(&output, ":/", QString(), QString(), QString(), stats);
+    PerfUnwind unwind(&output, QStringLiteral(":/"), QString(), QString(), QString(), stats);
     if (!stats) {
         QTest::ignoreMessage(QtWarningMsg,
-                             QRegularExpression(QRegularExpression::escape("Could not find ELF file for "
-                             "/home/ulf/dev/untitled1-Qt_5_9_1_gcc_64-Profile/untitled1. "
-                             "This can break stack unwinding and lead to missing symbols.")));
+                             QRegularExpression(QRegularExpression::escape(
+                                 QStringLiteral("Could not find ELF file for "
+                                                "/home/ulf/dev/untitled1-Qt_5_9_1_gcc_64-Profile/untitled1. "
+                                                "This can break stack unwinding and lead to missing symbols."))));
         QTest::ignoreMessage(QtWarningMsg,
-                             QRegularExpression(QRegularExpression::escape("Could not find ELF file for "
-                             "/lib/x86_64-linux-gnu/ld-2.24.so. "
-                             "This can break stack unwinding and lead to missing symbols.")));
+                             QRegularExpression(QRegularExpression::escape(
+                                 QStringLiteral("Could not find ELF file for "
+                                                "/lib/x86_64-linux-gnu/ld-2.24.so. "
+                                                "This can break stack unwinding and lead to missing symbols."))));
         QTest::ignoreMessage(QtWarningMsg,
-                             QRegularExpression(QRegularExpression::escape("Could not find ELF file for "
-                             "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.22. "
-                             "This can break stack unwinding and lead to missing symbols.")));
+                             QRegularExpression(QRegularExpression::escape(
+                                 QStringLiteral("Could not find ELF file for "
+                                                "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.22. "
+                                                "This can break stack unwinding and lead to missing symbols."))));
         QTest::ignoreMessage(QtWarningMsg,
-                             QRegularExpression(QRegularExpression::escape("Could not find ELF file for "
-                             "/lib/x86_64-linux-gnu/libm-2.24.so. "
-                             "This can break stack unwinding and lead to missing symbols.")));
+                             QRegularExpression(QRegularExpression::escape(
+                                 QStringLiteral("Could not find ELF file for "
+                                                "/lib/x86_64-linux-gnu/libm-2.24.so. "
+                                                "This can break stack unwinding and lead to missing symbols."))));
         QTest::ignoreMessage(QtWarningMsg,
-                             QRegularExpression(QRegularExpression::escape("Could not find ELF file for "
-                             "/lib/x86_64-linux-gnu/libgcc_s.so.1. "
-                             "This can break stack unwinding and lead to missing symbols.")));
+                             QRegularExpression(QRegularExpression::escape(
+                                 QStringLiteral("Could not find ELF file for "
+                                                "/lib/x86_64-linux-gnu/libgcc_s.so.1. "
+                                                "This can break stack unwinding and lead to missing symbols."))));
         QTest::ignoreMessage(QtWarningMsg,
-                             QRegularExpression(QRegularExpression::escape("Could not find ELF file for "
-                             "/lib/x86_64-linux-gnu/libc-2.24.so. "
-                             "This can break stack unwinding and lead to missing symbols.")));
+                             QRegularExpression(QRegularExpression::escape(
+                                 QStringLiteral("Could not find ELF file for "
+                                                "/lib/x86_64-linux-gnu/libc-2.24.so. "
+                                                "This can break stack unwinding and lead to missing symbols."))));
     }
     process(&unwind, &input, QByteArray("0.5"));
 
@@ -190,7 +196,7 @@ void TestPerfData::testTracingData()
 
 void TestPerfData::testContentSize()
 {
-    QString file(":/contentsize.data");
+    QString file(QStringLiteral(":/contentsize.data"));
 
     QBuffer output;
     QFile input(file);
@@ -199,7 +205,7 @@ void TestPerfData::testContentSize()
     QVERIFY(output.open(QIODevice::WriteOnly));
 
     // Don't try to load any system files. They are not the same as the ones we use to report.
-    PerfUnwind unwind(&output, ":/", QString(), QString(), QString(), true);
+    PerfUnwind unwind(&output, QStringLiteral(":/"), QString(), QString(), QString(), true);
     process(&unwind, &input, QByteArray("0.5"));
 
     QCOMPARE(unwind.stats().numSamples, 69u);
@@ -210,7 +216,7 @@ void TestPerfData::testContentSize()
     QVERIFY(!input.isEmpty() && QFile::exists(input));
 
     if (output.isEmpty()) {
-        compressFile(input, input + ".zlib");
+        compressFile(input, input + QLatin1String(".zlib"));
         return;
     }
 
@@ -276,32 +282,35 @@ void TestPerfData::testFiles()
         QSKIP("zstd support disabled, skipping test");
 #endif
 
-    const auto perfDataFileCompressed = QFINDTESTDATA(dataFile + ".zlib");
+    const auto perfDataFileCompressed = QFINDTESTDATA(dataFile + QLatin1String(".zlib"));
     QVERIFY(!perfDataFileCompressed.isEmpty() && QFile::exists(perfDataFileCompressed));
     uncompressFile(perfDataFileCompressed);
 
     const auto perfDataFile = QFINDTESTDATA(dataFile);
     QVERIFY(!perfDataFile.isEmpty() && QFile::exists(perfDataFile));
-    const auto expectedOutputFileCompressed = perfDataFile + ".expected.txt.zlib";
-    const auto expectedOutputFileUncompressed = perfDataFile + ".expected.txt";
-    const auto actualOutputFile = perfDataFile + ".actual.txt";
+    const auto expectedOutputFileCompressed = perfDataFile + QLatin1String(".expected.txt.zlib");
+    const auto expectedOutputFileUncompressed = perfDataFile + QLatin1String(".expected.txt");
+    const auto actualOutputFile = perfDataFile + QLatin1String(".actual.txt");
 
     QBuffer output;
     QVERIFY(output.open(QIODevice::WriteOnly));
 
     // Don't try to load any system files. They are not the same as the ones we use to report.
-    PerfUnwind unwind(&output, ":/", QString(), QString(), QFileInfo(perfDataFile).absolutePath());
+    PerfUnwind unwind(&output, QStringLiteral(":/"), QString(), QString(), QFileInfo(perfDataFile).absolutePath());
     {
         QFile input(perfDataFile);
         QVERIFY(input.open(QIODevice::ReadOnly));
         // don't try to parse kallsyms here, it's not the main point and it wouldn't be portable without the mapping file
         // from where we recorded the data. these files are usually large, and we don't want to bloat the repo too much
-        if (QTest::currentDataTag() != QLatin1String("fork_static_gcc/perf.data.zstd"))
-            QTest::ignoreMessage(QtWarningMsg, QRegularExpression("Failed to parse kernel symbol mapping file \".+\": Mapping is empty"));
+        if (QLatin1String(QTest::currentDataTag()) != QLatin1String("fork_static_gcc/perf.data.zstd")) {
+            QTest::ignoreMessage(QtWarningMsg,
+                                 QRegularExpression(QStringLiteral(
+                                     "Failed to parse kernel symbol mapping file \".+\": Mapping is empty")));
+        }
         unwind.setKallsymsPath(QProcess::nullDevice());
 
         auto version = QByteArray("0.5");
-        if (dataFile == "parallel_static_gcc/perf.data.zstd")
+        if (dataFile == QLatin1String("parallel_static_gcc/perf.data.zstd"))
             version = "0.6";
         process(&unwind, &input, version);
     }
@@ -332,7 +341,7 @@ void TestPerfData::testFiles()
              "std::enable_if<std::__is_bitwise_relocatable<double>::value, double*>::type std::__relocate_a_1<double, "
              "double>(double*, double*, double*, std::allocator<double>&)"}};
         for (const auto& replacement : replacements) {
-            actualText.replace(replacement.first, replacement.second);
+            actualText.replace(QLatin1String(replacement.first), QLatin1String(replacement.second));
         }
 
         QFile actual(actualOutputFile);
@@ -350,14 +359,14 @@ void TestPerfData::testFiles()
     if (actualText != expectedText) {
         compressFile(actualOutputFile);
 
-        const auto diff = QStandardPaths::findExecutable("diff");
+        const auto diff = QStandardPaths::findExecutable(QStringLiteral("diff"));
         if (!diff.isEmpty()) {
             {
                 QFile expectedUncompressed(expectedOutputFileUncompressed);
                 QVERIFY(expectedUncompressed.open(QIODevice::WriteOnly | QIODevice::Text));
                 expectedUncompressed.write(expectedText.toUtf8());
             }
-            QProcess::execute(diff, {"-u", expectedOutputFileUncompressed, actualOutputFile});
+            QProcess::execute(diff, {QStringLiteral("-u"), expectedOutputFileUncompressed, actualOutputFile});
         }
     }
     QCOMPARE(actualText, expectedText);

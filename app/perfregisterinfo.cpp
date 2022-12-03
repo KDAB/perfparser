@@ -151,10 +151,8 @@ PerfRegisterInfo::Architecture PerfRegisterInfo::archByName(const QByteArray &na
     if (name.startsWith("sparc"))
         return ARCH_SPARC;
 
-    static const auto iX86pattern = QRegularExpression(QStringLiteral("^i[3-7]86$"));
-    if (name.startsWith("x86")
-            || iX86pattern.match(name).hasMatch()
-            || name == "amd64")
+    if (name.startsWith("x86") || name == "i386" || name == "i486" || name == "i586" || name == "i686" || name == "i786"
+        || name == "amd64")
         return ARCH_X86;
 
     if (name.startsWith("mips"))

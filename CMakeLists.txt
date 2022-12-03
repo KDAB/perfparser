@@ -26,5 +26,6 @@ include(CheckSymbolExists)
 set(CMAKE_REQUIRED_LIBRARIES elfutils::dw elfutils::elf)
 check_symbol_exists(dwfl_get_debuginfod_client "libdwfl.h" HAVE_DWFL_GET_DEBUGINFOD_CLIENT)
 
+add_definitions(-DQT_NO_CAST_FROM_ASCII -DQT_NO_CAST_TO_ASCII)
 add_subdirectory(app)
 add_subdirectory(tests)

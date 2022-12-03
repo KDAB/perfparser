@@ -82,8 +82,7 @@ private:
     // Report an mmap to dwfl and parse it for symbols and inlines, or simply return it if dwfl has
     // it already
     Dwfl_Module *reportElf(const PerfElfMap::ElfInfo& elf);
-    QFileInfo findFile(const char *path, const QString &fileName,
-                       const QByteArray &buildId = QByteArray()) const;
+    QFileInfo findFile(const QString& path, const QString& fileName, const QByteArray& buildId = QByteArray()) const;
 
     class ElfAndFile {
     public:

@@ -115,14 +115,12 @@ static QStringList splitPath(const QString &path)
     return path.split(QDir::listSeparator(), Qt::SkipEmptyParts);
 }
 
-QFileInfo PerfSymbolTable::findFile(const char *path, const QString &fileName,
-                                    const QByteArray &buildId) const
+QFileInfo PerfSymbolTable::findFile(const QString& path, const QString& fileName, const QByteArray& buildId) const
 {
     QFileInfo fullPath;
     // first try to find the debug information via build id, if available
     if (!buildId.isEmpty()) {
-        const QString buildIdPath = QString::fromUtf8(path) + QDir::separator()
-                + QString::fromUtf8(buildId.toHex());
+        const QString buildIdPath = path + QDir::separator() + QString::fromUtf8(buildId.toHex());
         foreach (const QString &extraPath, splitPath(m_unwind->debugPath())) {
             fullPath.setFile(extraPath);
             if (findBuildIdPath(fullPath, buildIdPath))
@@ -145,25 +143,23 @@ QFileInfo PerfSymbolTable::findFile(const char *path, const QString &fileName,
     }
 
     // last fall-back, try the system root
-    fullPath.setFile(m_unwind->systemRoot() + QString::fromUtf8(path));
+    fullPath.setFile(m_unwind->systemRoot() + path);
     return fullPath;
 }
 
 void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &buildId)
 {
-    QString filePath(mmap.filename());
+    const auto filePath = QString::fromUtf8(mmap.filename());
     // special regions, such as [heap], [vdso], [stack], [kernel.kallsyms]_text ... as well as //anon
-    const bool isSpecialRegion = (filePath.startsWith('[') && filePath.contains(']'))
-                              || filePath.startsWith(QLatin1String("/dev/"))
-                              || filePath.startsWith(QLatin1String("/memfd:"))
-                              || filePath.startsWith(QLatin1String("/SYSV"))
-                              || filePath == QLatin1String("//anon");
+    const bool isSpecialRegion = (filePath.startsWith(QLatin1Char('[')) && filePath.contains(QLatin1Char(']')))
+        || filePath.startsWith(QLatin1String("/dev/")) || filePath.startsWith(QLatin1String("/memfd:"))
+        || filePath.startsWith(QLatin1String("/SYSV")) || filePath == QLatin1String("//anon");
     const auto fileName = isSpecialRegion ? QString() : QFileInfo(filePath).fileName();
     QFileInfo fullPath;
     if (isSpecialRegion) {
         // don not set fullPath, these regions don't represent a real file
     } else if (mmap.pid() != PerfUnwind::s_kernelPid) {
-        fullPath = findFile(mmap.filename(), fileName, buildId);
+        fullPath = findFile(filePath, fileName, buildId);
 
         if (!fullPath.isFile()) {
             m_unwind->sendError(PerfUnwind::MissingElfFile,
@@ -422,8 +418,9 @@ int PerfSymbolTable::findDebugInfo(Dwfl_Module *module, const char *moduleName, 
 
     // fall-back, mostly for situations where we loaded a file via it's build-id.
     // search all known paths for the debug link in that case
-    const auto debugLinkString = QFile(debugLink).fileName();
-    auto debugLinkFile = findFile(debugLink, debugLinkString);
+    const auto debugLinkPath = QString::fromUtf8(debugLink);
+    const auto debugLinkString = QFile(debugLinkPath).fileName();
+    auto debugLinkFile = findFile(debugLinkPath, debugLinkString);
     if (!debugLinkFile.isFile()) {
         // fall-back to original file path with debug link file name
         const auto &elf = m_elfs.findElf(base);
@@ -432,9 +429,9 @@ int PerfSymbolTable::findDebugInfo(Dwfl_Module *module, const char *moduleName, 
     }
 
     /// FIXME: find a proper solution to this
-    if (!debugLinkFile.isFile() && QByteArray(file).endsWith("/elf")) {
+    if (!debugLinkFile.isFile() && QByteArray::fromRawData(file, strlen(file)).endsWith("/elf")) {
         // fall-back to original file if it's in a build-id path
-        debugLinkFile.setFile(file);
+        debugLinkFile.setFile(QString::fromUtf8(file));
     }
 
     if (!debugLinkFile.isFile())
@@ -611,10 +608,10 @@ static QByteArray fakeSymbolFromSection(Dwfl_Module *mod, Dwarf_Addr addr)
     }
 
     auto str = elf_strptr(elf, textSectionIndex, nameOffset);
-    if (!str || str == QLatin1String(".text"))
+    if (!str || str == QByteArrayLiteral(".text"))
         return {};
 
-    if (str == QLatin1String(".plt") && entsize > 0) {
+    if (str == QByteArrayLiteral(".plt") && entsize > 0) {
         const auto *pltSymbol = findPltSymbol(elf, addr / entsize);
         if (pltSymbol)
             return demangle(pltSymbol) + "@plt";
