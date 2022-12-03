@@ -791,10 +791,11 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
     }
 
     QVector<QPair<qint32, quint64>> values;
-    if (sample.readFormats().isEmpty()) {
+    const auto readFormats = sample.readFormats();
+    if (readFormats.isEmpty()) {
         values.push_back({ attributesId, sample.period() });
     } else {
-        for (const auto& f : sample.readFormats()) {
+        for (const auto& f : readFormats) {
             values.push_back({ m_attributeIds.value(f.id, -1), f.value });
         }
     }
@@ -1025,13 +1026,13 @@ void PerfUnwind::flushEventBuffer(uint desiredBufferSize)
     std::stable_sort(m_taskEventsBuffer.begin(), m_taskEventsBuffer.end(), sortByTime<TaskEvent>);
 
     if (m_stats.enabled) {
-        for (const auto &sample : m_sampleBuffer) {
+        for (const auto &sample : qAsConst(m_sampleBuffer)) {
             if (sample.time() < m_lastFlushMaxTime)
                 ++m_stats.numTimeViolatingSamples;
             else
                 break;
         }
-        for (const auto &mmap : m_mmapBuffer) {
+        for (const auto &mmap : qAsConst(m_mmapBuffer)) {
             if (mmap.time() < m_lastFlushMaxTime)
                 ++m_stats.numTimeViolatingMmaps;
             else
