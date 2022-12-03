@@ -113,7 +113,7 @@ public:
     }
 
 signals:
-    void aboutToInvalidate(const ElfInfo &elf);
+    void aboutToInvalidate(const PerfElfMap::ElfInfo &elf);
 
 private:
     // elf sorted by start address
