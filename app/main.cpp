@@ -362,7 +362,7 @@ int main(int argc, char *argv[])
         }
     };
 
-    QObject::connect(&header, &PerfHeader::finished, [&]() {
+    QObject::connect(&header, &PerfHeader::finished, &app, [&]() {
         unwind.setByteOrder(static_cast<QSysInfo::Endian>(header.byteOrder()));
         if (!header.isPipe()) {
             if (infile->isSequential()) {
