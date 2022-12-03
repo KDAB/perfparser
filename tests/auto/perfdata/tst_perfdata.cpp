@@ -211,7 +211,7 @@ void TestPerfData::testContentSize()
     QCOMPARE(unwind.stats().numSamples, 69u);
 }
 
-[[maybe_unused]] static void compressFile(const QString& input, const QString& output = QString())
+Q_DECL_UNUSED static void compressFile(const QString& input, const QString& output = QString())
 {
     QVERIFY(!input.isEmpty() && QFile::exists(input));
 
