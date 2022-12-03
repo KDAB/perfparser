@@ -85,7 +85,8 @@ bool PerfTracingData::readHeaderFiles(QDataStream &stream)
     QByteArray buffer(static_cast<int>(size), Qt::Uninitialized);
     stream.readRawData(buffer.data(), buffer.size());
 
-    for (QByteArray line : buffer.split('\n')) {
+    const auto lines = buffer.split('\n');
+    for (const auto &line : lines) {
         if (!line.isEmpty())
             m_headerFields << readFormatField(line);
     }
@@ -105,7 +106,8 @@ bool PerfTracingData::readHeaderFiles(QDataStream &stream)
 static void processLine(const QByteArray &line,
                         const std::function<void(const QByteArray &, const QByteArray &)> &handler)
 {
-    for (const QByteArray &chunk : line.split('\t')) {
+    const auto chunks = line.split('\t');
+    for (const auto &chunk : chunks) {
         QList<QByteArray> segments = chunk.split(':');
         if (segments.size() != 2)
             continue;
@@ -211,7 +213,8 @@ bool PerfTracingData::readEventFormats(QDataStream &stream, const QByteArray &sy
         stream.readRawData(buffer.data(), buffer.length());
 
         FieldStage stage = BeforeFields;
-        for (const QByteArray &line : buffer.split('\n')) {
+        const auto lines = buffer.split('\n');
+        for (const auto &line : lines) {
             switch (stage) {
             case CommonFields:
                 if (line.isEmpty())
@@ -286,7 +289,8 @@ bool PerfTracingData::readFtracePrintk(QDataStream &stream)
     QByteArray buffer(static_cast<int>(size), Qt::Uninitialized);
     stream.readRawData(buffer.data(), buffer.length());
 
-    for (QByteArray line : buffer.split('\n')) {
+    const auto lines = buffer.split('\n');
+    for (const auto &line : lines) {
         if (!line.isEmpty()) {
             QList<QByteArray> segments = line.split(':');
             if (segments.length() == 2) {
@@ -310,7 +314,8 @@ bool PerfTracingData::readSavedCmdline(QDataStream &stream)
     QByteArray buffer(static_cast<int>(size), Qt::Uninitialized);
     stream.readRawData(buffer.data(), buffer.length());
 
-    for (const QByteArray &line : buffer.split('\n')) {
+    const auto lines = buffer.split('\n');
+    for (const auto &line : lines) {
         // Each line is prefixed with the PID it refers to
         if (!line.isEmpty())
             m_savedCmdlines.append(line);

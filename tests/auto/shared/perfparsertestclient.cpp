@@ -202,7 +202,8 @@ void PerfParserTestClient::convertToText(QTextStream &out) const
 {
     using Qt::dec;
     using Qt::hex;
-    for (const auto &sample : samples()) {
+    const auto allSamples = samples();
+    for (const auto &sample : allSamples) {
         out << string(command(sample.pid).name) << '\t'
             << sample.pid << '\t' << sample.tid << '\t'
             << sample.time / 1000000000 << '.' << qSetFieldWidth(9) << qSetPadChar(QLatin1Char('0'))
