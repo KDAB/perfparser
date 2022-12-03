@@ -64,14 +64,13 @@ void Demangler::loadDemangleLib(const QString &name, const char* function, const
 {
     QLibrary lib(name);
     if (!lib.load()) {
-        qDebug() << QStringLiteral("failed to load %1 library").arg(name)
-                 << lib.errorString();
+        qDebug("failed to load library %ls: %ls", qUtf16Printable(name), qUtf16Printable(lib.errorString()));
         return;
     }
     const auto rawSymbol = lib.resolve(function);
     if (!rawSymbol) {
-        qDebug() << QStringLiteral("failed to resolve %1 function in library").arg(function)
-                 << lib.fileName() << lib.errorString();
+        qDebug("failed to resolve %s function in library %ls: %ls", function, qUtf16Printable(lib.fileName()),
+               qUtf16Printable(lib.errorString()));
         return;
     }
 
