@@ -129,7 +129,7 @@ const char *PerfRegisterInfo::defaultArchitecture()
 #else
     return "";
 #endif
-};
+}
 
 PerfRegisterInfo::Architecture PerfRegisterInfo::archByName(const QByteArray &name)
 {
