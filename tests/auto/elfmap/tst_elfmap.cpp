@@ -348,9 +348,9 @@ private:
     QVector<PerfElfMap::ElfInfo> registerElf(PerfElfMap *map, const PerfElfMap::ElfInfo &info)
     {
         QVector<PerfElfMap::ElfInfo> invalidated;
-        auto connection = connect(map, &PerfElfMap::aboutToInvalidate,
-                                  this, [&](const PerfElfMap::ElfInfo &other) {
-                                    invalidated.push_back(other);
+        auto connection = connect(map, &PerfElfMap::aboutToInvalidate, this,
+                                  [&invalidated](const PerfElfMap::ElfInfo& other) { // clazy:exclude=lambda-in-connect
+                                      invalidated.push_back(other);
                                   });
         map->registerElf(info.addr, info.length, info.pgoff, info.localFile,
                          info.originalFileName, info.originalPath);
