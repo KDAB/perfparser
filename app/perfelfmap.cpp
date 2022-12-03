@@ -111,7 +111,7 @@ void PerfElfMap::registerElf(quint64 addr, quint64 len, quint64 pgoff,
                                       i->originalFileName, i->originalPath));
         }
 
-        aboutToInvalidate(*i);
+        emit aboutToInvalidate(*i);
         removedElfs.push_back(static_cast<int>(std::distance(m_elfs.begin(), i)));
     }
 
