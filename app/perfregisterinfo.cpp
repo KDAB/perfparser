@@ -110,24 +110,24 @@ const int PerfRegisterInfo::s_dummyRegisters[ARCH_INVALID][2] = {
     {0, 0}
 };
 
-const char *PerfRegisterInfo::defaultArchitecture()
+QString PerfRegisterInfo::defaultArchitecture()
 {
 #if defined(__aarch64__)
-    return "aarch64";
+    return QStringLiteral("aarch64");
 #elif defined(__arm__)
-    return "arm";
+    return QStringLiteral("arm");
 #elif defined(__powerpc__)
-    return "powerpc";
+    return QStringLiteral("powerpc");
 #elif defined(__s390__)
-    return "s390";
+    return QStringLiteral("s390");
 #elif defined(__sh__)
-    return "sh";
+    return QStringLiteral("sh");
 #elif defined(__sparc__)
-    return "sparc";
+    return QStringLiteral("sparc");
 #elif defined(__i386__) || defined(__x86_64__)
-    return "x86";
+    return QStringLiteral("x86");
 #else
-    return "";
+    return QString();
 #endif
 }
 
