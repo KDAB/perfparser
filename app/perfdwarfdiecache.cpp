@@ -24,6 +24,8 @@
 
 #include <dwarf.h>
 
+#include <vector>
+
 #include "demangler.h"
 
 namespace {
@@ -152,7 +154,7 @@ void prependScopeNames(QByteArray &name, Dwarf_Die *die, QHash<Dwarf_Off, QByteA
         Dwarf_Off offset;
         int trailing;
     };
-    QVector<ScopesToCache> cacheOps;
+    std::vector<ScopesToCache> cacheOps;
 
     // skip scope for the die itself at the start and the compile unit DIE at end
     for (int i = 1; i < nscopes - 1; ++i) {
@@ -174,7 +176,7 @@ void prependScopeNames(QByteArray &name, Dwarf_Die *die, QHash<Dwarf_Off, QByteA
         if (auto scopeLinkageName = linkageName(scope)) {
             // prepend the fully qualified linkage name
             name.prepend("::");
-            cacheOps.append({scopeOffset, int(name.size())});
+            cacheOps.push_back({scopeOffset, int(name.size())});
             // we have to demangle the scope linkage name, otherwise we get a
             // mish-mash of mangled and non-mangled names
             name.prepend(demangle(scopeLinkageName));
@@ -185,15 +187,15 @@ void prependScopeNames(QByteArray &name, Dwarf_Die *die, QHash<Dwarf_Off, QByteA
         if (auto scopeName = dwarf_diename(scope)) {
             // prepend this scope's name, e.g. the class or namespace name
             name.prepend("::");
-            cacheOps.append({scopeOffset, int(name.size())});
+            cacheOps.push_back({scopeOffset, int(name.size())});
             name.prepend(scopeName);
         }
 
         if (auto specification = specificationDie(scope, &dieMem)) {
             eu_compat_free(scopes);
             scopes = nullptr;
-            cacheOps.append({scopeOffset, int(name.size())});
-            cacheOps.append({dwarf_dieoffset(specification), int(name.size())});
+            cacheOps.push_back({scopeOffset, int(name.size())});
+            cacheOps.push_back({dwarf_dieoffset(specification), int(name.size())});
             // follow the scope's specification DIE instead
             prependScopeNames(name, specification, cache);
             break;
