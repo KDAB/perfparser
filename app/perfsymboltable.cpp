@@ -454,7 +454,7 @@ PerfElfMap::ElfInfo PerfSymbolTable::findElf(quint64 ip) const
     return m_elfs.findElf(ip);
 }
 
-int symbolIndex(const Elf64_Rel &rel)
+int symbolIndex(Elf64_Rel rel)
 {
     return ELF64_R_SYM(rel.r_info);
 }
@@ -464,12 +464,12 @@ int symbolIndex(const Elf64_Rela &rel)
     return ELF64_R_SYM(rel.r_info);
 }
 
-int symbolIndex(const Elf32_Rel &rel)
+int symbolIndex(Elf32_Rel rel)
 {
     return ELF32_R_SYM(rel.r_info);
 }
 
-int symbolIndex(const Elf32_Rela &rel)
+int symbolIndex(Elf32_Rela rel)
 {
     return ELF32_R_SYM(rel.r_info);
 }

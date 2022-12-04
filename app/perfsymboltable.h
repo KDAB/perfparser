@@ -45,7 +45,7 @@ public:
     ~PerfSymbolTable();
 
     struct PerfMapSymbol {
-        PerfMapSymbol(quint64 start = 0, quint64 length = 0, QByteArray name = QByteArray()) :
+        PerfMapSymbol(quint64 start = 0, quint64 length = 0, const QByteArray &name = QByteArray()) :
             start(start), length(length), name(name) {}
         quint64 start;
         quint64 length;
