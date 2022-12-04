@@ -40,7 +40,7 @@
 
 PerfSymbolTable::PerfSymbolTable(qint32 pid, Dwfl_Callbacks *callbacks, PerfUnwind *parent) :
     m_perfMapFile(QDir::tempPath() + QDir::separator()
-                  + QString::fromLatin1("perf-%1.map").arg(pid)),
+                  + QLatin1String("perf-%1.map").arg(QString::number(pid))),
     m_hasPerfMap(m_perfMapFile.exists()),
     m_cacheIsDirty(false),
     m_unwind(parent),
