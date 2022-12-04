@@ -25,6 +25,7 @@
 
 class PerfStdin : public QIODevice
 {
+    Q_OBJECT
 public:
     PerfStdin(QObject *parent = nullptr);
     ~PerfStdin();
