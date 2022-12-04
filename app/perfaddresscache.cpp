@@ -44,7 +44,7 @@ PerfAddressCache::AddressCacheEntry PerfAddressCache::find(const PerfElfMap::Elf
 }
 
 void PerfAddressCache::cache(const PerfElfMap::ElfInfo& elf, quint64 addr,
-                             const PerfAddressCache::AddressCacheEntry& entry,
+                             PerfAddressCache::AddressCacheEntry entry,
                              OffsetAddressCache *invalidAddressCache)
 {
     if (elf.isValid())

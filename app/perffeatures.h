@@ -70,7 +70,7 @@ struct PerfNrCpus {
 };
 
 QDataStream &operator>>(QDataStream &stream, PerfNrCpus &numCpus);
-QDataStream &operator<<(QDataStream &stream, const PerfNrCpus &numCpus);
+QDataStream &operator<<(QDataStream &stream, PerfNrCpus numCpus);
 
 struct PerfTotalMem {
     quint64 totalMem;
@@ -194,7 +194,7 @@ public:
 
 private:
     void createFeature(QIODevice *device, QDataStream::ByteOrder byteOrder,
-                       const PerfFileSection &section, PerfHeader::Feature featureId);
+                       PerfFileSection section, PerfHeader::Feature featureId);
 
     PerfTracingData m_tracingData;
     PerfBuildId m_buildId;
