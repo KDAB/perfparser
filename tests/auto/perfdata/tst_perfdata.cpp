@@ -288,9 +288,9 @@ void TestPerfData::testFiles()
 
     const auto perfDataFile = QFINDTESTDATA(dataFile);
     QVERIFY(!perfDataFile.isEmpty() && QFile::exists(perfDataFile));
-    const auto expectedOutputFileCompressed = perfDataFile + QLatin1String(".expected.txt.zlib");
-    const auto expectedOutputFileUncompressed = perfDataFile + QLatin1String(".expected.txt");
-    const auto actualOutputFile = perfDataFile + QLatin1String(".actual.txt");
+    const auto expectedOutputFileCompressed = QString(perfDataFile + QLatin1String(".expected.txt.zlib"));
+    const auto expectedOutputFileUncompressed = QString(perfDataFile + QLatin1String(".expected.txt"));
+    const auto actualOutputFile = QString(perfDataFile + QLatin1String(".actual.txt"));
 
     QBuffer output;
     QVERIFY(output.open(QIODevice::WriteOnly));
