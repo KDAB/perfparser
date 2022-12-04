@@ -36,7 +36,7 @@ static void removeTrailingZeros(QByteArray *string)
 }
 
 void PerfFeatures::createFeature(QIODevice *device, QDataStream::ByteOrder byteOrder,
-                                 const PerfFileSection &section, PerfHeader::Feature featureId)
+                                 PerfFileSection section, PerfHeader::Feature featureId)
 {
     device->seek(section.offset);
     QDataStream stream(device);
@@ -210,7 +210,7 @@ QDataStream &operator>>(QDataStream &stream, PerfNrCpus &nrCpus)
     return stream >> nrCpus.online >> nrCpus.available;
 }
 
-QDataStream &operator<<(QDataStream &stream, const PerfNrCpus &nrCpus)
+QDataStream &operator<<(QDataStream &stream, PerfNrCpus nrCpus)
 {
     return stream << nrCpus.online << nrCpus.available;
 }

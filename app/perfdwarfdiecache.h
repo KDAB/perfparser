@@ -48,7 +48,7 @@ struct DieRanges
 
     bool contains(Dwarf_Addr addr) const
     {
-        return std::any_of(ranges.begin(), ranges.end(), [addr](const DwarfRange &range) {
+        return std::any_of(ranges.begin(), ranges.end(), [addr](DwarfRange range) {
             return range.contains(addr);
         });
     }

@@ -78,7 +78,7 @@ public:
     AddressCacheEntry find(const PerfElfMap::ElfInfo& elf, quint64 addr,
                            OffsetAddressCache *invalidAddressCache) const;
     void cache(const PerfElfMap::ElfInfo& elf, quint64 addr,
-               const AddressCacheEntry& entry, OffsetAddressCache *invalidAddressCache);
+               AddressCacheEntry entry, OffsetAddressCache *invalidAddressCache);
 
     /// check if @c setSymbolCache was called for @p filePath already
     bool hasSymbolCache(const QByteArray &filePath) const;
