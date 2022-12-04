@@ -62,5 +62,5 @@ public:
     static const int s_dummyRegisters[ARCH_INVALID][2];
 
     // default architecture for the system which was used for compilation
-    static const char *defaultArchitecture();
+    static QString defaultArchitecture();
 };
