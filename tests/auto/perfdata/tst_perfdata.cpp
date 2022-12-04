@@ -77,7 +77,7 @@ static void process(PerfUnwind *unwind, QIODevice *input, const QByteArray &expe
     PerfData data(unwind, &header, &attributes);
     data.setSource(input);
 
-    QSignalSpy spy(&data, SIGNAL(finished()));
+    QSignalSpy spy(&data, &PerfData::finished);
     QObject::connect(&header, &PerfHeader::finished, &data, [&](){
         setupUnwind(unwind, &header, input, &attributes, &data, expectedVersion);
         data.read();
