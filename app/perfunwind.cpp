@@ -229,13 +229,13 @@ static int find_debuginfo(Dwfl_Module *module, void **userData, const char *modu
 
 QString PerfUnwind::defaultDebugInfoPath()
 {
-    return QString::fromLatin1("%1usr%1lib%1debug%2%3%1.debug%2.debug")
+    return QLatin1String("%1usr%1lib%1debug%2%3%1.debug%2.debug")
             .arg(QDir::separator(), QDir::listSeparator(), QDir::homePath());
 }
 
 QString PerfUnwind::defaultKallsymsPath()
 {
-    return QString::fromLatin1("%1proc%1kallsyms").arg(QDir::separator());
+    return QLatin1String("%1proc%1kallsyms").arg(QDir::separator());
 }
 
 PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugPath,

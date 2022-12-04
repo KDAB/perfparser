@@ -79,8 +79,8 @@ private:
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
-    app.setApplicationName(QLatin1String("perfparser"));
-    app.setApplicationVersion(QLatin1String("7.0"));
+    app.setApplicationName(QStringLiteral("perfparser"));
+    app.setApplicationVersion(QStringLiteral("7.0"));
 
     if (qEnvironmentVariableIsSet("PERFPARSER_DEBUG_WAIT")) {
 #ifdef Q_OS_LINUX
@@ -93,125 +93,123 @@ int main(int argc, char *argv[])
     }
 
     QCommandLineParser parser;
-    parser.setApplicationDescription(QLatin1String("Perf data parser and unwinder."));
+    parser.setApplicationDescription(QStringLiteral("Perf data parser and unwinder."));
     parser.addHelpOption();
     parser.addVersionOption();
 
-    QCommandLineOption input(QLatin1String("input"),
-                             QCoreApplication::translate(
-                                 "main", "Read perf data from <file> instead of stdin."),
-                             QLatin1String("file"));
+    QCommandLineOption input(QStringLiteral("input"),
+                             QCoreApplication::translate("main", "Read perf data from <file> instead of stdin."),
+                             QStringLiteral("file"));
     parser.addOption(input);
 
-    QCommandLineOption host(QLatin1String("host"),
-                            QCoreApplication::translate(
-                                "main", "Read perf data from remote <host> instead of stdin."),
-                            QLatin1String("host"));
+    QCommandLineOption host(QStringLiteral("host"),
+                            QCoreApplication::translate("main", "Read perf data from remote <host> instead of stdin."),
+                            QStringLiteral("host"));
     parser.addOption(host);
 
-    QCommandLineOption port(QLatin1String("port"),
-                            QCoreApplication::translate(
-                              "main", "When reading from remote host, connect to <port> (default: "
-                                      "9327)."),
-                            QLatin1String("port"),
-                            QLatin1String("9327"));
+    QCommandLineOption port(QStringLiteral("port"),
+                            QCoreApplication::translate("main",
+                                                        "When reading from remote host, connect to <port> (default: "
+                                                        "9327)."),
+                            QStringLiteral("port"), QStringLiteral("9327"));
     parser.addOption(port);
 
-    QCommandLineOption output(QLatin1String("output"),
-                              QCoreApplication::translate(
-                                  "main", "Write b2qt data to <file> instead of stdout."),
-                              QLatin1String("file"));
+    QCommandLineOption output(QStringLiteral("output"),
+                              QCoreApplication::translate("main", "Write b2qt data to <file> instead of stdout."),
+                              QStringLiteral("file"));
     parser.addOption(output);
 
-    QCommandLineOption sysroot(QLatin1String("sysroot"),
-                               QCoreApplication::translate(
-                                   "main", "Look for system libraries in <path> (default: %1).")
-                               .arg(QDir::rootPath()),
-                               QLatin1String("path"),
-                               QDir::rootPath());
+    QCommandLineOption sysroot(
+        QStringLiteral("sysroot"),
+        QCoreApplication::translate("main", "Look for system libraries in <path> (default: %1).").arg(QDir::rootPath()),
+        QStringLiteral("path"), QDir::rootPath());
     parser.addOption(sysroot);
 
     const auto defaultDebug = PerfUnwind::defaultDebugInfoPath();
-    QCommandLineOption debug(QLatin1String("debug"),
-                             QCoreApplication::translate(
-                                 "main",
-                                 "Look for debug information in <path>. "
-                                 "You can specify multiple paths separated by ':'. "
-                                 "Relative paths are relative to the original file's path. "
-                                 "The default is: <sysroot>%1 .").arg(defaultDebug),
-                             QLatin1String("path"), defaultDebug);
+    QCommandLineOption debug(QStringLiteral("debug"),
+                             QCoreApplication::translate("main",
+                                                         "Look for debug information in <path>. "
+                                                         "You can specify multiple paths separated by ':'. "
+                                                         "Relative paths are relative to the original file's path. "
+                                                         "The default is: <sysroot>%1 .")
+                                 .arg(defaultDebug),
+                             QStringLiteral("path"), defaultDebug);
     parser.addOption(debug);
 
-    QCommandLineOption extra(QLatin1String("extra"),
-                             QCoreApplication::translate(
-                                 "main", "Look for additional libraries in <path> (default: .)."),
-                             QLatin1String("path"));
+    QCommandLineOption extra(
+        QStringLiteral("extra"),
+        QCoreApplication::translate("main", "Look for additional libraries in <path> (default: .)."),
+        QStringLiteral("path"));
     parser.addOption(extra);
 
-    QCommandLineOption appPath(QLatin1String("app"),
-                               QCoreApplication::translate(
-                                   "main", "Look for application binary in <path> (default: .)."),
-                               QLatin1String("path"));
+    QCommandLineOption appPath(
+        QStringLiteral("app"),
+        QCoreApplication::translate("main", "Look for application binary in <path> (default: .)."),
+        QStringLiteral("path"));
     parser.addOption(appPath);
 
     const auto defaultArch = QLatin1String(PerfRegisterInfo::defaultArchitecture());
-    QCommandLineOption arch(QLatin1String("arch"),
-                            QCoreApplication::translate(
-                                "main",
-                                "Set the fallback architecture, in case the architecture is not "
-                                "given in the data itself, to <arch>. "
-                                "The default is: %1").arg(defaultArch),
-                            QLatin1String("arch"),
-                            defaultArch);
+    QCommandLineOption arch(
+        QStringLiteral("arch"),
+        QCoreApplication::translate("main",
+                                    "Set the fallback architecture, in case the architecture is not "
+                                    "given in the data itself, to <arch>. "
+                                    "The default is: %1")
+            .arg(defaultArch),
+        QStringLiteral("arch"), defaultArch);
     parser.addOption(arch);
 
     const auto defaultKallsyms = PerfUnwind::defaultKallsymsPath();
-    QCommandLineOption kallsymsPath(QLatin1String("kallsyms"),
-                                    QCoreApplication::translate(
-                                        "main", "Path to kallsyms mapping to resolve kernel "
-                                        "symbols. The default is: <sysroot>%1 .")
-                                    .arg(defaultKallsyms), QLatin1String("path"), defaultKallsyms);
+    QCommandLineOption kallsymsPath(QStringLiteral("kallsyms"),
+                                    QCoreApplication::translate("main",
+                                                                "Path to kallsyms mapping to resolve kernel "
+                                                                "symbols. The default is: <sysroot>%1 .")
+                                        .arg(defaultKallsyms),
+                                    QStringLiteral("path"), defaultKallsyms);
     parser.addOption(kallsymsPath);
 
-    QCommandLineOption printStats(QLatin1String("print-stats"),
-                               QCoreApplication::translate(
-                                   "main", "Print statistics instead of converting the data."));
+    QCommandLineOption printStats(
+        QStringLiteral("print-stats"),
+        QCoreApplication::translate("main", "Print statistics instead of converting the data."));
     parser.addOption(printStats);
 
-    QCommandLineOption bufferSize(QLatin1String("buffer-size"),
-                                  QCoreApplication::translate(
-                                   "main", "Initial size of event buffer in kilobytes. This"
-                                   " influences how many events get buffered before they get"
-                                   " sorted by time and then analyzed. Increase this value when"
-                                   " your perf.data file was recorded with a large buffer value"
-                                   " (perf record -m). Pass 0 to buffer events until a"
-                                   " FINISHED_ROUND event is encountered. perfparser will switch to"
-                                   " automatic buffering by FINISHED_ROUND events if either the"
-                                   " data indicates that the tace was recorded with a version of"
-                                   " perf >= 3.17, or a FINISHED_ROUND event is encountered and no"
-                                   " time order violations have occurred before. When encountering"
-                                   " a time order violation, perfparser will switch back to dynamic"
-                                   " buffering using buffer-size and max-buffer-size."
-                                   " The default value is 32MB."),
-                                   QLatin1String("buffer-size"), QString::number(1 << 15));
+    QCommandLineOption bufferSize(
+        QStringLiteral("buffer-size"),
+        QCoreApplication::translate("main",
+                                    "Initial size of event buffer in kilobytes. This"
+                                    " influences how many events get buffered before they get"
+                                    " sorted by time and then analyzed. Increase this value when"
+                                    " your perf.data file was recorded with a large buffer value"
+                                    " (perf record -m). Pass 0 to buffer events until a"
+                                    " FINISHED_ROUND event is encountered. perfparser will switch to"
+                                    " automatic buffering by FINISHED_ROUND events if either the"
+                                    " data indicates that the tace was recorded with a version of"
+                                    " perf >= 3.17, or a FINISHED_ROUND event is encountered and no"
+                                    " time order violations have occurred before. When encountering"
+                                    " a time order violation, perfparser will switch back to dynamic"
+                                    " buffering using buffer-size and max-buffer-size."
+                                    " The default value is 32MB."),
+        QStringLiteral("buffer-size"), QString::number(1 << 15));
     parser.addOption(bufferSize);
 
-    QCommandLineOption maxBufferSize(QLatin1String("max-buffer-size"),
-                                  QCoreApplication::translate(
-                                   "main", "Maximum size of event buffer in kilobytes. perfparser"
-                                   " increases the size of the event buffer when time order"
-                                   " violations are detected. It will never increase it beyond this"
-                                   " value, though. The default value is 1GB"),
-                                   QLatin1String("max-buffer-size"), QString::number(1 << 20));
+    QCommandLineOption maxBufferSize(
+        QStringLiteral("max-buffer-size"),
+        QCoreApplication::translate("main",
+                                    "Maximum size of event buffer in kilobytes. perfparser"
+                                    " increases the size of the event buffer when time order"
+                                    " violations are detected. It will never increase it beyond this"
+                                    " value, though. The default value is 1GB"),
+        QStringLiteral("max-buffer-size"), QString::number(1 << 20));
     parser.addOption(maxBufferSize);
 
-    QCommandLineOption maxFrames(QLatin1String("max-frames"),
-                                  QCoreApplication::translate(
-                                   "main", "Maximum number of frames that will be unwound."
-                                   " Set the value to -1 to unwind as many frames as possible."
-                                   " Beware that this can then potentially lead to infinite loops "
-                                   " when the stack got corrupted. Default value is 64."),
-                                   QLatin1String("max-frames"), QLatin1String("64"));
+    QCommandLineOption maxFrames(
+        QStringLiteral("max-frames"),
+        QCoreApplication::translate("main",
+                                    "Maximum number of frames that will be unwound."
+                                    " Set the value to -1 to unwind as many frames as possible."
+                                    " Beware that this can then potentially lead to infinite loops "
+                                    " when the stack got corrupted. Default value is 64."),
+        QStringLiteral("max-frames"), QStringLiteral("64"));
     parser.addOption(maxFrames);
 
     parser.process(app);
