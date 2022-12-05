@@ -344,8 +344,9 @@ Dwfl_Module *PerfSymbolTable::module(quint64 addr, const PerfElfMap::ElfInfo &el
     return reportElf(elf);
 }
 
-static QFileInfo findDebugInfoFile(const QString &root, const QString &file,
-                                   const QString &debugLinkString)
+QFileInfo PerfSymbolTable::findDebugInfoFile(
+        const QString &root, const QString &file,
+        const QString &debugLinkString)
 {
     auto dir = QFileInfo(root).dir();
     const auto folder = QFileInfo(file).path();
@@ -367,12 +368,12 @@ static QFileInfo findDebugInfoFile(const QString &root, const QString &file,
 
     // try again in /usr/lib/debug folder
     // some distros use for example /usr/lib/debug/lib (ubuntu) and some use /usr/lib/debug/usr/lib (fedora)
-    const auto usr = QDir::separator() + QLatin1String("usr") + QDir::separator();
+    const auto usr = QString(QDir::separator() + QLatin1String("usr") + QDir::separator());
     auto folderWithoutUsr = folder;
     folderWithoutUsr.replace(usr, QDir::separator());
 
     // make sure both (/usr/ and /) are searched
-    for (const auto& path : {folderWithoutUsr, usr + folderWithoutUsr}) {
+    for (const auto& path : {folderWithoutUsr, QString(usr + folderWithoutUsr)}) {
         debugLinkFile.setFile(dir.path() + QDir::separator() + QLatin1String("usr") + QDir::separator()
                               + QLatin1String("lib") + QDir::separator() + QLatin1String("debug") + QDir::separator()
                               + path + QDir::separator() + debugLinkString);
