@@ -343,8 +343,9 @@ Dwfl_Module *PerfSymbolTable::module(quint64 addr, const PerfElfMap::ElfInfo &el
     return reportElf(elf);
 }
 
-static QFileInfo findDebugInfoFile(const QString &root, const QString &file,
-                                   const QString &debugLinkString)
+QFileInfo PerfSymbolTable::findDebugInfoFile(
+        const QString &root, const QString &file,
+        const QString &debugLinkString)
 {
     auto dir = QFileInfo(root).dir();
     const auto folder = QFileInfo(file).path();

@@ -29,8 +29,6 @@
 
 #include "perfsymboltable.h"
 
-QFileInfo findDebugInfoFile(const QString& root, const QString& file, const QString& debugLinkString);
-
 class TestFindDebugSymbols : public QObject
 {
     Q_OBJECT
@@ -86,7 +84,8 @@ private slots:
         QFETCH(QString, file);
         QFETCH(QString, debugLinkString);
 
-        auto debugFile = findDebugInfoFile(tempDir.path() + QDir::separator(), root, file);
+        auto debugFile = PerfSymbolTable::findDebugInfoFile(
+                    tempDir.path() + QDir::separator(), root, file);
 
         QCOMPARE(debugFile.absoluteFilePath(), QFileInfo(tempDir.path() + debugLinkString).absoluteFilePath());
     }

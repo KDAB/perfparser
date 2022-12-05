@@ -44,6 +44,9 @@ public:
     PerfSymbolTable(qint32 pid, Dwfl_Callbacks *callbacks, PerfUnwind *parent);
     ~PerfSymbolTable();
 
+    static QFileInfo findDebugInfoFile(
+            const QString& root, const QString& file, const QString& debugLinkString);
+
     struct PerfMapSymbol {
         PerfMapSymbol(quint64 start = 0, quint64 length = 0, QByteArray name = QByteArray()) :
             start(start), length(length), name(name) {}
