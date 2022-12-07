@@ -115,14 +115,6 @@ void PerfFeatures::createFeature(QIODevice *device, QDataStream::ByteOrder byteO
         qWarning() << "feature not properly read" << featureId << section.size << readSize;
 }
 
-PerfFeatures::PerfFeatures()
-{
-}
-
-PerfFeatures::~PerfFeatures()
-{
-}
-
 bool PerfFeatures::read(QIODevice *device, const PerfHeader *header)
 {
     if (!device->seek(header->featureOffset())) {
