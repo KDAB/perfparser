@@ -25,7 +25,7 @@
 
 #ifdef MANUAL_TEST
 #define QVERIFY Q_ASSERT
-#define QCOMPARE(x, y) Q_ASSERT(x == y)
+#define QCOMPARE(x, y) Q_ASSERT((x) == (y))
 #else
 #include <QtTest>
 #endif
