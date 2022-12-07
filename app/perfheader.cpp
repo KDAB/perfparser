@@ -33,8 +33,6 @@ PerfHeader::PerfHeader(QIODevice *source)  :
 
 void PerfHeader::read()
 {
-    const uint featureParts = sizeof(m_features) / sizeof(quint64);
-
     QDataStream stream(m_source);
     if (m_size == 0) {
         if (!m_source->isSequential() && m_source->size() < pipeHeaderFixedLength()) {
@@ -78,20 +76,22 @@ void PerfHeader::read()
 
         // file header
         stream >> m_attrSize >> m_attrs >> m_data >> m_eventTypes;
-        for (uint i = 0; i < featureParts; ++i)
-            stream >> m_features[i];
+        for (auto &feature : m_features)
+            stream >> feature;
 
         if (m_magic == s_magicSwitched && !hasFeature(HOSTNAME) && !hasFeature(CMDLINE)) {
 
-            quint32 *features32 = reinterpret_cast<quint32 *>(&m_features[0]);
-            for (uint i = 0; i < featureParts; ++i)
-                qSwap(features32[static_cast<size_t>(i * 2)], features32[static_cast<size_t>(i * 2 + 1)]);
+            for (auto &feature : m_features)
+            {
+                static_assert(std::is_same<std::decay<decltype(feature)>::type, quint64>::value, "");
+                auto feature32 = reinterpret_cast<quint32*>(&feature);
+                qSwap(feature32[0], feature32[1]);
+            }
 
             if (!hasFeature(HOSTNAME) && !hasFeature(CMDLINE)) {
                 // It borked: blank it all
                 qWarning() << "bad feature data:" << m_features;
-                for (uint i = 0; i < featureParts; ++i)
-                    m_features[i] = 0;
+                std::fill(std::begin(m_features), std::end(m_features), 0);
                 setFeature(BUILD_ID);
             }
         }
