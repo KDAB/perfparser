@@ -76,6 +76,36 @@ private:
     quint16 tries = 0;
 };
 
+void PerfTcpSocket::processError(QAbstractSocket::SocketError error)
+{
+    if (error == QAbstractSocket::RemoteHostClosedError)
+        return;
+
+    qWarning() << "socket error" << error << errorString();
+    if (state() == QAbstractSocket::ConnectedState || tries > 10)
+        QCoreApplication::exit(TcpSocketError);
+    else
+        QTimer::singleShot(1 << tries, this, &PerfTcpSocket::tryConnect);
+}
+
+PerfTcpSocket::PerfTcpSocket(QCoreApplication *app, QString host, quint16 port) :
+    QTcpSocket(app), host(std::move(host)), port(port)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+    connect(this, &QAbstractSocket::errorOccurred, this, &PerfTcpSocket::processError);
+#else
+    connect(this, QOverload<QAbstractSocket::SocketError>::of(&QTcpSocket::error),
+            this, &PerfTcpSocket::processError);
+#endif
+    connect(this, &QAbstractSocket::disconnected, this, &QIODevice::close);
+}
+
+void PerfTcpSocket::tryConnect()
+{
+    ++tries;
+    connectToHost(host, port, QIODevice::ReadOnly);
+}
+
 int main(int argc, char *argv[])
 {
     QCoreApplication::setApplicationName(QStringLiteral("perfparser"));
@@ -428,37 +458,6 @@ int main(int argc, char *argv[])
     }
 
     return QCoreApplication::exec();
-}
-
-
-void PerfTcpSocket::processError(QAbstractSocket::SocketError error)
-{
-    if (error == QAbstractSocket::RemoteHostClosedError)
-        return;
-
-    qWarning() << "socket error" << error << errorString();
-    if (state() == QAbstractSocket::ConnectedState || tries > 10)
-        QCoreApplication::exit(TcpSocketError);
-    else
-        QTimer::singleShot(1 << tries, this, &PerfTcpSocket::tryConnect);
-}
-
-PerfTcpSocket::PerfTcpSocket(QCoreApplication *app, QString host, quint16 port) :
-    QTcpSocket(app), host(std::move(host)), port(port)
-{
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-    connect(this, &QAbstractSocket::errorOccurred, this, &PerfTcpSocket::processError);
-#else
-    connect(this, QOverload<QAbstractSocket::SocketError>::of(&QTcpSocket::error),
-            this, &PerfTcpSocket::processError);
-#endif
-    connect(this, &QAbstractSocket::disconnected, this, &QIODevice::close);
-}
-
-void PerfTcpSocket::tryConnect()
-{
-    ++tries;
-    connectToHost(host, port, QIODevice::ReadOnly);
 }
 
 #include "main.moc"
