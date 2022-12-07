@@ -142,19 +142,19 @@ QDataStream::ByteOrder PerfHeader::byteOrder() const
 
 void PerfHeader::setFeature(PerfHeader::Feature feature)
 {
-    Q_ASSERT(feature >= 0 && feature < sizeof(m_features) * sizeof(quint64));
+    Q_ASSERT(feature >= 0 && feature < FEAT_BITS);
     m_features[feature / 64] |= (1ULL << (feature % 64));
 }
 
 void PerfHeader::clearFeature(PerfHeader::Feature feature)
 {
-    Q_ASSERT(feature >= 0 && feature < sizeof(m_features) * sizeof(quint64));
+    Q_ASSERT(feature >= 0 && feature < FEAT_BITS);
     m_features[feature / 64] &= ~(1ULL << (feature % 64));
 }
 
 bool PerfHeader::hasFeature(PerfHeader::Feature feature) const
 {
-    Q_ASSERT(feature >= 0 && feature < sizeof(m_features) * sizeof(quint64));
+    Q_ASSERT(feature >= 0 && feature < FEAT_BITS);
     return (m_features[feature / 64] & (1ULL << (feature % 64))) != 0;
 }
 
