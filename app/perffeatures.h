@@ -168,9 +168,6 @@ QDataStream &operator>>(QDataStream &stream, PerfCompressed &compressed);
 class PerfFeatures
 {
 public:
-    PerfFeatures();
-    ~PerfFeatures();
-
     bool read(QIODevice *device, const PerfHeader *header);
     const QByteArray &architecture() const { return m_arch.value; }
     void setArchitecture(const QByteArray &arch) { m_arch.value = arch; }
