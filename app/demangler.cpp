@@ -52,12 +52,9 @@ bool Demangler::demangle(const char *mangledSymbol, char *demangleBuffer, size_t
         }
     }
 
-    for (const auto& demangler : std::as_const(m_demanglers)) {
-        if (demangler.demangler(mangledSymbol, demangleBuffer, demangleBufferLength)) {
-            return true;
-        }
-    }
-    return false;
+    return std::any_of(m_demanglers.constBegin(), m_demanglers.constEnd(), [&](const auto& demangler) {
+        return demangler.demangler(mangledSymbol, demangleBuffer, demangleBufferLength);
+    });
 }
 
 void Demangler::loadDemangleLib(const QString &name, const char* function, const QByteArray& prefix)
