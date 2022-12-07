@@ -87,8 +87,6 @@ bool mayHaveScopes(Dwarf_Die *die)
     case DW_TAG_entry_point:
     case DW_TAG_inlined_subroutine:
     case DW_TAG_subprogram:
-        return true;
-
     /* DIEs without addresses that can own DIEs with addresses.  */
     case DW_TAG_namespace:
     case DW_TAG_class_type:
