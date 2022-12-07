@@ -105,8 +105,10 @@ static bool accessDsoMem(const PerfUnwind::UnwindInfo *ui, Dwarf_Addr addr,
     return false;
 }
 
-static bool memoryRead(Dwfl *, Dwarf_Addr addr, Dwarf_Word *result, void *arg)
+static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *arg)
 {
+    Q_UNUSED(dwfl)
+
     PerfUnwind::UnwindInfo *ui = static_cast<PerfUnwind::UnwindInfo *>(arg);
     const int wordWidth =
             PerfRegisterInfo::s_wordWidth[ui->unwind->architecture()][registerAbi(ui->sample)];
