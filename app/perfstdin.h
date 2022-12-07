@@ -23,7 +23,7 @@
 #include <QIODevice>
 #include <QTimer>
 
-class PerfStdin : public QIODevice
+class PerfStdin final : public QIODevice
 {
     Q_OBJECT
 public:
