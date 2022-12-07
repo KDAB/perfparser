@@ -69,8 +69,8 @@ qint64 PerfStdin::readData(char *data, qint64 maxlen)
         Q_ASSERT(m_bufferPos <= m_bufferUsed);
         const size_t buffered = static_cast<size_t>(qMin(bufferedAvailable(), maxlen - read));
         memcpy(data + read, m_buffer.constData() + m_bufferPos, buffered);
-        m_bufferPos += buffered;
-        read += buffered;
+        m_bufferPos += static_cast<int>(buffered);
+        read += static_cast<int>(buffered);
     } while (read < maxlen && fillBuffer(maxlen) > 0);
 
     Q_ASSERT(read > 0 || bufferedAvailable() == 0);
@@ -123,7 +123,7 @@ qint64 PerfStdin::fillBuffer(qint64 targetBufferSize)
 
     const size_t read = fread(m_buffer.data() + m_bufferUsed, 1,
                               static_cast<size_t>(m_buffer.length() - m_bufferUsed), stdin);
-    m_bufferUsed += read;
+    m_bufferUsed += static_cast<int>(read);
     Q_ASSERT(m_buffer.length() >= m_bufferUsed);
     return static_cast<qint64>(read);
 }

@@ -462,7 +462,7 @@ int PerfSymbolTable::findDebugInfo(Dwfl_Module *module, const char *moduleName, 
     }
 
     /// FIXME: find a proper solution to this
-    if (!debugLinkFile.isFile() && QByteArray::fromRawData(file, strlen(file)).endsWith("/elf")) {
+    if (!debugLinkFile.isFile() && QByteArray::fromRawData(file, static_cast<int>(strlen(file))).endsWith("/elf")) {
         // fall-back to original file if it's in a build-id path
         debugLinkFile.setFile(QString::fromUtf8(file));
     }
@@ -645,7 +645,7 @@ static QByteArray fakeSymbolFromSection(Dwfl_Module *mod, Dwarf_Addr addr)
         return {};
 
     if (str == QByteArrayLiteral(".plt") && entsize > 0) {
-        const auto *pltSymbol = findPltSymbol(elf, addr / entsize);
+        const auto* pltSymbol = findPltSymbol(elf, static_cast<int>(addr / entsize));
         if (pltSymbol)
             return demangle(pltSymbol) + "@plt";
     }

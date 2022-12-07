@@ -65,7 +65,7 @@ bool PerfData::setCompressed(const PerfCompressed &compressed)
     return true;
 }
 
-const char * perfEventToString(qint32 type)
+const char* perfEventToString(quint32 type)
 {
     switch (type) {
     case PERF_RECORD_MMAP:                return "PERF_RECORD_MMAP";
@@ -284,7 +284,7 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
 
         // setup decompression buffer which may contain data from a previous compressed record
         // i.e. one where we had to Rerun. the decompression can add at most mmap_len data on top
-        m_decompressBuffer.resize(m_compressed.mmap_len + m_remaininingDecompressedDataSize);
+        m_decompressBuffer.resize(static_cast<int>(m_compressed.mmap_len + m_remaininingDecompressedDataSize));
         auto outBuffer = m_decompressBuffer.data() + m_remaininingDecompressedDataSize;
         auto outBufferSize = static_cast<size_t>(m_decompressBuffer.size() - m_remaininingDecompressedDataSize);
         ZSTD_outBuffer out = {outBuffer, outBufferSize, 0};
@@ -301,7 +301,7 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
         }
 
         // then resize the buffer to final size, which may be less than mmap_len
-        m_decompressBuffer.resize(out.pos + m_remaininingDecompressedDataSize);
+        m_decompressBuffer.resize(static_cast<int>(out.pos + m_remaininingDecompressedDataSize));
         // reset this now that we start to parse from the start of the buffer again
         m_remaininingDecompressedDataSize = 0;
 
@@ -326,7 +326,7 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
                 uncompressedStream.setDevice(nullptr);
                 // remaining decompressed data that needs to be parsed the next time
                 // we handle an uncompressed record
-                m_remaininingDecompressedDataSize = m_decompressBuffer.size() - oldPos;
+                m_remaininingDecompressedDataSize = static_cast<int>(m_decompressBuffer.size() - oldPos);
                 // move that data up front in the buffer and continue appending data
                 std::move(m_decompressBuffer.begin() + oldPos, m_decompressBuffer.end(),
                           m_decompressBuffer.begin());
@@ -356,7 +356,7 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
         if (parsedContentSize != expectedParsedContentSize) {
             qWarning() << "Event not fully parsed" << m_eventHeader.type << expectedParsedContentSize
                        << parsedContentSize;
-            stream.skipRawData(contentSize - parsedContentSize);
+            stream.skipRawData(static_cast<int>(contentSize - parsedContentSize));
         }
     }
 
@@ -406,7 +406,7 @@ PerfData::ReadStatus PerfData::doRead()
         const auto dataSize = m_header->dataSize();
         const auto endOfDataSection = dataOffset + dataSize;
 
-        m_destination->sendProgress(float(m_source->pos() - dataOffset) / dataSize);
+        m_destination->sendProgress(static_cast<float>(m_source->pos() - dataOffset) / static_cast<float>(dataSize));
         const qint64 posDeltaBetweenProgress = dataSize / 100;
         qint64 nextProgressAt = m_source->pos() + posDeltaBetweenProgress;
 
@@ -416,7 +416,8 @@ PerfData::ReadStatus PerfData::doRead()
                 break;
             }
             if (m_source->pos() >= nextProgressAt) {
-                m_destination->sendProgress(float(m_source->pos() - dataOffset) / dataSize);
+                m_destination->sendProgress(static_cast<float>(m_source->pos() - dataOffset)
+                                            / static_cast<float>(dataSize));
                 nextProgressAt += posDeltaBetweenProgress;
             }
         }

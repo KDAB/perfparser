@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_LINUX
         qWarning("PERFPARSER_DEBUG_WAIT is set, halting perfparser.");
         qWarning("Continue with \"kill -SIGCONT %lld\" or by attaching a debugger.", app.applicationPid());
-        kill(app.applicationPid(), SIGSTOP);
+        kill(static_cast<__pid_t>(app.applicationPid()), SIGSTOP);
 #else
         qWarning("PERFPARSER_DEBUG_WAIT is set, but this only works on linux. Ignoring.");
 #endif
