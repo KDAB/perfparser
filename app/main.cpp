@@ -64,7 +64,7 @@ enum ErrorCodes {
 class PerfTcpSocket : public QTcpSocket {
     Q_OBJECT
 public:
-    PerfTcpSocket(QCoreApplication *app, QString host, quint16 port);
+    PerfTcpSocket(QString host, quint16 port);
     void tryConnect();
 
 public slots:
@@ -88,8 +88,9 @@ void PerfTcpSocket::processError(QAbstractSocket::SocketError error)
         QTimer::singleShot(1 << tries, this, &PerfTcpSocket::tryConnect);
 }
 
-PerfTcpSocket::PerfTcpSocket(QCoreApplication *app, QString host, quint16 port) :
-    QTcpSocket(app), host(std::move(host)), port(port)
+PerfTcpSocket::PerfTcpSocket(QString host, quint16 port)
+    : host(std::move(host))
+    , port(port)
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     connect(this, &QAbstractSocket::errorOccurred, this, &PerfTcpSocket::processError);
@@ -104,6 +105,38 @@ void PerfTcpSocket::tryConnect()
 {
     ++tries;
     connectToHost(host, port, QIODevice::ReadOnly);
+}
+
+std::unique_ptr<QFile> initOutfile(const QCommandLineParser& parser, const QCommandLineOption& output)
+{
+    std::unique_ptr<QFile> outfile;
+    if (parser.isSet(output)) {
+        auto outfile = std::make_unique<QFile>(parser.value(output));
+        if (!outfile->open(QIODevice::WriteOnly))
+            QCoreApplication::exit(CannotOpen);
+    } else {
+#ifdef Q_OS_WIN
+        _setmode(fileno(stdout), O_BINARY);
+#endif
+        outfile = std::make_unique<QFile>();
+        if (!outfile->open(stdout, QIODevice::WriteOnly))
+            QCoreApplication::exit(CannotOpen);
+    }
+    return outfile;
+}
+
+std::unique_ptr<QIODevice> initInfile(const QCommandLineParser& parser, const QCommandLineOption& host,
+                                      const QCommandLineOption& port, const QCommandLineOption& input)
+{
+    if (parser.isSet(host))
+        return std::make_unique<PerfTcpSocket>(parser.value(host), parser.value(port).toUShort());
+    else if (parser.isSet(input))
+        return std::make_unique<QFile>(parser.value(input));
+
+#ifdef Q_OS_WIN
+    _setmode(fileno(stdin), O_BINARY);
+#endif
+    return std::make_unique<PerfStdin>();
 }
 
 int main(int argc, char *argv[])
@@ -246,33 +279,8 @@ int main(int argc, char *argv[])
 
     parser.process(app);
 
-    std::unique_ptr<QFile> outfile;
-    if (parser.isSet(output)) {
-        outfile = std::make_unique<QFile>(parser.value(output));
-        if (!outfile->open(QIODevice::WriteOnly))
-            return CannotOpen;
-    } else {
-        outfile = std::make_unique<QFile>();
-#ifdef Q_OS_WIN
-        _setmode(fileno(stdout), O_BINARY);
-#endif
-        if (!outfile->open(stdout, QIODevice::WriteOnly))
-            return CannotOpen;
-    }
-
-    std::unique_ptr<QIODevice> infile;
-    if (parser.isSet(host)) {
-        infile = std::make_unique<PerfTcpSocket>(&app, parser.value(host), parser.value(port).toUShort());
-    } else {
-        if (parser.isSet(input)) {
-            infile = std::make_unique<QFile>(parser.value(input));
-        } else {
-#ifdef Q_OS_WIN
-            _setmode(fileno(stdin), O_BINARY);
-#endif
-            infile = std::make_unique<PerfStdin>();
-        }
-    }
+    auto outfile = initOutfile(parser, output);
+    auto infile = initInfile(parser, host, port, input);
 
     bool ok = false;
     uint targetEventBufferSize = parser.value(bufferSize).toUInt(&ok) * 1024;
