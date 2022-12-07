@@ -746,7 +746,6 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordSample &record)
                 sectionSize -= intMax;
             } while (sectionSize > intMax);
             stream.skipRawData(static_cast<int>(sectionSize));
-            sectionSize = 0;
             stream.skipRawData(sizeof(quint64)); // skip contentSize
         } else if (sectionSize > 0) {
             record.m_userStack.resize(static_cast<int>(sectionSize));
