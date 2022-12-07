@@ -105,7 +105,9 @@ private:
     PerfFileSection m_data;
     PerfFileSection m_eventTypes;
 
-    quint64 m_features[FEAT_BITS / 64 + ((FEAT_BITS % 64) > 0 ? 1 : 0)] = {0};
+    static_assert(FEAT_BITS % 64 == 0, "");
+    static constexpr quint64 NUM_FEATURES = FEAT_BITS / 64;
+    quint64 m_features[NUM_FEATURES] = {0};
 
     static const qint64 s_magicSame = 0x32454c4946524550LL;
     static const qint64 s_magicSwitched = 0x50455246494c4532LL;
