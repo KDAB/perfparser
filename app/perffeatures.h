@@ -28,10 +28,9 @@
 #include <QVector>
 
 struct PerfEventHeader {
-    PerfEventHeader() : type(0), misc(0), size(0) {}
-    quint32 type;
-    quint16 misc;
-    quint16 size;
+    quint32 type = 0;
+    quint16 misc = 0;
+    quint16 size = 0;
 
     static quint16 fixedLength() { return sizeof(type) + sizeof(misc) + sizeof(size); }
 };
@@ -39,8 +38,6 @@ struct PerfEventHeader {
 QDataStream &operator>>(QDataStream &stream, PerfEventHeader &header);
 
 struct PerfBuildId {
-    PerfBuildId() : size(0) {}
-
     static const quint16 s_idLength = 20;
     static const quint16 s_idPadding = 4; // 20 aligned to 8 gives 24 => 4 unused bytes
     static const quint16 s_pathMax = 4096;
@@ -51,7 +48,7 @@ struct PerfBuildId {
         QByteArray fileName;
     };
 
-    qint64 size;
+    qint64 size = 0;
     QList<BuildId> buildIds;
 };
 
@@ -109,9 +106,9 @@ QDataStream &operator<<(QDataStream &stream, const PerfCpuTopology &cpuTopology)
 struct PerfNumaTopology {
 
     struct NumaNode {
-        quint32 nodeId;
-        quint64 memTotal;
-        quint64 memFree;
+        quint32 nodeId = 0;
+        quint64 memTotal = 0;
+        quint64 memFree = 0;
         QByteArray topology;
     };
 
@@ -124,7 +121,7 @@ QDataStream &operator<<(QDataStream &stream, const PerfNumaTopology::NumaNode &n
 struct PerfPmuMappings {
 
     struct Pmu {
-        quint32 type;
+        quint32 type = 0;
         QByteArray name;
     };
     QList<Pmu> pmus;
@@ -137,8 +134,8 @@ struct PerfGroupDesc {
 
     struct GroupDesc {
         QByteArray name;
-        quint32 leaderIndex;
-        quint32 numMembers;
+        quint32 leaderIndex = 0;
+        quint32 numMembers = 0;
     };
 
     QList<GroupDesc> groupDescs;
