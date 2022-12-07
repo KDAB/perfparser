@@ -78,15 +78,17 @@ private:
 
 int main(int argc, char *argv[])
 {
+    QCoreApplication::setApplicationName(QStringLiteral("perfparser"));
+    QCoreApplication::setApplicationVersion(QStringLiteral("10.0"));
+
     QCoreApplication app(argc, argv);
-    app.setApplicationName(QStringLiteral("perfparser"));
-    app.setApplicationVersion(QStringLiteral("10.0"));
 
     if (qEnvironmentVariableIsSet("PERFPARSER_DEBUG_WAIT")) {
 #ifdef Q_OS_LINUX
+        const auto pid = QCoreApplication::applicationPid();
         qWarning("PERFPARSER_DEBUG_WAIT is set, halting perfparser.");
-        qWarning("Continue with \"kill -SIGCONT %lld\" or by attaching a debugger.", app.applicationPid());
-        kill(static_cast<__pid_t>(app.applicationPid()), SIGSTOP);
+        qWarning("Continue with \"kill -SIGCONT %lld\" or by attaching a debugger.", pid);
+        kill(static_cast<__pid_t>(pid), SIGSTOP);
 #else
         qWarning("PERFPARSER_DEBUG_WAIT is set, but this only works on linux. Ignoring.");
 #endif
@@ -289,19 +291,19 @@ int main(int argc, char *argv[])
         const qint64 filePos = infile->pos();
         if (!attributes.read(infile.get(), &header)) {
             qWarning() << "Failed to read attributes";
-            qApp->exit(DataError);
+            QCoreApplication::exit(DataError);
             return;
         }
         if (!features.read(infile.get(), &header)) {
             qWarning() << "Failed to read features";
-            qApp->exit(DataError);
+            QCoreApplication::exit(DataError);
             return;
         }
         infile->seek(filePos);
 
         // first send features, as it may contain better event descriptions
         if (header.hasFeature(PerfHeader::COMPRESSED) && !data.setCompressed(features.compressed())) {
-            qApp->exit(DataError);
+            QCoreApplication::exit(DataError);
             return;
         }
         unwind.features(features);
@@ -318,7 +320,7 @@ int main(int argc, char *argv[])
 
         if (unwind.architecture() == PerfRegisterInfo::ARCH_INVALID) {
             qWarning() << "No information about CPU architecture found. Cannot unwind.";
-            qApp->exit(MissingData);
+            QCoreApplication::exit(MissingData);
             return;
         }
 
@@ -347,13 +349,13 @@ int main(int argc, char *argv[])
         const qint64 read = infile->read(buffer.data(), buffer.length());
         if (read < 0) {
             qWarning() << "Failed to read from input.";
-            qApp->exit(BufferingError);
+            QCoreApplication::exit(BufferingError);
             return;
         }
 
         if (!writeBytes(tempfile.get(), buffer.data(), read)) {
             qWarning() << "Failed to write buffer file.";
-            qApp->exit(BufferingError);
+            QCoreApplication::exit(BufferingError);
             return;
         }
     };
@@ -366,7 +368,7 @@ int main(int argc, char *argv[])
                 tempfile = std::make_unique<QTemporaryFile>();
                 if (!tempfile->open(QIODevice::ReadWrite)) {
                     qWarning() << "Failed to open buffer file.";
-                    qApp->exit(BufferingError);
+                    QCoreApplication::exit(BufferingError);
                     return;
                 }
 
@@ -375,7 +377,7 @@ int main(int argc, char *argv[])
                 const QByteArray fakeHeader(static_cast<int>(header.size()), 0);
                 if (!writeBytes(tempfile.get(), fakeHeader.data(), fakeHeader.length())) {
                     qWarning() << "Failed to write fake header to buffer file.";
-                    qApp->exit(BufferingError);
+                    QCoreApplication::exit(BufferingError);
                     return;
                 }
 
@@ -385,7 +387,7 @@ int main(int argc, char *argv[])
                     std::swap(infile, tempfile);
                     if (!infile->reset()) {
                         qWarning() << "Cannot reset buffer file.";
-                        qApp->exit(BufferingError);
+                        QCoreApplication::exit(BufferingError);
                         return;
                     }
                     readFileHeader();
@@ -404,15 +406,15 @@ int main(int argc, char *argv[])
     });
 
     QObject::connect(&header, &PerfHeader::error, []() {
-        qApp->exit(HeaderError);
+        QCoreApplication::exit(HeaderError);
     });
 
     QObject::connect(&data, &PerfData::finished, []() {
-        qApp->exit(NoError);
+        QCoreApplication::exit(NoError);
     });
 
     QObject::connect(&data, &PerfData::error, []() {
-        qApp->exit(DataError);
+        QCoreApplication::exit(DataError);
     });
 
     if (parser.isSet(host)) {
@@ -425,7 +427,7 @@ int main(int argc, char *argv[])
             QTimer::singleShot(0, &header, &PerfHeader::read);
     }
 
-    return app.exec();
+    return QCoreApplication::exec();
 }
 
 
@@ -436,7 +438,7 @@ void PerfTcpSocket::processError(QAbstractSocket::SocketError error)
 
     qWarning() << "socket error" << error << errorString();
     if (state() == QAbstractSocket::ConnectedState || tries > 10)
-        qApp->exit(TcpSocketError);
+        QCoreApplication::exit(TcpSocketError);
     else
         QTimer::singleShot(1 << tries, this, &PerfTcpSocket::tryConnect);
 }
