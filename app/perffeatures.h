@@ -69,8 +69,8 @@ struct PerfNrCpus {
     quint32 available;
 };
 
-QDataStream &operator>>(QDataStream &stream, PerfNrCpus &numCpus);
-QDataStream &operator<<(QDataStream &stream, PerfNrCpus numCpus);
+QDataStream &operator>>(QDataStream &stream, PerfNrCpus &nrCpus);
+QDataStream &operator<<(QDataStream &stream, PerfNrCpus nrCpus);
 
 struct PerfTotalMem {
     quint64 totalMem;
