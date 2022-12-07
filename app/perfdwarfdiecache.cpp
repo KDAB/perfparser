@@ -282,7 +282,7 @@ QByteArray absoluteSourcePath(const char *path, Dwarf_Die *cuDie)
         return path;
 
     QByteArray ret;
-    ret.reserve(strlen(compDir) + strlen(path) + 1);
+    ret.reserve(static_cast<int>(strlen(compDir) + strlen(path) + 1));
     ret.append(compDir);
     ret.append('/');
     ret.append(path);
