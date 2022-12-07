@@ -95,17 +95,17 @@ private:
     static quint16 fileHeaderFixedLength();
     static quint16 pipeHeaderFixedLength();
 
-    QIODevice *m_source;
+    QIODevice *m_source = nullptr;
 
-    qint64 m_magic;
-    qint64 m_size;
-    qint64 m_attrSize;
+    qint64 m_magic = 0;
+    qint64 m_size = 0;
+    qint64 m_attrSize = 0;
 
     PerfFileSection m_attrs;
     PerfFileSection m_data;
     PerfFileSection m_eventTypes;
 
-    quint64 m_features[FEAT_BITS / 64 + ((FEAT_BITS % 64) > 0 ? 1 : 0)];
+    quint64 m_features[FEAT_BITS / 64 + ((FEAT_BITS % 64) > 0 ? 1 : 0)] = {0};
 
     static const qint64 s_magicSame = 0x32454c4946524550LL;
     static const qint64 s_magicSwitched = 0x50455246494c4532LL;
