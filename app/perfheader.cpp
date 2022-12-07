@@ -22,6 +22,8 @@
 
 #include <QDebug>
 
+#include <cstddef>
+
 PerfHeader::PerfHeader(QIODevice *source)  :
     m_source(source)
 {
@@ -83,7 +85,7 @@ void PerfHeader::read()
 
             quint32 *features32 = reinterpret_cast<quint32 *>(&m_features[0]);
             for (uint i = 0; i < featureParts; ++i)
-                qSwap(features32[i * 2], features32[i * 2 + 1]);
+                qSwap(features32[static_cast<size_t>(i * 2)], features32[static_cast<size_t>(i * 2 + 1)]);
 
             if (!hasFeature(HOSTNAME) && !hasFeature(CMDLINE)) {
                 // It borked: blank it all
@@ -127,10 +129,9 @@ quint16 PerfHeader::pipeHeaderFixedLength()
 
 quint16 PerfHeader::fileHeaderFixedLength()
 {
-    return pipeHeaderFixedLength()
-            + sizeof(m_attrSize)
-            + 3 * PerfFileSection::fixedLength() // m_attrs, m_data, m_eventTypes
-            + sizeof(m_features);
+    return pipeHeaderFixedLength() + sizeof(m_attrSize)
+        + static_cast<unsigned long>(3 * PerfFileSection::fixedLength()) // m_attrs, m_data, m_eventTypes
+        + sizeof(m_features);
 }
 
 QDataStream::ByteOrder PerfHeader::byteOrder() const
