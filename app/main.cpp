@@ -64,7 +64,7 @@ enum ErrorCodes {
 class PerfTcpSocket : public QTcpSocket {
     Q_OBJECT
 public:
-    PerfTcpSocket(QCoreApplication *app, const QString &host, quint16 port);
+    PerfTcpSocket(QCoreApplication *app, QString host, quint16 port);
     void tryConnect();
 
 public slots:
@@ -441,8 +441,8 @@ void PerfTcpSocket::processError(QAbstractSocket::SocketError error)
         QTimer::singleShot(1 << tries, this, &PerfTcpSocket::tryConnect);
 }
 
-PerfTcpSocket::PerfTcpSocket(QCoreApplication *app, const QString &host, quint16 port) :
-    QTcpSocket(app), host(host), port(port)
+PerfTcpSocket::PerfTcpSocket(QCoreApplication *app, QString host, quint16 port) :
+    QTcpSocket(app), host(std::move(host)), port(port)
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     connect(this, &QAbstractSocket::errorOccurred, this, &PerfTcpSocket::processError);
