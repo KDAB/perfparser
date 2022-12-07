@@ -41,7 +41,7 @@
 #include <memory>
 
 #ifdef Q_OS_LINUX
-#include <signal.h>
+#include <csignal>
 #endif
 
 #ifdef Q_OS_WIN
