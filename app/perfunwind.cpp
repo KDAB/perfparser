@@ -589,9 +589,7 @@ void PerfUnwind::resolveCallchain()
     // in the normal callchain. The branch stack contains the non-kernel IPs then.
     const bool hasBranchStack = !m_currentUnwind.sample->branchStack().isEmpty();
 
-    for (int i = 0, c = m_currentUnwind.sample->callchain().size(); i < c; ++i) {
-        quint64 ip = m_currentUnwind.sample->callchain()[i];
-
+    for (unsigned long long ip : m_currentUnwind.sample->callchain()) {
         if (ip > PERF_CONTEXT_MAX) {
             switch (ip) {
             case PERF_CONTEXT_HV: // hypervisor
