@@ -127,7 +127,7 @@ bool PerfFeatures::read(QIODevice *device, const PerfHeader *header)
     QHash<PerfHeader::Feature, PerfFileSection> featureSections;
     PerfFileSection section;
     for (uint i = 0; i < PerfHeader::LAST_FEATURE; ++i) {
-        PerfHeader::Feature feature = static_cast<PerfHeader::Feature>(i);
+        auto feature = static_cast<PerfHeader::Feature>(i);
         if (header->hasFeature(feature)) {
             stream >> section;
             if (section.size > 0)

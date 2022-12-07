@@ -109,7 +109,7 @@ static bool memoryRead(Dwfl *dwfl, Dwarf_Addr addr, Dwarf_Word *result, void *ar
 {
     Q_UNUSED(dwfl)
 
-    PerfUnwind::UnwindInfo *ui = static_cast<PerfUnwind::UnwindInfo *>(arg);
+    auto* ui = static_cast<PerfUnwind::UnwindInfo*>(arg);
     const int wordWidth =
             PerfRegisterInfo::s_wordWidth[ui->unwind->architecture()][registerAbi(ui->sample)];
 
@@ -511,7 +511,7 @@ QDataStream &operator<<(QDataStream &stream, const PerfUnwind::Symbol &symbol)
 static int frameCallback(Dwfl_Frame *state, void *arg)
 {
     Dwarf_Addr pc = 0;
-    PerfUnwind::UnwindInfo *ui = static_cast<PerfUnwind::UnwindInfo *>(arg);
+    auto* ui = static_cast<PerfUnwind::UnwindInfo*>(arg);
 
     // do not query for activation directly, as this could potentially advance
     // the unwinder internally - we must first ensure the module for the pc

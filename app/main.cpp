@@ -416,7 +416,7 @@ int main(int argc, char *argv[])
     });
 
     if (parser.isSet(host)) {
-        PerfTcpSocket* socket = static_cast<PerfTcpSocket*>(infile.get());
+        auto* socket = static_cast<PerfTcpSocket*>(infile.get());
         socket->tryConnect();
     } else {
         if (!infile->open(QIODevice::ReadOnly))
