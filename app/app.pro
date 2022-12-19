@@ -31,7 +31,8 @@ SOURCES += main.cpp \
     perfelfmap.cpp \
     perfkallsyms.cpp \
     perftracingdata.cpp \
-    perfdwarfdiecache.cpp
+    perfdwarfdiecache.cpp \
+    demangler.cpp
 
 HEADERS += \
     perfaddresscache.h \
@@ -48,6 +49,7 @@ HEADERS += \
     perfkallsyms.h \
     perftracingdata.h \
     perfdwarfdiecache.h \
-    perfeucompat.h
+    perfeucompat.h \
+    demangler.h
 
 OTHER_FILES += app.qbs
