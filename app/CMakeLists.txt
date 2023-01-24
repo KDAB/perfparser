@@ -1,8 +1,8 @@
 add_qtc_library(perfparser_lib STATIC
   ALLOW_ASCII_CASTS
   PUBLIC_DEPENDS
-    Qt5::Core
-    Qt5::Network
+    Qt::Core
+    Qt::Network
     elfutils::dw
     elfutils::elf
   PUBLIC_INCLUDES ./
