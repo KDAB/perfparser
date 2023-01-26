@@ -11,6 +11,8 @@ QtcAutotest {
         "tst_perfdata.cpp",
         "../shared/perfparsertestclient.cpp",
         "../shared/perfparsertestclient.h",
+        "../../../app/demangler.cpp",
+        "../../../app/demangler.h",
         "../../../app/perfaddresscache.cpp",
         "../../../app/perfaddresscache.h",
         "../../../app/perfattributes.cpp",
@@ -37,7 +39,5 @@ QtcAutotest {
         "../../../app/perftracingdata.h",
         "../../../app/perfunwind.cpp",
         "../../../app/perfunwind.h",
-        "../../../app/demangle.cpp",
-        "../../../app/demangle.h"
     ]
 }

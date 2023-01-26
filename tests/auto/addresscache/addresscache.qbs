@@ -4,6 +4,8 @@ QtcAutotest {
     name: "AddressCache Autotest"
     files: [
         "tst_addresscache.cpp",
+        "../../../app/demangler.cpp",
+        "../../../app/demangler.h",
         "../../../app/perfelfmap.cpp",
         "../../../app/perfelfmap.h",
         "../../../app/perfaddresscache.cpp",

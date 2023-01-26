@@ -15,6 +15,8 @@ QtcTool {
 
     files: [
         "main.cpp",
+        "demangler.cpp",
+        "demangler.h",
         "perfaddresscache.cpp",
         "perfaddresscache.h",
         "perfattributes.cpp",
