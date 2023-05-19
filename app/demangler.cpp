@@ -44,7 +44,7 @@ bool Demangler::demangle(const char *mangledSymbol, char *demangleBuffer, size_t
 {
     // fast path, some languages (like rust since 1.37 or d) share a common prefix
     // try these first
-    for (const auto& demangler : qAsConst(m_demanglers)) {
+    for (const auto& demangler : std::as_const(m_demanglers)) {
         if (startsWith(mangledSymbol, demangler.prefix)) {
             if (demangler.demangler(mangledSymbol, demangleBuffer, demangleBufferLength)) {
                 return true;
@@ -52,7 +52,7 @@ bool Demangler::demangle(const char *mangledSymbol, char *demangleBuffer, size_t
         }
     }
 
-    for (const auto& demangler : qAsConst(m_demanglers)) {
+    for (const auto& demangler : std::as_const(m_demanglers)) {
         if (demangler.demangler(mangledSymbol, demangleBuffer, demangleBufferLength)) {
             return true;
         }

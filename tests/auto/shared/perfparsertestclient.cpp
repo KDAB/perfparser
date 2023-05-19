@@ -156,9 +156,9 @@ void PerfParserTestClient::extractTrace(QIODevice *device)
             SampleEvent sample;
             stream >> sample.pid >> sample.tid >> sample.time >> sample.cpu >> sample.frames
                    >> sample.numGuessedFrames >> sample.values;
-            for (qint32 locationId : qAsConst(sample.frames))
+            for (qint32 locationId : std::as_const(sample.frames))
                 checkLocation(locationId);
-            for (const auto &value : qAsConst(sample.values))
+            for (const auto &value : std::as_const(sample.values))
                 checkAttribute(value.first);
 
             if (eventType == TracePointSample) {
