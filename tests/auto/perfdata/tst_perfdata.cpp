@@ -190,7 +190,7 @@ void TestPerfData::testTracingData()
         QCOMPARE(sample.tracePointData.size(), 1);
         auto it = sample.tracePointData.constBegin();
         QCOMPARE(client.string(it.key()), QByteArray("__probe_ip"));
-        QCOMPARE(it.value().type(), QVariant::ULongLong);
+        QCOMPARE(it->userType(), qMetaTypeId<quint64>());
     }
 }
 
