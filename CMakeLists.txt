@@ -23,6 +23,9 @@ set_package_properties(LibDDemangle PROPERTIES
         TYPE RUNTIME)
 
 
-add_definitions(-DQT_NO_CAST_FROM_ASCII -DQT_NO_CAST_TO_ASCII -DQT_USE_QSTRINGBUILDER)
+add_definitions(-DQT_NO_CAST_FROM_ASCII
+                -DQT_NO_CAST_TO_ASCII
+                -DQT_USE_QSTRINGBUILDER
+                -DQT_NO_FOREACH)
 add_subdirectory(app)
 add_subdirectory(tests)

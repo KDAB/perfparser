@@ -197,7 +197,8 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
         if (m_attributes->globalAttributes().size() == 0)
             m_attributes->setGlobalAttributes(attr.attr());
 
-        foreach (quint64 id, attr.ids())
+        const auto ids = attr.ids();
+        for (quint64 id : ids)
             m_attributes->addAttributes(id, attr.attr());
 
         break;

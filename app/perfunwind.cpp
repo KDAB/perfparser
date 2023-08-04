@@ -366,7 +366,7 @@ void PerfUnwind::attr(const PerfRecordAttr &attr)
 }
 
 void PerfUnwind::addAttributes(const PerfEventAttributes &attributes, const QByteArray &name,
-                              const QList<quint64> &ids)
+                               const QList<quint64> &ids)
 {
     auto filteredIds = ids;
     // If we only get one attribute, it doesn't have an ID.
@@ -396,7 +396,7 @@ void PerfUnwind::addAttributes(const PerfEventAttributes &attributes, const QByt
     m_attributes.append(attributes);
     sendAttributes(internalId, attributes, name);
 
-    foreach (quint64 id, filteredIds)
+    for (quint64 id : std::as_const(filteredIds))
         m_attributeIds[id] = internalId;
 }
 

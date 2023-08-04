@@ -87,9 +87,9 @@ static bool findInExtraPath(QFileInfo &path, const QString &fileName)
     if (path.isFile())
         return true;
 
-    QDir absDir = path.absoluteDir();
-    foreach (const QString &entry, absDir.entryList(QStringList(),
-                                                    QDir::Dirs | QDir::NoDotAndDotDot)) {
+    const QDir absDir = path.absoluteDir();
+    const auto entries = absDir.entryList({}, QDir::Dirs | QDir::NoDotAndDotDot);
+    for (const QString &entry : entries) {
         path.setFile(absDir, entry);
         if (findInExtraPath(path, fileName))
             return true;
@@ -121,7 +121,8 @@ QFileInfo PerfSymbolTable::findFile(const QString& path, const QString& fileName
     // first try to find the debug information via build id, if available
     if (!buildId.isEmpty()) {
         const QString buildIdPath = path + QDir::separator() + QString::fromUtf8(buildId.toHex());
-        foreach (const QString &extraPath, splitPath(m_unwind->debugPath())) {
+        const auto extraPaths = splitPath(m_unwind->debugPath());
+        for (const QString &extraPath : extraPaths) {
             fullPath.setFile(extraPath);
             if (findBuildIdPath(fullPath, buildIdPath))
                 return fullPath;
@@ -136,7 +137,8 @@ QFileInfo PerfSymbolTable::findFile(const QString& path, const QString& fileName
     }
 
     // try to find the file in the extra libs path
-    foreach (const QString &extraPath, splitPath(m_unwind->extraLibsPath())) {
+    const auto extraPaths = splitPath(m_unwind->extraLibsPath());
+    for (const QString &extraPath : extraPaths) {
         fullPath.setFile(extraPath);
         if (findInExtraPath(fullPath, fileName))
             return fullPath;
