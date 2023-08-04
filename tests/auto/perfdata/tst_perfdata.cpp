@@ -162,7 +162,11 @@ void TestPerfData::testTracingData()
         QCOMPARE(stats.numBufferFlushes, flushes);
         QCOMPARE(stats.numTimeViolatingSamples, 0u);
         QCOMPARE(stats.numTimeViolatingMmaps, 0u);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         QCOMPARE(stats.maxBufferSize, 15608u);
+#else
+        QCOMPARE(stats.maxBufferSize, 15656u);
+#endif
         QCOMPARE(stats.maxTime, maxTime);
         return;
     }
