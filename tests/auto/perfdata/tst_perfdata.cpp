@@ -348,6 +348,12 @@ void TestPerfData::testFiles()
             actualText.replace(QLatin1String(replacement.first), QLatin1String(replacement.second));
         }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        // on Qt6 we get the nullbytes for tracepoint comm's which is correct but not useful
+        // remove that to let the test pass and stay compatible with the expected files from Qt5
+        actualText.remove(QChar::Null);
+#endif
+
         QFile actual(actualOutputFile);
         QVERIFY(actual.open(QIODevice::WriteOnly | QIODevice::Text));
         actual.write(actualText.toUtf8());
