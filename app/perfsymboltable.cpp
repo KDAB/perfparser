@@ -64,7 +64,7 @@ PerfSymbolTable::PerfSymbolTable(qint32 pid, Dwfl_Callbacks *callbacks, PerfUnwi
     debuginfod_set_progressfn(client, [](debuginfod_client* client, long numerator, long denominator) {
         auto self = reinterpret_cast<PerfSymbolTable*>(debuginfod_get_user_data(client));
         auto url = self->m_unwind->resolveString(QByteArray(debuginfod_get_url(client)));
-        self->m_unwind->sendDebugInfoDownloadProgress(url, numerator, denominator);
+        self->m_unwind->sendDebugInfoDownloadProgress(self->m_currentFindDebugInfoModule, url, numerator, denominator);
         // NOTE: eventually we could add a back channel to allow the user to cancel an ongoing download
         //       to do so, we'd have to return any non-zero value here then
         return 0;
@@ -442,6 +442,7 @@ int PerfSymbolTable::findDebugInfo(Dwfl_Module *module, const char *moduleName, 
                                    const char *file, const char *debugLink,
                                    GElf_Word crc, char **debugInfoFilename)
 {
+    m_currentFindDebugInfoModule = m_unwind->resolveString(QByteArray(moduleName));
     int ret = dwfl_standard_find_debuginfo(module, nullptr, moduleName, base, file,
                                            debugLink, crc, debugInfoFilename);
     if (ret >= 0 || !debugLink || strlen(debugLink) == 0)

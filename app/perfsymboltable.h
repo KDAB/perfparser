@@ -123,6 +123,7 @@ private:
     QHash<Dwfl_Module*, PerfDwarfDieCache> m_cuDieRanges;
     Dwfl_Callbacks *m_callbacks;
     qint32 m_pid;
+    qint32 m_currentFindDebugInfoModule = -1;
 
     QByteArray symbolFromPerfMap(quint64 ip, GElf_Off *offset) const;
     int parseDie(CuDieRangeMapping *cudie, Dwarf_Die *top, quint64 offset, quint64 size, quint64 relAddr, qint32 binaryId, qint32 binaryPathId, qint32 actualPathId, bool isKernel,
