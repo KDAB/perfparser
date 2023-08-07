@@ -5,8 +5,6 @@ Project {
     name: "Perf Parser"
     condition: qbs.targetOS.contains("linux")
 
-    cpp.defines: base.concat(["QT_NO_FOREACH"])
-
     property bool withAutotests: qbs.buildVariant === "debug"
 
     property string installBase: Environment.getEnv("ELFUTILS_INSTALL_DIR")
