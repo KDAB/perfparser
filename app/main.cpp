@@ -277,6 +277,14 @@ int main(int argc, char *argv[])
         QStringLiteral("max-frames"), QStringLiteral("64"));
     parser.addOption(maxFrames);
 
+    QCommandLineOption customPerfMapPath(
+        QStringLiteral("perf-map-path"),
+        QCoreApplication::translate("main",
+                                    "Specify a custom path where perfparser should look for a perf-$pid.map file"),
+        QStringLiteral("perf-map-path"));
+
+    parser.addOption(customPerfMapPath);
+
     parser.process(app);
 
     auto outfile = initOutfile(parser, output);
@@ -306,7 +314,9 @@ int main(int argc, char *argv[])
 
     PerfUnwind unwind(outfile.get(), parser.value(sysroot),
                       parser.isSet(debug) ? parser.value(debug) : parser.value(sysroot) + parser.value(debug),
-                      parser.value(extra), parser.value(appPath), parser.isSet(printStats));
+                      parser.value(extra), parser.value(appPath),
+                      parser.isSet(customPerfMapPath) ? parser.value(customPerfMapPath) : QString {},
+                      parser.isSet(printStats));
 
     unwind.setKallsymsPath(parser.isSet(kallsymsPath)
                            ? parser.value(kallsymsPath)
