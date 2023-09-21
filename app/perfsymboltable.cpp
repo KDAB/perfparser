@@ -40,9 +40,21 @@
 #include <debuginfod.h>
 #endif
 
+namespace {
+QString perfMapFile(const QString& customPerfMapPath, int pid)
+{
+    if (!customPerfMapPath.isEmpty()) {
+        QString path = customPerfMapPath + QDir::separator() + QLatin1String("perf-%1.map").arg(QString::number(pid));
+        if (QFile::exists(path)) {
+            return path;
+        }
+    }
+    return QDir::tempPath() + QDir::separator() + QLatin1String("perf-%1.map").arg(QString::number(pid));
+}
+}
+
 PerfSymbolTable::PerfSymbolTable(qint32 pid, Dwfl_Callbacks *callbacks, PerfUnwind *parent) :
-    m_perfMapFile(QDir::tempPath() + QDir::separator()
-                  + QLatin1String("perf-%1.map").arg(QString::number(pid))),
+    m_perfMapFile(perfMapFile(parent->perfMapPath(), pid)),
     m_hasPerfMap(m_perfMapFile.exists()),
     m_cacheIsDirty(false),
     m_unwind(parent),

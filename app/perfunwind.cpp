@@ -240,13 +240,14 @@ QString PerfUnwind::defaultKallsymsPath()
     return QLatin1String("%1proc%1kallsyms").arg(QDir::separator());
 }
 
-PerfUnwind::PerfUnwind(QIODevice *output, const QString &systemRoot, const QString &debugPath,
-                       const QString &extraLibsPath, const QString &appPath, bool printStats) :
+PerfUnwind::PerfUnwind(QIODevice* output, const QString& systemRoot, const QString& debugPath,
+                       const QString& extraLibsPath, const QString& appPath, const QString& customPerfMapPath,
+                       bool printStats) :
     m_output(output), m_architecture(PerfRegisterInfo::ARCH_INVALID), m_systemRoot(systemRoot),
     m_extraLibsPath(extraLibsPath), m_appPath(appPath), m_debugPath(debugPath),
     m_kallsymsPath(QDir::rootPath() + defaultKallsymsPath()), m_ignoreKallsymsBuildId(false),
-    m_lastEventBufferSize(1 << 20), m_maxEventBufferSize(1 << 30), m_targetEventBufferSize(1 << 25),
-    m_eventBufferSize(0), m_timeOrderViolations(0), m_lastFlushMaxTime(0)
+    m_customPerfMapPath(customPerfMapPath), m_lastEventBufferSize(1 << 20), m_maxEventBufferSize(1 << 30),
+    m_targetEventBufferSize(1 << 25), m_eventBufferSize(0), m_timeOrderViolations(0), m_lastFlushMaxTime(0)
 {
     m_stats.enabled = printStats;
     m_currentUnwind.unwind = this;
