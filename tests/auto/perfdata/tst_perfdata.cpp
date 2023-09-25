@@ -119,7 +119,7 @@ void TestPerfData::testTracingData()
     QVERIFY(output.open(QIODevice::WriteOnly));
 
     // Don't try to load any system files. They are not the same as the ones we use to report.
-    PerfUnwind unwind(&output, QStringLiteral(":/"), QString(), QString(), QString(), stats);
+    PerfUnwind unwind(&output, QStringLiteral(":/"), QString(), QString(), QString(), {}, stats);
     if (!stats) {
         QTest::ignoreMessage(QtWarningMsg,
                              QRegularExpression(QRegularExpression::escape(
@@ -209,7 +209,7 @@ void TestPerfData::testContentSize()
     QVERIFY(output.open(QIODevice::WriteOnly));
 
     // Don't try to load any system files. They are not the same as the ones we use to report.
-    PerfUnwind unwind(&output, QStringLiteral(":/"), QString(), QString(), QString(), true);
+    PerfUnwind unwind(&output, QStringLiteral(":/"), QString(), QString(), QString(), {}, true);
     process(&unwind, &input, QByteArray("0.5"));
 
     QCOMPARE(unwind.stats().numSamples, 69u);

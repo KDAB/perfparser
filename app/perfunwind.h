@@ -155,10 +155,9 @@ public:
     static QString defaultDebugInfoPath();
     static QString defaultKallsymsPath();
 
-    PerfUnwind(QIODevice *output, const QString &systemRoot = QDir::rootPath(),
-               const QString &debugPath = defaultDebugInfoPath(),
-               const QString &extraLibs = QString(), const QString &appPath = QString(),
-               bool printStats = false);
+    PerfUnwind(QIODevice* output, const QString& systemRoot = QDir::rootPath(),
+               const QString& debugPath = defaultDebugInfoPath(), const QString& extraLibs = QString(),
+               const QString& appPath = QString(), const QString& customPerfMapPath = {}, bool printStats = false);
     ~PerfUnwind();
 
     QString kallsymsPath() const { return m_kallsymsPath; }
@@ -230,6 +229,7 @@ public:
     QString extraLibsPath() const { return m_extraLibsPath; }
     QString appPath() const { return m_appPath; }
     QString debugPath() const { return m_debugPath; }
+    QString perfMapPath() const { return m_customPerfMapPath; }
     Stats stats() const { return m_stats; }
 
     void finalize()
@@ -278,6 +278,9 @@ private:
     // Path to kallsyms path
     QString m_kallsymsPath;
     bool m_ignoreKallsymsBuildId;
+
+    // Path to a directory containing perf-$pid.map
+    QString m_customPerfMapPath;
 
     QList<PerfRecordSample> m_sampleBuffer;
     QList<PerfRecordMmap> m_mmapBuffer;
