@@ -103,7 +103,7 @@ const char* perfEventToString(quint32 type)
     case PERF_RECORD_HEADER_FEATURE:      return "PERF_RECORD_HEADER_FEATURE";
     case PERF_RECORD_COMPRESSED:          return "PERF_RECORD_COMPRESSED";
     }
-    return "uknown type";
+    return "unknown type";
 }
 
 PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
