@@ -281,7 +281,7 @@ void TestPerfData::testFiles_data()
 void TestPerfData::testFiles()
 {
     QFETCH(QString, dataFile);
-#ifndef HAVE_ZSTD
+#if !HAVE_ZSTD
     if (dataFile.contains(QStringLiteral("zstd")))
         QSKIP("zstd support disabled, skipping test");
 #endif

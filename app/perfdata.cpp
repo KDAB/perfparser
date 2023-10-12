@@ -35,7 +35,7 @@ PerfData::PerfData(PerfUnwind *destination, const PerfHeader *header, PerfAttrib
 
 PerfData::~PerfData()
 {
-#ifdef HAVE_ZSTD
+#if HAVE_ZSTD
     if (m_zstdDstream)
         ZSTD_freeDStream(m_zstdDstream);
 #endif
@@ -263,7 +263,7 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
         break;
     }
 
-#ifdef HAVE_ZSTD
+#if HAVE_ZSTD
     case PERF_RECORD_COMPRESSED: {
         if (!m_zstdDstream) {
             if (!m_header->hasFeature(PerfHeader::COMPRESSED)) {
