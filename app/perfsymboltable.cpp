@@ -240,7 +240,7 @@ void PerfSymbolTable::registerElf(const PerfRecordMmap &mmap, const QByteArray &
 int PerfSymbolTable::insertSubprogram(CuDieRangeMapping *cudie, Dwarf_Die *top, Dwarf_Addr entry,
                                       quint64 offset, quint64 size, quint64 relAddr,
                                       qint32 binaryId, qint32 binaryPathId, qint32 actualPathId,
-                                      qint32 inlineCallLocationId, bool isKernel)
+                                      qint32 inlineCallLocationId, bool isKernel, bool isInline)
 {
     int line = 0;
     dwarf_decl_line(top, &line);
@@ -252,7 +252,7 @@ int PerfSymbolTable::insertSubprogram(CuDieRangeMapping *cudie, Dwarf_Die *top, 
     int locationId = m_unwind->resolveLocation(PerfUnwind::Location(entry, relAddr, fileId, m_pid, line,
                                                                     column, inlineCallLocationId));
     qint32 symId = m_unwind->resolveString(cudie->dieName(top));
-    m_unwind->resolveSymbol(locationId, PerfUnwind::Symbol{symId, offset, size, binaryId, binaryPathId, actualPathId, isKernel});
+    m_unwind->resolveSymbol(locationId, PerfUnwind::Symbol{symId, offset, size, binaryId, binaryPathId, actualPathId, isKernel, isInline});
 
     return locationId;
 }
@@ -282,10 +282,10 @@ int PerfSymbolTable::parseDie(CuDieRangeMapping *cudie, Dwarf_Die *top, quint64 
         location.parentLocationId = parentLocationId;
 
         int callLocationId = m_unwind->resolveLocation(location);
-        return insertSubprogram(cudie, top, entry, offset, size, relAddr, binaryId, binaryPathId, actualPathId, callLocationId, isKernel);
+        return insertSubprogram(cudie, top, entry, offset, size, relAddr, binaryId, binaryPathId, actualPathId, callLocationId, isKernel, true);
     }
     case DW_TAG_subprogram:
-        return insertSubprogram(cudie, top, entry, offset, size, relAddr, binaryId, binaryPathId, actualPathId, -1, isKernel);
+        return insertSubprogram(cudie, top, entry, offset, size, relAddr, binaryId, binaryPathId, actualPathId, -1, isKernel, false);
     default:
         return -1;
     }

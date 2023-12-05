@@ -79,6 +79,7 @@ public:
         qint32 path = -1;
         qint32 actualPath = -1;
         bool isKernel = false;
+        bool isInline = false;
     };
 
     struct SampleEvent : public ThreadEvent {

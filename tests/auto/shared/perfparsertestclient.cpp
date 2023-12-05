@@ -117,7 +117,7 @@ void PerfParserTestClient::extractTrace(QIODevice *device)
         case SymbolDefinition: {
             qint32 id;
             SymbolEvent symbol;
-            stream >> id >> symbol.name >> symbol.binary >> symbol.path >> symbol.isKernel >> symbol.relAddr >> symbol.size >> symbol.actualPath;
+            stream >> id >> symbol.name >> symbol.binary >> symbol.path >> symbol.isKernel >> symbol.relAddr >> symbol.size >> symbol.actualPath >> symbol.isInline;
             if (symbol.name != -1)
                 checkString(symbol.name);
             if (symbol.binary != -1)
@@ -237,7 +237,10 @@ void PerfParserTestClient::convertToText(QTextStream &out) const
 
             out << '\t' << Qt::hex << symbol.relAddr << ' ' << symbol.size << Qt::dec;
             if (symbol.path != -1)
-                out << '\t' << string(symbol.name) << ' ' << string(symbol.binary) << ' ' << string(symbol.path) << ' ' << (symbol.isKernel ? "[kernel]" : "");
+                out << '\t' << string(symbol.name) << ' ' << string(symbol.binary) << ' ' << string(symbol.path)
+                    << (symbol.isKernel ? " [kernel]" : "") << (symbol.isInline ? " (inlined)" : "")
+                    // trailing space for backwards compat with old expected data files
+                    << ((!symbol.isKernel && !symbol.isInline) ? " " : "");
             out << '\n';
             return location.parentLocationId;
         };
