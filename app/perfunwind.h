@@ -83,8 +83,8 @@ public:
 
     struct Symbol {
         explicit Symbol(qint32 name = -1, quint64 relAddr = 0, quint64 size = 0, qint32 binary = -1, qint32 path = -1, qint32 actualPath = -1,
-                        bool isKernel = false) :
-            name(name), relAddr(relAddr), size(size), binary(binary), path(path), actualPath(actualPath), isKernel(isKernel)
+                        bool isKernel = false, bool isInline = false) :
+            name(name), relAddr(relAddr), size(size), binary(binary), path(path), actualPath(actualPath), isKernel(isKernel), isInline(isInline)
         {}
 
         qint32 name;
@@ -94,6 +94,7 @@ public:
         qint32 path;
         qint32 actualPath;
         bool isKernel;
+        bool isInline;
     };
 
     struct UnwindInfo {
