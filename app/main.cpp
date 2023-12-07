@@ -49,6 +49,8 @@
 #include <fcntl.h>
 #endif
 
+#include <elfutils/libdwfl.h>
+
 enum ErrorCodes {
     NoError,
     TcpSocketError,
@@ -158,7 +160,8 @@ int main(int argc, char *argv[])
     }
 
     QCommandLineParser parser;
-    parser.setApplicationDescription(QStringLiteral("Perf data parser and unwinder."));
+    auto elfutilsVersion = QString::fromUtf8(dwfl_version(nullptr));
+    parser.setApplicationDescription(QStringLiteral("Perf data parser and unwinder.\nUsing elfutils version: %1").arg(elfutilsVersion));
     parser.addHelpOption();
     parser.addVersionOption();
 
