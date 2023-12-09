@@ -763,7 +763,7 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
                     addressLocation.parentLocationId = m_unwind->lookupLocation(functionLocation);
                     // otherwise resolve the inline chain if possible
                     if (!scopes.isEmpty() && !m_unwind->hasSymbol(addressLocation.parentLocationId)) {
-                        functionLocation.parentLocationId = parseDwarf(cudie, subprogram, scopes, bias, start, size, relAddr,
+                        addressLocation.parentLocationId = parseDwarf(cudie, subprogram, scopes, bias, start, size, relAddr,
                                                                        binaryId, binaryPathId, actualPathId, isKernel);
                     }
                 }
