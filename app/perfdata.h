@@ -505,6 +505,7 @@ public:
     struct ReadFormat {
         quint64 value;
         quint64 id;
+        quint64 lost;
     };
 
     QList<ReadFormat> readFormats() const { return m_readFormats; }

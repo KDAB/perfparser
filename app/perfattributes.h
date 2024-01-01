@@ -58,8 +58,9 @@ public:
         FORMAT_TOTAL_TIME_RUNNING = 1U << 1,
         FORMAT_ID                 = 1U << 2,
         FORMAT_GROUP              = 1U << 3,
+        FORMAT_LOST               = 1U << 4,
 
-        FORMAT_MAX                = 1U << 4
+        FORMAT_MAX                = 1U << 5
     };
 
     /*

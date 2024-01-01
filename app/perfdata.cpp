@@ -646,6 +646,7 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordSample &record)
     quint32 waste32;
 
     const quint64 sampleType = record.m_sampleId.sampleType();
+    const auto withLostFormat = record.m_readFormat & PerfEventAttributes::FORMAT_LOST;
 
     if (sampleType & PerfEventAttributes::SAMPLE_IDENTIFIER)
         stream >> record.m_sampleId.m_id;
@@ -682,10 +683,14 @@ QDataStream &operator>>(QDataStream &stream, PerfRecordSample &record)
         if (record.m_readFormat & PerfEventAttributes::FORMAT_GROUP) {
             while (numFormats-- > 0) {
                 stream >> format.value >> format.id;
+                if (withLostFormat)
+                    stream  >> format.lost;
                 record.m_readFormats << format;
             }
         } else {
             stream >> format.id;
+            if (withLostFormat)
+                stream >> format.lost;
             record.m_readFormats << format;
         }
     }
