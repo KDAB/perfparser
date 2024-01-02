@@ -97,13 +97,14 @@ public:
     };
 
     struct UnwindInfo {
-        UnwindInfo() : frames(0), unwind(nullptr), sample(nullptr), maxFrames(64),
-            firstGuessedFrame(-1), isInterworking(false) {}
+        UnwindInfo() : frames(0), unwind(nullptr), sample(nullptr), lastInvalidAddr(0),
+            maxFrames(64), firstGuessedFrame(-1), isInterworking(false) {}
 
         QHash<qint32, QHash<quint64, Dwarf_Word>> stackValues;
         QVector<qint32> frames;
         PerfUnwind *unwind;
         const PerfRecordSample *sample;
+        Dwarf_Addr lastInvalidAddr;
         int maxFrames;
         int firstGuessedFrame;
         bool isInterworking;
