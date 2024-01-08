@@ -40,6 +40,7 @@ private slots:
     void testContentSize();
     void testFiles_data();
     void testFiles();
+    void testInlineDetection();
 };
 
 static void setupUnwind(PerfUnwind *unwind, PerfHeader *header, QIODevice *input,
@@ -380,6 +381,38 @@ void TestPerfData::testFiles()
         }
     }
     QCOMPARE(actualText, expectedText);
+}
+
+void TestPerfData::testInlineDetection()
+{
+    QString perfDataFile = QFINDTESTDATA("cpp-inlining/cpp-inlining.perf.data");
+
+    QBuffer output;
+    QVERIFY(output.open(QIODevice::WriteOnly));
+
+    PerfUnwind unwind(&output, QStringLiteral(":/"), QString(), QString(), QFileInfo(perfDataFile).absolutePath());
+    {
+        QFile input(perfDataFile);
+        QVERIFY(input.open(QIODevice::ReadOnly));
+        unwind.setKallsymsPath(QProcess::nullDevice());
+
+        process(&unwind, &input, "0.6");
+    }
+
+    output.close();
+    output.open(QIODevice::ReadOnly);
+
+    PerfParserTestClient client;
+    client.extractTrace(&output);
+
+    auto main = client.symbol(29);
+    Q_ASSERT(!main.isInline);
+    Q_ASSERT(client.string(main.name) == "main");
+
+    auto log = client.symbol(104);
+    Q_ASSERT(log.isInline);
+    Q_ASSERT(client.string(log.name)
+             == "std::__detail::_Mod<unsigned long, 2147483647ul, 16807ul, 0ul, true, true>::__calc(unsigned long)");
 }
 
 QTEST_GUILESS_MAIN(TestPerfData)
