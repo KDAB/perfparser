@@ -97,17 +97,23 @@ PerfSymbolTable::~PerfSymbolTable()
     dwfl_end(m_dwfl);
 }
 
-static bool findInExtraPath(QFileInfo &path, const QString &fileName)
+static bool findInExtraPath(QFileInfo &path, const QString &fileName, QSet<QString> &checkedCanonicalPaths)
 {
     path.setFile(path.absoluteFilePath() + QDir::separator() + fileName);
     if (path.isFile())
         return true;
 
+    QString canonicalPath = path.canonicalFilePath();
+    if (checkedCanonicalPaths.contains(canonicalPath))
+        return false;
+
+    checkedCanonicalPaths.insert(canonicalPath);
     const QDir absDir = path.absoluteDir();
+
     const auto entries = absDir.entryList({}, QDir::Dirs | QDir::NoDotAndDotDot);
     for (const QString &entry : entries) {
         path.setFile(absDir, entry);
-        if (findInExtraPath(path, fileName))
+        if (findInExtraPath(path, fileName, checkedCanonicalPaths))
             return true;
     }
     return false;
@@ -170,11 +176,19 @@ QFileInfo PerfSymbolTable::findFile(const QString& path, const QString &fileName
                 return fullPath;
         }
     }
+    
+    // we want to ensure to not check a path twice (overlap of appPath and extraPath,
+    // recursive symlinks like /usr/bin/X11 as seen in Debian/Ubuntu, ...) so we store
+    // the canonical visited paths for each library during the lookup
+    QSet<QString> checkedCanonicalPaths;
+
+    // reserve an arbitrary small number to remove the first few reallocations and rehashes
+    checkedCanonicalPaths.reserve(16);
 
     if (!m_unwind->appPath().isEmpty()) {
         // try to find the file in the app path
         fullPath.setFile(m_unwind->appPath());
-        if (findInExtraPath(fullPath, fileName) && matchesBuildId(buildId, fullPath)) {
+        if (findInExtraPath(fullPath, fileName, checkedCanonicalPaths) && matchesBuildId(buildId, fullPath)) {
             return fullPath;
         }
     }
@@ -183,7 +197,7 @@ QFileInfo PerfSymbolTable::findFile(const QString& path, const QString &fileName
     const auto extraPaths = splitPath(m_unwind->extraLibsPath());
     for (const QString &extraPath : extraPaths) {
         fullPath.setFile(extraPath);
-        if (findInExtraPath(fullPath, fileName) && matchesBuildId(buildId, fullPath)) {
+        if (findInExtraPath(fullPath, fileName, checkedCanonicalPaths) && matchesBuildId(buildId, fullPath)) {
             return fullPath;
         }
     }
