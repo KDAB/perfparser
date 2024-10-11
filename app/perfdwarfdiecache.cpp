@@ -359,9 +359,14 @@ void CuDieRangeMapping::addSubprograms()
 
 QByteArray CuDieRangeMapping::dieName(Dwarf_Die *die)
 {
-    auto &name = m_dieNameCache[dwarf_dieoffset(die)];
-    if (name.isEmpty())
+    // in QT6 QHash is no longer iterator safe
+    // since qualifiedDieName can modify m_dieNameCache we need to insert name again
+    const auto offset = dwarf_dieoffset(die);
+    auto name = m_dieNameCache[offset];
+    if (name.isEmpty()) {
         name = demangle(qualifiedDieName(die, m_dieNameCache));
+        m_dieNameCache[offset] = name;
+    }
 
     return name;
 }
