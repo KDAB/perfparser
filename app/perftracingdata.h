@@ -66,6 +66,7 @@ struct EventFormat
     QVector<FormatField> commonFields;
     QVector<FormatField> fields;
     quint32 flags = 0;
+    QByteArray format;
 };
 
 class PerfTracingData
