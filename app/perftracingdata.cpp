@@ -107,13 +107,14 @@ static void processLine(const QByteArray &line,
                         const std::function<void(const QByteArray &, const QByteArray &)> &handler)
 {
     const auto chunks = line.split('\t');
-    for (const auto &chunk : chunks) {
-        QList<QByteArray> segments = chunk.split(':');
-        if (segments.size() != 2)
+    for (const auto& chunk : chunks) {
+        auto split = chunk.indexOf(':');
+        if (split == -1) {
             continue;
+        }
 
-        QByteArray name = segments[0].toLower();
-        QByteArray value = segments[1].trimmed();
+        auto name = chunk.left(split).toLower().trimmed();
+        auto value = chunk.mid(split + 1).trimmed();
         if (value.endsWith(';'))
             value.chop(1);
         handler(name, value);
@@ -240,6 +241,8 @@ bool PerfTracingData::readEventFormats(QDataStream &stream, const QByteArray &sy
                         seenId = true;
                     } else if (name == "format") {
                         stage = CommonFields;
+                    } else if (name == "print fmt") {
+                        event.format = value;
                     }
                 });
             }

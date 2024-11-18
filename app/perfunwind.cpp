@@ -428,7 +428,7 @@ void PerfUnwind::sendEventFormat(qint32 id, const EventFormat &format)
 
     QByteArray buffer;
     QDataStream(&buffer, QIODevice::WriteOnly) << static_cast<quint8>(TracePointFormat) << id
-                                               << systemId << nameId << format.flags;
+                                               << systemId << nameId << format.flags << resolveString(format.format);
     sendBuffer(buffer);
 }
 
@@ -809,13 +809,12 @@ void PerfUnwind::analyze(const PerfRecordSample &sample)
 
     if (type == TracePointSample) {
         QHash<qint32, QVariant> traceData;
-        const QByteArray &data = sample.rawData();
-        const EventFormat &format = m_tracingData.eventFormat(eventFormatId);
-        for (const FormatField &field : format.fields) {
-            traceData[lookupString(field.name)]
-                    = readTraceData(data, field, m_byteOrder != QSysInfo::ByteOrder);
+        const QByteArray& data = sample.rawData();
+        const EventFormat& format = m_tracingData.eventFormat(eventFormatId);
+        for (const FormatField& field : format.fields) {
+            traceData[lookupString(field.name)] = readTraceData(data, field, m_byteOrder != QSysInfo::ByteOrder);
         }
-        stream << traceData;
+        stream << eventFormatId << traceData;
     }
 
     sendBuffer(buffer);
