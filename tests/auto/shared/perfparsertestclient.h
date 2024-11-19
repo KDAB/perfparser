@@ -93,6 +93,7 @@ public:
         qint32 system = -1;
         qint32 name = -1;
         quint32 flags = 0;
+        qint32 format = -1;
     };
 
     // Repeated here, as we want to check against accidental changes in enum values.

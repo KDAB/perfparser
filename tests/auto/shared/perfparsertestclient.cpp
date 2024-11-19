@@ -162,7 +162,8 @@ void PerfParserTestClient::extractTrace(QIODevice *device)
                 checkAttribute(value.first);
 
             if (eventType == TracePointSample) {
-                stream >> sample.tracePointData;
+				qint32 formatId;
+                stream >> formatId >> sample.tracePointData;
                 for (auto it = sample.tracePointData.constBegin(),
                      end = sample.tracePointData.constEnd();
                      it != end; ++it) {
@@ -183,9 +184,10 @@ void PerfParserTestClient::extractTrace(QIODevice *device)
             qint32 id;
             TracePointFormatEvent tracePointFormat;
             stream >> id >> tracePointFormat.system >> tracePointFormat.name
-                   >> tracePointFormat.flags;
+                   >> tracePointFormat.flags >> tracePointFormat.format;
             checkString(tracePointFormat.system);
             checkString(tracePointFormat.name);
+			checkString(tracePointFormat.format);
             QVERIFY(!m_tracePointFormats.contains(id));
             m_tracePointFormats.insert(id, tracePointFormat);
             break;
