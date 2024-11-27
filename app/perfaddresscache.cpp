@@ -37,7 +37,7 @@ quint64 relativeAddress(const PerfElfMap::ElfInfo& elf, quint64 addr)
 PerfAddressCache::AddressCacheEntry PerfAddressCache::find(const PerfElfMap::ElfInfo& elf, quint64 addr,
                                                            OffsetAddressCache *invalidAddressCache) const
 {
-    if (elf.isValid())
+    if (elf.isValid() && (elf.addr + elf.length) > addr)
         return m_cache.value(elf.originalPath).value(relativeAddress(elf, addr));
     else
         return invalidAddressCache->value(addr);
@@ -47,7 +47,7 @@ void PerfAddressCache::cache(const PerfElfMap::ElfInfo& elf, quint64 addr,
                              PerfAddressCache::AddressCacheEntry entry,
                              OffsetAddressCache *invalidAddressCache)
 {
-    if (elf.isValid())
+    if (elf.isValid() && (elf.addr + elf.length) > addr)
         m_cache[elf.originalPath][relativeAddress(elf, addr)] = entry;
     else
         (*invalidAddressCache)[addr] = entry;
