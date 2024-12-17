@@ -150,6 +150,8 @@ QDataStream &operator>>(QDataStream &stream, PerfBuildId &buildId)
     while (next < buildId.size) {
         PerfEventHeader header;
         stream >> header;
+        if (!header.size)
+            break;
 
         PerfBuildId::BuildId build;
         stream >> build.pid;
