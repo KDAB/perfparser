@@ -18,6 +18,7 @@
 ****************************************************************************/
 
 #include "demangler.h"
+#include "swift_demangler.h"
 
 #include <QLibrary>
 #include <QDebug>
@@ -38,6 +39,7 @@ Demangler::Demangler()
 {
     loadDemangleLib(QStringLiteral("rustc_demangle"), "rustc_demangle", QByteArrayLiteral("_R"));
     loadDemangleLib(QStringLiteral("d_demangle"), "demangle_symbol", QByteArrayLiteral("_D"));
+    m_demanglers.push_back({"$s", reinterpret_cast<Demangler::demangler_t>(swift_demangle)});
 }
 
 bool Demangler::demangle(const char *mangledSymbol, char *demangleBuffer, size_t demangleBufferLength)
