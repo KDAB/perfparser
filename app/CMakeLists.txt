@@ -23,7 +23,7 @@ add_qtc_library(perfparser_lib STATIC
     perfdwarfdiecache.cpp perfdwarfdiecache.h
     perfeucompat.h
     demangler.cpp demangler.h
-    swift_demangler.cpp swift_demangler.h
+    swift_demangler.c swift_demangler.h
 )
 
 if (Zstd_FOUND)
