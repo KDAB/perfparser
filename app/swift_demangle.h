@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with [project name].  If not, see <https://www.gnu.org/licenses/>.
+ * along with perfparser.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #ifndef SWIFT_DEMANGLER_H
