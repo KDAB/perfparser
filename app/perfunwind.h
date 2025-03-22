@@ -340,7 +340,7 @@ private:
 
     QVariant readTraceData(const QByteArray &data, const FormatField &field, bool byteSwap);
     void forwardMmapBuffer(QList<PerfRecordMmap>::Iterator &it,
-                           const QList<PerfRecordMmap>::Iterator &mmapEnd,
+                           QList<PerfRecordMmap>::Iterator mmapEnd,
                            quint64 timestamp);
     void revertTargetEventBufferSize();
     bool hasTracePointAttributes() const;

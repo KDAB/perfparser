@@ -1006,7 +1006,7 @@ void PerfUnwind::bufferEvent(const Event &event, QList<Event> *buffer, uint *eve
 }
 
 void PerfUnwind::forwardMmapBuffer(QList<PerfRecordMmap>::Iterator &mmapIt,
-                                   const QList<PerfRecordMmap>::Iterator &mmapEnd,
+                                   QList<PerfRecordMmap>::Iterator mmapEnd,
                                    quint64 timestamp)
 {
     for (; mmapIt != mmapEnd && mmapIt->time() <= timestamp; ++mmapIt) {
