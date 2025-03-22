@@ -27,7 +27,7 @@
 #define QVERIFY Q_ASSERT
 #define QCOMPARE(x, y) Q_ASSERT((x) == (y))
 #else
-#include <QtTest>
+#include <QTest>
 #endif
 
 PerfParserTestClient::PerfParserTestClient(QObject *parent) : QObject(parent)
