@@ -492,7 +492,7 @@ int PerfSymbolTable::findDebugInfo(Dwfl_Module *module, const char *moduleName, 
     }
 
     /// FIXME: find a proper solution to this
-    if (!debugLinkFile.isFile() && QByteArray::fromRawData(file, static_cast<int>(strlen(file))).endsWith("/elf")) {
+    if (file && !debugLinkFile.isFile() && QByteArray::fromRawData(file, static_cast<int>(strlen(file))).endsWith("/elf")) {
         // fall-back to original file if it's in a build-id path
         debugLinkFile.setFile(QString::fromUtf8(file));
     }
