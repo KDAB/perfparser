@@ -24,6 +24,7 @@
 #include <QVector>
 
 #include "perfelfmap.h"
+#include "perfregisterinfo.h"
 
 #include <libdwfl.h>
 
@@ -89,7 +90,7 @@ public:
     SymbolCacheEntry findSymbol(const QByteArray &filePath, quint64 relAddr);
 
     /// extract all symbols in @p module into a structure suitable to be passed to @p setSymbols
-    static SymbolCache extractSymbols(Dwfl_Module *module, quint64 elfStart, bool isArmArch);
+    static SymbolCache extractSymbols(Dwfl_Module *module, quint64 elfStart, PerfRegisterInfo::Architecture arch);
 
 private:
     QHash<QByteArray, OffsetAddressCache> m_cache;

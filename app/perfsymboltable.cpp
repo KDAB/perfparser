@@ -715,7 +715,8 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
 
     Dwfl_Module *mod = module(ip, elf);
 
-    const bool isArmArch = (m_unwind->architecture() == PerfRegisterInfo::ARCH_ARM);
+    const auto arch = m_unwind->architecture();
+    const bool isArmArch = (arch == PerfRegisterInfo::ARCH_ARM);
     PerfUnwind::Location addressLocation(PerfAddressCache::symbolAddress(ip, isArmArch), 0, -1, m_pid);
     PerfUnwind::Location functionLocation(addressLocation);
 
@@ -730,7 +731,7 @@ int PerfSymbolTable::lookupFrame(Dwarf_Addr ip, bool isKernel,
             // cache all symbols in a sorted lookup table and demangle them on-demand
             // note that the symbols within the symtab aren't necessarily sorted,
             // which makes searching repeatedly via dwfl_module_addrinfo potentially very slow
-            addressCache->setSymbolCache(elf.originalPath, PerfAddressCache::extractSymbols(mod, elfStart, isArmArch));
+            addressCache->setSymbolCache(elf.originalPath, PerfAddressCache::extractSymbols(mod, elfStart, arch));
         }
 
         auto cachedAddrInfo = addressCache->findSymbol(elf.originalPath, addressLocation.address - elfStart);
