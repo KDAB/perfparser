@@ -405,11 +405,11 @@ void TestPerfData::testInlineDetection()
     PerfParserTestClient client;
     client.extractTrace(&output);
 
-    auto main = client.symbol(29);
+    auto main = client.symbol(17);
     QVERIFY(!main.isInline);
     QCOMPARE(client.string(main.name), "main");
 
-    auto log = client.symbol(104);
+    auto log = client.symbol(52);
     QVERIFY(log.isInline);
     QCOMPARE(client.string(log.name),
              "std::__detail::_Mod<unsigned long, 2147483647ul, 16807ul, 0ul, true, true>::__calc(unsigned long)");

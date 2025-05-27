@@ -30,7 +30,7 @@ class TestAddressCache : public QObject
 private slots:
     void testRelative()
     {
-        PerfElfMap::ElfInfo info_a{{}, 0x100, 100, 0,
+        PerfElfMap::ElfInfo info_a{{}, 0x100, 100, 0, PerfElfMap::ElfInfo::INVALID_BASE_ADDR,
                                    QByteArrayLiteral("libfoo.so"),
                                    QByteArrayLiteral("/usr/lib/libfoo.so")};
         PerfElfMap::ElfInfo info_b = info_a;

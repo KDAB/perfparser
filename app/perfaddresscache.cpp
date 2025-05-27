@@ -27,7 +27,7 @@ namespace {
 quint64 relativeAddress(const PerfElfMap::ElfInfo& elf, quint64 addr)
 {
     Q_ASSERT(elf.isValid());
-    const auto elfAddr = elf.hasBaseAddr() ? elf.baseAddr : elf.addr;
+    const auto elfAddr = elf.baseAddrOrFallback();
     Q_ASSERT(elfAddr <= addr);
     Q_ASSERT((elf.addr + elf.length) > addr);
     return addr - elfAddr;
@@ -63,11 +63,6 @@ static bool operator==(const PerfAddressCache::SymbolCacheEntry &lhs, const Perf
     return lhs.offset == rhs.offset && lhs.size == rhs.size;
 }
 
-static bool operator<(const PerfAddressCache::SymbolCacheEntry &lhs, quint64 addr)
-{
-    return lhs.offset < addr;
-}
-
 
 bool PerfAddressCache::hasSymbolCache(const QByteArray &filePath) const
 {
@@ -77,7 +72,9 @@ bool PerfAddressCache::hasSymbolCache(const QByteArray &filePath) const
 PerfAddressCache::SymbolCacheEntry PerfAddressCache::findSymbol(const QByteArray& filePath, quint64 relAddr)
 {
     auto &symbols = m_symbolCache[filePath];
-    auto it = std::lower_bound(symbols.begin(), symbols.end(), relAddr);
+    auto it =
+        std::lower_bound(symbols.begin(), symbols.end(), relAddr,
+                         [](const PerfAddressCache::SymbolCacheEntry& lhs, quint64 addr) { return lhs.value < addr; });
 
     // demangle symbols on demand instead of demangling all symbols directly
     // hopefully most of the symbols we won't ever encounter after all
@@ -89,14 +86,14 @@ PerfAddressCache::SymbolCacheEntry PerfAddressCache::findSymbol(const QByteArray
         return entry;
     };
 
-    if (it != symbols.end() && it->offset == relAddr)
+    if (it != symbols.end() && it->value == relAddr)
         return lazyDemangle(*it);
     if (it == symbols.begin())
         return {};
 
     --it;
 
-    if (it->offset <= relAddr && (it->offset + it->size > relAddr || (it->size == 0))) {
+    if (it->value <= relAddr && (it->value + it->size > relAddr || (it->size == 0))) {
         return lazyDemangle(*it);
     }
     return {};

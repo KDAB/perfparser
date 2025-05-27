@@ -66,9 +66,8 @@ PerfElfMap::PerfElfMap(QObject *parent)
 
 PerfElfMap::~PerfElfMap() = default;
 
-void PerfElfMap::registerElf(quint64 addr, quint64 len, quint64 pgoff,
-                             const QFileInfo &fullPath, const QByteArray &originalFileName,
-                             const QByteArray &originalPath)
+void PerfElfMap::registerElf(quint64 addr, quint64 len, quint64 pgoff, quint64 baseAddr, const QFileInfo& fullPath,
+                             const QByteArray& originalFileName, const QByteArray& originalPath)
 {
     quint64 addrEnd = addr + len;
 
@@ -102,12 +101,11 @@ void PerfElfMap::registerElf(quint64 addr, quint64 len, quint64 pgoff,
         // reinsert any fragments of it that remain.
 
         if (i->addr < addr) {
-            newElfs.push_back(ElfInfo(i->localFile, i->addr, addr - i->addr, i->pgoff,
-                                      i->originalFileName, i->originalPath));
+            newElfs.push_back(ElfInfo(i->localFile, i->addr, addr - i->addr, i->pgoff, i->baseAddr, i->originalFileName,
+                                      i->originalPath));
         }
         if (iEnd > addrEnd) {
-            newElfs.push_back(ElfInfo(i->localFile, addrEnd, iEnd - addrEnd,
-                                      i->pgoff + addrEnd - i->addr,
+            newElfs.push_back(ElfInfo(i->localFile, addrEnd, iEnd - addrEnd, i->pgoff + addrEnd - i->addr, i->baseAddr,
                                       i->originalFileName, i->originalPath));
         }
 
@@ -119,10 +117,10 @@ void PerfElfMap::registerElf(quint64 addr, quint64 len, quint64 pgoff,
     for (auto it = removedElfs.rbegin(), end = removedElfs.rend(); it != end; ++it)
         m_elfs.remove(*it);
 
-    ElfInfo elf(fullPath, addr, len, pgoff, originalFileName, originalPath);
+    ElfInfo elf(fullPath, addr, len, pgoff, baseAddr, originalFileName, originalPath);
 
     if (elf.isFile()) {
-        if (m_lastBase.originalPath == originalPath && elf.addr > m_lastBase.addr)
+        if (m_lastBase.originalPath == originalPath && elf.addr > m_lastBase.addr && !elf.hasBaseAddr())
             elf.baseAddr = m_lastBase.addr;
         else if (!pgoff)
             m_lastBase = elf;
