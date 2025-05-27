@@ -33,7 +33,7 @@ public:
             INVALID_BASE_ADDR = std::numeric_limits<quint64>::max()
         };
         explicit ElfInfo(const QFileInfo &localFile = QFileInfo(), quint64 addr = 0,
-                         quint64 length = 0, quint64 pgoff = 0,
+                         quint64 length = 0, quint64 pgoff = 0, quint64 baseAddr = INVALID_BASE_ADDR,
                          const QByteArray &originalFileName = {},
                          const QByteArray &originalPath = {}) :
             localFile(localFile),
@@ -43,7 +43,7 @@ public:
             originalPath(originalPath.isEmpty()
                 ? localFile.absoluteFilePath().toLocal8Bit()
                 : originalPath),
-            addr(addr), length(length), pgoff(pgoff)
+            addr(addr), length(length), pgoff(pgoff), baseAddr(baseAddr)
         {}
 
         bool isValid() const
@@ -59,6 +59,11 @@ public:
         bool hasBaseAddr() const
         {
             return baseAddr != INVALID_BASE_ADDR;
+        }
+
+        quint64 baseAddrOrFallback() const
+        {
+            return hasBaseAddr() ? baseAddr : (addr - pgoff);
         }
 
         bool operator==(const ElfInfo& rhs) const
@@ -92,10 +97,8 @@ public:
     explicit PerfElfMap(QObject *parent = nullptr);
     ~PerfElfMap();
 
-    void registerElf(quint64 addr, quint64 len, quint64 pgoff,
-                     const QFileInfo &fullPath,
-                     const QByteArray &originalFileName = {},
-                     const QByteArray &originalPath = {});
+    void registerElf(quint64 addr, quint64 len, quint64 pgoff, quint64 baseAddr, const QFileInfo& fullPath,
+                     const QByteArray& originalFileName = {}, const QByteArray& originalPath = {});
     ElfInfo findElf(quint64 ip) const;
     void updateElf(quint64 addr, quint64 dwflStart, quint64 dwflEnd);
 

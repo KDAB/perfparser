@@ -48,7 +48,7 @@ private slots:
         PerfElfMap map;
         QVERIFY(map.isEmpty());
 
-        const PerfElfMap::ElfInfo first({}, 100, 10, 0, "foo", "/foo");
+        const PerfElfMap::ElfInfo first({}, 100, 10, 0, PerfElfMap::ElfInfo::INVALID_BASE_ADDR, "foo", "/foo");
 
         QVERIFY(registerElf(&map, first).isEmpty());
         QVERIFY(!map.isEmpty());
@@ -59,7 +59,7 @@ private slots:
         QCOMPARE(map.findElf(109), first);
         QCOMPARE(map.findElf(110), invalid);
 
-        const PerfElfMap::ElfInfo second({}, 0, 10, 0, "bar", "/bar");
+        const PerfElfMap::ElfInfo second({}, 0, 10, 0, PerfElfMap::ElfInfo::INVALID_BASE_ADDR, "bar", "/bar");
         QVERIFY(registerElf(&map, second).isEmpty());
 
         QCOMPARE(map.findElf(0), second);
@@ -114,7 +114,9 @@ private slots:
         QCOMPARE(map.findElf(110), third);
         QCOMPARE(map.findElf(110), third);
 
-        const PerfElfMap::ElfInfo fragment2(file1, 120, 5, 15);
+        PerfElfMap::ElfInfo fragment2(file1, 120, 5, 15);
+        if (firstIsFile)
+            fragment2.baseAddr = 95;
         const PerfElfMap::ElfInfo fragment3(file1, 95, 5, 0);
         QCOMPARE(map.findElf(122), fragment2);
         QCOMPARE(map.findElf(97), fragment3);
@@ -209,7 +211,7 @@ private slots:
         QBENCHMARK {
             PerfElfMap map;
             for (quint64 addr = 0; addr < MAX_ADDR; addr += ADDR_STEP) {
-                map.registerElf(addr, LEN, 0, {});
+                map.registerElf(addr, LEN, 0, PerfElfMap::ElfInfo::INVALID_BASE_ADDR, {});
             }
         }
     }
@@ -232,7 +234,7 @@ private slots:
         QBENCHMARK {
             PerfElfMap map;
             for (quint64 addr = 0; addr < MAX_ADDR; addr += ADDR_STEP, len -= ADDR_STEP) {
-                map.registerElf(addr, len, 0, {});
+                map.registerElf(addr, len, 0, PerfElfMap::ElfInfo::INVALID_BASE_ADDR, {});
             }
         }
     }
@@ -252,7 +254,7 @@ private slots:
         QBENCHMARK {
             PerfElfMap map;
             for (quint64 len = LEN_STEP; len <= MAX_LEN; len += LEN_STEP) {
-                map.registerElf(ADDR, len, 0, {});
+                map.registerElf(ADDR, len, 0, PerfElfMap::ElfInfo::INVALID_BASE_ADDR, {});
             }
         }
     }
@@ -272,7 +274,7 @@ private slots:
         const quint64 MAX_ADDR = ADDR_STEP * numElfMaps;
         const quint64 LEN = 1024;
         for (quint64 addr = 0; addr < MAX_ADDR; addr += ADDR_STEP) {
-            map.registerElf(addr, LEN, 0, {});
+            map.registerElf(addr, LEN, 0, PerfElfMap::ElfInfo::INVALID_BASE_ADDR, {});
         }
 
         const quint64 ADDR_STEP_FIND = 64;
@@ -299,7 +301,7 @@ private slots:
         const quint64 MAX_ADDR = ADDR_STEP * numElfMaps;
         quint64 LEN = MAX_ADDR;
         for (quint64 addr = 0; addr < MAX_ADDR; addr += ADDR_STEP, LEN -= ADDR_STEP) {
-            map.registerElf(addr, LEN, 0, {});
+            map.registerElf(addr, LEN, 0, PerfElfMap::ElfInfo::INVALID_BASE_ADDR, {});
         }
 
         const quint64 ADDR_STEP_FIND = 64;
@@ -326,7 +328,7 @@ private slots:
         const quint64 LEN_STEP = 1024;
         const quint64 MAX_LEN = LEN_STEP * numElfMaps;
         for (quint64 len = LEN_STEP; len <= MAX_LEN; len += LEN_STEP) {
-            map.registerElf(FIRST_ADDR, len, 0, {});
+            map.registerElf(FIRST_ADDR, len, 0, PerfElfMap::ElfInfo::INVALID_BASE_ADDR, {});
         }
 
         const quint64 MAX_ADDR = FIRST_ADDR + MAX_LEN;
@@ -352,7 +354,7 @@ private:
                                   [&invalidated](const PerfElfMap::ElfInfo& other) { // clazy:exclude=lambda-in-connect
                                       invalidated.push_back(other);
                                   });
-        map->registerElf(info.addr, info.length, info.pgoff, info.localFile,
+        map->registerElf(info.addr, info.length, info.pgoff, info.baseAddr, info.localFile,
                          info.originalFileName, info.originalPath);
         disconnect(connection);
         return invalidated;
