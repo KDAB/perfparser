@@ -313,10 +313,10 @@ qint32 PerfSymbolTable::parseDwarf(CuDieRangeMapping *cudie, SubProgramDie *subp
 
     qint32 parentLocationId = -1;
     auto handleDie = [&](Dwarf_Die scope) {
-        Dwarf_Addr scopeAddr = bias;
         Dwarf_Addr entry = 0;
-        if (dwarf_entrypc(&scope, &entry) == 0 && entry != 0)
-            scopeAddr += entry;
+        if (dwarf_entrypc(&scope, &entry) != 0 || entry == 0)
+            entry = relAddr;
+        Dwarf_Addr scopeAddr = bias + entry;
 
         auto locationId = parseDie(cudie, &scope, offset, size, relAddr, binaryId, binaryPathId, actualPathId, isKernel, files, scopeAddr, parentLocationId);
         if (locationId != -1)
