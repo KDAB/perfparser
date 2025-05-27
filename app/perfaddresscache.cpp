@@ -121,7 +121,22 @@ void PerfAddressCache::setSymbolCache(const QByteArray &filePath, SymbolCache ca
     m_symbolCache[filePath] = cache;
 }
 
-PerfAddressCache::SymbolCache PerfAddressCache::extractSymbols(Dwfl_Module *module, quint64 elfStart, bool isArmArch)
+static bool isMappingSymbol(const char* sym, PerfRegisterInfo::Architecture arch)
+{
+    switch (arch) {
+        case PerfRegisterInfo::ARCH_AARCH64:
+            return strncmp(sym, "$x", 2) == 0;
+        case PerfRegisterInfo::ARCH_ARM:
+            return strncmp(sym, "$a", 2) == 0 || strncmp(sym, "$t", 2) == 0;
+        // TODO: Add cases for RISC-V and CSKY when supported, see:
+        // https://github.com/llvm/llvm-project/blob/de93f7ed0d615060735ad15e720f2497ed1d2468/llvm/include/llvm/Object/ELFObjectFile.h#L817
+        default:
+            return false;
+    }
+}
+
+PerfAddressCache::SymbolCache PerfAddressCache::extractSymbols(Dwfl_Module* module, quint64 elfStart,
+                                                               PerfRegisterInfo::Architecture arch)
 {
     PerfAddressCache::SymbolCache cache;
 
@@ -130,8 +145,8 @@ PerfAddressCache::SymbolCache PerfAddressCache::extractSymbols(Dwfl_Module *modu
         GElf_Sym sym;
         GElf_Addr symAddr;
         const auto symbol = dwfl_module_getsym_info(module, i, &sym, &symAddr, nullptr, nullptr, nullptr);
-        if (symbol) {
-            const quint64 start = alignedAddress(sym.st_value, isArmArch);
+        if (symbol && !isMappingSymbol(symbol, arch)) {
+            const quint64 start = alignedAddress(sym.st_value, arch == PerfRegisterInfo::ARCH_ARM);
             cache.append({symAddr - elfStart, start, sym.st_size, symbol});
         }
     }
