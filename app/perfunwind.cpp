@@ -623,6 +623,12 @@ void PerfUnwind::resolveCallchain()
             if (hasBranchStack && !isKernel)
                 break;
 
+            // For stack frames other than the first one, ip is a return address, so it points to the instruction after
+            // the call instruction. Therefore, subtract 1 from the return address so that it gets correctly attributed
+            // to the call instruction.
+            if (addedUserFrames)
+                --ip;
+
             if (!reportIp(ip))
                 return;
 
