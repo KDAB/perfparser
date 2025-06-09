@@ -406,13 +406,13 @@ void TestPerfData::testInlineDetection()
     client.extractTrace(&output);
 
     auto main = client.symbol(29);
-    Q_ASSERT(!main.isInline);
-    Q_ASSERT(client.string(main.name) == "main");
+    QVERIFY(!main.isInline);
+    QCOMPARE(client.string(main.name), "main");
 
     auto log = client.symbol(104);
-    Q_ASSERT(log.isInline);
-    Q_ASSERT(client.string(log.name)
-             == "std::__detail::_Mod<unsigned long, 2147483647ul, 16807ul, 0ul, true, true>::__calc(unsigned long)");
+    QVERIFY(log.isInline);
+    QCOMPARE(client.string(log.name),
+             "std::__detail::_Mod<unsigned long, 2147483647ul, 16807ul, 0ul, true, true>::__calc(unsigned long)");
 }
 
 QTEST_GUILESS_MAIN(TestPerfData)
