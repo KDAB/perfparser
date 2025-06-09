@@ -26,6 +26,8 @@
 
 #include <limits>
 
+#include <sys/mman.h>
+
 static const int intMax = std::numeric_limits<int>::max();
 
 PerfData::PerfData(PerfUnwind *destination, const PerfHeader *header, PerfAttributes *attributes) :
@@ -187,7 +189,11 @@ PerfData::ReadStatus PerfData::processEvents(QDataStream &stream)
     case PERF_RECORD_MMAP2: {
         PerfRecordMmap2 mmap2(&m_eventHeader, sampleType, sampleIdAll);
         stream >> mmap2;
-        m_destination->registerElf(mmap2); // Throw out the extra data for now.
+        // We only care about executable mappings, and registerElf will match this against an executable mapping in the
+        // program headers.
+        if (mmap2.prot() & PROT_EXEC) {
+            m_destination->registerElf(mmap2); // Throw out the extra data for now.
+        }
         break;
     }
     case PERF_RECORD_HEADER_ATTR: {
