@@ -668,6 +668,7 @@ private:
     int m_remaininingDecompressedDataSize = 0;
 #if HAVE_ZSTD
     ZSTD_DStream *m_zstdDstream = nullptr;
+    ReadStatus processCompressedEvents(QDataStream &stream, qint64 contentSize);
 #endif
 
     ReadStatus processEvents(QDataStream &stream);
