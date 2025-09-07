@@ -104,6 +104,9 @@ const char* perfEventToString(quint32 type)
     case PERF_RECORD_TIME_CONV:           return "PERF_RECORD_TIME_CONV";
     case PERF_RECORD_HEADER_FEATURE:      return "PERF_RECORD_HEADER_FEATURE";
     case PERF_RECORD_COMPRESSED:          return "PERF_RECORD_COMPRESSED";
+    case PERF_RECORD_FINISHED_INIT:       return "PERF_RECORD_FINISHED_INIT";
+    case PERF_RECORD_COMPRESSED2:         return "PERF_RECORD_COMPRESSED2";
+    case PERF_RECORD_BPF_METADATA:        return "PERF_RECORD_BPF_METADATA";
     }
     return "unknown type";
 }
