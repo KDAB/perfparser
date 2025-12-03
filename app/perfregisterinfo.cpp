@@ -58,6 +58,9 @@ static int x86_64[] = {0, 3, 2, 1, 4, 5, 6, 7, 16, 17, 18, 19, 20, 21, 22, 23, 8
 #endif
 static int mips[] = { 32,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
                         18, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31};
+// Perf and Dwarf register layouts are the same for LoongArch
+static int loongarch[] = { 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
+                        18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32};
 
 static int none[] = {0};
 
@@ -70,6 +73,7 @@ const int *PerfRegisterInfo::s_perfToDwarf[PerfRegisterInfo::ARCH_INVALID][PerfR
     {none,    none   },
     {x86,     x86_64 },
     {mips,    mips   },
+    {loongarch, loongarch},
 };
 
 const int PerfRegisterInfo::s_perfIp[ARCH_INVALID] = {
@@ -126,6 +130,8 @@ QString PerfRegisterInfo::defaultArchitecture()
     return QStringLiteral("sparc");
 #elif defined(__i386__) || defined(__x86_64__)
     return QStringLiteral("x86");
+#elif defined(__loongarch__)
+    return QStringLiteral("loongarch");
 #else
     return QString();
 #endif
@@ -157,6 +163,9 @@ PerfRegisterInfo::Architecture PerfRegisterInfo::archByName(const QByteArray &na
 
     if (name.startsWith("mips"))
         return ARCH_MIPS;
+
+    if (name.startsWith("loongarch"))
+        return ARCH_LOONGARCH;
 
     return ARCH_INVALID;
 }
