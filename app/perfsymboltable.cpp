@@ -145,8 +145,7 @@ static bool matchesBuildId(const QByteArray &buildId, const QFileInfo& path)
         return true;
 
     QFile file(path.absoluteFilePath());
-    file.open(QIODevice::ReadOnly);
-    if (!file.isOpen())
+    if (!file.open(QIODevice::ReadOnly))
         return false;
 
     auto elf = elf_begin(file.handle(), ELF_C_READ, NULL);
@@ -885,8 +884,10 @@ void PerfSymbolTable::updatePerfMap()
     if (!m_hasPerfMap)
         return;
 
-    if (!m_perfMapFile.isOpen())
-        m_perfMapFile.open(QIODevice::ReadOnly);
+    if (!m_perfMapFile.isOpen() && !m_perfMapFile.open(QIODevice::ReadOnly)) {
+        qWarning() << "Failed to open perf map:" << m_perfMapFile.fileName() << m_perfMapFile.errorString();
+        return;
+    }
 
     bool readLine = false;
     while (!m_perfMapFile.atEnd()) {
