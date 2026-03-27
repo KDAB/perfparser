@@ -25,7 +25,8 @@
 class PerfRegisterInfo
 {
 public:
-    enum Architecture {
+    enum Architecture
+    {
         ARCH_ARM = 0,
         ARCH_AARCH64,
         ARCH_POWERPC,
@@ -34,18 +35,19 @@ public:
         ARCH_SPARC,
         ARCH_X86,
         ARCH_MIPS,
+        ARCH_RISCV,
         ARCH_INVALID
     };
 
     static const int s_numAbis = 2; // maybe more for some archs?
 
-    static Architecture archByName(const QByteArray &name);
+    static Architecture archByName(const QByteArray& name);
     static const int s_numRegisters[ARCH_INVALID][s_numAbis];
     static const int s_wordWidth[ARCH_INVALID][s_numAbis];
 
     // Translation table for converting perf register layout to dwarf register layout
     // This is specific to ABI as the different ABIs may have different numbers of registers.
-    static const int *s_perfToDwarf[ARCH_INVALID][s_numAbis];
+    static const int* s_perfToDwarf[ARCH_INVALID][s_numAbis];
 
     // location of IP register or equivalent in perf register layout for each arch/abi
     // This is not specific to ABI as perf makes sure IP is always in the same spot

@@ -31,6 +31,8 @@ const int PerfRegisterInfo::s_numRegisters[PerfRegisterInfo::ARCH_INVALID][PerfR
     { 0,  0},
     { 0,  0},
     { 9, 17},
+	{ 0,  0},
+	{32, 32},
 };
 
 const int PerfRegisterInfo::s_wordWidth[PerfRegisterInfo::ARCH_INVALID][PerfRegisterInfo::s_numAbis] = {
@@ -41,6 +43,8 @@ const int PerfRegisterInfo::s_wordWidth[PerfRegisterInfo::ARCH_INVALID][PerfRegi
     {0, 0},
     {0, 0},
     {4, 8},
+	{0, 0},
+	{4, 8},
 };
 
 // Perf and Dwarf register layouts are the same for ARM and ARM64
@@ -59,6 +63,9 @@ static int x86_64[] = {0, 3, 2, 1, 4, 5, 6, 7, 16, 17, 18, 19, 20, 21, 22, 23, 8
 static int mips[] = { 32,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
                         18, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31};
 
+static int riscv[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+	                    20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
+
 static int none[] = {0};
 
 const int *PerfRegisterInfo::s_perfToDwarf[PerfRegisterInfo::ARCH_INVALID][PerfRegisterInfo::s_numAbis] = {
@@ -70,14 +77,15 @@ const int *PerfRegisterInfo::s_perfToDwarf[PerfRegisterInfo::ARCH_INVALID][PerfR
     {none,    none   },
     {x86,     x86_64 },
     {mips,    mips   },
+	{riscv,   riscv  },
 };
 
 const int PerfRegisterInfo::s_perfIp[ARCH_INVALID] = {
-    15, 32, 0xffff, 0xffff, 0xffff, 0xffff, 8
+    15, 32, 0xffff, 0xffff, 0xffff, 0xffff, 8, 0xffff, 0
 };
 
 const int PerfRegisterInfo::s_perfSp[ARCH_INVALID] = {
-    13, 31, 0xffff, 0xffff, 0xffff, 0xffff, 7
+    13, 31, 0xffff, 0xffff, 0xffff, 0xffff, 7, 0xffff, 2
 };
 
 const int PerfRegisterInfo::s_dwarfLr[ARCH_INVALID][s_numAbis] = {
@@ -87,7 +95,9 @@ const int PerfRegisterInfo::s_dwarfLr[ARCH_INVALID][s_numAbis] = {
     {0xffff, 0xffff},
     {0xffff, 0xffff},
     {0xffff, 0xffff},
-    {0xffff, 0xffff}
+    {0xffff, 0xffff},
+    {0xffff, 0xffff},
+	{1, 1}
 };
 
 const int PerfRegisterInfo::s_dwarfIp[ARCH_INVALID][s_numAbis] = {
@@ -97,7 +107,9 @@ const int PerfRegisterInfo::s_dwarfIp[ARCH_INVALID][s_numAbis] = {
     {0xffff, 0xffff},
     {0xffff, 0xffff},
     {0xffff, 0xffff},
-    {8, 16}
+    {8, 16},
+	{0xffff, 0xffff},
+	{0, 0}
 };
 
 const int PerfRegisterInfo::s_dummyRegisters[ARCH_INVALID][2] = {
@@ -157,6 +169,9 @@ PerfRegisterInfo::Architecture PerfRegisterInfo::archByName(const QByteArray &na
 
     if (name.startsWith("mips"))
         return ARCH_MIPS;
+
+    if (name.startsWith("risc"))
+		return ARCH_RISCV;
 
     return ARCH_INVALID;
 }
